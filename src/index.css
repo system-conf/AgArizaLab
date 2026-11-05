@@ -1,1 +1,27 @@
 @import "tailwindcss";
+
+@theme {
+  /* Windows command prompt look for the terminal tab. */
+  --font-console: Consolas, "Lucida Console", "Cascadia Mono", "Courier New", ui-monospace, monospace;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-slate-50 text-slate-800 antialiased;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

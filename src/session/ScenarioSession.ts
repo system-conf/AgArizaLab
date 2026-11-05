@@ -1,5 +1,5 @@
-import type { NetworkEngine, TerminalLine } from '../domain/EngineContract'
-import type { Device, Link, NetworkState } from '../domain/NetworkTypes'
+import type { NetworkEngine, PacketTrace, TerminalLine } from '../domain/EngineContract'
+import type { Device, Link, MapPosition, NetworkState } from '../domain/NetworkTypes'
 import type { Scenario } from '../domain/ScenarioTypes'
 import { networkEngine, solveChecker, type ConditionResult, type SolveChecker } from '../engine'
 
@@ -26,6 +26,10 @@ interface SessionData {
   finishedAt: number | null
   notes: string
   lastCheck: readonly ConditionResult[] | null
+  /** Map positions the player dragged devices to; layout only, never read by the engine. */
+  layout: Readonly<Record<string, MapPosition>>
+  /** Route of the latest ping, for the map animation; null before the first ping. */
+  lastTrace: PacketTrace | null
 }
 
 const noLines: readonly TerminalLine[] = []
@@ -60,6 +64,8 @@ export class ScenarioSession {
         finishedAt: null,
         notes: '',
         lastCheck: null,
+        layout: {},
+        lastTrace: null,
       },
       services,
     )
@@ -107,6 +113,25 @@ export class ScenarioSession {
     return this.data.lastCheck
   }
 
+  /** Route of the latest ping (kept until the next ping); null before the first one. */
+  get lastTrace(): PacketTrace | null {
+    return this.data.lastTrace
+  }
+
+  /** True when at least one device was dragged away from its scenario position. */
+  get hasCustomLayout(): boolean {
+    return Object.keys(this.data.layout).length > 0
+  }
+
+  /** Where the device is drawn: the dragged position if any, else the scenario position. */
+  positionOf(deviceId: string): MapPosition {
+    const moved = this.data.layout[deviceId]
+    if (moved) return moved
+    const device = this.data.state.devices.find((candidate) => candidate.id === deviceId)
+    if (!device) throw new Error(`Unknown device id: ${deviceId}`)
+    return device.position
+  }
+
   terminalLines(deviceId: string): readonly TerminalLine[] {
     return this.data.terminal[deviceId] ?? noLines
   }
@@ -134,6 +159,22 @@ export class ScenarioSession {
     return this.with({ state: { ...state, links: replaceById(state.links, next, 'link') } })
   }
 
+  /** Moves a device on the map. Changes only the drawing, never the network state. */
+  moveDevice(deviceId: string, position: MapPosition): ScenarioSession {
+    if (!this.data.state.devices.some((device) => device.id === deviceId)) {
+      throw new Error(`Unknown device id: ${deviceId}`)
+    }
+    if (!Number.isFinite(position.x) || !Number.isFinite(position.y)) {
+      throw new Error(`Invalid map position for ${deviceId}`)
+    }
+    return this.with({ layout: { ...this.data.layout, [deviceId]: { x: position.x, y: position.y } } })
+  }
+
+  /** Puts every device back at its scenario position. */
+  resetLayout(): ScenarioSession {
+    return this.hasCustomLayout ? this.with({ layout: {} }) : this
+  }
+
   /** Runs a terminal line on a host: echoes the input, then the engine output; applies network changes. */
   runCommand(deviceId: string, commandLine: string): ScenarioSession {
     const result = this.services.engine.runCommand(this.data.state, deviceId, commandLine)
@@ -145,6 +186,7 @@ export class ScenarioSession {
     return this.with({
       state: result.nextState ?? this.data.state,
       terminal: { ...this.data.terminal, [deviceId]: lines },
+      lastTrace: result.trace ?? this.data.lastTrace,
     })
   }
 

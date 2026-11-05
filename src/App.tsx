@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import GameScreen, { type SolvedSummary } from './features/game/GameScreen'
 import ResultScreen from './features/result/ResultScreen'
 import ScenarioList from './features/scenario/ScenarioList'
@@ -16,6 +16,11 @@ function App() {
   const [progress, setProgress] = useState(() => progressStore.read())
   const [screen, setScreen] = useState<Screen>({ kind: 'list' })
 
+  // Every screen starts at the top, not at the scroll position of the previous one.
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [screen])
+
   const showList = () => setScreen({ kind: 'list' })
 
   if (screen.kind === 'list') {
@@ -24,6 +29,7 @@ function App() {
       order: scenario.order,
       title: scenario.title,
       setting: scenario.setting,
+      topics: scenario.topics,
       completed: progress[scenario.id] !== undefined,
     }))
     const start = (scenarioId: string) => {

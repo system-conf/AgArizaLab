@@ -24,15 +24,21 @@ function HintButton({ hints, revealedCount, onReveal }: HintButtonProps) {
         onClick={() => setOpen((value) => !value)}
         aria-expanded={open}
         aria-controls={panelId}
-        className={`flex items-center gap-1.5 rounded-md border border-amber-300 bg-amber-50 px-3 py-1.5 text-sm text-amber-900 hover:bg-amber-100 ${focusRing}`}
+        className={`flex h-9 items-center gap-1.5 rounded-lg border border-amber-300 bg-amber-50 px-2.5 text-sm font-medium text-amber-900 hover:bg-amber-100 sm:px-3 ${focusRing}`}
       >
         <Lightbulb className="h-4 w-4" aria-hidden="true" />
-        İpucu ({revealedCount}/{hints.length})
+        <span className="sr-only sm:not-sr-only">İpucu</span>
+        <span className="tabular-nums">
+          {revealedCount}/{hints.length}
+        </span>
       </button>
       {open && (
         <div
           id={panelId}
-          className="absolute right-0 z-30 mt-2 w-80 max-w-[calc(100vw-2rem)] rounded-lg border border-slate-200 bg-white p-3 shadow-lg"
+          onKeyDown={(event) => {
+            if (event.key === 'Escape') setOpen(false)
+          }}
+          className="absolute right-0 z-30 mt-2 w-80 max-w-[calc(100vw-1.5rem)] rounded-xl border border-slate-200 bg-white p-3 shadow-lg"
         >
           <div className="mb-2 flex items-center justify-between">
             <h2 className="text-sm font-semibold text-slate-800">İpuçları</h2>

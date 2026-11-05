@@ -1,4 +1,4 @@
-import type { ReachResult } from '../domain/EngineContract'
+import type { FailureReason, ReachResult } from '../domain/EngineContract'
 import type { Device, HostNetworkConfig, NetworkState, RouterInterface } from '../domain/NetworkTypes'
 import { DeviceLookup } from './DeviceLookup'
 import { Ipv4 } from './Ipv4'
@@ -11,7 +11,24 @@ interface ReadyHost {
   segment: Segment
 }
 
-type ReadyResult = { ok: true; ready: ReadyHost } | { ok: false; result: ReachResult }
+/**
+ * Reach result plus the devices the packet actually travelled through (v1.1 map animation).
+ * ok → `reached` equals the result path; !ok → source up to the device that dropped it.
+ */
+export interface ReachTrace {
+  result: ReachResult
+  reached: string[]
+}
+
+type ReadyResult = { ok: true; ready: ReadyHost } | { ok: false; trace: ReachTrace }
+
+function success(path: string[]): ReachTrace {
+  return { result: { ok: true, path }, reached: path }
+}
+
+function failure(reason: FailureReason, atDeviceId: string, reached: string[]): ReachTrace {
+  return { result: { ok: false, reason, atDeviceId }, reached }
+}
 
 /** Answers "can this device ping that address?" following PLAN §4.2 in order. */
 export class ReachabilityChecker {
@@ -22,17 +39,22 @@ export class ReachabilityChecker {
   }
 
   reach(state: NetworkState, fromDeviceId: string, toIp: string): ReachResult {
+    return this.trace(state, fromDeviceId, toIp).result
+  }
+
+  /** Same checks as `reach`, also returning how far the packet travelled. */
+  trace(state: NetworkState, fromDeviceId: string, toIp: string): ReachTrace {
     const from = DeviceLookup.require(state, fromDeviceId)
-    if (!from.powered) return { ok: false, reason: 'powerOff', atDeviceId: from.id }
+    if (!from.powered) return failure('powerOff', from.id, [from.id])
     // Loopback is answered by the device itself, even without a network link.
-    if (Ipv4.isLoopback(toIp)) return { ok: true, path: [from.id] }
+    if (Ipv4.isLoopback(toIp)) return success([from.id])
 
     const prepared = this.prepare(state, from)
-    if (!prepared.ok) return prepared.result
+    if (!prepared.ok) return prepared.trace
     const { device, host, segment } = prepared.ready
 
-    if (!Ipv4.isValid(toIp)) return { ok: false, reason: 'invalidConfig', atDeviceId: device.id }
-    if (toIp === host.ip) return { ok: true, path: [device.id] }
+    if (!Ipv4.isValid(toIp)) return failure('invalidConfig', device.id, [device.id])
+    if (toIp === host.ip) return success([device.id])
 
     if (Ipv4.sameSubnet(host.ip, toIp, host.mask)) {
       return this.reachLocal(state, segment, toIp, device.id)
@@ -40,37 +62,39 @@ export class ReachabilityChecker {
     return this.reachThroughGateway(state, prepared.ready, toIp)
   }
 
-  /** Steps 2–3: link, port and own address. */
+  /** Steps 2–3: link, port and own address. Failures here never leave the source. */
   private prepare(state: NetworkState, from: Device): ReadyResult {
+    const source = [from.id]
     const host = from.host
-    if (!host) return { ok: false, result: { ok: false, reason: 'cableDisconnected', atDeviceId: from.id } }
+    if (!host) return { ok: false, trace: failure('cableDisconnected', from.id, source) }
 
     const attachment = this.segments.attachment(state, from)
     if (!attachment.ok) {
-      return { ok: false, result: { ok: false, reason: attachment.reason, atDeviceId: attachment.atDeviceId ?? from.id } }
+      return { ok: false, trace: failure(attachment.reason, attachment.atDeviceId ?? from.id, source) }
     }
-    if (host.ip === '') return { ok: false, result: { ok: false, reason: 'noIpAddress', atDeviceId: from.id } }
+    if (host.ip === '') return { ok: false, trace: failure('noIpAddress', from.id, source) }
     if (!Ipv4.isValid(host.ip) || !Ipv4.isValidMask(host.mask)) {
-      return { ok: false, result: { ok: false, reason: 'invalidConfig', atDeviceId: from.id } }
+      return { ok: false, trace: failure('invalidConfig', from.id, source) }
     }
     const segment = this.segments.segment(state, from.id, attachment.vlan)
     return { ok: true, ready: { device: from, host, segment } }
   }
 
   /** Step 4: destination in the sender's own subnet must be in its layer-2 segment. */
-  private reachLocal(state: NetworkState, segment: Segment, toIp: string, fromId: string): ReachResult {
+  private reachLocal(state: NetworkState, segment: Segment, toIp: string, fromId: string): ReachTrace {
     const target = this.segments.findAddress(state, segment, toIp)
-    if (!target) return { ok: false, reason: 'destinationNotInSegment', atDeviceId: fromId }
-    return { ok: true, path: this.segments.pathTo(segment, target.id) }
+    if (!target) return failure('destinationNotInSegment', fromId, [fromId])
+    return success(this.segments.pathTo(segment, target.id))
   }
 
   /** Step 5: the default gateway must be a router interface inside the segment. */
-  private reachThroughGateway(state: NetworkState, ready: ReadyHost, toIp: string): ReachResult {
+  private reachThroughGateway(state: NetworkState, ready: ReadyHost, toIp: string): ReachTrace {
     const { device, host, segment } = ready
-    if (host.gateway === '') return { ok: false, reason: 'gatewayNotSet', atDeviceId: device.id }
-    if (!Ipv4.isValid(host.gateway)) return { ok: false, reason: 'invalidConfig', atDeviceId: device.id }
+    const source = [device.id]
+    if (host.gateway === '') return failure('gatewayNotSet', device.id, source)
+    if (!Ipv4.isValid(host.gateway)) return failure('invalidConfig', device.id, source)
     if (!Ipv4.sameSubnet(host.ip, host.gateway, host.mask)) {
-      return { ok: false, reason: 'gatewayOutsideSubnet', atDeviceId: device.id }
+      return failure('gatewayOutsideSubnet', device.id, source)
     }
 
     const router = this.segments.findAddress(state, segment, host.gateway)
@@ -78,25 +102,25 @@ export class ReachabilityChecker {
       (candidate) => candidate.ip === host.gateway && candidate.vlan === segment.vlan,
     )
     if (!router || router.kind !== 'router' || !gatewayInterface) {
-      return { ok: false, reason: 'gatewayUnreachable', atDeviceId: device.id }
+      return failure('gatewayUnreachable', device.id, source)
     }
     const pathToRouter = this.segments.pathTo(segment, router.id)
     return this.routeAtRouter(state, router, toIp, pathToRouter)
   }
 
   /** Step 6: the router forwards to one of its subnets or to the internet. */
-  private routeAtRouter(state: NetworkState, router: Device, toIp: string, pathToRouter: string[]): ReachResult {
+  private routeAtRouter(state: NetworkState, router: Device, toIp: string, pathToRouter: string[]): ReachTrace {
     const interfaces = router.routerInterfaces ?? []
-    if (interfaces.some((candidate) => candidate.ip === toIp)) return { ok: true, path: pathToRouter }
+    if (interfaces.some((candidate) => candidate.ip === toIp)) return success(pathToRouter)
 
     const outgoing = interfaces.find((candidate) => Ipv4.sameSubnet(candidate.ip, toIp, candidate.mask))
     if (outgoing) return this.deliverToVlan(state, router, outgoing, toIp, pathToRouter)
 
     if (Ipv4.isPublic(toIp)) {
-      if (router.wanUp !== true) return { ok: false, reason: 'wanDown', atDeviceId: router.id }
-      return { ok: true, path: [...pathToRouter, ...this.internetBehind(state, router)] }
+      if (router.wanUp !== true) return failure('wanDown', router.id, pathToRouter)
+      return success([...pathToRouter, ...this.internetBehind(state, router)])
     }
-    return { ok: false, reason: 'noRouteToDestination', atDeviceId: router.id }
+    return failure('noRouteToDestination', router.id, pathToRouter)
   }
 
   /** Inter-VLAN delivery; the destination must route its reply back through the same interface. */
@@ -106,15 +130,16 @@ export class ReachabilityChecker {
     outgoing: RouterInterface,
     toIp: string,
     pathToRouter: string[],
-  ): ReachResult {
+  ): ReachTrace {
     const vlanSegment = this.segments.segment(state, router.id, outgoing.vlan)
     const target = this.segments.findAddress(state, vlanSegment, toIp)
-    if (!target) return { ok: false, reason: 'destinationNotInSegment', atDeviceId: router.id }
-    if (target.host?.gateway !== outgoing.ip) {
-      return { ok: false, reason: 'gatewayUnreachable', atDeviceId: target.id }
-    }
+    if (!target) return failure('destinationNotInSegment', router.id, pathToRouter)
     const pathFromRouter = this.segments.pathTo(vlanSegment, target.id).slice(1)
-    return { ok: true, path: [...pathToRouter, ...pathFromRouter] }
+    if (target.host?.gateway !== outgoing.ip) {
+      // The request arrived; only the reply has no way back.
+      return failure('gatewayUnreachable', target.id, [...pathToRouter, ...pathFromRouter])
+    }
+    return success([...pathToRouter, ...pathFromRouter])
   }
 
   /** The internet device on the router's WAN port, for the display path. */

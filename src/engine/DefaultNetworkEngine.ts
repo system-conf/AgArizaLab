@@ -2,6 +2,7 @@ import type {
   AppLinkStatus,
   CommandResult,
   DhcpResult,
+  LinkLight,
   NetworkEngine,
   ReachResult,
   ResolveResult,
@@ -12,6 +13,7 @@ import { CommandFormatter } from './CommandFormatter'
 import { CommandRunner } from './CommandRunner'
 import { DhcpService } from './DhcpService'
 import { DnsResolver } from './DnsResolver'
+import { LinkLightChecker } from './LinkLightChecker'
 import { ReachabilityChecker } from './ReachabilityChecker'
 import { SegmentFinder } from './SegmentFinder'
 
@@ -22,6 +24,7 @@ export class DefaultNetworkEngine implements NetworkEngine {
   private readonly appLinks: AppLinkChecker
   private readonly dhcp: DhcpService
   private readonly commands: CommandRunner
+  private readonly linkLights = new LinkLightChecker()
 
   constructor() {
     const segments = new SegmentFinder()
@@ -56,5 +59,9 @@ export class DefaultNetworkEngine implements NetworkEngine {
 
   runCommand(state: NetworkState, deviceId: string, commandLine: string): CommandResult {
     return this.commands.run(state, deviceId, commandLine)
+  }
+
+  linkLight(state: NetworkState, linkId: string): LinkLight {
+    return this.linkLights.light(state, linkId)
   }
 }

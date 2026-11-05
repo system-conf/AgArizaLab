@@ -1,9 +1,12 @@
+import { AppWindow, Cable, EthernetPort, Info, Network, Wifi } from 'lucide-react'
 import type { AppLinkStatus } from '../../domain/EngineContract'
 import type { Device, NetworkState } from '../../domain/NetworkTypes'
 import AppLinkStatusList from './AppLinkStatusList'
-import { linksOfDevice, type DeviceLinkView } from './deviceLinks'
+import { connectedPortIdsOf, linksOfDevice, type DeviceLinkView } from './deviceLinks'
 import { deviceKindLabels } from './deviceKindLabels'
+import FactList, { type Fact } from './FactList'
 import SettingsSection from './SettingsSection'
+import SwitchPortStrip from './SwitchPortStrip'
 import WirelessNetworksList from './WirelessNetworksList'
 
 interface InfoTabProps {
@@ -27,60 +30,60 @@ function orDash(value: string): string {
   return value === '' ? '—' : value
 }
 
-/** "Bilgi" tab: read-only facts about the selected device. */
+function generalFacts(device: Device): Fact[] {
+  const facts: Fact[] = [
+    { label: 'Tür', value: deviceKindLabels[device.kind] },
+    { label: 'Güç', value: device.powered ? 'Açık' : 'Kapalı' },
+  ]
+  if (device.kind !== 'internet') facts.push({ label: 'MAC adresi', value: device.mac, mono: true })
+  return facts
+}
+
+/** "Bilgi" tab: read-only facts about the selected device, as cards. */
 function InfoTab({ device, state, appLinkStatuses }: InfoTabProps) {
   const { host } = device
   const links = linksOfDevice(state, device.id)
 
   return (
-    <div className="flex flex-col gap-4 text-sm">
-      <SettingsSection title="Genel">
-        <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1">
-          <dt className="text-slate-500">Tür</dt>
-          <dd>{deviceKindLabels[device.kind]}</dd>
-          <dt className="text-slate-500">Güç</dt>
-          <dd>{device.powered ? 'Açık' : 'Kapalı'}</dd>
-          {device.kind !== 'internet' && (
-            <>
-              <dt className="text-slate-500">MAC adresi</dt>
-              <dd className="font-mono">{device.mac}</dd>
-            </>
-          )}
-        </dl>
+    <div className="flex flex-col gap-3">
+      <SettingsSection title="Genel" icon={Info}>
+        <FactList facts={generalFacts(device)} />
       </SettingsSection>
       {host && (
-        <SettingsSection title="IP bilgileri">
-          <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1">
-            <dt className="text-slate-500">Mod</dt>
-            <dd>{host.mode === 'dhcp' ? 'Otomatik (DHCP)' : 'Elle (statik)'}</dd>
-            <dt className="text-slate-500">IP adresi</dt>
-            <dd className="font-mono">{orDash(host.ip)}</dd>
-            <dt className="text-slate-500">Maske</dt>
-            <dd className="font-mono">{orDash(host.mask)}</dd>
-            <dt className="text-slate-500">Ağ geçidi</dt>
-            <dd className="font-mono">{orDash(host.gateway)}</dd>
-            <dt className="text-slate-500">DNS</dt>
-            <dd className="font-mono">{host.dns.length > 0 ? host.dns.join(', ') : '—'}</dd>
-          </dl>
+        <SettingsSection title="IP bilgileri" icon={Network}>
+          <FactList
+            facts={[
+              { label: 'Mod', value: host.mode === 'dhcp' ? 'Otomatik (DHCP)' : 'Elle (statik)' },
+              { label: 'IP adresi', value: orDash(host.ip), mono: true },
+              { label: 'Maske', value: orDash(host.mask), mono: true },
+              { label: 'Ağ geçidi', value: orDash(host.gateway), mono: true },
+              { label: 'DNS', value: host.dns.length > 0 ? host.dns.join(', ') : '—', mono: true },
+            ]}
+          />
+        </SettingsSection>
+      )}
+      {device.switchPorts && (
+        <SettingsSection title="Portlar" icon={EthernetPort}>
+          <SwitchPortStrip ports={device.switchPorts} connectedPortIds={connectedPortIdsOf(state, device.id)} />
         </SettingsSection>
       )}
       {appLinkStatuses.length > 0 && (
-        <SettingsSection title="Uygulama bağlantıları">
+        <SettingsSection title="Uygulama bağlantıları" icon={AppWindow}>
           <AppLinkStatusList statuses={appLinkStatuses} />
         </SettingsSection>
       )}
       {device.wirelessNetworks && (
-        <SettingsSection title="Kablosuz ağlar">
+        <SettingsSection title="Kablosuz ağlar" icon={Wifi}>
           <WirelessNetworksList networks={device.wirelessNetworks} />
         </SettingsSection>
       )}
-      <SettingsSection title="Bağlantılar">
-        {links.length === 0 && <p className="text-slate-500">Bağlı kablo yok.</p>}
-        <ul className="flex flex-col gap-1.5">
+      <SettingsSection title="Bağlantılar" icon={Cable}>
+        {links.length === 0 && <p className="text-sm text-slate-500">Bağlı kablo yok.</p>}
+        <ul className="flex flex-col gap-1.5 text-sm">
           {links.map((view) => {
             const vlan = vlanText(device, view)
             return (
-              <li key={view.link.id} className="rounded-md bg-slate-50 px-2 py-1.5">
+              <li key={view.link.id} className="rounded-lg bg-slate-50 px-2.5 py-2">
                 <span className="font-mono">{view.ownPortId}</span> → {view.peer?.name ?? 'Bilinmeyen cihaz'}{' '}
                 <span className="font-mono text-slate-500">({view.peerPortId})</span>
                 <span className="block text-xs text-slate-500">

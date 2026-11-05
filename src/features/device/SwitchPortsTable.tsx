@@ -1,12 +1,17 @@
-import { useState, type FormEvent } from 'react'
+import { useRef, useState, type FormEvent } from 'react'
 import type { Device, SwitchPort, SwitchPortMode } from '../../domain/NetworkTypes'
 import { focusRing } from '../shared/focusRing'
+import SwitchPortStrip from './SwitchPortStrip'
 
 interface SwitchPortsTableProps {
   device: Device
   ports: SwitchPort[]
   onUpdateDevice: (next: Device) => void
+  /** Ports with a plugged-in cable, shown on the port strip. */
+  connectedPortIds?: ReadonlySet<string>
 }
+
+const noPorts: ReadonlySet<string> = new Set()
 
 interface PortDraft {
   id: string
@@ -25,10 +30,22 @@ function isValidVlan(text: string): boolean {
  * Editable port table of a switch. Parent should remount it (via `key`) when the
  * ports change from outside.
  */
-function SwitchPortsTable({ device, ports, onUpdateDevice }: SwitchPortsTableProps) {
+function SwitchPortsTable({ device, ports, onUpdateDevice, connectedPortIds = noPorts }: SwitchPortsTableProps) {
   const [drafts, setDrafts] = useState<PortDraft[]>(() =>
     ports.map((port) => ({ id: port.id, vlanText: String(port.vlan), mode: port.mode, enabled: port.enabled })),
   )
+  const [selectedPortId, setSelectedPortId] = useState<string | undefined>(undefined)
+  // Mode selects by port id, so a click on the port strip can jump to that row.
+  const modeSelects = useRef(new Map<string, HTMLSelectElement>())
+
+  function selectPort(portId: string) {
+    setSelectedPortId(portId)
+    const select = modeSelects.current.get(portId)
+    if (select) {
+      select.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+      select.focus({ preventScroll: true })
+    }
+  }
   const invalidIds = drafts.filter((d) => d.mode === 'access' && !isValidVlan(d.vlanText)).map((d) => d.id)
 
   function updateDraft(id: string, change: Partial<PortDraft>) {
@@ -50,6 +67,13 @@ function SwitchPortsTable({ device, ports, onUpdateDevice }: SwitchPortsTablePro
 
   return (
     <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-3">
+      <SwitchPortStrip
+        ports={ports}
+        connectedPortIds={connectedPortIds}
+        selectedPortId={selectedPortId}
+        onSelectPort={selectPort}
+      />
+      <p className="text-xs text-slate-500">Bir porta tıkla, aşağıdaki tabloda o satır seçilsin.</p>
       <div className="overflow-x-auto">
         <table className="w-full text-left text-sm">
           <caption className="sr-only">Switch portları</caption>
@@ -66,13 +90,20 @@ function SwitchPortsTable({ device, ports, onUpdateDevice }: SwitchPortsTablePro
               const invalid = invalidIds.includes(draft.id)
               const poe = ports.find((port) => port.id === draft.id)?.poe ?? false
               return (
-                <tr key={draft.id} className="border-t border-slate-100">
+                <tr
+                  key={draft.id}
+                  className={`border-t border-slate-100 ${draft.id === selectedPortId ? 'bg-sky-50' : ''}`}
+                >
                   <th scope="row" className="py-1.5 pr-2 font-mono font-normal">
                     {draft.id}
                     {poe && <span className="ml-1 rounded bg-amber-100 px-1 text-[10px] text-amber-800">PoE</span>}
                   </th>
                   <td className="py-1.5 pr-2">
                     <select
+                      ref={(element) => {
+                        if (element) modeSelects.current.set(draft.id, element)
+                        else modeSelects.current.delete(draft.id)
+                      }}
                       aria-label={`${draft.id} modu`}
                       value={draft.mode}
                       onChange={(e) => updateDraft(draft.id, { mode: e.target.value === 'trunk' ? 'trunk' : 'access' })}

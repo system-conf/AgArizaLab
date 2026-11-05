@@ -43,11 +43,29 @@ export interface TerminalLine {
   text: string
 }
 
+/**
+ * Route a ping packet took, for map animation (v1.1).
+ * ok: path = full route source → destination (reply goes back the same way).
+ * !ok: path = route from source to the device where the packet was dropped (may be just [source]).
+ */
+export interface PacketTrace {
+  path: string[]
+  ok: boolean
+}
+
 export interface CommandResult {
   lines: TerminalLine[]
   /** Set when the command changed the network (e.g. 'ipconfig /renew'). */
   nextState?: NetworkState
+  /** Set by ping (one trace for the whole command; for names, the trace to the resolved IP). */
+  trace?: PacketTrace
 }
+
+/**
+ * Physical link light, like a switch port LED (v1.1). 'up' = cable connected, both ends powered,
+ * switch port(s) enabled. Says nothing about IP/VLAN/DNS, so it never reveals a config fault.
+ */
+export type LinkLight = 'up' | 'down'
 
 export type DhcpResult =
   | { ok: true; nextState: NetworkState; ip: string }
@@ -64,4 +82,6 @@ export interface NetworkEngine {
   renewDhcp(state: NetworkState, deviceId: string): DhcpResult
   /** Run a terminal command line on a host: ipconfig, ipconfig /all, ipconfig /renew, ping, nslookup, help. */
   runCommand(state: NetworkState, deviceId: string, commandLine: string): CommandResult
+  /** Physical light of one link (v1.1). */
+  linkLight(state: NetworkState, linkId: string): LinkLight
 }

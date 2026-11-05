@@ -2,9 +2,8 @@ import { useId, useState } from 'react'
 import type { AppLinkStatus, TerminalLine } from '../../domain/EngineContract'
 import type { Device, Link, NetworkState } from '../../domain/NetworkTypes'
 import { TerminalAvailability } from '../../engine'
-import { deviceIcons } from '../map/deviceIcons'
 import { focusRing } from '../shared/focusRing'
-import { deviceKindLabels } from './deviceKindLabels'
+import DeviceHeader from './DeviceHeader'
 import InfoTab from './InfoTab'
 import SettingsTab from './SettingsTab'
 import TerminalTab from './TerminalTab'
@@ -31,8 +30,9 @@ const tabs: { id: TabId; label: string }[] = [
 function DevicePanel(props: DevicePanelProps) {
   const { device, state, appLinkStatuses, terminalLines, onRunCommand, onUpdateDevice, onUpdateLink } = props
   const [selectedTab, setSelectedTab] = useState<TabId>('info')
+  // `cls` only hides older lines on screen; the session keeps its full history.
+  const [clearedLineCount, setClearedLineCount] = useState(0)
   const baseId = useId()
-  const Icon = deviceIcons[device.kind]
   // Only PCs, POS terminals and the NVR have a command line; other devices get no Terminal tab.
   const hasTerminal = TerminalAvailability.isAvailable(device)
   const visibleTabs = hasTerminal ? tabs : tabs.filter((tab) => tab.id !== 'terminal')
@@ -40,15 +40,7 @@ function DevicePanel(props: DevicePanelProps) {
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex items-center gap-3">
-        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-sky-50 text-sky-800">
-          <Icon className="h-5 w-5" aria-hidden="true" />
-        </span>
-        <div>
-          <h2 className="font-semibold text-slate-900">{device.name}</h2>
-          <p className="text-xs text-slate-500">{deviceKindLabels[device.kind]}</p>
-        </div>
-      </div>
+      <DeviceHeader device={device} />
       <div role="tablist" aria-label="Cihaz sekmeleri" className="flex gap-1 rounded-lg bg-slate-100 p-1">
         {visibleTabs.map((tab) => (
           <button
@@ -72,7 +64,14 @@ function DevicePanel(props: DevicePanelProps) {
         {activeTab === 'settings' && (
           <SettingsTab device={device} state={state} onUpdateDevice={onUpdateDevice} onUpdateLink={onUpdateLink} />
         )}
-        {activeTab === 'terminal' && hasTerminal && <TerminalTab lines={terminalLines} onRunCommand={onRunCommand} />}
+        {activeTab === 'terminal' && hasTerminal && (
+          <TerminalTab
+            lines={terminalLines}
+            hiddenLineCount={Math.min(clearedLineCount, terminalLines.length)}
+            onRunCommand={onRunCommand}
+            onClear={() => setClearedLineCount(terminalLines.length)}
+          />
+        )}
       </div>
     </div>
   )

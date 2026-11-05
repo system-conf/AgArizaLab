@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest'
+import type { NetworkEngine, PacketTrace } from '../domain/EngineContract'
 import type { Device } from '../domain/NetworkTypes'
+import { networkEngine, solveChecker } from '../engine'
 import { posGateway } from '../scenarios/posGateway'
 import { printerDhcp } from '../scenarios/printerDhcp'
 import { ScenarioSession } from './ScenarioSession'
@@ -106,6 +108,58 @@ describe('ScenarioSession', () => {
     expect(solved.lastCheck?.every((result) => result.ok)).toBe(true)
     expect(solved.elapsedSeconds(startedAt + 999_000)).toBe(65)
     expect(solved.checkSolved(startedAt + 90_000).finishedAt).toBe(startedAt + 65_400)
+  })
+
+  it('moves devices on the map without touching the network state', () => {
+    const first = ScenarioSession.start(posGateway, startedAt)
+    const original = first.positionOf('kasa')
+    const moved = first.moveDevice('kasa', { x: 123, y: 456 })
+    expect(moved.positionOf('kasa')).toEqual({ x: 123, y: 456 })
+    expect(moved.state).toBe(first.state)
+    expect(moved.hasCustomLayout).toBe(true)
+    expect(first.positionOf('kasa')).toEqual(original)
+    expect(first.hasCustomLayout).toBe(false)
+    expect(moved.checkSolved(startedAt + 1).lastCheck).toEqual(first.checkSolved(startedAt + 1).lastCheck)
+  })
+
+  it('keeps moved positions across selection and device edits, and resets the layout', () => {
+    const moved = ScenarioSession.start(posGateway, startedAt).moveDevice('kasa', { x: 10, y: 20 })
+    const edited = fixKasaGateway(moved.selectDevice('kasa').selectDevice(null))
+    expect(edited.positionOf('kasa')).toEqual({ x: 10, y: 20 })
+    const reset = edited.resetLayout()
+    expect(reset.hasCustomLayout).toBe(false)
+    expect(reset.positionOf('kasa')).toEqual(deviceOf(reset, 'kasa').position)
+    expect(reset.resetLayout()).toBe(reset)
+  })
+
+  it('rejects moving unknown devices or to invalid positions', () => {
+    const session = ScenarioSession.start(posGateway, startedAt)
+    expect(() => session.moveDevice('yok', { x: 1, y: 1 })).toThrow()
+    expect(() => session.moveDevice('kasa', { x: Number.NaN, y: 1 })).toThrow()
+    expect(() => session.positionOf('yok')).toThrow()
+  })
+
+  it('keeps the trace of the latest ping until the next ping', () => {
+    const trace: PacketTrace = { path: ['kasa', 'switch'], ok: false }
+    const engine: NetworkEngine = {
+      reach: (state, from, toIp) => networkEngine.reach(state, from, toIp),
+      resolve: (state, from, name) => networkEngine.resolve(state, from, name),
+      appLinkStatus: (state, deviceId) => networkEngine.appLinkStatus(state, deviceId),
+      renewDhcp: (state, deviceId) => networkEngine.renewDhcp(state, deviceId),
+      linkLight: (state, linkId) => networkEngine.linkLight(state, linkId),
+      runCommand: (_state, _deviceId, line) => (line.startsWith('ping') ? { lines: [], trace } : { lines: [] }),
+    }
+    const session = ScenarioSession.start(posGateway, startedAt, { engine, checker: solveChecker })
+    expect(session.lastTrace).toBeNull()
+    const pinged = session.runCommand('kasa', 'ping 8.8.8.8')
+    expect(pinged.lastTrace).toBe(trace)
+    expect(pinged.runCommand('kasa', 'ipconfig').lastTrace).toBe(trace)
+    expect(session.lastTrace).toBeNull()
+  })
+
+  it('records the real engine trace for a ping', () => {
+    const pinged = ScenarioSession.start(posGateway, startedAt).runCommand('kasa', 'ping 192.168.10.1')
+    expect(pinged.lastTrace?.path[0]).toBe('kasa')
   })
 
   it('counts elapsed whole seconds while unsolved and never goes negative', () => {

@@ -8,6 +8,15 @@ export interface DeviceLinkView {
   peerPortId: string
 }
 
+/** Own port ids of `deviceId` that have a plugged-in (connected) link. */
+export function connectedPortIdsOf(state: NetworkState, deviceId: string): Set<string> {
+  return new Set(
+    linksOfDevice(state, deviceId)
+      .filter((view) => view.link.connected)
+      .map((view) => view.ownPortId),
+  )
+}
+
 /** Lists every link that touches `deviceId`, oriented from that device's side. */
 export function linksOfDevice(state: NetworkState, deviceId: string): DeviceLinkView[] {
   return state.links

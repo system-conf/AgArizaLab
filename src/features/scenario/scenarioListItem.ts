@@ -6,5 +6,7 @@ export interface ScenarioListItem {
   order: number
   title: string
   setting: ScenarioSetting
+  /** Short topic tags, e.g. ['VLAN', 'Switch portu']. */
+  topics: string[]
   completed: boolean
 }

@@ -54,7 +54,7 @@ export class CommandRunner {
       case 'ipconfig':
         return this.ipconfig(state, device, device.host, args)
       case 'ping':
-        return { lines: this.ping(state, device, args) }
+        return this.ping(state, device, args)
       case 'nslookup':
         return { lines: this.nslookup(state, device, args) }
     }
@@ -84,21 +84,25 @@ export class CommandRunner {
     return { lines: formatter.renewNotPermitted() }
   }
 
-  private ping(state: NetworkState, device: Device, args: string[]): TerminalLine[] {
+  /** Usage errors send no packet (no trace); an unknown name fails at the source. */
+  private ping(state: NetworkState, device: Device, args: string[]): CommandResult {
     const { formatter } = this.deps
     const target = args[0]
-    if (target === undefined) return formatter.usage('ping <ip adresi veya ad>  (örnek: ping 8.8.8.8)')
+    if (target === undefined) return { lines: formatter.usage('ping <ip adresi veya ad>  (örnek: ping 8.8.8.8)') }
 
     let targetIp = target
     let resolvedName: string | null = null
     if (!Ipv4.isValid(target)) {
       const resolved = this.deps.dns.resolve(state, device.id, target)
-      if (!resolved.ok) return formatter.pingHostNotFound(target)
+      if (!resolved.ok) return { lines: formatter.pingHostNotFound(target), trace: { path: [device.id], ok: false } }
       targetIp = resolved.ip
       resolvedName = target
     }
-    const reach = this.deps.reachability.reach(state, device.id, targetIp)
-    return formatter.ping(targetIp, resolvedName, this.pingOutcome(state, device, targetIp, reach))
+    const { result, reached } = this.deps.reachability.trace(state, device.id, targetIp)
+    return {
+      lines: formatter.ping(targetIp, resolvedName, this.pingOutcome(state, device, targetIp, result)),
+      trace: { path: reached, ok: result.ok },
+    }
   }
 
   private pingOutcome(state: NetworkState, device: Device, targetIp: string, reach: ReachResult): PingOutcome {

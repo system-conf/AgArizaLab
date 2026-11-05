@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import type { Device, Link } from '../domain/NetworkTypes'
+import type { Device, Link, MapPosition } from '../domain/NetworkTypes'
 import type { Scenario } from '../domain/ScenarioTypes'
 import { ScenarioSession } from './ScenarioSession'
 
@@ -11,6 +11,8 @@ export interface ScenarioSessionControls {
   updateDevice: (next: Device) => void
   updateLink: (next: Link) => void
   runCommand: (deviceId: string, commandLine: string) => void
+  moveDevice: (deviceId: string, position: MapPosition) => void
+  resetLayout: () => void
   revealHint: () => void
   setNotes: (notes: string) => void
   /** Runs the solve check and returns the resulting session (so the caller can react to a win). */
@@ -45,6 +47,8 @@ export function useScenarioSession(scenario: Scenario): ScenarioSessionControls 
     updateDevice: (next) => setSession((current) => current.updateDevice(next)),
     updateLink: (next) => setSession((current) => current.updateLink(next)),
     runCommand: (deviceId, commandLine) => setSession((current) => current.runCommand(deviceId, commandLine)),
+    moveDevice: (deviceId, position) => setSession((current) => current.moveDevice(deviceId, position)),
+    resetLayout: () => setSession((current) => current.resetLayout()),
     revealHint: () => setSession((current) => current.revealHint()),
     setNotes: (notes) => setSession((current) => current.setNotes(notes)),
     checkSolved,
