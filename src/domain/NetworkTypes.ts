@@ -117,7 +117,8 @@ export interface Device {
 /**
  * Port ids: hosts use 'eth0' (wired) or 'wlan0' (wireless);
  * switches use their SwitchPort.id; routers use 'lan' (carries all VLANs, like a trunk) or 'wan';
- * access points use 'uplink' (wired, trunk-like) or 'radio' (wireless side).
+ * access points use 'uplink' (wired, trunk-like) or 'radio' (wireless side);
+ * the 'internet' device uses 'wan' (linked to the router's 'wan').
  */
 export interface LinkEnd {
   deviceId: string
