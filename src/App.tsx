@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import GameScreen, { type SolvedSummary } from './features/game/GameScreen'
+import ExerciseScreen, { type SolvedSummary } from './features/exercise/ExerciseScreen'
 import { useDocumentMeta } from './features/layout/useDocumentMeta'
 import ResultScreen from './features/result/ResultScreen'
 import ScenarioList from './features/scenario/ScenarioList'
@@ -53,7 +53,7 @@ function App() {
       setScreen({ kind: 'result', scenarioIndex: screen.scenarioIndex, summary })
     }
     return (
-      <GameScreen key={scenario.id} scenario={scenario} total={scenarios.length} onBack={showList} onSolved={handleSolved} />
+      <ExerciseScreen key={scenario.id} scenario={scenario} total={scenarios.length} onBack={showList} onSolved={handleSolved} />
     )
   }
 

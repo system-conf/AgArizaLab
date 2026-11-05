@@ -9,21 +9,23 @@ function settingsOf(line: string) {
 
 describe('PingOptions', () => {
   it('defaults to 4 requests of 32 bytes', () => {
-    expect(settingsOf('8.8.8.8')).toEqual({ target: '8.8.8.8', count: 4, size: 32, continuous: false })
+    expect(settingsOf('8.8.8.8')).toEqual({ target: '8.8.8.8', count: 4, size: 32, continuous: false, countLimited: false })
   })
 
   it('reads -n and -l in any position and case', () => {
-    expect(settingsOf('-N 7 8.8.8.8 -l 1200')).toEqual({ target: '8.8.8.8', count: 7, size: 1200, continuous: false })
+    expect(settingsOf('-N 7 8.8.8.8 -l 1200')).toEqual({ target: '8.8.8.8', count: 7, size: 1200, continuous: false, countLimited: false })
     expect(settingsOf('8.8.8.8 -4 -l 0')).toMatchObject({ size: 0 })
   })
 
-  it('clamps large counts to 20 without complaint', () => {
-    expect(settingsOf('-n 1000 8.8.8.8').count).toBe(20)
+  it('clamps large counts to 20 and marks them as limited', () => {
+    expect(settingsOf('-n 1000 8.8.8.8')).toMatchObject({ count: 20, countLimited: true })
+    expect(settingsOf('-n 20 8.8.8.8')).toMatchObject({ count: 20, countLimited: false })
   })
 
   it('treats -t as four requests', () => {
     expect(settingsOf('-t 8.8.8.8')).toMatchObject({ count: 4, continuous: true })
     expect(settingsOf('-n 9 -t 8.8.8.8')).toMatchObject({ count: 4, continuous: true })
+    expect(settingsOf('-n 50 -t 8.8.8.8')).toMatchObject({ count: 4, continuous: true, countLimited: false })
   })
 
   it('rejects values outside the Windows ranges', () => {

@@ -21,8 +21,8 @@
   "power": {
     "on": "Açık",
     "off": "Kapalı",
-    "toggleWhenOn": "Açık — kapatmak için tıklayın",
-    "toggleWhenOff": "Kapalı — açmak için tıklayın"
+    "toggleWhenOn": "Açık — kapatmak için tıkla",
+    "toggleWhenOff": "Kapalı — açmak için tıkla"
   },
   "header": {
     "ipAddress": "IP adresi:",
@@ -73,7 +73,7 @@
   "appLinks": {
     "ok": "Bağlantı var",
     "addressLabel": "{{label}} adresi",
-    "invalidAddress": "Geçerli bir IPv4 adresi yazın (ör. 192.168.1.150).",
+    "invalidAddress": "Geçerli bir IPv4 adresi yaz (ör. 192.168.1.150).",
     "save": "Uygulama adreslerini kaydet"
   },
   "failureReasons": {
@@ -101,7 +101,7 @@
   "hostForm": {
     "modeLabel": "IP adresi alma şekli",
     "dhcpInfo": "Adres bilgileri DHCP sunucusundan gelir.",
-    "renewHint": "Yeni adres almak için Terminal sekmesinde <cmd>ipconfig /renew</cmd> yazın.",
+    "renewHint": "Yeni adres almak için Terminal sekmesinde <cmd>ipconfig /renew</cmd> yaz.",
     "ip": "IP adresi",
     "mask": "Alt ağ maskesi",
     "gateway": "Varsayılan ağ geçidi",
@@ -111,9 +111,9 @@
     "errors": {
       "ipRequired": "Statik modda IP adresi gerekli.",
       "maskRequired": "Statik modda alt ağ maskesi gerekli.",
-      "invalidAddress": "Geçerli bir IPv4 adresi yazın (ör. 192.168.1.10).",
-      "invalidMask": "Geçerli bir maske yazın (ör. 255.255.255.0).",
-      "notHostAddress": "Bu adres alt ağın ağ adresi veya yayın (broadcast) adresi; bir cihaza verilemez."
+      "invalidAddress": "Geçerli bir IPv4 adresi yaz (ör. 192.168.1.10).",
+      "invalidMask": "Geçerli bir alt ağ maskesi yaz (ör. 255.255.255.0).",
+      "notHostAddress": "Bu adres, alt ağın ağ adresi ya da yayın (broadcast) adresi; bir cihaza verilemez."
     }
   },
   "router": {
@@ -138,7 +138,7 @@
     "noLeases": "Yok"
   },
   "switchPorts": {
-    "selectHint": "Bir porta tıklayın, aşağıdaki tabloda o satır seçilsin.",
+    "selectHint": "Bir porta tıkla; aşağıdaki tabloda o portun satırı seçilir.",
     "caption": "Switch portları",
     "port": "Port",
     "mode": "Mod",

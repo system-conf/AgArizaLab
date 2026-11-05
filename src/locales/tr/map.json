@@ -18,15 +18,15 @@
     "resetLayoutTitle": "Cihazları başlangıçtaki yerlerine geri koy"
   },
   "reactFlow": {
-    "nodeDescription": "Cihazı seçmek için Enter veya Boşluk tuşuna basın. Taşımak için ok tuşlarını kullanın.",
-    "nodeDescriptionKeyboardDisabled": "Cihazı seçmek için Enter veya Boşluk tuşuna basın.",
+    "nodeDescription": "Cihazı seçmek için Enter veya Boşluk tuşuna bas. Taşımak için ok tuşlarını kullan.",
+    "nodeDescriptionKeyboardDisabled": "Cihazı seçmek için Enter veya Boşluk tuşuna bas.",
     "nodeMoved": "Cihaz taşındı. Yeni konum: x {{x}}, y {{y}}.",
     "edgeDescription": "Cihazlar arasındaki bağlantı.",
     "controls": "Harita kontrolleri",
     "zoomIn": "Yakınlaştır",
     "zoomOut": "Uzaklaştır",
     "fitView": "Haritayı ekrana sığdır",
-    "interactive": "Haritayı kilitle veya aç",
+    "interactive": "Haritayı kilitle veya kilidini aç",
     "minimap": "Küçük harita",
     "handle": "Bağlantı noktası"
   }

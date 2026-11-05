@@ -16,7 +16,7 @@ export interface SolvedSummary {
   guideStepsUsed: number
 }
 
-interface GameScreenProps {
+interface ExerciseScreenProps {
   scenario: Scenario
   total: number
   onBack: () => void
@@ -24,11 +24,11 @@ interface GameScreenProps {
 }
 
 /** One open exercise: header, complaint, map, device panel and the verify footer. */
-function GameScreen({ scenario, total, onBack, onSolved }: GameScreenProps) {
+function ExerciseScreen({ scenario, total, onBack, onSolved }: ExerciseScreenProps) {
   const controls = useScenarioSession(scenario)
   // Fullscreen target: the whole exercise area, so the device panel stays usable in fullscreen.
-  const gameAreaRef = useRef<HTMLDivElement>(null)
-  const fullscreen = useFullscreen(gameAreaRef)
+  const exerciseAreaRef = useRef<HTMLDivElement>(null)
+  const fullscreen = useFullscreen(exerciseAreaRef)
   const { session } = controls
   const selected = session.selectedDevice
   const failedChecks = session.lastCheck ? FailedCheckDescriber.describeFailures(session.state, session.lastCheck) : []
@@ -41,7 +41,7 @@ function GameScreen({ scenario, total, onBack, onSolved }: GameScreenProps) {
   }
 
   return (
-    <div ref={gameAreaRef} className="overflow-auto bg-slate-50">
+    <div ref={exerciseAreaRef} className="overflow-auto bg-slate-50">
       <AppLayout
         header={
           <ScenarioHeader
@@ -89,4 +89,4 @@ function GameScreen({ scenario, total, onBack, onSolved }: GameScreenProps) {
   )
 }
 
-export default GameScreen
+export default ExerciseScreen

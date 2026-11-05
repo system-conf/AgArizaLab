@@ -66,10 +66,12 @@ export class TracertCommand {
     switch (failure.kind) {
       case 'generalFailure':
         return { hops: [], ending: { kind: 'generalFailure' } }
-      case 'unreachable':
-        return failure.reporter === 'self'
-          ? { hops: [], ending: { kind: 'unreachable', reporterIp: ownIp } }
-          : { hops: routerHops, ending: { kind: 'unreachable', reporterIp: device.host?.gateway ?? ownIp } }
+      case 'unreachable': {
+        // The reporter's ICMP answer replaces its own hop line, so it is always hop 1:
+        // "  1  192.168.1.1  reports: Destination host unreachable." (own IP for ARP failures).
+        const reporterIp = failure.reporter === 'self' ? ownIp : (device.host?.gateway ?? ownIp)
+        return { hops: [], ending: { kind: 'unreachable', reporterIp } }
+      }
       case 'silent':
         return { hops: routerHops, ending: { kind: 'timedOut' } }
     }

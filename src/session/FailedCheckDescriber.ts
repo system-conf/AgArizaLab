@@ -5,7 +5,7 @@ import type { ConditionResult } from '../engine'
 import { localizedMessage } from '../i18n/messageKeys'
 
 /**
- * Turns unmet solve conditions into messages for the player (`session:failedChecks.*`).
+ * Turns unmet solve conditions into messages for the learner (`session:failedChecks.*`).
  * Messages state the symptom only, never the cause, so the fault stays hidden.
  */
 export class FailedCheckDescriber {

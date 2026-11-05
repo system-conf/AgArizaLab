@@ -21,7 +21,7 @@ interface SettingsTabProps {
 
 type SavedGroup = 'ip' | 'appLinks' | 'ports'
 
-/** "Settings" tab: every setting the player may change on the selected device, grouped in cards. */
+/** "Settings" tab: every setting the learner may change on the selected device, grouped in cards. */
 function SettingsTab({ device, state, onUpdateDevice, onUpdateLink }: SettingsTabProps) {
   const { host, switchPorts, appLinks } = device
   const { t } = useTranslation('device')

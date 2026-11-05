@@ -9,6 +9,8 @@ export interface PingSettings {
   size: number
   /** -t was given: continuous ping is not supported, so `count` is the default 4. */
   continuous: boolean
+  /** -n asked for more than PingOptions.maxCount requests; only the first maxCount are shown. */
+  countLimited: boolean
 }
 
 export type PingParseResult = { ok: true; settings: PingSettings } | { ok: false; error: OptionError }
@@ -31,10 +33,12 @@ export class PingOptions {
     const { target, flags, values } = parsed.options
 
     let count = DEFAULT_COUNT
+    let countLimited = false
     const countOption = values.get('n')
     if (countOption !== undefined) {
       const value = CommandOptions.integerIn(countOption.value, 1, WINDOWS_MAX_COUNT)
       if (value === null) return PingOptions.badValue(countOption.option, 1, WINDOWS_MAX_COUNT)
+      countLimited = value > PingOptions.maxCount
       count = Math.min(value, PingOptions.maxCount)
     }
 
@@ -47,7 +51,8 @@ export class PingOptions {
     }
 
     const continuous = flags.has('t')
-    return { ok: true, settings: { target, count: continuous ? DEFAULT_COUNT : count, size, continuous } }
+    if (continuous) return { ok: true, settings: { target, count: DEFAULT_COUNT, size, continuous, countLimited: false } }
+    return { ok: true, settings: { target, count, size, continuous, countLimited } }
   }
 
   /** Windows names the option as typed ("-n" or "/N"). */

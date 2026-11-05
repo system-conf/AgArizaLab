@@ -3,7 +3,7 @@ import type { HostNetworkConfig, IpMode } from '../../domain/NetworkTypes'
 import { Ipv4 } from '../../engine'
 import { localizedMessage } from '../../i18n/messageKeys'
 
-/** What the player is typing into the IP settings form (all fields as raw text). */
+/** What the learner is typing into the IP settings form (all fields as raw text). */
 export interface HostDraft {
   mode: IpMode
   ip: string

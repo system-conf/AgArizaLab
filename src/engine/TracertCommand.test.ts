@@ -70,16 +70,26 @@ describe('tracert — failures', () => {
     expect(result.trace).toEqual({ ok: false, path: ['pc1', 'switch', 'router'] })
   })
 
-  it('reports the gateway when the router cannot deliver', () => {
-    const lines = texts(run(vlanNetwork(), 'kasa', 'tracert 192.168.20.77'))
-    expect(lines).toContain('  1    <1 ms    <1 ms    <1 ms  192.168.10.1')
-    expect(lines).toContain('  2  192.168.10.1  reports: Destination host unreachable.')
+  it('prints the gateway report as hop 1 when the router cannot deliver (no separate hop line)', () => {
+    expect(texts(run(vlanNetwork(), 'kasa', 'tracert 192.168.20.77'))).toEqual([
+      '',
+      'Tracing route to 192.168.20.77 over a maximum of 30 hops',
+      '',
+      '  1  192.168.10.1  reports: Destination host unreachable.',
+      '',
+      'Trace complete.',
+    ])
+  })
+
+  it('prints the gateway report as hop 1 for a network the router has no route to', () => {
+    const lines = texts(run(officeNetwork(), 'pc1', 'tracert 10.9.9.9'))
+    expect(lines.filter((line) => /^ {2}\d/.test(line))).toEqual(['  1  192.168.1.1  reports: Destination host unreachable.'])
+    expect(lines[lines.length - 1]).toBe('Trace complete.')
   })
 
   it('reports its own address when a local target does not answer', () => {
-    expect(texts(run(officeNetwork(), 'pc1', 'tracert 192.168.1.99'))).toContain(
-      '  1  192.168.1.20  reports: Destination host unreachable.',
-    )
+    const lines = texts(run(officeNetwork(), 'pc1', 'tracert 192.168.1.99'))
+    expect(lines.filter((line) => /^ {2}\d/.test(line))).toEqual(['  1  192.168.1.20  reports: Destination host unreachable.'])
   })
 
   it('times out after the router when the destination has no way back', () => {

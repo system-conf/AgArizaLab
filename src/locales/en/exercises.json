@@ -34,7 +34,7 @@
     "hints": [
       "Look up the printer address saved on the PCs (Info tab) and ping it. Then check the printer's own address.",
       "Select the printer and look at its current address in the Info tab: is it the same as 192.168.1.150, the address the PCs expect? The printer gets its address automatically via DHCP.",
-      "Set the printer's IP configuration to Static: IP 192.168.1.150, mask 255.255.255.0, gateway 192.168.1.1, DNS 192.168.1.1. Both PCs will then find the printer again. In real life you should also exclude this address from the modem's DHCP range or assign it to the printer as a DHCP reservation."
+      "Set the printer's IP address assignment to Manual (static): IP 192.168.1.150, mask 255.255.255.0, gateway 192.168.1.1, DNS 192.168.1.1. Both PCs will then find the printer again. In real life you should also exclude this address from the modem's DHCP range or assign it to the printer as a DHCP reservation."
     ],
     "explanation": {
       "whatHappened": "The printer was getting its address automatically via DHCP. When its lease expired and it requested an address again, the modem gave it 192.168.1.153 instead of 192.168.1.150. The PCs were still looking for the printer at the old address, 192.168.1.150, so they could not send any print jobs.",
@@ -67,7 +67,7 @@
     ],
     "explanation": {
       "whatHappened": "Camera 3 had reverted to its factory settings and started up with the manufacturer's default address, 192.168.0.64. The video recorder and the other cameras were on the 192.168.1.x network; the recorder was looking for the camera at 192.168.1.63, so it could not find it. Cabling and power were fine; the only problem was that the address was on a different network.",
-      "realLife": "Cameras can revert to factory settings after a power outage, a reset button held down too long or a firmware update, and then start up with their default address. To prevent trouble, keep a list of every camera's IP and MAC address, label the switch ports, and set up a reset camera again with the same address. Backing up the camera configuration after installation makes reconfiguring a reset camera faster. Putting the cameras in their own VLAN is a separate security and organization measure that has nothing to do with this fault.",
+      "realLife": "Cameras can revert to factory settings after a power outage, a reset button held down too long or a firmware update, and then start up with their default address. To prevent trouble, keep a list of every camera's IP and MAC address, label the switch ports, and reconfigure a reset camera with the same address. Backing up the camera configuration after installation makes reconfiguring a reset camera faster. Putting the cameras in their own VLAN is a separate security and organization measure that has nothing to do with this fault.",
       "interviewAnswer": "First I do the physical checks: is the camera's PoE light on, is the switch port active, is the cable intact. I ping the faulty camera's address from the video recorder, and when there is no reply I look at the camera's own IP settings. Seeing that it is running on its factory default address, 192.168.0.64, which is on a different network, I correct its IP address to 192.168.1.63 and its gateway to 192.168.1.1. Finally I ping it again from the recorder and check that the video comes through."
     },
     "topics": ["Subnet", "Static IP", "Factory reset", "IP camera"],

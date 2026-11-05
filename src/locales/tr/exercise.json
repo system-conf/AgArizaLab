@@ -22,7 +22,7 @@
     "mapRegion": "Ağ haritası",
     "panelRegion": "Cihaz paneli",
     "closePanel": "Kapat",
-    "selectDevice": "Ayrıntıları görmek için haritada bir cihaza tıklayın."
+    "selectDevice": "Ayrıntıları görmek için haritada bir cihaza tıkla."
   },
   "footer": {
     "notesLabel": "Not defterim",

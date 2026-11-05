@@ -26,13 +26,13 @@ export default defineConfig([
   },
   {
     // User-facing text must come from src/locales via t() (docs/I18N.md).
-    // 'warn' until wave 1.1 has moved the literals; the verifier then switches it to 'error'.
+    // 'error': a literal in JSX fails the lint (wave 1.1 moved every literal to the locale files).
     files: ['src/features/**/*.{ts,tsx}', 'src/App.tsx'],
     ignores: ['**/*.test.{ts,tsx}'],
     plugins: { i18next },
     rules: {
       'i18next/no-literal-string': [
-        'warn',
+        'error',
         {
           mode: 'jsx-only',
           // Non-text attributes (title, aria-label, placeholder, label, alt stay checked).

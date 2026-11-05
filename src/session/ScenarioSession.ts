@@ -20,13 +20,11 @@ interface SessionData {
   selectedDeviceId: string | null
   terminal: Readonly<Record<string, readonly TerminalLine[]>>
   hintsRevealed: number
-  /** Epoch milliseconds. */
-  startedAt: number
-  /** Epoch milliseconds; null while unsolved. */
-  finishedAt: number | null
+  /** Set by the first successful check and never cleared. */
+  solved: boolean
   notes: string
   lastCheck: readonly ConditionResult[] | null
-  /** Map positions the player dragged devices to; layout only, never read by the engine. */
+  /** Map positions the learner dragged devices to; layout only, never read by the engine. */
   layout: Readonly<Record<string, MapPosition>>
   /** Route of the latest ping, for the map animation; null before the first ping. */
   lastTrace: PacketTrace | null
@@ -39,8 +37,20 @@ function replaceById<T extends { id: string }>(items: T[], next: T, what: string
   return items.map((item) => (item.id === next.id ? next : item))
 }
 
+/** Copies the display texts of `source` (device names, app link labels) onto `devices`, matched by id. */
+function relabelDevices(devices: Device[], source: readonly Device[]): Device[] {
+  const sourceById = new Map(source.map((device) => [device.id, device]))
+  return devices.map((device) => {
+    const localized = sourceById.get(device.id)
+    if (!localized) return device
+    const labels = new Map((localized.appLinks ?? []).map((appLink) => [appLink.id, appLink.label]))
+    const appLinks = device.appLinks?.map((appLink) => ({ ...appLink, label: labels.get(appLink.id) ?? appLink.label }))
+    return appLinks ? { ...device, name: localized.name, appLinks } : { ...device, name: localized.name }
+  })
+}
+
 /**
- * One play-through of a scenario. Immutable: every change returns a new instance,
+ * One attempt at a scenario. Immutable: every change returns a new instance,
  * so React can compare sessions by reference.
  */
 export class ScenarioSession {
@@ -52,7 +62,7 @@ export class ScenarioSession {
     this.services = services
   }
 
-  static start(scenario: Scenario, startedAt: number, services: SessionServices = defaultServices): ScenarioSession {
+  static start(scenario: Scenario, services: SessionServices = defaultServices): ScenarioSession {
     return new ScenarioSession(
       {
         scenario,
@@ -60,8 +70,7 @@ export class ScenarioSession {
         selectedDeviceId: null,
         terminal: {},
         hintsRevealed: 0,
-        startedAt,
-        finishedAt: null,
+        solved: false,
         notes: '',
         lastCheck: null,
         layout: {},
@@ -92,16 +101,8 @@ export class ScenarioSession {
     return this.data.hintsRevealed
   }
 
-  get startedAt(): number {
-    return this.data.startedAt
-  }
-
-  get finishedAt(): number | null {
-    return this.data.finishedAt
-  }
-
   get isSolved(): boolean {
-    return this.data.finishedAt !== null
+    return this.data.solved
   }
 
   get notes(): string {
@@ -134,12 +135,6 @@ export class ScenarioSession {
 
   terminalLines(deviceId: string): readonly TerminalLine[] {
     return this.data.terminal[deviceId] ?? noLines
-  }
-
-  /** Whole seconds since start, frozen once the scenario is solved. */
-  elapsedSeconds(now: number): number {
-    const end = this.data.finishedAt ?? now
-    return Math.max(0, Math.floor((end - this.data.startedAt) / 1000))
   }
 
   selectDevice(deviceId: string | null): ScenarioSession {
@@ -200,12 +195,24 @@ export class ScenarioSession {
     return this.with({ notes })
   }
 
-  /** Evaluates solvedWhen; on success records `now` as the finish time (kept if already solved). */
-  checkSolved(now: number): ScenarioSession {
+  /** Evaluates solvedWhen; a success marks the session solved (kept even if a later check fails). */
+  checkSolved(): ScenarioSession {
     const results = this.services.checker.check(this.data.state, this.data.scenario.solvedWhen)
-    const solved = results.every((result) => result.ok)
-    const finishedAt = this.data.finishedAt ?? (solved ? now : null)
-    return this.with({ lastCheck: results, finishedAt })
+    const solved = this.data.solved || results.every((result) => result.ok)
+    return this.with({ lastCheck: results, solved })
+  }
+
+  /**
+   * Takes the display texts of the same scenario in another language: the scenario itself (title,
+   * complaint, guide steps, explanation) plus device names and app link labels, matched by id.
+   * Everything the learner did (network changes, layout, terminal, notes, guide steps, checks) stays.
+   */
+  relabel(scenario: Scenario): ScenarioSession {
+    if (scenario.id !== this.data.scenario.id) {
+      throw new Error(`Cannot relabel scenario ${this.data.scenario.id} with ${scenario.id}`)
+    }
+    const state = this.data.state
+    return this.with({ scenario, state: { ...state, devices: relabelDevices(state.devices, scenario.initialState.devices) } })
   }
 
   private with(changes: Partial<SessionData>): ScenarioSession {

@@ -1,8 +1,9 @@
 {
-  "devicePoweredOff": "Cihaz kapalı. Komut çalıştırmak için önce cihazı açın.",
+  "devicePoweredOff": "Cihaz kapalı. Komut çalıştırmak için önce cihazı aç.",
   "noTerminal": "Bu cihazda komut satırı yok. Terminal yalnızca bilgisayar, kasa ve kayıt cihazında (NVR) kullanılabilir.",
-  "unknownCommand": "'{{command}}' komutu bu laboratuvarda tanınmıyor. Kullanılabilir komutları görmek için 'help' yazın.",
+  "unknownCommand": "'{{command}}' komutu bu laboratuvarda tanınmıyor. Kullanılabilir komutları görmek için 'help' yaz.",
   "pingContinuousNotSupported": "Sürekli ping (-t) bu laboratuvarda desteklenmiyor; bunun yerine 4 istek gönderildi.",
+  "pingCountLimited": "Bu laboratuvarda yalnızca ilk {{count}} istek gösterilir.",
   "usage": {
     "ipconfig": "Kullanım: ipconfig [/all | /renew | /release]",
     "ping": "Kullanım: ping [-n sayı] [-l boyut] [-t] [-4] <IP adresi veya ad>  (örnek: ping -n 2 8.8.8.8)",
@@ -15,9 +16,9 @@
     "ipconfigAll": "  ipconfig /all          MAC adresi, DHCP durumu ve DNS sunucuları dahil tüm ayrıntılar",
     "ipconfigRenew": "  ipconfig /renew        DHCP sunucusundan yeniden IP adresi ister",
     "ipconfigRelease": "  ipconfig /release      DHCP adresini geri verir; ağ kartı adressiz kalır",
-    "ping": "  ping <ip veya ad>      Bir adrese ulaşılıp ulaşılamadığını dener",
+    "ping": "  ping <ip veya ad>      Bir adrese ulaşılıp ulaşılamadığını sınar",
     "pingCount": "    -n <sayı>            Gönderilecek istek sayısı (en çok 20 tanesi gösterilir)",
-    "pingSize": "    -l <boyut>           İstek başına veri miktarı, bayt (0 ile 65500 arası)",
+    "pingSize": "    -l <boyut>           Her istekteki veri miktarı, bayt olarak (0 ile 65500 arası)",
     "pingContinuous": "    -t                   Sürekli ping; bu laboratuvarda 4 istek gönderilir",
     "tracert": "  tracert <ip veya ad>   Bir adrese giden yoldaki yönlendiricileri (atlamaları) listeler",
     "nslookup": "  nslookup <ad>          Bir adın hangi IP adresine karşılık geldiğini DNS sunucusuna sorar",

@@ -3,6 +3,7 @@
   "noTerminal": "This device has no command line. The terminal is only available on computers, POS terminals and video recorders (NVR).",
   "unknownCommand": "'{{command}}' is not a recognized command in this lab. Type 'help' to see the available commands.",
   "pingContinuousNotSupported": "Continuous ping (-t) is not supported in this lab; 4 echo requests are sent instead.",
+  "pingCountLimited": "This lab shows only the first {{count}} echo requests.",
   "usage": {
     "ipconfig": "Usage: ipconfig [/all | /renew | /release]",
     "ping": "Usage: ping [-n count] [-l size] [-t] [-4] <IP address or name>  (example: ping -n 2 8.8.8.8)",

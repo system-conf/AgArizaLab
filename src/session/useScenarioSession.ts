@@ -20,13 +20,21 @@ export interface ScenarioSessionControls {
 
 /**
  * React state around an immutable ScenarioSession. Mount it with `key={scenario.id}`
- * so switching exercises starts a fresh session. No timer: the screen re-renders only on changes.
+ * so switching exercises starts a fresh session. When the same exercise arrives in another
+ * language (new `scenario` identity), the session is relabelled and keeps the learner's work.
  */
 export function useScenarioSession(scenario: Scenario): ScenarioSessionControls {
-  const [session, setSession] = useState(() => ScenarioSession.start(scenario, Date.now()))
+  const [session, setSession] = useState(() => ScenarioSession.start(scenario))
+  const [labelledWith, setLabelledWith] = useState(scenario)
+
+  // Adjusting state during render (React docs pattern): no effect, no extra paint in the old language.
+  if (labelledWith !== scenario) {
+    setLabelledWith(scenario)
+    setSession((current) => current.relabel(scenario))
+  }
 
   function checkSolved(): ScenarioSession {
-    const next = session.checkSolved(Date.now())
+    const next = session.checkSolved()
     setSession(next)
     return next
   }

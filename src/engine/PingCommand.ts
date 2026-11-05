@@ -1,9 +1,9 @@
-import type { CommandResult, ReachResult } from '../domain/EngineContract'
+import type { CommandResult, ReachResult, TerminalLine } from '../domain/EngineContract'
 import type { Device, NetworkState } from '../domain/NetworkTypes'
 import type { CommandFormatter } from './CommandFormatter'
 import type { DnsResolver } from './DnsResolver'
 import { type PingOutcome, PingFormatter } from './PingFormatter'
-import { PingOptions } from './PingOptions'
+import { PingOptions, type PingSettings } from './PingOptions'
 import { ProbeFailures } from './ProbeFailures'
 import type { ReachabilityChecker } from './ReachabilityChecker'
 import { ReplyTimings } from './ReplyTimings'
@@ -26,7 +26,7 @@ export class PingCommand {
     const parsed = PingOptions.parse(args)
     if (!parsed.ok) return { lines: this.formatter.optionError(parsed.error, 'ping') }
     const { settings } = parsed
-    const note = settings.continuous ? [this.pingFormatter.continuousNotSupported()] : []
+    const note = this.notes(settings)
 
     const target = this.dns.resolveTarget(state, device.id, settings.target)
     if (!target.ok) {
@@ -38,6 +38,13 @@ export class PingCommand {
       lines: [...note, ...this.pingFormatter.ping(target.ip, target.name, outcome, settings)],
       trace: { path: reached, ok: result.ok },
     }
+  }
+
+  /** App notes shown before the Windows output when the lab does not do exactly what was asked. */
+  private notes(settings: PingSettings): TerminalLine[] {
+    if (settings.continuous) return [this.pingFormatter.continuousNotSupported()]
+    if (settings.countLimited) return [this.pingFormatter.countLimited(PingOptions.maxCount)]
+    return []
   }
 
   private outcome(state: NetworkState, device: Device, targetIp: string, reach: ReachResult): PingOutcome {

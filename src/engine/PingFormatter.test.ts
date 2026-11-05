@@ -49,4 +49,8 @@ describe('PingFormatter', () => {
   it('notes that continuous ping is not supported with an app message', () => {
     expect(formatter.continuousNotSupported()).toEqual({ kind: 'info', message: { key: 'engine:pingContinuousNotSupported' } })
   })
+
+  it('notes that only the first requests are shown with an app message', () => {
+    expect(formatter.countLimited(20)).toEqual({ kind: 'info', message: { key: 'engine:pingCountLimited', params: { count: 20 } } })
+  })
 })

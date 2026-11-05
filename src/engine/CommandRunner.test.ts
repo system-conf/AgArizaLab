@@ -264,10 +264,17 @@ describe('CommandRunner — ping options', () => {
     expect(output).toContain('Packets: Sent = 2, Received = 2, Lost = 0 (0% loss),')
   })
 
-  it('shows at most 20 requests', () => {
-    const output = textOf(run(officeNetwork(), 'pc1', 'ping -n 500 8.8.8.8'))
+  it('shows at most 20 requests, with a note', () => {
+    const result = run(officeNetwork(), 'pc1', 'ping -n 500 8.8.8.8')
+    expect(result.lines[0]).toEqual({ kind: 'info', message: { key: 'engine:pingCountLimited', params: { count: 20 } } })
+    expect(result.lines.filter((line) => line.message !== undefined)).toHaveLength(1)
+    const output = textOf(result)
     expect(output.match(/Reply from 8\.8\.8\.8/g)).toHaveLength(20)
     expect(output).toContain('Packets: Sent = 20, Received = 20, Lost = 0 (0% loss),')
+  })
+
+  it('adds no note for 20 requests or fewer', () => {
+    expect(run(officeNetwork(), 'pc1', 'ping -n 20 8.8.8.8').lines.filter((line) => line.message !== undefined)).toEqual([])
   })
 
   it('answers -t with four requests and a note', () => {

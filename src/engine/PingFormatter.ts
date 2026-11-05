@@ -55,6 +55,11 @@ export class PingFormatter {
     return messageLine(localizedMessage('engine:pingContinuousNotSupported'), 'info')
   }
 
+  /** App note shown before the output of `ping -n N` with N above the lab's limit. */
+  countLimited(maxCount: number): TerminalLine {
+    return messageLine(localizedMessage('engine:pingCountLimited', { count: maxCount }), 'info')
+  }
+
   private echoLine(outcome: PingOutcome, index: number, size: number): string {
     switch (outcome.kind) {
       case 'reply': {

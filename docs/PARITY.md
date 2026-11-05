@@ -35,7 +35,7 @@ Status: ✅ done · 🟡 partial · ⬜ not started · Phase = PLAN_V2 phase/pac
 |---|---|---|
 | IP configuration GUI (static / DHCP) | ✅ | — |
 | Command prompt: ipconfig, ping, nslookup | ✅ | — |
-| tracert, arp, netstat, ipconfig /release | ⬜ | 1 / 4 |
+| tracert, arp, netstat, ipconfig /release | 🟡 tracert, /release done | 1 / 4 |
 | Desktop apps: web browser, email, FTP client, terminal (console), text editor | ⬜ | 5.5 |
 | Server services: DHCP, DNS, HTTP/HTTPS, FTP, TFTP, email, Syslog, NTP, AAA | 🟡 DHCP/DNS on router | 3 / 5.5 |
 | Laptops, tablets, smartphones, IP phones, printers | 🟡 some kinds | 2 |
@@ -89,7 +89,7 @@ Status: ✅ done · 🟡 partial · ⬜ not started · Phase = PLAN_V2 phase/pac
 | Activities with goals and automatic grading | 🟡 5 fixed exercises | 5.9 |
 | Activity editor for instructors | ⬜ | 5.9 |
 | Locked fields / hidden settings in activities | ⬜ | 2 |
-| Multiple languages | ⬜ | 1 |
+| Multiple languages | ✅ tr + en, i18n | 1 |
 | IoT devices and scripting (Python / JS) | ⬜ | 5.9 |
 
 ## Our extras (not in Packet Tracer)

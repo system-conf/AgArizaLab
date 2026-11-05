@@ -19,7 +19,7 @@ export interface ScenarioExplanation {
   whatHappened: string
   /** How this shows up in real life and how it is prevented. */
   realLife: string
-  /** A 3–5 sentence answer the player can give in a job interview. */
+  /** A 3–5 sentence answer the learner can give in a job interview. */
   interviewAnswer: string
 }
 
