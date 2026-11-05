@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import type { AppLink, Device } from '../../domain/NetworkTypes'
 import { focusRing } from '../shared/focusRing'
-import { isIpv4Format } from './ipv4Format'
+import { Ipv4 } from '../../engine'
 import TextField from './TextField'
 
 interface AppLinkSettingsProps {
@@ -20,7 +20,7 @@ function AppLinkSettings({ device, appLinks, onUpdateDevice }: AppLinkSettingsPr
   )
   const errorFor = (id: string): string | undefined => {
     const value = (targets[id] ?? '').trim()
-    return isIpv4Format(value) ? undefined : 'Geçerli bir IPv4 adresi yazın (ör. 192.168.1.150).'
+    return Ipv4.isValid(value) ? undefined : 'Geçerli bir IPv4 adresi yazın (ör. 192.168.1.150).'
   }
   const hasErrors = appLinks.some((appLink) => errorFor(appLink.id) !== undefined)
 

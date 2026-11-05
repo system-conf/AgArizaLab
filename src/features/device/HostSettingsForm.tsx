@@ -1,7 +1,7 @@
 import { useId, useState, type FormEvent } from 'react'
 import type { Device, HostNetworkConfig, IpMode } from '../../domain/NetworkTypes'
 import { focusRing } from '../shared/focusRing'
-import { isIpv4Format, isSubnetMaskFormat } from './ipv4Format'
+import { Ipv4 } from '../../engine'
 import TextField from './TextField'
 
 interface HostSettingsFormProps {
@@ -41,13 +41,13 @@ function validate(draft: HostDraft): DraftErrors {
   const ip = draft.ip.trim()
   const mask = draft.mask.trim()
   if (ip === '') errors.ip = 'Statik modda IP adresi gerekli.'
-  else if (!isIpv4Format(ip)) errors.ip = formatError
+  else if (!Ipv4.isValid(ip)) errors.ip = formatError
   if (mask === '') errors.mask = 'Statik modda alt ağ maskesi gerekli.'
-  else if (!isSubnetMaskFormat(mask)) errors.mask = 'Geçerli bir maske yazın (ör. 255.255.255.0).'
+  else if (!Ipv4.isValidMask(mask)) errors.mask = 'Geçerli bir maske yazın (ör. 255.255.255.0).'
   const optionalFields = ['gateway', 'dnsPrimary', 'dnsSecondary'] as const
   for (const field of optionalFields) {
     const value = draft[field].trim()
-    if (value !== '' && !isIpv4Format(value)) errors[field] = formatError
+    if (value !== '' && !Ipv4.isValid(value)) errors[field] = formatError
   }
   return errors
 }
