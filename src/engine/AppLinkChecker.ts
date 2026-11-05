@@ -24,7 +24,7 @@ export class AppLinkChecker {
 
     const target = DeviceLookup.answeringDevice(state, reach.path, appLink.targetIp)
     const isInternetTarget =
-      appLink.targetKind === 'internet' && !target && !Ipv4.isPrivate(appLink.targetIp)
+      appLink.targetKind === 'internet' && !target && Ipv4.isPublic(appLink.targetIp)
     if (isInternetTarget || (target && target.powered && target.kind === appLink.targetKind)) {
       return { ...base, ok: true }
     }

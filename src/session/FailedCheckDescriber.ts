@@ -20,7 +20,7 @@ export class FailedCheckDescriber {
       case 'internet':
         return `${FailedCheckDescriber.nameOf(state, condition.fromDeviceId)} hâlâ internete çıkamıyor.`
       case 'resolves':
-        return `${FailedCheckDescriber.nameOf(state, condition.fromDeviceId)} hâlâ '${condition.name}' adresini çözemiyor.`
+        return `${FailedCheckDescriber.nameOf(state, condition.fromDeviceId)} hâlâ '${condition.name}' sitesini açamıyor.`
       case 'reachable': {
         const from = FailedCheckDescriber.nameOf(state, condition.fromDeviceId)
         const to = FailedCheckDescriber.nameOf(state, condition.toDeviceId)

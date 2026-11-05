@@ -43,6 +43,30 @@ describe('Ipv4', () => {
     expect(Ipv4.isLoopback('128.0.0.1')).toBe(false)
   })
 
+  it('treats only internet-routable addresses as public', () => {
+    for (const publicIp of ['8.8.8.8', '1.1.1.1', '172.32.0.1', '100.63.255.255', '100.128.0.1', '223.255.255.255']) {
+      expect(Ipv4.isPublic(publicIp), publicIp).toBe(true)
+    }
+    const nonPublic = [
+      '192.168.1.1',
+      '10.0.0.1',
+      '127.0.0.1',
+      '0.0.0.0',
+      '0.1.2.3',
+      '169.254.10.20',
+      '100.64.0.1',
+      '100.127.255.255',
+      '224.0.0.1',
+      '239.255.255.250',
+      '240.0.0.1',
+      '255.255.255.255',
+      'bad',
+    ]
+    for (const ip of nonPublic) {
+      expect(Ipv4.isPublic(ip), ip).toBe(false)
+    }
+  })
+
   it('iterates address ranges across octet boundaries', () => {
     expect(Ipv4.range('192.168.1.254', '192.168.2.1')).toEqual([
       '192.168.1.254',

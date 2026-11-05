@@ -119,7 +119,7 @@ export const wrongDns: Scenario = {
   hints: [
     'Muhasebe bilgisayarından önce 8.8.8.8 adresine, sonra google.com adına ping at. Biri çalışıp diğeri çalışmıyorsa nslookup google.com dene.',
     'Muhasebe bilgisayarında ipconfig /all ile DNS sunucusu adresine bak ve bu adrese ping at. Çalışan PC Satış\'ın DNS ayarıyla karşılaştır.',
-    'Muhasebe bilgisayarının DNS sunucusunu 192.168.1.254 yerine 192.168.1.1 (modem) yap. 8.8.8.8 de çalışır.',
+    'Muhasebe bilgisayarının DNS sunucusunu 192.168.1.254 yerine 192.168.1.1 (modem) yap. DNS olarak 8.8.8.8 de girilebilir.',
   ],
   explanation: {
     whatHappened:

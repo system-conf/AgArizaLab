@@ -8,6 +8,7 @@ import { internetHosts } from './internetHosts'
 import { Ipv4 } from './Ipv4'
 import type { ReachabilityChecker } from './ReachabilityChecker'
 import type { SegmentFinder } from './SegmentFinder'
+import { TerminalAvailability } from './TerminalAvailability'
 
 export interface CommandRunnerDependencies {
   segments: SegmentFinder
@@ -46,7 +47,7 @@ export class CommandRunner {
     if (command !== 'ipconfig' && command !== 'ping' && command !== 'nslookup') {
       return { lines: formatter.unknownCommand(rawCommand) }
     }
-    if (!device.host) return { lines: formatter.noTerminal() }
+    if (!device.host || !TerminalAvailability.isAvailable(device)) return { lines: formatter.noTerminal() }
     if (!device.powered) return { lines: formatter.devicePoweredOff() }
 
     switch (command) {
@@ -129,7 +130,7 @@ export class CommandRunner {
   }
 
   private replyOutcome(state: NetworkState, targetIp: string, path: string[]): PingOutcome {
-    if (!Ipv4.isPrivate(targetIp)) {
+    if (Ipv4.isPublic(targetIp)) {
       return { kind: 'reply', fromIp: targetIp, ttl: INTERNET_TTL, baseTimeMs: INTERNET_TIME_MS }
     }
     const routed = path

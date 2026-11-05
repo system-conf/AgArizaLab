@@ -92,7 +92,7 @@ export class ReachabilityChecker {
     const outgoing = interfaces.find((candidate) => Ipv4.sameSubnet(candidate.ip, toIp, candidate.mask))
     if (outgoing) return this.deliverToVlan(state, router, outgoing, toIp, pathToRouter)
 
-    if (!Ipv4.isPrivate(toIp)) {
+    if (Ipv4.isPublic(toIp)) {
       if (router.wanUp !== true) return { ok: false, reason: 'wanDown', atDeviceId: router.id }
       return { ok: true, path: [...pathToRouter, ...this.internetBehind(state, router)] }
     }

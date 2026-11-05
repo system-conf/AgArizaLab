@@ -154,7 +154,7 @@ export class CommandFormatter {
   }
 
   noTerminal(): TerminalLine[] {
-    return this.error('Bu cihazda komut satırı yok. Terminal yalnızca bilgisayar, kasa gibi uç cihazlarda kullanılabilir.')
+    return this.error('Bu cihazda komut satırı yok. Terminal yalnızca bilgisayar, kasa ve kayıt cihazında kullanılabilir.')
   }
 
   private hardwareFields(view: AdapterView): string[] {

@@ -1,14 +1,15 @@
 import { describe, expect, it } from 'vitest'
 import { DefaultNetworkEngine } from './DefaultNetworkEngine'
 import { networkEngine, solveChecker } from './index'
-import { deepFreeze, deviceOf, officeNetwork, updateHost, vlanNetwork } from './testFixtures'
+import { deepFreeze, deviceOf, officeNetwork, updateDevice, updateHost, vlanNetwork } from './testFixtures'
 
 const engine = new DefaultNetworkEngine()
 
 describe('DefaultNetworkEngine', () => {
   it('never mutates a deep-frozen input state', () => {
     const office = deepFreeze(updateHost(officeNetwork(), 'pc2', { ip: '', gateway: '', dns: [] }))
-    const vlans = deepFreeze(vlanNetwork())
+    // The Wi-Fi client becomes a PC so the commands really run (phones have no terminal).
+    const vlans = deepFreeze(updateDevice(vlanNetwork(), 'phone', (device) => ({ ...device, kind: 'pc' })))
     const snapshot = JSON.stringify(office)
 
     expect(() => {

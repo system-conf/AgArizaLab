@@ -103,6 +103,16 @@ describe('ReachabilityChecker — gateway and routing', () => {
     })
   })
 
+  it('fails with noRouteToDestination for special-purpose addresses instead of a public reply', () => {
+    for (const ip of ['0.1.2.3', '169.254.1.1', '100.64.0.1', '224.0.0.1', '240.0.0.1', '255.255.255.255']) {
+      expect(checker.reach(officeNetwork(), 'pc1', ip), ip).toEqual({
+        ok: false,
+        reason: 'noRouteToDestination',
+        atDeviceId: 'router',
+      })
+    }
+  })
+
   it('routes between VLANs through the router', () => {
     expect(checker.reach(vlanNetwork(), 'kasa', '192.168.20.50')).toEqual({
       ok: true,

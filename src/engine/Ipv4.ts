@@ -11,6 +11,18 @@ const PRIVATE_BLOCKS: ReadonlyArray<{ base: string; prefix: number }> = [
   { base: '127.0.0.0', prefix: 8 },
 ]
 
+/**
+ * Special-purpose blocks that are not private yet never reach a public host either:
+ * "this network", link-local (APIPA), carrier-grade NAT, multicast and reserved (incl. broadcast).
+ */
+const SPECIAL_BLOCKS: ReadonlyArray<{ base: string; prefix: number }> = [
+  { base: '0.0.0.0', prefix: 8 },
+  { base: '169.254.0.0', prefix: 16 },
+  { base: '100.64.0.0', prefix: 10 },
+  { base: '224.0.0.0', prefix: 4 },
+  { base: '240.0.0.0', prefix: 4 },
+]
+
 export class Ipv4 {
   /** Returns the address as an unsigned 32-bit number, or null when not a dotted-quad IPv4. */
   static parse(text: string): number | null {
@@ -61,13 +73,12 @@ export class Ipv4 {
   }
 
   static isPrivate(text: string): boolean {
-    const value = Ipv4.parse(text)
-    if (value === null) return false
-    return PRIVATE_BLOCKS.some((block) => {
-      const base = Ipv4.parse(block.base)
-      const mask = Ipv4.prefixToMask(block.prefix)
-      return base !== null && Ipv4.applyMask(value, mask) === base
-    })
+    return Ipv4.inAnyBlock(text, PRIVATE_BLOCKS)
+  }
+
+  /** A valid address that a router would forward to the internet (neither private nor special-purpose). */
+  static isPublic(text: string): boolean {
+    return Ipv4.isValid(text) && !Ipv4.isPrivate(text) && !Ipv4.inAnyBlock(text, SPECIAL_BLOCKS)
   }
 
   static isLoopback(text: string): boolean {
@@ -85,6 +96,16 @@ export class Ipv4 {
       result.push(Ipv4.format(value))
     }
     return result
+  }
+
+  private static inAnyBlock(text: string, blocks: ReadonlyArray<{ base: string; prefix: number }>): boolean {
+    const value = Ipv4.parse(text)
+    if (value === null) return false
+    return blocks.some((block) => {
+      const base = Ipv4.parse(block.base)
+      const mask = Ipv4.prefixToMask(block.prefix)
+      return base !== null && Ipv4.applyMask(value, mask) === base
+    })
   }
 
   private static applyMask(value: number, mask: number): number {

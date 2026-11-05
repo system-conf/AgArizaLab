@@ -17,6 +17,7 @@ export { SegmentFinder } from './SegmentFinder'
 export type { HostAttachment, Segment } from './SegmentFinder'
 export { SolveChecker } from './SolveChecker'
 export type { ConditionResult } from './SolveChecker'
+export { TerminalAvailability } from './TerminalAvailability'
 
 export const networkEngine: NetworkEngine = new DefaultNetworkEngine()
 export const solveChecker = new SolveChecker(networkEngine)

@@ -12,11 +12,11 @@ describe('FailedCheckDescriber.describe', () => {
     )
   })
 
-  it('describes a resolves condition with the name being looked up', () => {
+  it('describes a resolves condition as a symptom without naming DNS', () => {
     const condition = { type: 'resolves', fromDeviceId: 'muhasebe', name: 'google.com' } as const
-    expect(FailedCheckDescriber.describe(wrongDns.initialState, condition)).toBe(
-      "PC Muhasebe hâlâ 'google.com' adresini çözemiyor.",
-    )
+    const sentence = FailedCheckDescriber.describe(wrongDns.initialState, condition)
+    expect(sentence).toBe("PC Muhasebe hâlâ 'google.com' sitesini açamıyor.")
+    expect(sentence).not.toMatch(/DNS|çöz/)
   })
 
   it('describes an appLinksOk condition without naming the broken target', () => {

@@ -75,15 +75,15 @@ describe('ScenarioSession', () => {
   })
 
   it('applies the network change of ipconfig /renew', () => {
-    const printer = deviceOf(ScenarioSession.start(printerDhcp, startedAt), 'yazici')
-    if (!printer.host) throw new Error('no host')
+    const satis = deviceOf(ScenarioSession.start(printerDhcp, startedAt), 'satis')
+    if (!satis.host) throw new Error('no host')
     const cleared = ScenarioSession.start(printerDhcp, startedAt).updateDevice({
-      ...printer,
-      host: { ...printer.host, ip: '', gateway: '', dns: [] },
+      ...satis,
+      host: { ...satis.host, ip: '', gateway: '', dns: [] },
     })
-    const renewed = cleared.runCommand('yazici', 'ipconfig /renew')
-    expect(deviceOf(renewed, 'yazici').host?.ip).toBe('192.168.1.153')
-    expect(deviceOf(cleared, 'yazici').host?.ip).toBe('')
+    const renewed = cleared.runCommand('satis', 'ipconfig /renew')
+    expect(deviceOf(renewed, 'satis').host?.ip).toBe('192.168.1.102')
+    expect(deviceOf(cleared, 'satis').host?.ip).toBe('')
   })
 
   it('caps revealed hints at three', () => {

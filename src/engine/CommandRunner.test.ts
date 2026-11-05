@@ -46,7 +46,9 @@ describe('CommandRunner — ipconfig', () => {
   })
 
   it('names the Wi-Fi adapter for wireless clients', () => {
-    expect(textOf(run(vlanNetwork(), 'phone', 'ipconfig'))).toContain('Wireless LAN adapter Wi-Fi:')
+    // A Wi-Fi laptop: the fixture's phone turned into a PC, since phones have no terminal.
+    const state = updateDevice(vlanNetwork(), 'phone', (device) => ({ ...device, kind: 'pc' }))
+    expect(textOf(run(state, 'phone', 'ipconfig'))).toContain('Wireless LAN adapter Wi-Fi:')
   })
 
   it('shows an APIPA address for a DHCP host without a lease', () => {
@@ -184,6 +186,22 @@ describe('CommandRunner — other commands', () => {
     const off = updateDevice(officeNetwork(), 'pc1', (device) => ({ ...device, powered: false }))
     expect(run(off, 'pc1', 'ipconfig').lines[0]).toMatchObject({ kind: 'error' })
     expect(run(officeNetwork(), 'switch', 'ipconfig').lines[0]).toMatchObject({ kind: 'error' })
+  })
+
+  it('offers a terminal only on PCs, POS terminals and NVRs', () => {
+    const noTerminal = {
+      kind: 'error',
+      text: 'Bu cihazda komut satırı yok. Terminal yalnızca bilgisayar, kasa ve kayıt cihazında kullanılabilir.',
+    }
+    expect(run(officeNetwork(), 'printer', 'ipconfig').lines).toEqual([noTerminal])
+    expect(run(vlanNetwork(), 'kitchen', 'ping 192.168.10.20').lines).toEqual([noTerminal])
+    expect(run(vlanNetwork(), 'phone', 'nslookup google.com').lines).toEqual([noTerminal])
+    const camera = updateDevice(officeNetwork(), 'printer', (device) => ({ ...device, kind: 'camera' }))
+    expect(run(camera, 'printer', 'ipconfig').lines).toEqual([noTerminal])
+
+    expect(textOf(run(vlanNetwork(), 'kasa', 'ipconfig'))).toContain('IPv4 Address')
+    const nvr = updateDevice(officeNetwork(), 'printer', (device) => ({ ...device, kind: 'nvr' }))
+    expect(textOf(run(nvr, 'printer', 'ping 192.168.1.20'))).toContain('Reply from 192.168.1.20')
   })
 
   it('is deterministic', () => {
