@@ -88,37 +88,56 @@ Owns `src/domain/**`, `src/i18n/**`, `src/locales/**` (new), `package.json`, `es
 
 ## 4. Phase 2 — v2.0: port model and workspace builder
 
-### Wave 2.0 — contracts v2 (agent K2, alone)
-Owns `src/domain/**`, `src/lab/migrations/**`, docs. Designs and documents:
-- **Explicit ports** on every device: `Port { id, medium: 'copper' | 'fiber' | 'wireless' | 'serial' |
-  'console', mac, adminUp, l2?: { mode, accessVlan, nativeVlan, allowedVlans, poe }, l3?: { ip, mask },
-  subInterfaces? }`. Host IP config moves onto its NIC port; gateway/DNS stay host-level.
-  Routers get several physical ports (no more single `lan`).
-- **Device models** (`DeviceModel`: id, kind, port layout, capabilities) referenced by `device.modelId`.
-- **Cables**: `Link.cable: 'copperStraight' | 'copperCross' | 'fiber' | 'serial' | 'console' |
-  'wireless'` with compatibility rules (auto-MDIX on by default).
-- **LabDocument** `{ schemaVersion, meta: { title, author, createdAt }, state, notes, layout }` and
-  **Exercise** `{ id, lab, solvedWhen, guide, explanationKey, topics, lockedFields? }`.
-- `migrateV1(state)` so the five existing scenarios load unchanged; tests prove identical engine
-  results before and after migration for every scenario and condition.
+### Wave 2.0 — contracts v2 (agent K2, alone) — done
+Design: **`docs/MODEL_V2.md`** (binding for every Phase 2 agent). Code: `src/domain/v2/**` next to v1
+(v1 untouched until I2 finishes), `src/lab/migrations/**`, namespaces `catalog`, `workspace`, `lab`.
+- Explicit ports (`Port` union on `role`: switched / routed / host / radio / console / passive) with
+  `l2` switchport settings, `l3` IPv4 settings, dot1Q sub-interfaces; VLAN database + SVIs on
+  switches; static routes, DHCP (pools, exclusions, leases) and DNS (forwarders, records) as data;
+  typed `never` extension keys for every later pack.
+- `DeviceModel` / `PortTemplate` / capabilities (catalog contract); `device.ports` is authoritative.
+- `LinkV2` with `CableType` (copper straight / cross, fiber, serial + DCE end, console, coaxial,
+  wireless + SSID) and the pure `CableRules` class (typed refusal reasons, auto-MDIX on by default,
+  `autoCable` for the "auto" tool); `StateInvariants` for semantic validation; `MacAddress`.
+- Internet: cloud device with per-port `IspHandoff.serviceUp`; WAN up = routed port cabled to a
+  serving cloud port + a route out of it.
+- `LabDocument` (schemaVersion 2, meta, layout, notes, annotations), `ExerciseDefinition` with locks,
+  `NetworkEngineV2` (`FailureReasonV2` adds `ttlExpired`).
+- `migrateV1ToV2` / `migrateV1Layout` / `migrateV1Exercise`, tested on all five exercises (structure
+  and every v1 field). Engine-level equivalence moves to E2 (below).
 
 ### Wave 2.1 — parallel (4 agents)
-- **E2 engine on v2** (`src/engine/**`): adapt SegmentFinder / Reachability / DHCP / DNS / LinkLight
-  to ports and multiple router interfaces; static routes table (`ip route`) as data; all old tests
-  pass through `migrateV1`.
-- **B1 workspace canvas** (`src/features/workspace/**`): device palette by category, drag to add,
-  cable tool (pick cable type → click port on device A → port on device B, invalid combos refused with
-  a reason), delete, multi-select, align/snap, notes and labels on canvas, keyboard shortcuts.
-- **B2 lab core** (`src/lab/**` except migrations): `LabHistory` (undo/redo over immutable states),
-  `LabSerializer` (zod schema validation, schemaVersion + migrations), autosave to IndexedDB,
-  export/import `.agl.json`, share link (compressed state in URL hash), recent labs list.
-- **C1 device catalog + icons** (`src/catalog/**`, `src/features/map/deviceIcons.ts`): device models
-  (router 2/4 port, switch 8/24/48, L3 switch, hub, AP, wireless router, PC, laptop, server, printer,
-  IP phone, POS, camera, NVR, cloud/ISP), original SVG icons, physical port strip data per model.
+`src/domain/**` and `src/lab/migrations/**` are frozen; contract changes go through the coordinator.
+- **E2 engine on v2** (`src/engine/**`): implement `NetworkEngineV2` per MODEL_V2 §13 (ports and
+  `adminUp`, VLAN database, native VLAN / allowed VLANs, routed ports + sub-interfaces, SVIs, static
+  routes with longest prefix + AD, `ttlExpired` on loops, WAN rule of §5, DNS forwarders, DHCP pool by
+  interface subnet, link lights incl. wireless SSID and copper pinouts). Behavioural equivalence:
+  every existing engine and scenario test also runs on `migrateV1ToV2(fixture)` with identical
+  results (import from `src/lab/migrations`). Keep the v1 engine exported until I2 switches over.
+- **B1 workspace canvas** (`src/features/workspace/**`, `workspace` ns): device palette by
+  `DeviceModel.category`, drag to add, cable tool (cable type or "auto" → click port on device A →
+  port on device B; `CableRules.checkEnd` highlights usable ports, `check` refusals shown via a
+  `workspace:cableRefusal.<reason>` message; serial: first click = DCE; wireless: SSID picker), delete,
+  multi-select, align/snap, annotations (`LabDocument.annotations`) and notes, keyboard shortcuts.
+- **B2 lab core** (`src/lab/**` except migrations, `lab` ns): zod schemas mirroring `src/domain/v2`
+  (reserved `never` keys = must be absent), `LabSerializer` (zod → `StateInvariants` → migrations
+  chain by `schemaVersion`; errors as `lab:` message codes), `LabHistory` (undo/redo over immutable
+  documents), autosave to IndexedDB, export/import `.agl.json`, share link (compressed document in
+  the URL hash), recent labs list, `createEmptyLab()`.
+- **C1 device catalog + icons** (`src/catalog/**`, `catalog` ns, `src/features/map/deviceIcons.ts`):
+  `DeviceModel`s (router 2/4 port, switch 8/24/48 ± PoE, L3 switch, hub, AP, wireless router, PC,
+  laptop, server, printer, IP phone, POS, camera, NVR, kitchen display, smartphone, tablet, cloud/ISP);
+  must include every id in `V1_MODEL_IDS` with the ports the migration creates (MODEL_V2 §11);
+  `PortFactory` (template → default `Port`, MACs via `MacAddress.derive` from a generated base);
+  test that every `nameKey` exists; original SVG icons, physical port strip data per model.
 
 ### Wave 2.2 — integration (agent I2)
-Workspace becomes the home screen; "Exercises" opens an exercise as a locked lab with verify button;
-device panel shows ports from the model; settings per port. Then verifier V2.
+Workspace becomes the home screen; "Exercises" opens an exercise as a locked lab with verify button
+(`migrateV1Exercise` until the exercises are rewritten as `ExerciseDefinition` data, honouring
+`locks`); device panel shows ports from the device; settings per port / sub-interface / SVI; UI,
+session and solve checks switch to `NetworkEngineV2`; translations for `ttlExpired`; rename
+`landing:settings.*` to the English setting ids. Then delete v1 types and engine, drop the `V2`
+suffixes (MODEL_V2 §1). Then verifier V2.
 
 ## 5. Phase 3 — v2.1: packet-level simulation
 
