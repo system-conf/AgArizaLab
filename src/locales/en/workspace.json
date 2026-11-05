@@ -1,3 +1,195 @@
 {
-  "title": "Workspace"
+  "title": "Workspace",
+  "header": {
+    "titleLabel": "Lab title",
+    "undo": "Undo (Ctrl+Z)",
+    "redo": "Redo (Ctrl+Shift+Z)",
+    "shortcuts": "Keyboard shortcuts (?)"
+  },
+  "palette": {
+    "title": "Devices",
+    "hint": "Drag a device onto the canvas, or click it to add it in the middle.",
+    "open": "Devices",
+    "close": "Close device list",
+    "add": "Add {{name}}",
+    "categories": {
+      "routers": "Routers",
+      "switches": "Switches",
+      "wireless": "Wireless",
+      "endDevices": "End devices",
+      "servers": "Servers",
+      "wan": "WAN / Internet"
+    }
+  },
+  "deviceName": "{{kind}} {{number}}",
+  "deviceKinds": {
+    "internet": "Internet",
+    "router": "Router",
+    "wirelessRouter": "Wireless router",
+    "switch": "Switch",
+    "l3Switch": "L3 switch",
+    "hub": "Hub",
+    "accessPoint": "Access point",
+    "pc": "PC",
+    "laptop": "Laptop",
+    "server": "Server",
+    "printer": "Printer",
+    "ipPhone": "IP phone",
+    "pos": "POS",
+    "camera": "Camera",
+    "nvr": "NVR",
+    "kitchenDisplay": "Kitchen display",
+    "smartphone": "Smartphone",
+    "tablet": "Tablet"
+  },
+  "toolbar": {
+    "label": "Canvas tools",
+    "select": "Select (Esc)",
+    "cables": "Cables",
+    "addNote": "Add note",
+    "delete": "Delete selection (Del)",
+    "snap": "Snap to grid",
+    "alignLeft": "Align left",
+    "alignCenter": "Align centres",
+    "alignTop": "Align top",
+    "fitView": "Fit to screen",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out"
+  },
+  "cableTools": {
+    "auto": "Automatic",
+    "copperStraight": "Copper straight-through",
+    "copperCross": "Copper crossover",
+    "fiber": "Fiber",
+    "serial": "Serial",
+    "console": "Console",
+    "coaxial": "Coaxial",
+    "wireless": "Wireless"
+  },
+  "cableHints": {
+    "firstDevice": "{{cable}}: click the first device.",
+    "firstDeviceSerial": "{{cable}}: click the first device. Its end is the DCE (provides the clock).",
+    "secondDevice": "{{cable}} from {{device}} {{port}}: now click the second device.",
+    "escape": "Esc cancels"
+  },
+  "portPicker": {
+    "title": "Ports of {{device}}",
+    "firstEnd": "First end",
+    "secondEnd": "Second end",
+    "free": "Free",
+    "inUse": "In use",
+    "inUseTo": "In use → {{device}} {{port}}",
+    "close": "Close port list",
+    "noPorts": "This device has no ports."
+  },
+  "media": {
+    "copper": "Copper",
+    "fiber": "Fiber",
+    "wireless": "Wireless",
+    "serial": "Serial",
+    "console": "Console",
+    "coaxial": "Coaxial"
+  },
+  "ssidPicker": {
+    "title": "Join a wireless network",
+    "label": "SSID (network name)",
+    "hint": "Pick a network of the access point or type a name.",
+    "noOptions": "This access point offers no SSIDs yet; type the name the client should use.",
+    "connect": "Connect",
+    "cancel": "Cancel"
+  },
+  "cableRefusal": {
+    "unknownDevice": "That device no longer exists.",
+    "unknownPort": "That port no longer exists.",
+    "sameDevice": "A cable cannot join two ports of the same device.",
+    "cableDoesNotFitPort": "This cable's connector does not fit that port.",
+    "wirelessNeedsClientAndRadio": "A wireless connection joins a client's Wi-Fi card to an access point radio.",
+    "portInUse": "That port is already in use.",
+    "consoleNeedsTerminal": "A console cable joins a computer to a device's console port.",
+    "ssidRequired": "Enter the name of the wireless network (SSID).",
+    "crossoverRequired": "Auto-MDIX is off on both ports and they use the same wiring: use a crossover cable.",
+    "straightThroughRequired": "Auto-MDIX is off on both ports and they use different wiring: use a straight-through cable."
+  },
+  "toast": {
+    "connected": "Connected {{a}} ↔ {{b}}.",
+    "dismiss": "Dismiss message"
+  },
+  "canvas": {
+    "label": "Lab canvas",
+    "empty": "Drag devices here from the device list to start building your lab.",
+    "deviceOff": "{{name}} (off)",
+    "link": "{{cable}} between {{a}} and {{b}}"
+  },
+  "properties": {
+    "title": "Properties",
+    "close": "Close properties",
+    "name": "Name",
+    "model": "Model",
+    "type": "Type",
+    "ports": "Ports",
+    "portFree": "Free",
+    "portLinked": "→ {{device}} {{port}}",
+    "portShut": "Shut down",
+    "selected_one": "{{count}} item selected",
+    "selected_other": "{{count}} items selected",
+    "link": "Cable",
+    "linkCable": "Cable type",
+    "linkEnds": "Ends",
+    "linkSsid": "SSID",
+    "linkDce": "DCE end",
+    "unplugged": "Unplugged",
+    "disconnect": "Remove cable",
+    "delete": "Delete",
+    "notes": "Lab notes",
+    "notesHint": "Your own notes about this lab. They are saved with the lab.",
+    "noteText": "Note text",
+    "noteColor": "Colour",
+    "noteSize": "Text size",
+    "shape": "Shape"
+  },
+  "annotation": {
+    "defaultText": "Note",
+    "label": "Note: {{text}}",
+    "editHint": "Double-click or press Enter to edit",
+    "editLabel": "Edit note",
+    "colors": {
+      "neutral": "Grey",
+      "blue": "Blue",
+      "green": "Green",
+      "amber": "Amber",
+      "red": "Red",
+      "purple": "Purple"
+    },
+    "sizes": {
+      "small": "Small",
+      "medium": "Medium",
+      "large": "Large"
+    }
+  },
+  "shortcuts": {
+    "title": "Keyboard shortcuts",
+    "close": "Close",
+    "undo": "Undo",
+    "redo": "Redo",
+    "delete": "Delete the selection",
+    "escape": "Cancel the cable step / clear the selection",
+    "cable": "Cable tool (automatic cable)",
+    "connectFocused": "With the cable tool: open the ports of the focused device",
+    "nudge": "Move the selection",
+    "nudgeLarge": "Move the selection further",
+    "selectAll": "Select everything",
+    "multiSelect": "Add to the selection",
+    "boxSelect": "Select with a box",
+    "help": "Show this list",
+    "keys": {
+      "ctrl": "Ctrl / ⌘",
+      "shift": "Shift",
+      "arrows": "Arrow keys",
+      "drag": "drag",
+      "click": "click",
+      "enter": "Enter",
+      "del": "Del",
+      "esc": "Esc"
+    }
+  }
 }

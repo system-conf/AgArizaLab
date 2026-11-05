@@ -256,7 +256,8 @@ generically, deterministic, input untouched) + per-exercise spot checks of each 
 v1 `wanUp: true` without a cloud link (no place → dropped, no internet in v2); v1 ignored the WAN link's
 `connected` flag, v2 does not; a host with both eth0 and wlan0 linked keeps its address only on eth0
 (v1 fell back to Wi-Fi with the same address); two v1 interfaces in VLAN 1 (the 2nd becomes the
-tagged sub-interface `Gi0/0.1`, unreachable through a native-VLAN-1 trunk).
+tagged sub-interface `Gi0/0.1`, unreachable through a native-VLAN-1 trunk); v1 let a router answer a
+same-subnet ping on an address of another VLAN's interface, v2 answers ARP per interface (found by E2).
 **Behavioural equivalence through the engine is E2's job**: every existing engine and scenario test
 must pass on `migrateV1ToV2(fixture)` with identical results.
 

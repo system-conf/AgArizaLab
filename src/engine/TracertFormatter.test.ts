@@ -61,3 +61,22 @@ describe('TracertFormatter', () => {
     expect(texts(formatter.hostNotFound('yok.example'))).toEqual(['Unable to resolve target system name yok.example.'])
   })
 })
+
+describe('TracertFormatter — hop limit (v2 routing loops)', () => {
+  it('prints the hop lines and nothing after them', () => {
+    const hops = [
+      { ip: '10.1.1.1', baseTimeMs: 0 },
+      { ip: '10.0.12.2', baseTimeMs: 1 },
+    ]
+    expect(formatter.tracert('10.9.1.1', null, hops, { kind: 'hopLimit' }).map((line: TerminalLine) => line.text ?? '')).toEqual([
+      '',
+      'Tracing route to 10.9.1.1 over a maximum of 30 hops',
+      '',
+      '  1    <1 ms    <1 ms    <1 ms  10.1.1.1',
+      '  2     1 ms     2 ms     1 ms  10.0.12.2',
+      '',
+      'Trace complete.',
+    ])
+    expect(TracertFormatter.maxHops).toBe(30)
+  })
+})

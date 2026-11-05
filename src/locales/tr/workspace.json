@@ -1,3 +1,195 @@
 {
-  "title": "Çalışma alanı"
+  "title": "Çalışma alanı",
+  "header": {
+    "titleLabel": "Laboratuvar adı",
+    "undo": "Geri al (Ctrl+Z)",
+    "redo": "Yinele (Ctrl+Shift+Z)",
+    "shortcuts": "Klavye kısayolları (?)"
+  },
+  "palette": {
+    "title": "Cihazlar",
+    "hint": "Bir cihazı tuvale sürükleyin ya da ortaya eklemek için tıklayın.",
+    "open": "Cihazlar",
+    "close": "Cihaz listesini kapat",
+    "add": "{{name}} ekle",
+    "categories": {
+      "routers": "Router'lar",
+      "switches": "Switch'ler",
+      "wireless": "Kablosuz",
+      "endDevices": "Uç cihazlar",
+      "servers": "Sunucular",
+      "wan": "WAN / İnternet"
+    }
+  },
+  "deviceName": "{{kind}} {{number}}",
+  "deviceKinds": {
+    "internet": "İnternet",
+    "router": "Router",
+    "wirelessRouter": "Kablosuz router",
+    "switch": "Switch",
+    "l3Switch": "L3 switch",
+    "hub": "Hub",
+    "accessPoint": "Erişim noktası",
+    "pc": "PC",
+    "laptop": "Dizüstü",
+    "server": "Sunucu",
+    "printer": "Yazıcı",
+    "ipPhone": "IP telefon",
+    "pos": "Kasa",
+    "camera": "Kamera",
+    "nvr": "NVR",
+    "kitchenDisplay": "Mutfak ekranı",
+    "smartphone": "Akıllı telefon",
+    "tablet": "Tablet"
+  },
+  "toolbar": {
+    "label": "Tuval araçları",
+    "select": "Seç (Esc)",
+    "cables": "Kablolar",
+    "addNote": "Not ekle",
+    "delete": "Seçileni sil (Del)",
+    "snap": "Izgaraya hizala",
+    "alignLeft": "Sola hizala",
+    "alignCenter": "Ortalara hizala",
+    "alignTop": "Üste hizala",
+    "fitView": "Ekrana sığdır",
+    "zoomIn": "Yakınlaştır",
+    "zoomOut": "Uzaklaştır"
+  },
+  "cableTools": {
+    "auto": "Otomatik",
+    "copperStraight": "Bakır düz kablo",
+    "copperCross": "Bakır çapraz kablo",
+    "fiber": "Fiber",
+    "serial": "Seri",
+    "console": "Konsol",
+    "coaxial": "Koaksiyel",
+    "wireless": "Kablosuz"
+  },
+  "cableHints": {
+    "firstDevice": "{{cable}}: ilk cihaza tıklayın.",
+    "firstDeviceSerial": "{{cable}}: ilk cihaza tıklayın. Bu uç DCE olur (saati sağlar).",
+    "secondDevice": "{{cable}}, {{device}} {{port}} ucundan: şimdi ikinci cihaza tıklayın.",
+    "escape": "Esc iptal eder"
+  },
+  "portPicker": {
+    "title": "{{device}} portları",
+    "firstEnd": "Birinci uç",
+    "secondEnd": "İkinci uç",
+    "free": "Boş",
+    "inUse": "Kullanımda",
+    "inUseTo": "Kullanımda → {{device}} {{port}}",
+    "close": "Port listesini kapat",
+    "noPorts": "Bu cihazın portu yok."
+  },
+  "media": {
+    "copper": "Bakır",
+    "fiber": "Fiber",
+    "wireless": "Kablosuz",
+    "serial": "Seri",
+    "console": "Konsol",
+    "coaxial": "Koaksiyel"
+  },
+  "ssidPicker": {
+    "title": "Kablosuz ağa bağlan",
+    "label": "SSID (ağ adı)",
+    "hint": "Erişim noktasının ağlarından birini seçin ya da bir ad yazın.",
+    "noOptions": "Bu erişim noktası henüz SSID yayınlamıyor; istemcinin kullanacağı adı yazın.",
+    "connect": "Bağla",
+    "cancel": "Vazgeç"
+  },
+  "cableRefusal": {
+    "unknownDevice": "Bu cihaz artık yok.",
+    "unknownPort": "Bu port artık yok.",
+    "sameDevice": "Bir kablo aynı cihazın iki portunu birleştiremez.",
+    "cableDoesNotFitPort": "Bu kablonun konnektörü o porta uymuyor.",
+    "wirelessNeedsClientAndRadio": "Kablosuz bağlantı, bir istemcinin Wi-Fi kartını bir erişim noktası radyosuna bağlar.",
+    "portInUse": "Bu port zaten kullanımda.",
+    "consoleNeedsTerminal": "Konsol kablosu bir bilgisayarı bir cihazın konsol portuna bağlar.",
+    "ssidRequired": "Kablosuz ağın adını (SSID) girin.",
+    "crossoverRequired": "İki portta da Auto-MDIX kapalı ve kablolamaları aynı: çapraz kablo kullanın.",
+    "straightThroughRequired": "İki portta da Auto-MDIX kapalı ve kablolamaları farklı: düz kablo kullanın."
+  },
+  "toast": {
+    "connected": "Bağlandı: {{a}} ↔ {{b}}.",
+    "dismiss": "Mesajı kapat"
+  },
+  "canvas": {
+    "label": "Laboratuvar tuvali",
+    "empty": "Laboratuvarınızı kurmaya başlamak için cihaz listesinden buraya cihaz sürükleyin.",
+    "deviceOff": "{{name}} (kapalı)",
+    "link": "{{a}} ile {{b}} arasında {{cable}}"
+  },
+  "properties": {
+    "title": "Özellikler",
+    "close": "Özellikleri kapat",
+    "name": "Ad",
+    "model": "Model",
+    "type": "Tür",
+    "ports": "Portlar",
+    "portFree": "Boş",
+    "portLinked": "→ {{device}} {{port}}",
+    "portShut": "Kapalı (shutdown)",
+    "selected_one": "{{count}} öğe seçili",
+    "selected_other": "{{count}} öğe seçili",
+    "link": "Kablo",
+    "linkCable": "Kablo türü",
+    "linkEnds": "Uçlar",
+    "linkSsid": "SSID",
+    "linkDce": "DCE ucu",
+    "unplugged": "Takılı değil",
+    "disconnect": "Kabloyu kaldır",
+    "delete": "Sil",
+    "notes": "Laboratuvar notları",
+    "notesHint": "Bu laboratuvarla ilgili kendi notlarınız. Laboratuvarla birlikte kaydedilir.",
+    "noteText": "Not metni",
+    "noteColor": "Renk",
+    "noteSize": "Yazı boyutu",
+    "shape": "Şekil"
+  },
+  "annotation": {
+    "defaultText": "Not",
+    "label": "Not: {{text}}",
+    "editHint": "Düzenlemek için çift tıklayın ya da Enter'a basın",
+    "editLabel": "Notu düzenle",
+    "colors": {
+      "neutral": "Gri",
+      "blue": "Mavi",
+      "green": "Yeşil",
+      "amber": "Turuncu",
+      "red": "Kırmızı",
+      "purple": "Mor"
+    },
+    "sizes": {
+      "small": "Küçük",
+      "medium": "Orta",
+      "large": "Büyük"
+    }
+  },
+  "shortcuts": {
+    "title": "Klavye kısayolları",
+    "close": "Kapat",
+    "undo": "Geri al",
+    "redo": "Yinele",
+    "delete": "Seçileni sil",
+    "escape": "Kablo adımını iptal et / seçimi temizle",
+    "cable": "Kablo aracı (otomatik kablo)",
+    "connectFocused": "Kablo aracı açıkken: odaktaki cihazın portlarını aç",
+    "nudge": "Seçileni kaydır",
+    "nudgeLarge": "Seçileni daha çok kaydır",
+    "selectAll": "Hepsini seç",
+    "multiSelect": "Seçime ekle",
+    "boxSelect": "Kutu çizerek seç",
+    "help": "Bu listeyi göster",
+    "keys": {
+      "ctrl": "Ctrl / ⌘",
+      "shift": "Shift",
+      "arrows": "Ok tuşları",
+      "drag": "sürükle",
+      "click": "tıkla",
+      "enter": "Enter",
+      "del": "Del",
+      "esc": "Esc"
+    }
+  }
 }

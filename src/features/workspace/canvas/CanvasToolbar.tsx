@@ -1,0 +1,138 @@
+import { useReactFlow } from '@xyflow/react'
+import {
+  AlignCenterVertical,
+  AlignStartHorizontal,
+  AlignStartVertical,
+  Grid3x3,
+  Maximize,
+  MousePointer2,
+  StickyNote,
+  Trash2,
+  ZoomIn,
+  ZoomOut,
+  type LucideIcon,
+} from 'lucide-react'
+import type { ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
+import type { CableTool } from '../../../domain/v2'
+import { focusRing } from '../../shared/focusRing'
+import CableGlyph from '../cable/CableGlyph'
+import type { AlignMode } from '../geometry/AlignCalculator'
+
+/** Cable tools in toolbar order. */
+const CABLE_TOOLS: readonly CableTool[] = [
+  'auto',
+  'copperStraight',
+  'copperCross',
+  'fiber',
+  'serial',
+  'console',
+  'coaxial',
+  'wireless',
+]
+
+interface CanvasToolbarProps {
+  activeTool: CableTool | null
+  onSelectTool: () => void
+  onChooseCable: (tool: CableTool) => void
+  onAddNote: () => void
+  canDelete: boolean
+  onDelete: () => void
+  snapToGrid: boolean
+  onToggleSnap: () => void
+  canAlign: boolean
+  onAlign: (mode: AlignMode) => void
+}
+
+const ALIGN_BUTTONS: readonly { mode: AlignMode; icon: LucideIcon; label: 'toolbar.alignLeft' | 'toolbar.alignCenter' | 'toolbar.alignTop' }[] = [
+  { mode: 'left', icon: AlignStartVertical, label: 'toolbar.alignLeft' },
+  { mode: 'center', icon: AlignCenterVertical, label: 'toolbar.alignCenter' },
+  { mode: 'top', icon: AlignStartHorizontal, label: 'toolbar.alignTop' },
+]
+
+const fitViewOptions = { padding: 0.3, maxZoom: 1.25, duration: 200 }
+
+interface ToolButtonProps {
+  label: string
+  onClick: () => void
+  pressed?: boolean
+  disabled?: boolean
+  children: ReactNode
+}
+
+function ToolButton({ label, onClick, pressed, disabled, children }: ToolButtonProps) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      aria-pressed={pressed}
+      aria-label={label}
+      title={label}
+      className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40 ${
+        pressed ? 'bg-sky-100 text-sky-800 ring-1 ring-sky-300 hover:bg-sky-100' : ''
+      } ${focusRing}`}
+    >
+      {children}
+    </button>
+  )
+}
+
+function Divider() {
+  return <span className="mx-1 h-6 w-px shrink-0 bg-slate-200" aria-hidden="true" />
+}
+
+/** Tools above the canvas: select, cables, note, delete, snap, align, zoom. Scrolls sideways on phones. */
+function CanvasToolbar(props: CanvasToolbarProps) {
+  const { t } = useTranslation('workspace')
+  const flow = useReactFlow()
+  const { activeTool } = props
+
+  return (
+    <div
+      role="group"
+      aria-label={t('toolbar.label')}
+      className="flex items-center gap-0.5 overflow-x-auto border-b border-slate-200 bg-white px-2 py-1 [scrollbar-width:none]"
+    >
+      <ToolButton label={t('toolbar.select')} onClick={props.onSelectTool} pressed={activeTool === null}>
+        <MousePointer2 className="h-5 w-5" aria-hidden="true" />
+      </ToolButton>
+      <Divider />
+      <div role="group" aria-label={t('toolbar.cables')} className="flex items-center gap-0.5">
+        {CABLE_TOOLS.map((tool) => (
+          <ToolButton key={tool} label={t(`cableTools.${tool}`)} onClick={() => props.onChooseCable(tool)} pressed={activeTool === tool}>
+            <CableGlyph tool={tool} />
+          </ToolButton>
+        ))}
+      </div>
+      <Divider />
+      <ToolButton label={t('toolbar.addNote')} onClick={props.onAddNote}>
+        <StickyNote className="h-5 w-5" aria-hidden="true" />
+      </ToolButton>
+      <ToolButton label={t('toolbar.delete')} onClick={props.onDelete} disabled={!props.canDelete}>
+        <Trash2 className="h-5 w-5" aria-hidden="true" />
+      </ToolButton>
+      <Divider />
+      <ToolButton label={t('toolbar.snap')} onClick={props.onToggleSnap} pressed={props.snapToGrid}>
+        <Grid3x3 className="h-5 w-5" aria-hidden="true" />
+      </ToolButton>
+      {ALIGN_BUTTONS.map(({ mode, icon: Icon, label }) => (
+        <ToolButton key={mode} label={t(label)} onClick={() => props.onAlign(mode)} disabled={!props.canAlign}>
+          <Icon className="h-5 w-5" aria-hidden="true" />
+        </ToolButton>
+      ))}
+      <Divider />
+      <ToolButton label={t('toolbar.zoomOut')} onClick={() => void flow.zoomOut({ duration: 150 })}>
+        <ZoomOut className="h-5 w-5" aria-hidden="true" />
+      </ToolButton>
+      <ToolButton label={t('toolbar.zoomIn')} onClick={() => void flow.zoomIn({ duration: 150 })}>
+        <ZoomIn className="h-5 w-5" aria-hidden="true" />
+      </ToolButton>
+      <ToolButton label={t('toolbar.fitView')} onClick={() => void flow.fitView(fitViewOptions)}>
+        <Maximize className="h-5 w-5" aria-hidden="true" />
+      </ToolButton>
+    </div>
+  )
+}
+
+export default CanvasToolbar

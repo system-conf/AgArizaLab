@@ -1,0 +1,12 @@
+// Shared helper of the catalog data files: fills in the model's i18n key.
+import type { DeviceModel } from '../../domain/v2'
+import type { CatalogPortTemplate } from '../portTemplates'
+
+/** A catalog model: every port template carries a typed strip group. */
+export interface CatalogDeviceModel extends DeviceModel {
+  ports: readonly CatalogPortTemplate[]
+}
+
+export function defineModel(model: Omit<CatalogDeviceModel, 'nameKey'>): CatalogDeviceModel {
+  return { ...model, nameKey: `catalog:models.${model.id}.name` }
+}

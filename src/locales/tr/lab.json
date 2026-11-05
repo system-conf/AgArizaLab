@@ -1,3 +1,69 @@
 {
-  "untitled": "Adsız lab"
+  "untitled": "Adsız lab",
+  "actions": {
+    "newLab": "Yeni lab",
+    "export": "Labı dışa aktar",
+    "import": "Lab içe aktar",
+    "share": "Paylaşım bağlantısını kopyala",
+    "undo": "Geri al",
+    "redo": "Yinele"
+  },
+  "recent": {
+    "title": "Son lablar",
+    "empty": "Henüz kayıtlı lab yok.",
+    "open": "Aç",
+    "delete": "Sil",
+    "updatedAt": "Son değişiklik {{date}}",
+    "notFound": "Bu lab artık tarayıcı depolamasında yok."
+  },
+  "share": {
+    "copied": "Paylaşım bağlantısı kopyalandı.",
+    "tooLarge": "Bu lab paylaşım bağlantısı için çok büyük ({{size}} karakter, en fazla {{limit}}). Bunun yerine dosya olarak dışa aktarın.",
+    "corrupt": "Paylaşım bağlantısı bozuk ya da eksik. Yeni bir bağlantı isteyin."
+  },
+  "import": {
+    "notJson": "Dosya geçerli bir JSON değil: {{detail}}",
+    "notALab": "Dosya bir AgArizaLab labı değil.",
+    "unsupportedVersion": "Bu lab AgArizaLab'ın daha yeni bir sürümüyle kaydedilmiş (biçim {{version}}; bu sürüm en fazla {{supported}} okuyabilir). Uygulamayı güncelleyip tekrar deneyin.",
+    "invalidVersion": "Lab biçim sürümü \"{{version}}\" geçerli değil.",
+    "migrationFailed": "Lab, {{version}} biçiminden güncel biçime yükseltilemedi: {{detail}}",
+    "moreErrors": "…ve {{count}} sorun daha.",
+    "readFailed": "Dosya okunamadı: {{detail}}"
+  },
+  "schema": {
+    "invalidType": "{{path}}: {{expected}} bekleniyordu.",
+    "invalidValue": "{{path}}: bu değere izin verilmiyor (izin verilenler: {{allowed}}).",
+    "unknownKey": "{{path}}: bilinmeyen alan \"{{key}}\".",
+    "tooSmall": "{{path}}: değer çok küçük ya da çok kısa (en az {{minimum}}).",
+    "tooBig": "{{path}}: değer çok büyük ya da çok uzun (en fazla {{maximum}}).",
+    "notInteger": "{{path}}: tam sayı olmalı.",
+    "invalid": "{{path}}: geçersiz değer."
+  },
+  "invariant": {
+    "duplicateDeviceId": "İki cihaz aynı \"{{deviceId}}\" kimliğini kullanıyor.",
+    "duplicateLinkId": "İki kablo aynı \"{{linkId}}\" kimliğini kullanıyor.",
+    "duplicatePortId": "\"{{deviceId}}\" cihazında \"{{portId}}\" adlı iki port var.",
+    "badInterfaceId": "\"{{deviceId}}\" cihazı: \"{{portId}}\" arayüzünün adı hatalı ya da yinelenmiş.",
+    "invalidBaseMac": "\"{{deviceId}}\" cihazının MAC adresi geçersiz.",
+    "invalidMac": "\"{{deviceId}}\" cihazı, \"{{portId}}\" portu: MAC adresi geçersiz.",
+    "duplicateMac": "\"{{deviceId}}\" cihazı, \"{{portId}}\" portu: MAC adresi başka bir port tarafından kullanılıyor.",
+    "vlanOutOfRange": "\"{{deviceId}}\" cihazı: bir VLAN numarası 1–4094 aralığının dışında.",
+    "vlanOutOfRangeOnPort": "\"{{deviceId}}\" cihazı, \"{{portId}}\" arayüzü: bir VLAN numarası 1–4094 aralığının dışında.",
+    "missingDefaultVlan": "\"{{deviceId}}\" cihazı: VLAN veritabanında VLAN 1 bulunmalı.",
+    "invalidLink": {
+      "unknownDevice": "\"{{linkId}}\" kablosu var olmayan bir cihaza bağlı.",
+      "unknownPort": "\"{{linkId}}\" kablosu var olmayan bir porta bağlı.",
+      "sameDevice": "\"{{linkId}}\" kablosu bir cihazı kendisine bağlıyor.",
+      "cableDoesNotFitPort": "\"{{linkId}}\" kablosu takıldığı porta uymuyor.",
+      "wirelessNeedsClientAndRadio": "\"{{linkId}}\" kablosuz bağlantısı bir kablosuz istemciyi bir radyoya bağlamalı.",
+      "portInUse": "\"{{linkId}}\" kablosu başka bir kablonun takılı olduğu portu kullanıyor.",
+      "consoleNeedsTerminal": "\"{{linkId}}\" konsol kablosu bir uç cihazı bir ağ cihazına bağlamalı.",
+      "ssidRequired": "\"{{linkId}}\" kablosuz bağlantısının ağ adı (SSID) yok.",
+      "crossoverRequired": "\"{{linkId}}\" için çapraz (crossover) kablo gerekli (iki uçta da auto-MDIX kapalı).",
+      "straightThroughRequired": "\"{{linkId}}\" için düz (straight-through) kablo gerekli (iki uçta da auto-MDIX kapalı)."
+    }
+  },
+  "storage": {
+    "unavailable": "Tarayıcı depolaması kullanılamıyor. Labınız yalnızca bu sekme kapanana kadar saklanır; korumak için dışa aktarın."
+  }
 }

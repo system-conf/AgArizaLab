@@ -1,3 +1,69 @@
 {
-  "untitled": "Untitled lab"
+  "untitled": "Untitled lab",
+  "actions": {
+    "newLab": "New lab",
+    "export": "Export lab",
+    "import": "Import lab",
+    "share": "Copy share link",
+    "undo": "Undo",
+    "redo": "Redo"
+  },
+  "recent": {
+    "title": "Recent labs",
+    "empty": "No saved labs yet.",
+    "open": "Open",
+    "delete": "Delete",
+    "updatedAt": "Last changed {{date}}",
+    "notFound": "This lab is no longer in the browser storage."
+  },
+  "share": {
+    "copied": "Share link copied.",
+    "tooLarge": "This lab is too large for a share link ({{size}} of at most {{limit}} characters). Export it as a file instead.",
+    "corrupt": "The share link is damaged or incomplete. Ask for a new link."
+  },
+  "import": {
+    "notJson": "The file is not valid JSON: {{detail}}",
+    "notALab": "The file is not an AgArizaLab lab.",
+    "unsupportedVersion": "This lab was saved by a newer version of AgArizaLab (format {{version}}; this version reads up to {{supported}}). Update the app and try again.",
+    "invalidVersion": "The lab format version \"{{version}}\" is not valid.",
+    "migrationFailed": "The lab could not be upgraded from format {{version}} to the current format: {{detail}}",
+    "moreErrors": "…and {{count}} more problems.",
+    "readFailed": "The file could not be read: {{detail}}"
+  },
+  "schema": {
+    "invalidType": "{{path}}: expected {{expected}}.",
+    "invalidValue": "{{path}}: value not allowed (allowed: {{allowed}}).",
+    "unknownKey": "{{path}}: unknown field \"{{key}}\".",
+    "tooSmall": "{{path}}: value too small or too short (minimum {{minimum}}).",
+    "tooBig": "{{path}}: value too large or too long (maximum {{maximum}}).",
+    "notInteger": "{{path}}: must be a whole number.",
+    "invalid": "{{path}}: invalid value."
+  },
+  "invariant": {
+    "duplicateDeviceId": "Two devices share the id \"{{deviceId}}\".",
+    "duplicateLinkId": "Two cables share the id \"{{linkId}}\".",
+    "duplicatePortId": "Device \"{{deviceId}}\" has two ports named \"{{portId}}\".",
+    "badInterfaceId": "Device \"{{deviceId}}\": interface \"{{portId}}\" has a bad or duplicate name.",
+    "invalidBaseMac": "Device \"{{deviceId}}\" has an invalid MAC address.",
+    "invalidMac": "Device \"{{deviceId}}\", port \"{{portId}}\": invalid MAC address.",
+    "duplicateMac": "Device \"{{deviceId}}\", port \"{{portId}}\": the MAC address is already used by another port.",
+    "vlanOutOfRange": "Device \"{{deviceId}}\": a VLAN id is outside 1–4094.",
+    "vlanOutOfRangeOnPort": "Device \"{{deviceId}}\", interface \"{{portId}}\": a VLAN id is outside 1–4094.",
+    "missingDefaultVlan": "Device \"{{deviceId}}\": the VLAN database must contain VLAN 1.",
+    "invalidLink": {
+      "unknownDevice": "Cable \"{{linkId}}\" ends on a device that does not exist.",
+      "unknownPort": "Cable \"{{linkId}}\" ends on a port that does not exist.",
+      "sameDevice": "Cable \"{{linkId}}\" joins a device to itself.",
+      "cableDoesNotFitPort": "Cable \"{{linkId}}\" does not fit the port it is plugged into.",
+      "wirelessNeedsClientAndRadio": "Wireless connection \"{{linkId}}\" must join a wireless client to a radio.",
+      "portInUse": "Cable \"{{linkId}}\" uses a port that already holds another cable.",
+      "consoleNeedsTerminal": "Console cable \"{{linkId}}\" must join an end device to a network device.",
+      "ssidRequired": "Wireless connection \"{{linkId}}\" has no network name (SSID).",
+      "crossoverRequired": "Cable \"{{linkId}}\" needs a crossover cable (auto-MDIX is off on both ends).",
+      "straightThroughRequired": "Cable \"{{linkId}}\" needs a straight-through cable (auto-MDIX is off on both ends)."
+    }
+  },
+  "storage": {
+    "unavailable": "Browser storage is not available. Your lab is kept only until this tab is closed; export it to keep it."
+  }
 }

@@ -103,3 +103,21 @@ describe('Ipv4', () => {
     expect(Ipv4.range('bad', '192.168.1.4')).toEqual([])
   })
 })
+
+describe('Ipv4 — prefixes (v2 routing)', () => {
+  it('counts the one bits of a mask', () => {
+    expect(Ipv4.prefixLength('0.0.0.0')).toBe(0)
+    expect(Ipv4.prefixLength('255.0.0.0')).toBe(8)
+    expect(Ipv4.prefixLength('255.255.255.252')).toBe(30)
+    expect(Ipv4.prefixLength('255.255.255.255')).toBe(32)
+    expect(Ipv4.prefixLength('255.0.255.0')).toBeNull()
+    expect(Ipv4.prefixLength('bad')).toBeNull()
+  })
+
+  it('matches an address against a route prefix, the default route included', () => {
+    expect(Ipv4.inNetwork('10.2.2.10', '10.2.2.0', '255.255.255.0')).toBe(true)
+    expect(Ipv4.inNetwork('10.2.3.10', '10.2.2.0', '255.255.255.0')).toBe(false)
+    expect(Ipv4.inNetwork('8.8.8.8', '0.0.0.0', '0.0.0.0')).toBe(true)
+    expect(Ipv4.inNetwork('8.8.8.8', '0.0.0.0', '255.0.255.0')).toBe(false)
+  })
+})

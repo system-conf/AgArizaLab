@@ -7,6 +7,8 @@ export type PingOutcome =
   | { kind: 'reply'; fromIp: string; ttl: number; baseTimeMs: number }
   /** "Reply from X: Destination host unreachable." (X = own IP for ARP failures, gateway for routing). */
   | { kind: 'unreachable'; fromIp: string }
+  /** "Reply from X: TTL expired in transit." (X = the router where the looping packet's TTL ran out). */
+  | { kind: 'ttlExpired'; fromIp: string }
   | { kind: 'timeout' }
   /** No usable adapter/route/address at all: "PING: transmit failed. General failure." */
   | { kind: 'generalFailure' }
@@ -28,7 +30,8 @@ export class PingFormatter {
     const lines: string[] = ['', `Pinging ${header} with ${size} bytes of data:`]
     for (let index = 0; index < count; index += 1) lines.push(this.echoLine(outcome, index, size))
 
-    const received = outcome.kind === 'reply' || outcome.kind === 'unreachable' ? count : 0
+    // Windows counts ICMP error replies (unreachable, TTL expired) as received.
+    const received = outcome.kind === 'timeout' || outcome.kind === 'generalFailure' ? 0 : count
     const lost = count - received
     lines.push(
       '',
@@ -67,6 +70,8 @@ export class PingFormatter {
       }
       case 'unreachable':
         return `Reply from ${outcome.fromIp}: Destination host unreachable.`
+      case 'ttlExpired':
+        return `Reply from ${outcome.fromIp}: TTL expired in transit.`
       case 'timeout':
         return 'Request timed out.'
       case 'generalFailure':

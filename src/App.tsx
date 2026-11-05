@@ -6,13 +6,21 @@ import ScenarioList from './features/scenario/ScenarioList'
 import type { ScenarioListItem } from './features/scenario/scenarioListItem'
 import { useLocalizedScenarios } from './scenarios'
 import { ProgressStore } from './session/ProgressStore'
+import WorkspaceScreen from './features/workspace/WorkspaceScreen'
 
 type Screen =
   | { kind: 'list' }
   | { kind: 'exercise'; scenarioIndex: number }
   | { kind: 'result'; scenarioIndex: number; summary: SolvedSummary }
 
+/** Temporary entry until I2 adds navigation: `?view=workspace` opens the lab workspace. */
+const showWorkspace = new URLSearchParams(window.location.search).get('view') === 'workspace'
+
 function App() {
+  return showWorkspace ? <WorkspaceScreen /> : <ExerciseApp />
+}
+
+function ExerciseApp() {
   const scenarios = useLocalizedScenarios()
   const [progressStore] = useState(() => ProgressStore.fromBrowser())
   const [progress, setProgress] = useState(() => progressStore.read())

@@ -1,3 +1,199 @@
 {
-  "title": "Devices"
+  "title": "Devices",
+  "categories": {
+    "routers": "Routers",
+    "switches": "Switches",
+    "wireless": "Wireless",
+    "endDevices": "End devices",
+    "servers": "Servers",
+    "wan": "Internet / WAN"
+  },
+  "kinds": {
+    "internet": "Internet",
+    "router": "Router",
+    "wirelessRouter": "Wireless router",
+    "switch": "Switch",
+    "l3Switch": "Layer 3 switch",
+    "hub": "Hub",
+    "accessPoint": "Access point",
+    "pc": "PC",
+    "laptop": "Laptop",
+    "server": "Server",
+    "printer": "Printer",
+    "ipPhone": "IP phone",
+    "pos": "POS terminal",
+    "camera": "IP camera",
+    "nvr": "Video recorder (NVR)",
+    "kitchenDisplay": "Kitchen display",
+    "smartphone": "Smartphone",
+    "tablet": "Tablet"
+  },
+  "models": {
+    "router2Port": {
+      "name": "Router (2 ports)",
+      "description": "Branch router with two Gigabit Ethernet ports (LAN and WAN) and a console port."
+    },
+    "router4Port": {
+      "name": "Router (4 ports)",
+      "description": "Router with four Gigabit Ethernet ports for several LANs or links."
+    },
+    "router2PortSerial": {
+      "name": "Router (2 ports + serial)",
+      "description": "Router with two Gigabit Ethernet ports and a two-port serial WAN card."
+    },
+    "switch8": {
+      "name": "Switch (8 ports)",
+      "description": "Small managed switch with eight Fast Ethernet ports."
+    },
+    "switch8Poe": {
+      "name": "PoE switch (8 ports)",
+      "description": "Eight Fast Ethernet ports that also power phones, cameras and access points (PoE)."
+    },
+    "switch24": {
+      "name": "Switch (24 ports)",
+      "description": "24 Fast Ethernet ports and two Gigabit uplink ports."
+    },
+    "switch24Poe": {
+      "name": "PoE switch (24 ports)",
+      "description": "24 Fast Ethernet PoE ports and two Gigabit uplink ports."
+    },
+    "switch48": {
+      "name": "Switch (48 ports)",
+      "description": "48 Fast Ethernet ports and four Gigabit fiber uplink ports."
+    },
+    "switch48Poe": {
+      "name": "PoE switch (48 ports)",
+      "description": "48 Fast Ethernet PoE ports and four Gigabit fiber uplink ports."
+    },
+    "l3Switch24": {
+      "name": "Layer 3 switch (24 ports)",
+      "description": "24 Gigabit ports and four fiber uplinks; can route between VLANs."
+    },
+    "hub8": {
+      "name": "Hub (8 ports)",
+      "description": "Old-style hub: repeats every frame to every port."
+    },
+    "accessPoint": {
+      "name": "Access point",
+      "description": "Brings Wi-Fi clients into the wired network; one uplink port."
+    },
+    "wirelessRouter": {
+      "name": "Wireless router",
+      "description": "Home / small-office router: internet port, four LAN ports, Wi-Fi, DHCP."
+    },
+    "pc": {
+      "name": "PC",
+      "description": "Desktop computer with a wired network card and a command prompt."
+    },
+    "laptop": {
+      "name": "Laptop",
+      "description": "Laptop with a wired and a Wi-Fi network card."
+    },
+    "printer": {
+      "name": "Network printer",
+      "description": "Printer on the network with a wired port."
+    },
+    "ipPhone": {
+      "name": "IP phone",
+      "description": "Desk phone that talks over the network."
+    },
+    "pos": {
+      "name": "POS terminal",
+      "description": "Cash register / payment terminal with a wired port."
+    },
+    "ipCamera": {
+      "name": "IP camera",
+      "description": "Security camera that streams over the network."
+    },
+    "kitchenDisplay": {
+      "name": "Kitchen display",
+      "description": "Screen in the kitchen that shows orders from the POS."
+    },
+    "smartphone": {
+      "name": "Smartphone",
+      "description": "Phone that joins the network over Wi-Fi."
+    },
+    "tablet": {
+      "name": "Tablet",
+      "description": "Tablet that joins the network over Wi-Fi."
+    },
+    "server": {
+      "name": "Server",
+      "description": "Server with two network cards; can run DHCP and DNS."
+    },
+    "nvr": {
+      "name": "Video recorder (NVR)",
+      "description": "Records the IP cameras' video."
+    },
+    "internetCloud": {
+      "name": "Internet (ISP)",
+      "description": "The internet service provider: each port is one internet line."
+    }
+  },
+  "media": {
+    "copper": "Copper (RJ-45)",
+    "fiber": "Fiber",
+    "wireless": "Wireless",
+    "serial": "Serial",
+    "console": "Console",
+    "coaxial": "Coaxial"
+  },
+  "portRoles": {
+    "switched": "Switch port",
+    "routed": "Routed interface",
+    "host": "Network card",
+    "radio": "Radio",
+    "console": "Console port",
+    "passive": "Port"
+  },
+  "portGroups": {
+    "lan": {
+      "name": "LAN",
+      "description": "Toward the local network."
+    },
+    "wan": {
+      "name": "WAN",
+      "description": "Toward the internet provider or another site."
+    },
+    "ethernet": {
+      "name": "Ethernet",
+      "description": "Gigabit Ethernet interface; use it for LAN or WAN."
+    },
+    "serial": {
+      "name": "Serial",
+      "description": "Serial WAN line to another router; one end provides the clock (DCE)."
+    },
+    "access": {
+      "name": "Ports",
+      "description": "Ports for end devices; access VLAN 1 by default."
+    },
+    "uplink": {
+      "name": "Uplink",
+      "description": "Faster port toward another switch or router."
+    },
+    "shared": {
+      "name": "Ports",
+      "description": "Every port shares the same traffic."
+    },
+    "handoff": {
+      "name": "Internet lines",
+      "description": "Plug a router's WAN port in here."
+    },
+    "nic": {
+      "name": "Network card",
+      "description": "Wired network card."
+    },
+    "wireless": {
+      "name": "Wi-Fi",
+      "description": "Wireless connection."
+    },
+    "console": {
+      "name": "Console",
+      "description": "Management port for a console cable from a PC."
+    },
+    "other": {
+      "name": "Other ports",
+      "description": "Ports this model does not normally have."
+    }
+  }
 }

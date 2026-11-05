@@ -1,17 +1,26 @@
 import type { TerminalLine } from '../domain/EngineContract'
-import type { HostNetworkConfig } from '../domain/NetworkTypes'
 import { type AppMessageKey, localizedMessage } from '../i18n/messageKeys'
 import type { OptionError } from './CommandOptions'
 import { messageLine, textLines } from './terminalLines'
 
-/** What ipconfig needs to know about the host's single adapter. */
+/** IPv4 settings of one adapter as ipconfig shows them (gateway and DNS of the host). */
+export interface AdapterAddressing {
+  mode: 'static' | 'dhcp'
+  /** '' = no address. */
+  ip: string
+  mask: string
+  gateway: string
+  dns: readonly string[]
+}
+
+/** What ipconfig needs to know about one adapter of the host. */
 export interface AdapterView {
   hostName: string
   /** 'eth0' → Ethernet, 'wlan0' → Wi-Fi. */
   wireless: boolean
   connected: boolean
   mac: string
-  host: HostNetworkConfig
+  host: AdapterAddressing
   /** Another device in the segment uses the same address (Windows duplicate address detection). */
   duplicateAddress: boolean
 }
@@ -53,35 +62,40 @@ const HELP_KEYS: readonly AppMessageKey[] = [
  */
 export class CommandFormatter {
   ipconfig(view: AdapterView, all: boolean): TerminalLine[] {
+    return this.adapters([view], all)
+  }
+
+  /** ipconfig for a host with several adapters, in the given order (Windows numbers repeats: "Ethernet 2"). */
+  adapters(views: readonly AdapterView[], all: boolean): TerminalLine[] {
     const lines: string[] = ['', 'Windows IP Configuration', '']
-    if (all) {
-      lines.push(this.field('Host Name', view.hostName), '')
-    }
-    lines.push(`${this.adapterTitle(view.wireless)}:`, '')
-
-    if (!view.connected) {
-      lines.push(this.field('Media State', 'Media disconnected'), this.field('Connection-specific DNS Suffix', ''))
-      if (all) lines.push(...this.hardwareFields(view))
-      return textLines(lines)
-    }
-
-    lines.push(this.field('Connection-specific DNS Suffix', ''))
-    if (all) lines.push(...this.hardwareFields(view))
-    lines.push(...this.addressFields(view, all))
+    const first = views[0]
+    if (all && first) lines.push(this.field('Host Name', first.hostName), '')
+    const titles = this.adapterTitles(views)
+    views.forEach((view, index) => {
+      if (index > 0) lines.push('')
+      lines.push(`${titles[index] ?? this.adapterTitle(view.wireless)}:`, '', ...this.adapterFields(view, all))
+    })
     return textLines(lines)
   }
 
   /** `ipconfig /release`: the adapter is left without an IPv4 address. */
   released(view: AdapterView): TerminalLine[] {
-    return textLines([
-      '',
-      'Windows IP Configuration',
-      '',
-      `${this.adapterTitle(view.wireless)}:`,
-      '',
-      this.field('Connection-specific DNS Suffix', ''),
-      this.field('Default Gateway', ''),
-    ])
+    return this.releasedAdapters([view])
+  }
+
+  releasedAdapters(views: readonly AdapterView[]): TerminalLine[] {
+    const lines: string[] = ['', 'Windows IP Configuration', '']
+    const titles = this.adapterTitles(views)
+    views.forEach((view, index) => {
+      if (index > 0) lines.push('')
+      lines.push(
+        `${titles[index] ?? this.adapterTitle(view.wireless)}:`,
+        '',
+        this.field('Connection-specific DNS Suffix', ''),
+        this.field('Default Gateway', ''),
+      )
+    })
+    return textLines(lines)
   }
 
   /** /renew or /release on a static adapter. */
@@ -195,6 +209,27 @@ export class CommandFormatter {
     return wireless ? 'Wireless LAN adapter Wi-Fi' : 'Ethernet adapter Ethernet'
   }
 
+  private adapterFields(view: AdapterView, all: boolean): string[] {
+    if (!view.connected) {
+      const lines = [this.field('Media State', 'Media disconnected'), this.field('Connection-specific DNS Suffix', '')]
+      return all ? [...lines, ...this.hardwareFields(view)] : lines
+    }
+    const lines = [this.field('Connection-specific DNS Suffix', '')]
+    if (all) lines.push(...this.hardwareFields(view))
+    return [...lines, ...this.addressFields(view, all)]
+  }
+
+  /** "Ethernet adapter Ethernet", "Ethernet adapter Ethernet 2", … per adapter type. */
+  private adapterTitles(views: readonly AdapterView[]): string[] {
+    const seen = { ethernet: 0, wireless: 0 }
+    return views.map((view) => {
+      const key = view.wireless ? 'wireless' : 'ethernet'
+      seen[key] += 1
+      const title = this.adapterTitle(view.wireless)
+      return seen[key] === 1 ? title : `${title} ${seen[key]}`
+    })
+  }
+
   private hardwareFields(view: AdapterView): string[] {
     return [
       this.field('Physical Address', view.mac.toUpperCase().replaceAll(':', '-')),
@@ -256,7 +291,7 @@ export class CommandFormatter {
     return leader
   }
 
-  private multiField(label: string, values: string[]): string[] {
+  private multiField(label: string, values: readonly string[]): string[] {
     if (values.length === 0) return [this.field(label, '')]
     const [first, ...rest] = values
     const indent = ' '.repeat(FIELD_INDENT.length + LABEL_WIDTH + 2)

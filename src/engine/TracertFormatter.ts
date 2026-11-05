@@ -18,6 +18,8 @@ export type TracertEnding =
   | { kind: 'timedOut' }
   /** No usable adapter, address or gateway: the probe never leaves the host. */
   | { kind: 'generalFailure' }
+  /** The hop lines already reach the hop limit (a routing loop): nothing follows them. */
+  | { kind: 'hopLimit' }
 
 const MAX_HOPS = 30
 /**
@@ -31,6 +33,9 @@ const TIMEOUT_PROBE = `${'*'.padStart(6)}   `
 
 /** Windows-style (English) tracert output. Pure string building, no network logic. */
 export class TracertFormatter {
+  /** Windows' default maximum number of hops. */
+  static readonly maxHops = MAX_HOPS
+
   tracert(targetIp: string, resolvedName: string | null, hops: readonly TracertHop[], ending: TracertEnding): TerminalLine[] {
     const lines: string[] = ['', ...this.header(targetIp, resolvedName), '']
     hops.forEach((hop, index) => lines.push(this.hopLine(index + 1, hop)))
@@ -50,6 +55,7 @@ export class TracertFormatter {
   private endingLines(nextHop: number, ending: TracertEnding): string[] {
     switch (ending.kind) {
       case 'complete':
+      case 'hopLimit':
         return []
       case 'unreachable':
         return [`${this.hopNumber(nextHop)}  ${ending.reporterIp}  reports: Destination host unreachable.`]

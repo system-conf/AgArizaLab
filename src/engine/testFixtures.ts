@@ -16,8 +16,9 @@ const MASK = '255.255.255.0'
 let macCounter = 0
 function nextMac(): string {
   macCounter += 1
-  const hex = macCounter.toString(16).toUpperCase().padStart(2, '0')
-  return `AA:BB:CC:00:00:${hex}`
+  // Two octets, so the MAC stays valid past 255 devices (the v2 migration validates MACs).
+  const hex = macCounter.toString(16).toUpperCase().padStart(4, '0')
+  return `AA:BB:CC:00:${hex.slice(0, 2)}:${hex.slice(2, 4)}`
 }
 
 export function makeHost(

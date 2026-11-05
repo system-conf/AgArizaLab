@@ -104,3 +104,18 @@ describe('CommandFormatter — app messages', () => {
     ])
   })
 })
+
+describe('CommandFormatter — several adapters (v2 hosts)', () => {
+  it('numbers repeated adapter types and separates the blocks', () => {
+    const wifi = { ...view, wireless: true, host: { ...view.host, ip: '192.168.2.5' } }
+    const lines = texts(formatter.adapters([view, { ...view, connected: false }, wifi], true))
+    expect(lines.filter((text) => text.endsWith(':') && !text.includes(' : '))).toEqual([
+      'Ethernet adapter Ethernet:',
+      'Ethernet adapter Ethernet 2:',
+      'Wireless LAN adapter Wi-Fi:',
+    ])
+    expect(lines.filter((text) => text.startsWith('   Host Name'))).toHaveLength(1)
+    expect(lines[lines.indexOf('Ethernet adapter Ethernet 2:') - 1]).toBe('')
+    expect(texts(formatter.releasedAdapters([view, wifi]))).toContain('Wireless LAN adapter Wi-Fi:')
+  })
+})

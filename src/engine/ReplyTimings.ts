@@ -8,15 +8,22 @@ export interface ReplyTiming {
   baseTimeMs: number
 }
 
-const LOCAL: ReplyTiming = { ttl: 128, baseTimeMs: 1 }
-const ROUTED: ReplyTiming = { ttl: 127, baseTimeMs: 2 }
+/** Windows' default TTL; every router on the way decrements it once. */
+const DEFAULT_TTL = 128
+const LOCAL: ReplyTiming = { ttl: DEFAULT_TTL, baseTimeMs: 1 }
 const INTERNET: ReplyTiming = { ttl: 117, baseTimeMs: 14 }
 
-/** Picks the timing by how far the destination is: same segment, behind the router, or the internet. */
+/** Picks the timing by how far the destination is: same segment, behind routers, or the internet. */
 export class ReplyTimings {
   static forPath(state: NetworkState, targetIp: string, path: readonly string[]): ReplyTiming {
+    const routers = path.slice(1, -1).filter((deviceId) => DeviceLookup.find(state, deviceId)?.kind === 'router').length
+    return ReplyTimings.forRouters(targetIp, routers)
+  }
+
+  /** `routers` = routers between sender and destination (one router: TTL 127, 2 ms). */
+  static forRouters(targetIp: string, routers: number): ReplyTiming {
     if (Ipv4.isPublic(targetIp)) return INTERNET
-    const routed = path.slice(1, -1).some((deviceId) => DeviceLookup.find(state, deviceId)?.kind === 'router')
-    return routed ? ROUTED : LOCAL
+    if (routers === 0) return LOCAL
+    return { ttl: DEFAULT_TTL - routers, baseTimeMs: 1 + routers }
   }
 }

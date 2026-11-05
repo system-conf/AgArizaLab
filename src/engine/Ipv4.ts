@@ -53,6 +53,27 @@ export class Ipv4 {
     return ((inverted + 1) & inverted) === 0
   }
 
+  /** Number of one bits of a valid mask (0 for '0.0.0.0'), or null when the mask is invalid. */
+  static prefixLength(mask: string): number | null {
+    const value = Ipv4.parse(mask)
+    if (value === null) return null
+    if (value === 0) return 0
+    if (!Ipv4.isValidMask(mask)) return null
+    return 32 - Math.log2(0xffffffff - value + 1)
+  }
+
+  /**
+   * True when `ip` lies in `prefix`/`mask` (a route or pool network). Unlike `sameSubnet`, a
+   * '0.0.0.0' mask is allowed: the default route contains every address.
+   */
+  static inNetwork(ip: string, prefix: string, mask: string): boolean {
+    const ipValue = Ipv4.parse(ip)
+    const prefixValue = Ipv4.parse(prefix)
+    const maskValue = Ipv4.parse(mask)
+    if (ipValue === null || prefixValue === null || maskValue === null || Ipv4.prefixLength(mask) === null) return false
+    return Ipv4.applyMask(ipValue, maskValue) === Ipv4.applyMask(prefixValue, maskValue)
+  }
+
   static prefixToMask(prefix: number): number {
     return prefix === 0 ? 0 : (0xffffffff - (2 ** (32 - prefix) - 1))
   }

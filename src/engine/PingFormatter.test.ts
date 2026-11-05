@@ -54,3 +54,18 @@ describe('PingFormatter', () => {
     expect(formatter.countLimited(20)).toEqual({ kind: 'info', message: { key: 'engine:pingCountLimited', params: { count: 20 } } })
   })
 })
+
+describe('PingFormatter — TTL expired (v2 routing loops)', () => {
+  it('prints the router reply and counts it as received', () => {
+    const text = formatter.ping('10.9.1.1', null, { kind: 'ttlExpired', fromIp: '10.0.12.2' }, { count: 2, size: 32 }).map((line) => line.text ?? '')
+    expect(text).toEqual([
+      '',
+      'Pinging 10.9.1.1 with 32 bytes of data:',
+      'Reply from 10.0.12.2: TTL expired in transit.',
+      'Reply from 10.0.12.2: TTL expired in transit.',
+      '',
+      'Ping statistics for 10.9.1.1:',
+      '    Packets: Sent = 2, Received = 2, Lost = 0 (0% loss),',
+    ])
+  })
+})

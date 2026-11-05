@@ -1,3 +1,199 @@
 {
-  "title": "Cihazlar"
+  "title": "Cihazlar",
+  "categories": {
+    "routers": "Router’lar",
+    "switches": "Switch’ler",
+    "wireless": "Kablosuz",
+    "endDevices": "Uç cihazlar",
+    "servers": "Sunucular",
+    "wan": "İnternet / WAN"
+  },
+  "kinds": {
+    "internet": "İnternet",
+    "router": "Router",
+    "wirelessRouter": "Kablosuz router",
+    "switch": "Switch",
+    "l3Switch": "Katman 3 switch",
+    "hub": "Hub",
+    "accessPoint": "Kablosuz erişim noktası",
+    "pc": "Bilgisayar",
+    "laptop": "Dizüstü bilgisayar",
+    "server": "Sunucu",
+    "printer": "Yazıcı",
+    "ipPhone": "IP telefon",
+    "pos": "Kasa (POS)",
+    "camera": "IP kamera",
+    "nvr": "Kayıt cihazı (NVR)",
+    "kitchenDisplay": "Mutfak ekranı",
+    "smartphone": "Akıllı telefon",
+    "tablet": "Tablet"
+  },
+  "models": {
+    "router2Port": {
+      "name": "Router (2 port)",
+      "description": "İki Gigabit Ethernet portu (LAN ve WAN) ve konsol portu olan şube router’ı."
+    },
+    "router4Port": {
+      "name": "Router (4 port)",
+      "description": "Birden fazla LAN veya bağlantı için dört Gigabit Ethernet portlu router."
+    },
+    "router2PortSerial": {
+      "name": "Router (2 port + seri)",
+      "description": "İki Gigabit Ethernet portu ve iki portlu seri WAN kartı olan router."
+    },
+    "switch8": {
+      "name": "Switch (8 port)",
+      "description": "Sekiz Fast Ethernet portlu küçük yönetilebilir switch."
+    },
+    "switch8Poe": {
+      "name": "PoE switch (8 port)",
+      "description": "Telefon, kamera ve erişim noktalarına elektrik de veren (PoE) sekiz Fast Ethernet port."
+    },
+    "switch24": {
+      "name": "Switch (24 port)",
+      "description": "24 Fast Ethernet port ve iki Gigabit uplink portu."
+    },
+    "switch24Poe": {
+      "name": "PoE switch (24 port)",
+      "description": "24 Fast Ethernet PoE port ve iki Gigabit uplink portu."
+    },
+    "switch48": {
+      "name": "Switch (48 port)",
+      "description": "48 Fast Ethernet port ve dört Gigabit fiber uplink portu."
+    },
+    "switch48Poe": {
+      "name": "PoE switch (48 port)",
+      "description": "48 Fast Ethernet PoE port ve dört Gigabit fiber uplink portu."
+    },
+    "l3Switch24": {
+      "name": "Katman 3 switch (24 port)",
+      "description": "24 Gigabit port ve dört fiber uplink; VLAN’lar arasında yönlendirme yapabilir."
+    },
+    "hub8": {
+      "name": "Hub (8 port)",
+      "description": "Eski tip hub: her çerçeveyi bütün portlara tekrarlar."
+    },
+    "accessPoint": {
+      "name": "Erişim noktası",
+      "description": "Wi-Fi istemcilerini kablolu ağa bağlar; tek uplink portu vardır."
+    },
+    "wirelessRouter": {
+      "name": "Kablosuz router",
+      "description": "Ev / küçük ofis router’ı: internet portu, dört LAN portu, Wi-Fi, DHCP."
+    },
+    "pc": {
+      "name": "Bilgisayar",
+      "description": "Kablolu ağ kartı ve komut istemi olan masaüstü bilgisayar."
+    },
+    "laptop": {
+      "name": "Dizüstü bilgisayar",
+      "description": "Kablolu ve Wi-Fi ağ kartı olan dizüstü bilgisayar."
+    },
+    "printer": {
+      "name": "Ağ yazıcısı",
+      "description": "Kablolu portla ağa bağlanan yazıcı."
+    },
+    "ipPhone": {
+      "name": "IP telefon",
+      "description": "Ağ üzerinden konuşan masa telefonu."
+    },
+    "pos": {
+      "name": "Kasa (POS)",
+      "description": "Kablolu portu olan kasa / ödeme terminali."
+    },
+    "ipCamera": {
+      "name": "IP kamera",
+      "description": "Görüntüyü ağ üzerinden gönderen güvenlik kamerası."
+    },
+    "kitchenDisplay": {
+      "name": "Mutfak ekranı",
+      "description": "Kasadan gelen siparişleri gösteren mutfak ekranı."
+    },
+    "smartphone": {
+      "name": "Akıllı telefon",
+      "description": "Ağa Wi-Fi ile bağlanan telefon."
+    },
+    "tablet": {
+      "name": "Tablet",
+      "description": "Ağa Wi-Fi ile bağlanan tablet."
+    },
+    "server": {
+      "name": "Sunucu",
+      "description": "İki ağ kartlı sunucu; DHCP ve DNS çalıştırabilir."
+    },
+    "nvr": {
+      "name": "Kayıt cihazı (NVR)",
+      "description": "IP kameraların görüntüsünü kaydeder."
+    },
+    "internetCloud": {
+      "name": "İnternet (servis sağlayıcı)",
+      "description": "İnternet servis sağlayıcısı: her port bir internet hattıdır."
+    }
+  },
+  "media": {
+    "copper": "Bakır (RJ-45)",
+    "fiber": "Fiber",
+    "wireless": "Kablosuz",
+    "serial": "Seri",
+    "console": "Konsol",
+    "coaxial": "Koaksiyel"
+  },
+  "portRoles": {
+    "switched": "Switch portu",
+    "routed": "Yönlendirilen arayüz",
+    "host": "Ağ kartı",
+    "radio": "Radyo",
+    "console": "Konsol portu",
+    "passive": "Port"
+  },
+  "portGroups": {
+    "lan": {
+      "name": "LAN",
+      "description": "Yerel ağa doğru."
+    },
+    "wan": {
+      "name": "WAN",
+      "description": "İnternet servis sağlayıcısına veya başka bir şubeye doğru."
+    },
+    "ethernet": {
+      "name": "Ethernet",
+      "description": "Gigabit Ethernet arayüzü; LAN veya WAN için kullanılır."
+    },
+    "serial": {
+      "name": "Seri",
+      "description": "Başka bir router’a seri WAN hattı; bir uç saati verir (DCE)."
+    },
+    "access": {
+      "name": "Portlar",
+      "description": "Uç cihazlar için portlar; varsayılan olarak erişim VLAN’ı 1."
+    },
+    "uplink": {
+      "name": "Uplink",
+      "description": "Başka bir switch’e veya router’a giden hızlı port."
+    },
+    "shared": {
+      "name": "Portlar",
+      "description": "Bütün portlar aynı trafiği paylaşır."
+    },
+    "handoff": {
+      "name": "İnternet hatları",
+      "description": "Router’ın WAN portunu buraya tak."
+    },
+    "nic": {
+      "name": "Ağ kartı",
+      "description": "Kablolu ağ kartı."
+    },
+    "wireless": {
+      "name": "Wi-Fi",
+      "description": "Kablosuz bağlantı."
+    },
+    "console": {
+      "name": "Konsol",
+      "description": "Bilgisayardan konsol kablosuyla yönetim portu."
+    },
+    "other": {
+      "name": "Diğer portlar",
+      "description": "Bu modelde normalde olmayan portlar."
+    }
+  }
 }
