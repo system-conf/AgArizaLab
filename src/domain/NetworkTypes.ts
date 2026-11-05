@@ -76,7 +76,7 @@ export interface WirelessNetwork {
  */
 export interface AppLink {
   id: string
-  /** Turkish label shown in the UI, e.g. 'Yazıcı' or 'Kamera 3'. */
+  /** Label shown in the UI, e.g. 'Printer' (localized for exercises; see ScenarioDefinition). */
   label: string
   targetIp: string
   targetKind: DeviceKind
@@ -92,7 +92,7 @@ export interface MapPosition {
 export interface Device {
   id: string
   kind: DeviceKind
-  /** Turkish display name, e.g. 'Kasa (POS)'. */
+  /** Display name, e.g. 'Cash register (POS)' (localized for exercises; user content in labs). */
   name: string
   mac: string
   position: MapPosition

@@ -1,4 +1,5 @@
 // Scenario contract: data that describes one troubleshooting exercise.
+// `Scenario` is the LOCALIZED shape the UI consumes; `ScenarioDefinition` is the text-free data.
 import type { NetworkState } from './NetworkTypes'
 
 export type ScenarioSetting = 'restoran' | 'ofis' | 'magaza'
@@ -14,7 +15,7 @@ export type SolveCondition =
   | { type: 'appLinksOk'; deviceId: string }
 
 export interface ScenarioExplanation {
-  /** What was actually broken, in plain Turkish. */
+  /** What was actually broken, in plain language (localized). */
   whatHappened: string
   /** How this shows up in real life and how it is prevented. */
   realLife: string
@@ -41,4 +42,23 @@ export interface Scenario {
   explanation: ScenarioExplanation
   /** Short topic tags shown on the result screen, e.g. ['Gateway', 'Statik IP']. */
   topics: string[]
+}
+
+/**
+ * Data-only part of an exercise: topology, ids and solve conditions, with NO user-facing text.
+ * Texts live in the `exercises` namespace keyed by `id` (layout in docs/I18N.md); the localizer
+ * (`useLocalizedScenarios`) merges both into a `Scenario` for the current language.
+ * In `initialState`, `Device.name` and `AppLink.label` are placeholders (use the device id / app
+ * link id); the localizer replaces them with `exercises:<id>.devices.<deviceId>` and
+ * `exercises:<id>.appLinks.<appLinkId>`. Every exercise has exactly three hints (`hints.0..2`),
+ * so no hint count is stored here.
+ */
+export interface ScenarioDefinition {
+  /** camelCase, e.g. 'posGateway'; also the key of the exercise in the `exercises` namespace. */
+  id: string
+  order: number
+  setting: ScenarioSetting
+  initialState: NetworkState
+  /** All must hold for the scenario to count as solved. */
+  solvedWhen: SolveCondition[]
 }

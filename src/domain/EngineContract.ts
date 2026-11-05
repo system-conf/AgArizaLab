@@ -1,5 +1,6 @@
 // Engine contract: what the UI and scenario checks may call.
 // The engine is pure: it never mutates the NetworkState it receives.
+import type { LocalizedMessage } from './Messages'
 import type { NetworkState } from './NetworkTypes'
 
 export type FailureReason =
@@ -21,6 +22,10 @@ export type FailureReason =
   | 'wrongDeviceAtAddress'
   | 'dhcpNoServer'
   | 'dhcpPoolExhausted'
+  /** Another device uses the same IP; like Windows duplicate address detection, both lose it. */
+  | 'ipConflict'
+  /** The host IP is the network or broadcast address of its own subnet. */
+  | 'invalidHostAddress'
 
 export type ReachResult =
   | { ok: true; path: string[] }
@@ -38,10 +43,30 @@ export interface AppLinkStatus {
   reason?: FailureReason
 }
 
-export interface TerminalLine {
-  kind: 'input' | 'output' | 'error' | 'info'
+export type TerminalLineKind = 'input' | 'output' | 'error' | 'info'
+
+/**
+ * Device text: shown verbatim and never translated (Windows / IOS output stays English in every
+ * language; 'input' lines are what the user typed).
+ */
+export interface TerminalTextLine {
+  kind: TerminalLineKind
   text: string
+  message?: never
 }
+
+/** App message around the device output (help text, "device is off", …): translated by the UI. */
+export interface TerminalMessageLine {
+  kind: TerminalLineKind
+  message: LocalizedMessage
+  text?: never
+}
+
+/**
+ * One terminal line: exactly one of `text` (device output) or `message` (app message).
+ * Narrow with `'message' in line` or `line.message !== undefined`.
+ */
+export type TerminalLine = TerminalTextLine | TerminalMessageLine
 
 /**
  * Route a ping packet took, for map animation (v1.1).

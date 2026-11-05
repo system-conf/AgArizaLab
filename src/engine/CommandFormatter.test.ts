@@ -16,7 +16,7 @@ describe('CommandFormatter', () => {
         },
         true,
       )
-      .map((line) => line.text)
+      .map((line) => line.text ?? '')
       .filter((text) => text.includes(' : '))
     expect(lines.length).toBeGreaterThan(5)
     for (const text of lines) expect(text.indexOf(' : ')).toBe(36)
@@ -27,7 +27,7 @@ describe('CommandFormatter', () => {
   it('formats a successful ping with statistics', () => {
     const text = formatter
       .ping('8.8.8.8', null, { kind: 'reply', fromIp: '8.8.8.8', ttl: 117, baseTimeMs: 14 })
-      .map((line) => line.text)
+      .map((line) => line.text ?? '')
     expect(text).toEqual([
       '',
       'Pinging 8.8.8.8 with 32 bytes of data:',

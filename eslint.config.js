@@ -1,5 +1,6 @@
 import js from '@eslint/js'
 import globals from 'globals'
+import i18next from 'eslint-plugin-i18next'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 import tseslint from 'typescript-eslint'
@@ -21,6 +22,30 @@ export default defineConfig([
     },
     rules: {
       '@typescript-eslint/no-explicit-any': 'error',
+    },
+  },
+  {
+    // User-facing text must come from src/locales via t() (docs/I18N.md).
+    // 'warn' until wave 1.1 has moved the literals; the verifier then switches it to 'error'.
+    files: ['src/features/**/*.{ts,tsx}', 'src/App.tsx'],
+    ignores: ['**/*.test.{ts,tsx}'],
+    plugins: { i18next },
+    rules: {
+      'i18next/no-literal-string': [
+        'warn',
+        {
+          mode: 'jsx-only',
+          // Non-text attributes (title, aria-label, placeholder, label, alt stay checked).
+          'jsx-attributes': {
+            exclude: [
+              'className', 'style', 'type', 'key', 'id', 'width', 'height', 'role', 'href', 'target',
+              'rel', 'htmlFor', 'name', 'value', 'autoComplete', 'enterKeyHint', 'inputMode',
+              'aria-hidden', 'aria-live', 'aria-current', 'aria-haspopup', 'aria-controls',
+              'position', 'color', 'nodeColor', 'nodeStrokeColor',
+            ],
+          },
+        },
+      ],
     },
   },
 ])

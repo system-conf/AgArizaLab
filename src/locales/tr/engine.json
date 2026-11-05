@@ -1,0 +1,4 @@
+{
+  "devicePoweredOff": "Cihaz kapalı. Komut çalıştırmak için önce cihazı açın.",
+  "unknownCommand": "'{{command}}' komutu tanınmadı. Kullanılabilir komutları görmek için 'help' yazın."
+}

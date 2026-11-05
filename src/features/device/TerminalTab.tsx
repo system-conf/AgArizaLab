@@ -1,6 +1,7 @@
 import { Eraser, SquareTerminal } from 'lucide-react'
 import { useEffect, useId, useRef, useState, type FormEvent, type KeyboardEvent } from 'react'
 import type { TerminalLine } from '../../domain/EngineContract'
+import { useMessageTranslator } from '../../i18n'
 import { focusRing } from '../shared/focusRing'
 
 interface TerminalTabProps {
@@ -35,6 +36,7 @@ function TerminalTab({ lines, onRunCommand, hiddenLineCount = 0, onClear }: Term
   const scrollRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const inputId = useId()
+  const translateMessage = useMessageTranslator()
   const visibleLines = lines.slice(hiddenLineCount)
 
   useEffect(() => {
@@ -113,7 +115,11 @@ function TerminalTab({ lines, onRunCommand, hiddenLineCount = 0, onClear }: Term
           {visibleLines.map((line, offset) => (
             // Lines are append-only, so the absolute index is a stable key.
             <pre key={hiddenLineCount + offset} className={`whitespace-pre-wrap break-words font-console ${lineColors[line.kind]}`}>
-              {line.kind === 'input' ? `${prompt}${line.text}` : line.text}
+              {line.message !== undefined
+                ? translateMessage(line.message)
+                : line.kind === 'input'
+                  ? `${prompt}${line.text}`
+                  : line.text}
             </pre>
           ))}
         </div>

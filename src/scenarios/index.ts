@@ -12,3 +12,11 @@ export const scenarios: Scenario[] = [
   kitchenVlan,
   wrongDns,
 ].sort((first, second) => first.order - second.order)
+
+/**
+ * Scenarios in the current UI language. Stub for wave 1.0: returns the existing Turkish data.
+ * Agent X1 replaces it with ScenarioDefinition data + texts from the `exercises` namespace.
+ */
+export function useLocalizedScenarios(): Scenario[] {
+  return scenarios
+}

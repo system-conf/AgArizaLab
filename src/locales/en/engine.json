@@ -1,0 +1,4 @@
+{
+  "devicePoweredOff": "The device is turned off. Turn it on before running commands.",
+  "unknownCommand": "'{{command}}' is not a recognized command. Type 'help' to see the available commands."
+}
