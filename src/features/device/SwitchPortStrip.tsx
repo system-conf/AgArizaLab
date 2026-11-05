@@ -1,3 +1,5 @@
+import type { TFunction } from 'i18next'
+import { useTranslation } from 'react-i18next'
 import type { SwitchPort } from '../../domain/NetworkTypes'
 import { focusRing } from '../shared/focusRing'
 
@@ -31,22 +33,32 @@ function shortName(portId: string): string {
   return parts[parts.length - 1] ?? portId
 }
 
-function describe(port: SwitchPort, connected: boolean): string {
-  const vlan = port.mode === 'trunk' ? 'trunk' : `VLAN ${port.vlan}`
-  const state = port.enabled ? 'açık' : 'kapalı'
-  const cable = connected ? 'kablo takılı' : 'kablo yok'
-  return `${port.id}: ${vlan}, ${state}, ${cable}${port.poe ? ', PoE' : ''}`
+/** Screen-reader / tooltip text, e.g. 'Fa0/3: VLAN 10, enabled, cable plugged in, PoE'. */
+function describe(t: TFunction<'device'>, port: SwitchPort, connected: boolean): string {
+  const details = [
+    port.mode === 'trunk' ? t('portStrip.trunk') : t('vlanNumber', { vlan: port.vlan }),
+    port.enabled ? t('portStrip.enabled') : t('portStrip.disabled'),
+    connected ? t('portStrip.linkUp') : t('portStrip.noCable'),
+  ]
+  if (port.poe) details.push(t('portStrip.poe'))
+  return t('portStrip.description', { port: port.id, details: details.join(', ') })
+}
+
+function faceClassOf(port: SwitchPort, selected: boolean): string {
+  const outline = selected ? 'outline-2 outline-offset-1 outline-white' : ''
+  return `relative flex aspect-square w-full min-w-0 flex-col items-center justify-center gap-0.5 rounded ring-1 ${colorOf(port)} ${outline}`
 }
 
 /** Front panel of a switch: one small square per port with its VLAN number. */
 function SwitchPortStrip({ ports, connectedPortIds, selectedPortId, onSelectPort }: SwitchPortStripProps) {
+  const { t } = useTranslation('device')
   return (
     <div className="flex flex-col gap-2">
-      <ul aria-label="Switch ön paneli" className="grid grid-cols-8 gap-1 rounded-lg bg-slate-800 p-1.5">
+      <ul aria-label={t('portStrip.label')} className="grid grid-cols-8 gap-1 rounded-lg bg-slate-800 p-1.5">
         {ports.map((port) => {
           const connected = connectedPortIds.has(port.id)
           const selected = port.id === selectedPortId
-          const label = describe(port, connected)
+          const label = describe(t, port, connected)
           const face = (
             <>
               <span className="text-[10px] leading-none opacity-75">{shortName(port.id)}</span>
@@ -54,20 +66,18 @@ function SwitchPortStrip({ ports, connectedPortIds, selectedPortId, onSelectPort
                 {port.mode === 'trunk' ? 'T' : port.vlan}
               </span>
               {connected && (
-                <span className="absolute right-0.5 top-0.5 h-1.5 w-1.5 rounded-full bg-emerald-500 ring-1 ring-white" />
+                <span className="absolute end-0.5 top-0.5 h-1.5 w-1.5 rounded-full bg-emerald-500 ring-1 ring-white" />
               )}
             </>
           )
-          const faceClass = `relative flex aspect-square w-full min-w-0 flex-col items-center justify-center gap-0.5 rounded ring-1 ${colorOf(port)} ${
-            selected ? 'outline-2 outline-offset-1 outline-white' : ''
-          }`
+          const faceClass = faceClassOf(port, selected)
           return (
             <li key={port.id} className="min-w-0">
               {onSelectPort ? (
                 <button
                   type="button"
                   title={label}
-                  aria-label={`${label}. Düzenlemek için seç`}
+                  aria-label={t('portStrip.selectToEdit', { description: label })}
                   aria-pressed={selected}
                   onClick={() => onSelectPort(port.id)}
                   className={`${faceClass} hover:brightness-95 ${focusRing} focus-visible:outline-white`}
@@ -87,12 +97,12 @@ function SwitchPortStrip({ ports, connectedPortIds, selectedPortId, onSelectPort
         })}
       </ul>
       <p className="flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-slate-500">
-        <span>Sayı: VLAN</span>
-        <span>T: trunk</span>
+        <span>{t('portStrip.legend.number')}</span>
+        <span>{t('portStrip.legend.trunk')}</span>
         <span className="flex items-center gap-1">
-          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" aria-hidden="true" /> kablo takılı
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" aria-hidden="true" /> {t('portStrip.legend.linkUp')}
         </span>
-        <span>Soluk: port kapalı</span>
+        <span>{t('portStrip.legend.dimmed')}</span>
       </p>
     </div>
   )

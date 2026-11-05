@@ -62,7 +62,11 @@ export class ReachabilityChecker {
     return this.reachThroughGateway(state, prepared.ready, toIp)
   }
 
-  /** Steps 2–3: link, port and own address. Failures here never leave the source. */
+  /**
+   * Steps 2–3: link, port and own address. Failures here never leave the source.
+   * An address that is the subnet's network/broadcast address, or that another device in the
+   * segment already uses (duplicate address detection), is unusable like on Windows.
+   */
   private prepare(state: NetworkState, from: Device): ReadyResult {
     const source = [from.id]
     const host = from.host
@@ -76,7 +80,13 @@ export class ReachabilityChecker {
     if (!Ipv4.isValid(host.ip) || !Ipv4.isValidMask(host.mask)) {
       return { ok: false, trace: failure('invalidConfig', from.id, source) }
     }
+    if (!Ipv4.isHostAddress(host.ip, host.mask)) {
+      return { ok: false, trace: failure('invalidHostAddress', from.id, source) }
+    }
     const segment = this.segments.segment(state, from.id, attachment.vlan)
+    if (this.segments.conflictingDevice(state, segment, from.id, host.ip)) {
+      return { ok: false, trace: failure('ipConflict', from.id, source) }
+    }
     return { ok: true, ready: { device: from, host, segment } }
   }
 

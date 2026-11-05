@@ -1,5 +1,6 @@
 import { MousePointerClick, X } from 'lucide-react'
 import type { ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 import { focusRing } from '../shared/focusRing'
 
 interface AppLayoutProps {
@@ -14,12 +15,13 @@ interface AppLayoutProps {
 }
 
 /**
- * Game screen layout. Desktop: map on the left, device panel on the right.
+ * Exercise screen layout. Desktop: map on the start side, device panel on the end side.
  * Phone (<768px): map on top, the device panel slides up as a bottom sheet over it.
  * The map section is an unstyled flex column; on desktop it stretches to the row height,
  * so a map that uses `md:h-full` fills it. The map draws its own frame.
  */
 function AppLayout({ header, complaint, map, panel, footer, onClosePanel }: AppLayoutProps) {
+  const { t } = useTranslation('exercise')
   const hasPanel = panel !== null
 
   return (
@@ -28,13 +30,13 @@ function AppLayout({ header, complaint, map, panel, footer, onClosePanel }: AppL
       <div className="px-3 pt-3 sm:px-4">{complaint}</div>
       <div className="flex min-h-0 flex-1 flex-col gap-4 p-3 sm:px-4 md:flex-row">
         <section
-          aria-label="Ağ haritası"
+          aria-label={t('layout.mapRegion')}
           className="relative flex min-w-0 flex-col md:min-h-0 md:flex-1"
         >
           {map}
         </section>
         <aside
-          aria-label="Cihaz paneli"
+          aria-label={t('layout.panelRegion')}
           className={`${hasPanel ? 'flex' : 'hidden md:flex'} fixed inset-x-0 bottom-0 z-20 max-h-[75vh] flex-col overflow-y-auto rounded-t-3xl border-t border-slate-200 bg-white p-4 shadow-[0_-8px_24px_rgba(15,23,42,0.14)] md:static md:z-auto md:max-h-none md:w-[26rem] md:shrink-0 md:rounded-2xl md:border md:shadow-sm`}
         >
           {hasPanel ? (
@@ -44,10 +46,10 @@ function AppLayout({ header, complaint, map, panel, footer, onClosePanel }: AppL
                 <button
                   type="button"
                   onClick={onClosePanel}
-                  className={`absolute right-3 top-1.5 flex items-center gap-1 rounded-md px-2 py-1 text-sm text-slate-600 hover:bg-slate-100 ${focusRing}`}
+                  className={`absolute end-3 top-1.5 flex items-center gap-1 rounded-md px-2 py-1 text-sm text-slate-600 hover:bg-slate-100 ${focusRing}`}
                 >
                   <X className="h-4 w-4" aria-hidden="true" />
-                  Kapat
+                  {t('layout.closePanel')}
                 </button>
               </div>
               {panel}
@@ -57,7 +59,7 @@ function AppLayout({ header, complaint, map, panel, footer, onClosePanel }: AppL
               <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-sky-50 text-sky-700">
                 <MousePointerClick className="h-7 w-7" aria-hidden="true" />
               </span>
-              Ayrıntıları görmek için haritada bir cihaza tıklayın.
+              {t('layout.selectDevice')}
             </div>
           )}
         </aside>

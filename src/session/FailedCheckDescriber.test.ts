@@ -1,41 +1,54 @@
 import { describe, expect, it } from 'vitest'
-import { cameraSubnet } from '../scenarios/cameraSubnet'
-import { posGateway } from '../scenarios/posGateway'
-import { printerDhcp } from '../scenarios/printerDhcp'
-import { wrongDns } from '../scenarios/wrongDns'
+import type { Device, NetworkState } from '../domain/NetworkTypes'
 import { FailedCheckDescriber } from './FailedCheckDescriber'
+
+function device(id: string, name: string): Device {
+  return { id, kind: 'pc', name, mac: '00:00:00:00:00:01', position: { x: 0, y: 0 }, powered: true }
+}
+
+// Device names arrive already localized (exercise texts) or as user content; they are passed through.
+const state: NetworkState = {
+  devices: [device('kasa', 'Cash register (POS)'), device('muhasebe', 'Accounting PC'), device('yazici', 'Printer')],
+  links: [],
+}
 
 describe('FailedCheckDescriber.describe', () => {
   it('describes an internet condition by the device name', () => {
-    expect(FailedCheckDescriber.describe(posGateway.initialState, { type: 'internet', fromDeviceId: 'kasa' })).toBe(
-      'Kasa (POS) hâlâ internete çıkamıyor.',
-    )
+    expect(FailedCheckDescriber.describe(state, { type: 'internet', fromDeviceId: 'kasa' })).toEqual({
+      key: 'session:failedChecks.internet',
+      params: { device: 'Cash register (POS)' },
+    })
   })
 
   it('describes a resolves condition as a symptom without naming DNS', () => {
     const condition = { type: 'resolves', fromDeviceId: 'muhasebe', name: 'google.com' } as const
-    const sentence = FailedCheckDescriber.describe(wrongDns.initialState, condition)
-    expect(sentence).toBe("PC Muhasebe hâlâ 'google.com' sitesini açamıyor.")
-    expect(sentence).not.toMatch(/DNS|çöz/)
+    const message = FailedCheckDescriber.describe(state, condition)
+    expect(message).toEqual({
+      key: 'session:failedChecks.resolves',
+      params: { device: 'Accounting PC', name: 'google.com' },
+    })
+    expect(message.key).not.toMatch(/dns/i)
   })
 
   it('describes an appLinksOk condition without naming the broken target', () => {
-    expect(FailedCheckDescriber.describe(cameraSubnet.initialState, { type: 'appLinksOk', deviceId: 'nvr' })).toBe(
-      'Kayıt Cihazı (NVR) bazı cihazlara hâlâ ulaşamıyor.',
-    )
+    expect(FailedCheckDescriber.describe(state, { type: 'appLinksOk', deviceId: 'muhasebe' })).toEqual({
+      key: 'session:failedChecks.appLinksOk',
+      params: { device: 'Accounting PC' },
+    })
   })
 
   it('describes a reachable condition with both device names', () => {
     const condition = { type: 'reachable', fromDeviceId: 'muhasebe', toDeviceId: 'yazici' } as const
-    expect(FailedCheckDescriber.describe(printerDhcp.initialState, condition)).toBe(
-      'PC Muhasebe hâlâ Yazıcı cihazına ulaşamıyor.',
-    )
+    expect(FailedCheckDescriber.describe(state, condition)).toEqual({
+      key: 'session:failedChecks.reachable',
+      params: { from: 'Accounting PC', to: 'Printer' },
+    })
   })
 
   it('falls back to the device id for unknown devices', () => {
-    expect(FailedCheckDescriber.describe(posGateway.initialState, { type: 'internet', fromDeviceId: 'yok' })).toBe(
-      'yok hâlâ internete çıkamıyor.',
-    )
+    expect(FailedCheckDescriber.describe(state, { type: 'internet', fromDeviceId: 'missing' }).params).toEqual({
+      device: 'missing',
+    })
   })
 })
 
@@ -43,16 +56,21 @@ describe('FailedCheckDescriber.describeFailures', () => {
   it('lists only failing conditions, in order, without duplicates', () => {
     const internet = { type: 'internet', fromDeviceId: 'kasa' } as const
     const resolves = { type: 'resolves', fromDeviceId: 'kasa', name: 'odeme.ornekbanka.com.tr' } as const
-    const sentences = FailedCheckDescriber.describeFailures(posGateway.initialState, [
+    const reachable = { type: 'reachable', fromDeviceId: 'muhasebe', toDeviceId: 'yazici' } as const
+    const messages = FailedCheckDescriber.describeFailures(state, [
       { condition: internet, ok: false },
       { condition: resolves, ok: true },
+      { condition: reachable, ok: false },
       { condition: internet, ok: false },
     ])
-    expect(sentences).toEqual(['Kasa (POS) hâlâ internete çıkamıyor.'])
+    expect(messages.map((message) => message.key)).toEqual([
+      'session:failedChecks.internet',
+      'session:failedChecks.reachable',
+    ])
   })
 
   it('returns nothing when every condition holds', () => {
     const internet = { type: 'internet', fromDeviceId: 'kasa' } as const
-    expect(FailedCheckDescriber.describeFailures(posGateway.initialState, [{ condition: internet, ok: true }])).toEqual([])
+    expect(FailedCheckDescriber.describeFailures(state, [{ condition: internet, ok: true }])).toEqual([])
   })
 })

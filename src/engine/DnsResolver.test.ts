@@ -83,3 +83,21 @@ describe('DnsResolver', () => {
     expect(resolver.resolve(state, 'pc1', 'google.com')).toMatchObject({ ok: false, reason: 'dnsUnreachable' })
   })
 })
+
+describe('DnsResolver — unusable own address', () => {
+  it('fails with ipConflict when the own address is duplicate', () => {
+    const state = updateHost(officeNetwork(), 'printer', { ip: '192.168.1.20' })
+    expect(resolver.resolve(state, 'pc1', 'google.com')).toEqual({ ok: false, reason: 'ipConflict', dnsServer: '8.8.8.8' })
+  })
+
+  it('fails with invalidHostAddress for a broadcast address', () => {
+    const state = updateHost(officeNetwork(), 'pc1', { ip: '192.168.1.255' })
+    expect(resolver.resolve(state, 'pc1', 'google.com')).toMatchObject({ ok: false, reason: 'invalidHostAddress' })
+  })
+
+  it('uses an address as is and resolves names for ping targets', () => {
+    expect(resolver.resolveTarget(officeNetwork(), 'pc1', '10.1.2.3')).toEqual({ ok: true, ip: '10.1.2.3', name: null })
+    expect(resolver.resolveTarget(officeNetwork(), 'pc1', 'google.com')).toEqual({ ok: true, ip: '142.250.187.206', name: 'google.com' })
+    expect(resolver.resolveTarget(officeNetwork(), 'pc1', 'yok.example')).toEqual({ ok: false })
+  })
+})

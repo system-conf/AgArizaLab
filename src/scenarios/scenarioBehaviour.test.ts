@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Device, HostNetworkConfig, NetworkState } from '../domain/NetworkTypes'
-import type { Scenario } from '../domain/ScenarioTypes'
+import type { ScenarioDefinition } from '../domain/ScenarioTypes'
 import { networkEngine, solveChecker } from '../engine'
 import { cameraSubnet } from './cameraSubnet'
 import { kitchenVlan } from './kitchenVlan'
@@ -41,11 +41,11 @@ function withSwitchPortVlan(state: NetworkState, switchId: string, portId: strin
   }))
 }
 
-function isSolved(scenario: Scenario, state: NetworkState): boolean {
+function isSolved(scenario: ScenarioDefinition, state: NetworkState): boolean {
   return solveChecker.check(state, scenario.solvedWhen).every((result) => result.ok)
 }
 
-function failingConditions(scenario: Scenario, state: NetworkState) {
+function failingConditions(scenario: ScenarioDefinition, state: NetworkState) {
   return solveChecker.check(state, scenario.solvedWhen).filter((result) => !result.ok)
 }
 
@@ -61,7 +61,7 @@ function expectAllEndDevicesOnline(state: NetworkState) {
 }
 
 interface BehaviourCase {
-  scenario: Scenario
+  scenario: ScenarioDefinition
   expectBrokenSymptom: (state: NetworkState) => void
   applyFix: (state: NetworkState) => NetworkState
 }

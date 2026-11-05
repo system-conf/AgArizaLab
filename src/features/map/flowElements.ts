@@ -12,8 +12,12 @@ function ipLabelOf(device: Device): string {
   return routerIp ? routerIp : '—'
 }
 
-export function deviceLabel(device: Device): string {
-  return device.powered ? device.name : `${device.name} (kapalı)`
+/** Translated accessible names of map elements; NetworkMap builds them from t(). */
+export interface FlowLabels {
+  /** Name of a device node, e.g. 'Printer' or 'Printer (off)'. */
+  device: (device: Device) => string
+  /** Name of the link between two devices. */
+  link: (a: Device, b: Device) => string
 }
 
 /** Map nodes, one per device. Selection and positions come from the session, never from React Flow. */
@@ -22,6 +26,7 @@ export function buildNodes(
   positionOf: (deviceId: string) => MapPosition,
   selectedDeviceId: string | null,
   measured: MeasuredSizes,
+  labels: FlowLabels,
 ): DeviceFlowNode[] {
   return state.devices.map((device) => ({
     id: device.id,
@@ -30,7 +35,7 @@ export function buildNodes(
     data: { device, ipLabel: ipLabelOf(device) },
     selected: device.id === selectedDeviceId,
     measured: measured[device.id],
-    ariaLabel: deviceLabel(device),
+    ariaLabel: labels.device(device),
     className: 'group',
   }))
 }
@@ -47,7 +52,7 @@ function switchEndsOf(link: Link, devicesById: ReadonlyMap<string, Device>): Swi
 }
 
 /** Map edges, one per link. Lights come from the engine's physical link light only. */
-export function buildEdges(state: NetworkState, engine: NetworkEngine): LinkFlowEdge[] {
+export function buildEdges(state: NetworkState, engine: NetworkEngine, labels: FlowLabels): LinkFlowEdge[] {
   const devicesById = new Map(state.devices.map((device) => [device.id, device]))
   const edges: LinkFlowEdge[] = []
   for (const link of state.links) {
@@ -64,7 +69,7 @@ export function buildEdges(state: NetworkState, engine: NetworkEngine): LinkFlow
       target: deviceB.id,
       selectable: false,
       focusable: false,
-      ariaLabel: `${deviceA.name} – ${deviceB.name} bağlantısı`,
+      ariaLabel: labels.link(deviceA, deviceB),
       data: {
         link,
         light: engine.linkLight(state, link.id),

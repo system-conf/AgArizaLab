@@ -1,4 +1,5 @@
 import { useId, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { AppLinkStatus, TerminalLine } from '../../domain/EngineContract'
 import type { Device, Link, NetworkState } from '../../domain/NetworkTypes'
 import { TerminalAvailability } from '../../engine'
@@ -20,15 +21,17 @@ interface DevicePanelProps {
 
 type TabId = 'info' | 'settings' | 'terminal'
 
-const tabs: { id: TabId; label: string }[] = [
-  { id: 'info', label: 'Bilgi' },
-  { id: 'settings', label: 'Ayarlar' },
-  { id: 'terminal', label: 'Terminal' },
-]
+/** Tab ids with their label keys in the `device` namespace. */
+const tabs = [
+  { id: 'info', labelKey: 'tabs.info' },
+  { id: 'settings', labelKey: 'tabs.settings' },
+  { id: 'terminal', labelKey: 'tabs.terminal' },
+] as const satisfies readonly { id: TabId; labelKey: `tabs.${TabId}` }[]
 
-/** Right-hand panel for the selected device with Bilgi / Ayarlar / Terminal tabs. */
+/** Right-hand panel for the selected device with Info / Settings / Terminal tabs. */
 function DevicePanel(props: DevicePanelProps) {
   const { device, state, appLinkStatuses, terminalLines, onRunCommand, onUpdateDevice, onUpdateLink } = props
+  const { t } = useTranslation('device')
   const [selectedTab, setSelectedTab] = useState<TabId>('info')
   // `cls` only hides older lines on screen; the session keeps its full history.
   const [clearedLineCount, setClearedLineCount] = useState(0)
@@ -41,7 +44,7 @@ function DevicePanel(props: DevicePanelProps) {
   return (
     <div className="flex flex-col gap-3">
       <DeviceHeader device={device} />
-      <div role="tablist" aria-label="Cihaz sekmeleri" className="flex gap-1 rounded-lg bg-slate-100 p-1">
+      <div role="tablist" aria-label={t('tabs.listLabel')} className="flex gap-1 rounded-lg bg-slate-100 p-1">
         {visibleTabs.map((tab) => (
           <button
             key={tab.id}
@@ -55,7 +58,7 @@ function DevicePanel(props: DevicePanelProps) {
               activeTab === tab.id ? 'bg-white font-medium text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
             } ${focusRing}`}
           >
-            {tab.label}
+            {t(tab.labelKey)}
           </button>
         ))}
       </div>

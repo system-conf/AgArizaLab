@@ -1,3 +1,7 @@
 {
-  "windowTitle": "Komut İstemi"
+  "windowTitle": "Komut İstemi",
+  "clear": "Temizle",
+  "emptyHint": "Komut yazıp Enter’a basın.\nKomut listesi: help · Ekranı temizlemek: cls",
+  "outputLabel": "Komut çıktısı",
+  "inputLabel": "Komut"
 }

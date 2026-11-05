@@ -5,7 +5,7 @@ interface TextFieldProps {
   label: string
   value: string
   onChange: (value: string) => void
-  /** Turkish error text; shown under the input and marks it invalid. */
+  /** Translated error text; shown under the input and marks it invalid. */
   error?: string
   disabled?: boolean
   placeholder?: string

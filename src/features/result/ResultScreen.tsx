@@ -1,6 +1,8 @@
-import { ArrowRight, Briefcase, Building2, CircleCheck, Clock, Lightbulb, List, Search, type LucideIcon } from 'lucide-react'
+import { ArrowRight, Briefcase, Building2, CircleCheck, Compass, List, RotateCcw, Search, type LucideIcon } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import type { ScenarioExplanation } from '../../domain/ScenarioTypes'
-import { formatDuration } from '../scenario/formatDuration'
+import SiteHeader from '../layout/SiteHeader'
+import { useNumberFormat } from '../layout/useNumberFormat'
 import { focusRing } from '../shared/focusRing'
 import ShareOnLinkedIn from './ShareOnLinkedIn'
 
@@ -8,86 +10,97 @@ interface ResultScreenProps {
   title: string
   explanation: ScenarioExplanation
   topics: string[]
-  elapsedSeconds: number
-  hintsUsed: number
-  totalHints: number
-  /** Omit on the last scenario; the next button is then hidden. */
+  guideStepsUsed: number
+  totalGuideSteps: number
+  /** Omit on the last exercise; the next button is then hidden. */
   onNext?: () => void
+  onSolveAgain: () => void
   onBackToList: () => void
 }
 
-const sections: { key: keyof ScenarioExplanation; title: string; icon: LucideIcon }[] = [
-  { key: 'whatHappened', title: 'Ne olmuştu?', icon: Search },
-  { key: 'realLife', title: 'Gerçek hayatta', icon: Building2 },
-  { key: 'interviewAnswer', title: 'Mülakatta böyle anlatabilirsin', icon: Briefcase },
+const sections: { key: keyof ScenarioExplanation; icon: LucideIcon }[] = [
+  { key: 'whatHappened', icon: Search },
+  { key: 'realLife', icon: Building2 },
+  { key: 'interviewAnswer', icon: Briefcase },
 ]
 
-/** Shown after a correct solve: success header, explanation cards, sharing and navigation. */
+const secondaryButton = `flex items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-slate-700 hover:bg-slate-50 ${focusRing}`
+
+/** Solution report after a successful verification: summary, explanation cards, sharing and navigation. */
 function ResultScreen(props: ResultScreenProps) {
-  const { title, explanation, topics, elapsedSeconds, hintsUsed, totalHints, onNext, onBackToList } = props
+  const { title, explanation, topics, guideStepsUsed, totalGuideSteps, onNext, onSolveAgain, onBackToList } = props
+  const { t } = useTranslation('results')
+  const formatNumber = useNumberFormat()
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-3xl flex-col gap-5 px-4 py-6 sm:py-10">
-      <header className="flex flex-col items-center gap-3 rounded-3xl bg-gradient-to-br from-emerald-600 to-teal-700 px-5 py-8 text-center text-white shadow-lg">
-        <span className="flex h-14 w-14 items-center justify-center rounded-full bg-white/20">
-          <CircleCheck className="h-8 w-8" aria-hidden="true" />
-        </span>
-        <h1 className="text-2xl font-semibold sm:text-3xl">Tebrikler, arıza giderildi!</h1>
-        <p className="text-emerald-50">{title}</p>
-        <ul aria-label="Sonuç" className="flex flex-wrap justify-center gap-2 text-sm">
-          <li className="flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1">
-            <Clock className="h-4 w-4" aria-hidden="true" /> Süre: <span className="font-mono">{formatDuration(elapsedSeconds)}</span>
-          </li>
-          <li className="flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1">
-            <Lightbulb className="h-4 w-4" aria-hidden="true" /> Kullanılan ipucu: {hintsUsed}/{totalHints}
-          </li>
-        </ul>
-        {topics.length > 0 && (
-          <ul aria-label="Konular" className="flex flex-wrap justify-center gap-1.5">
-            {topics.map((topic) => (
-              <li key={topic} className="rounded-full bg-white px-2.5 py-0.5 text-xs font-medium text-emerald-900">
-                {topic}
-              </li>
-            ))}
-          </ul>
-        )}
-      </header>
-      {sections.map((section) => {
-        const Icon = section.icon
-        return (
-          <section key={section.key} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
-            <h2 className="mb-2 flex items-center gap-2 font-semibold text-slate-900">
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-sky-50 text-sky-700">
-                <Icon className="h-4 w-4" aria-hidden="true" />
-              </span>
-              {section.title}
-            </h2>
-            <p className="whitespace-pre-line leading-relaxed text-slate-700">{explanation[section.key]}</p>
-          </section>
-        )
-      })}
-      <ShareOnLinkedIn />
-      <nav aria-label="Sonraki adım" className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-center">
-        <button
-          type="button"
-          onClick={onBackToList}
-          className={`flex items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-slate-700 hover:bg-slate-50 ${focusRing}`}
+    <div className="min-h-screen bg-slate-50">
+      <SiteHeader />
+      <main className="mx-auto flex max-w-3xl flex-col gap-5 px-4 py-6 sm:py-10">
+        <section
+          aria-labelledby="solutionReportTitle"
+          className="flex flex-col items-center gap-3 rounded-3xl bg-gradient-to-br from-emerald-600 to-teal-700 px-5 py-8 text-center text-white shadow-lg"
         >
-          <List className="h-4 w-4" aria-hidden="true" />
-          Senaryo listesine dön
-        </button>
-        {onNext && (
-          <button
-            type="button"
-            onClick={onNext}
-            className={`flex items-center justify-center gap-2 rounded-lg bg-sky-700 px-4 py-2.5 font-medium text-white hover:bg-sky-800 ${focusRing}`}
-          >
-            Sonraki senaryo
-            <ArrowRight className="h-4 w-4" aria-hidden="true" />
+          <span className="flex h-14 w-14 items-center justify-center rounded-full bg-white/20">
+            <CircleCheck className="h-8 w-8" aria-hidden="true" />
+          </span>
+          <p className="text-sm font-medium uppercase tracking-wide text-emerald-50">{t('verified')}</p>
+          <h1 id="solutionReportTitle" className="text-2xl font-semibold sm:text-3xl">
+            {t('title')}
+          </h1>
+          <p className="text-emerald-50">{title}</p>
+          <ul aria-label={t('summaryAria')} className="flex flex-wrap justify-center gap-2 text-sm">
+            <li className="flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1">
+              <Compass className="h-4 w-4" aria-hidden="true" />
+              {t('guideUsed', { used: formatNumber(guideStepsUsed), total: formatNumber(totalGuideSteps) })}
+            </li>
+          </ul>
+          {topics.length > 0 && (
+            <ul aria-label={t('topicsAria')} className="flex flex-wrap justify-center gap-1.5">
+              {topics.map((topic) => (
+                <li key={topic} className="rounded-full bg-white px-2.5 py-0.5 text-xs font-medium text-emerald-900">
+                  {topic}
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+        {sections.map((section) => {
+          const Icon = section.icon
+          return (
+            <section key={section.key} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+              <h2 className="mb-2 flex items-center gap-2 font-semibold text-slate-900">
+                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-sky-50 text-sky-700">
+                  <Icon className="h-4 w-4" aria-hidden="true" />
+                </span>
+                {t(`sections.${section.key}`)}
+              </h2>
+              <p className="whitespace-pre-line leading-relaxed text-slate-700">{explanation[section.key]}</p>
+            </section>
+          )
+        })}
+        <ShareOnLinkedIn />
+        <nav aria-label={t('nav.aria')} className="flex flex-col-reverse gap-3 sm:flex-row sm:flex-wrap sm:justify-center">
+          <button type="button" onClick={onBackToList} className={secondaryButton}>
+            <List className="h-4 w-4" aria-hidden="true" />
+            {t('nav.backToList')}
           </button>
-        )}
-      </nav>
-    </main>
+          <button type="button" onClick={onSolveAgain} className={secondaryButton}>
+            <RotateCcw className="h-4 w-4" aria-hidden="true" />
+            {t('nav.solveAgain')}
+          </button>
+          {onNext && (
+            <button
+              type="button"
+              onClick={onNext}
+              className={`flex items-center justify-center gap-2 rounded-lg bg-sky-700 px-4 py-2.5 font-medium text-white hover:bg-sky-800 ${focusRing}`}
+            >
+              {t('nav.next')}
+              <ArrowRight className="h-4 w-4 rtl:-scale-x-100" aria-hidden="true" />
+            </button>
+          )}
+        </nav>
+      </main>
+    </div>
   )
 }
 

@@ -1,20 +1,25 @@
 import { ArrowRight, CircleCheck, RotateCcw } from 'lucide-react'
 import { useId } from 'react'
+import { useTranslation } from 'react-i18next'
+import { useNumberFormat } from '../layout/useNumberFormat'
 import { focusRing } from '../shared/focusRing'
-import { difficultyInfo, difficultyOf } from './scenarioDifficulty'
+import { difficultyOf, difficultyStyles } from './scenarioDifficulty'
 import type { ScenarioListItem } from './scenarioListItem'
-import { settingLabels } from './settingLabels'
+import { settingIcons } from './settingIcons'
 
 interface ScenarioCardProps {
   item: ScenarioListItem
   onStart: (scenarioId: string) => void
 }
 
-/** One scenario on the start page: setting, title, difficulty, topics and a start button. */
+/** One exercise on the start page: setting, title, difficulty, topics and a start button. */
 function ScenarioCard({ item, onStart }: ScenarioCardProps) {
-  const setting = settingLabels[item.setting]
-  const SettingIcon = setting.icon
-  const difficulty = difficultyInfo[difficultyOf(item.id)]
+  const { t } = useTranslation('landing')
+  const formatNumber = useNumberFormat()
+  const SettingIcon = settingIcons[item.setting]
+  const level = difficultyOf(item.id)
+  const difficulty = difficultyStyles[level]
+  const levelLabel = t(`difficulty.${level}`)
   const titleId = useId()
 
   return (
@@ -28,9 +33,9 @@ function ScenarioCard({ item, onStart }: ScenarioCardProps) {
         <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-sky-50 text-sky-700 ring-1 ring-sky-100">
           <SettingIcon className="h-5 w-5" aria-hidden="true" />
         </span>
-        <div className="flex flex-col items-end gap-1 text-right">
+        <div className="flex flex-col items-end gap-1 text-end">
           <span className="text-xs text-slate-500">
-            Senaryo {item.order} · {setting.label}
+            {t('card.meta', { order: formatNumber(item.order), setting: t(`settings.${item.setting}`) })}
           </span>
           <span className={`flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium ring-1 ${difficulty.badgeClass}`}>
             <span className="flex items-end gap-0.5" aria-hidden="true">
@@ -42,10 +47,8 @@ function ScenarioCard({ item, onStart }: ScenarioCardProps) {
                 />
               ))}
             </span>
-            <span>
-              <span className="sr-only">Zorluk: </span>
-              {difficulty.label}
-            </span>
+            <span aria-hidden="true">{levelLabel}</span>
+            <span className="sr-only">{t('card.difficulty', { level: levelLabel })}</span>
           </span>
         </div>
       </div>
@@ -53,7 +56,7 @@ function ScenarioCard({ item, onStart }: ScenarioCardProps) {
         {item.title}
       </h3>
       {item.topics.length > 0 && (
-        <ul aria-label="Konular" className="flex flex-wrap gap-1.5">
+        <ul aria-label={t('card.topics')} className="flex flex-wrap gap-1.5">
           {item.topics.map((topic) => (
             <li key={topic} className="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-700">
               {topic}
@@ -65,15 +68,15 @@ function ScenarioCard({ item, onStart }: ScenarioCardProps) {
         {item.completed ? (
           <span className="flex items-center gap-1 text-sm font-medium text-emerald-700">
             <CircleCheck className="h-4 w-4" aria-hidden="true" />
-            Tamamlandı
+            {t('card.solved')}
           </span>
         ) : (
-          <span className="text-sm text-slate-500">Henüz oynanmadı</span>
+          <span className="text-sm text-slate-500">{t('card.notSolved')}</span>
         )}
         <button
           type="button"
           onClick={() => onStart(item.id)}
-          aria-label={`${item.title} senaryosunu ${item.completed ? 'tekrar oyna' : 'başlat'}`}
+          aria-label={t(item.completed ? 'card.solveAgainAria' : 'card.startAria', { title: item.title })}
           className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium ${
             item.completed
               ? 'border border-slate-300 bg-white text-slate-700 hover:bg-slate-50'
@@ -82,11 +85,13 @@ function ScenarioCard({ item, onStart }: ScenarioCardProps) {
         >
           {item.completed ? (
             <>
-              <RotateCcw className="h-4 w-4" aria-hidden="true" /> Tekrar oyna
+              <RotateCcw className="h-4 w-4" aria-hidden="true" />
+              {t('card.solveAgain')}
             </>
           ) : (
             <>
-              Başla <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              {t('card.start')}
+              <ArrowRight className="h-4 w-4 rtl:-scale-x-100" aria-hidden="true" />
             </>
           )}
         </button>

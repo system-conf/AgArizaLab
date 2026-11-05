@@ -1,23 +1,18 @@
-import type { Scenario } from '../domain/ScenarioTypes'
+import type { ScenarioDefinition } from '../domain/ScenarioTypes'
 import { buildSwitchPorts } from './switchPorts'
 
 const mask = '255.255.255.0'
 
-export const kitchenVlan: Scenario = {
+export const kitchenVlan: ScenarioDefinition = {
   id: 'kitchenVlan',
   order: 4,
-  title: 'Siparişler mutfağa düşmüyor',
   setting: 'restoran',
-  complaint: {
-    from: 'Mutfak şefi',
-    message: 'Kasadan girilen siparişler mutfak ekranına düşmüyor.',
-  },
   initialState: {
     devices: [
       {
         id: 'internet',
         kind: 'internet',
-        name: 'İnternet',
+        name: 'internet',
         mac: '00:00:5E:00:04:01',
         position: { x: 500, y: 60 },
         powered: true,
@@ -25,7 +20,7 @@ export const kitchenVlan: Scenario = {
       {
         id: 'router',
         kind: 'router',
-        name: 'Modem / Router',
+        name: 'router',
         mac: '00:1A:2B:40:00:01',
         position: { x: 500, y: 180 },
         powered: true,
@@ -61,7 +56,7 @@ export const kitchenVlan: Scenario = {
       {
         id: 'switch',
         kind: 'switch',
-        name: 'Switch',
+        name: 'switch',
         mac: '00:1A:2B:40:00:02',
         position: { x: 500, y: 320 },
         powered: true,
@@ -74,7 +69,7 @@ export const kitchenVlan: Scenario = {
       {
         id: 'erisimNoktasi',
         kind: 'accessPoint',
-        name: 'Kablosuz Erişim Noktası',
+        name: 'erisimNoktasi',
         mac: '00:1A:2B:40:00:03',
         position: { x: 780, y: 400 },
         powered: true,
@@ -86,7 +81,7 @@ export const kitchenVlan: Scenario = {
       {
         id: 'kasa',
         kind: 'pos',
-        name: 'Kasa (POS)',
+        name: 'kasa',
         mac: '00:1A:2B:40:00:20',
         position: { x: 220, y: 520 },
         powered: true,
@@ -100,7 +95,7 @@ export const kitchenVlan: Scenario = {
         appLinks: [
           {
             id: 'mutfakEkrani',
-            label: 'Mutfak ekranı',
+            label: 'mutfakEkrani',
             targetIp: '192.168.10.30',
             targetKind: 'kitchenDisplay',
           },
@@ -109,7 +104,7 @@ export const kitchenVlan: Scenario = {
       {
         id: 'mutfakEkrani',
         kind: 'kitchenDisplay',
-        name: 'Mutfak Ekranı',
+        name: 'mutfakEkrani',
         mac: '00:1A:2B:40:00:30',
         position: { x: 470, y: 520 },
         powered: true,
@@ -124,7 +119,7 @@ export const kitchenVlan: Scenario = {
       {
         id: 'misafirTelefonu',
         kind: 'phone',
-        name: 'Misafir Telefonu',
+        name: 'misafirTelefonu',
         mac: '00:1A:2B:40:00:70',
         position: { x: 820, y: 540 },
         powered: true,
@@ -181,18 +176,4 @@ export const kitchenVlan: Scenario = {
     { type: 'appLinksOk', deviceId: 'kasa' },
     { type: 'internet', fromDeviceId: 'misafirTelefonu' },
   ],
-  hints: [
-    'Kasadan mutfak ekranının adresine (192.168.10.30) ping at. IP ayarları doğru görünüyorsa sorunu kablonun takılı olduğu switch portunda ara.',
-    'Switch\'in port ayarlarına bak: Kasa Fa0/2\'ye, Mutfak Ekranı Fa0/3\'e bağlı. İki portun VLAN numaraları aynı mı?',
-    'Switch\'te Fa0/3 portunu access modunda VLAN 10 yap. Misafir ağındaki telefonun VLAN 20\'de kalması doğrudur, ona dokunma.',
-  ],
-  explanation: {
-    whatHappened:
-      'Mutfak ekranının takılı olduğu switch portu Fa0/3, işletme ağı olan VLAN 10 yerine misafir ağı VLAN 20\'ye ayarlanmıştı. Ekranın IP ayarları doğru olsa da switch onu misafir ağına koyduğu için kasa, aynı ağda olduğunu sandığı ekranı bulamadı. Port VLAN 10 yapılınca ikisi aynı ağa döndü.',
-    realLife:
-      'Misafir Wi-Fi\'si ayrı VLAN\'da tutulan işletmelerde, birisi kabloyu başka bir porta taktığında ya da port ayarı yanlışlıkla değiştirildiğinde bu sorun sık görülür. Önlemek için switch portlarını ve duvar prizlerini hangi VLAN\'a ait olduklarıyla etiketlemek, port-VLAN tablosunu belgelemek ve switch ayarlarının yedeğini almak gerekir. Misafir ağını ayrı bir VLAN\'a almak iki ağı birbirinden ayırır; hata ayrımın kendisinde değil, portun yanlış VLAN\'a atanmasındadır. Ancak VLAN tek başına yetmez: misafirlerin işletme cihazlarına hiç ulaşamaması için router\'da ayrıca bir erişim kuralı (ACL ya da güvenlik duvarı kuralı) tanımlamak gerekir.',
-    interviewAnswer:
-      'Önce fiziksel kontrolü yaparım: mutfak ekranı açık mı, kablosu takılı mı, switch portunun ışığı yanıyor mu. Sonra iki cihazın ağ ayarlarına (kasada ipconfig, ekranda kendi ayar menüsü) bakıp IP, maske ve ağ geçidinin aynı ağda ve doğru olduğunu doğrularım. Ayarlar doğru olduğu halde kasadan ekrana ping gitmiyorsa, iki cihazın switch\'te aynı VLAN\'da olup olmadığına bakarım; burada ekranın bağlı olduğu Fa0/3 portunun VLAN 20\'de olduğunu görür ve VLAN 10 yaparım. Son olarak kasadan ekrana tekrar ping atar, bir deneme siparişiyle sorunun çözüldüğünü ve misafir ağının hâlâ internete çıktığını kontrol ederim.',
-  },
-  topics: ['VLAN', 'Switch portu', 'Misafir ağı'],
 }

@@ -1,5 +1,6 @@
 import { BaseEdge, getStraightPath, type EdgeProps } from '@xyflow/react'
 import { memo } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { LinkFlowEdge, SwitchEnd } from './mapTypes'
 
 /** Distance from the switch centre (flow px) of the link light and the port label. */
@@ -24,6 +25,7 @@ function pointAlong(from: Point, to: Point, distance: number): Point {
  * switch end shows the physical link light. Nothing here reflects IP, VLAN or DNS health.
  */
 function LinkEdge({ id, sourceX, sourceY, targetX, targetY, data }: EdgeProps<LinkFlowEdge>) {
+  const { t } = useTranslation('map')
   const [path] = getStraightPath({ sourceX, sourceY, targetX, targetY })
   if (!data) return null
   const { link, light, wireless, switchEnds } = data
@@ -41,7 +43,7 @@ function LinkEdge({ id, sourceX, sourceY, targetX, targetY, data }: EdgeProps<Li
     return (
       <g key={end.side}>
         <circle cx={led.x} cy={led.y} r={5} fill={up ? '#22c55e' : '#94a3b8'} stroke="#ffffff" strokeWidth={2}>
-          <title>{up ? `${end.portId}: bağlantı ışığı yanıyor` : `${end.portId}: bağlantı ışığı sönük`}</title>
+          <title>{up ? t('edge.linkLightUp', { port: end.portId }) : t('edge.linkLightDown', { port: end.portId })}</title>
         </circle>
         <text
           x={label.x}
@@ -69,7 +71,7 @@ function LinkEdge({ id, sourceX, sourceY, targetX, targetY, data }: EdgeProps<Li
       />
       {switchEnds.map(renderSwitchEnd)}
       {!link.connected && (
-        <title>Kablo takılı değil</title>
+        <title>{t('edge.unplugged')}</title>
       )}
     </>
   )

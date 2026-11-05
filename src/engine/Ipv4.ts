@@ -72,6 +72,22 @@ export class Ipv4 {
     return networkA !== null && networkA === networkB
   }
 
+  /**
+   * True when `ip` may be used by a host under `mask`: not the network address and not the
+   * broadcast address of its subnet. /31 (point-to-point, RFC 3021) and /32 (single address) have
+   * no network/broadcast pair, so both of their addresses count as host addresses.
+   * Only checks the subnet position; false for an invalid address or mask.
+   */
+  static isHostAddress(ip: string, mask: string): boolean {
+    const ipValue = Ipv4.parse(ip)
+    const maskValue = Ipv4.parse(mask)
+    if (ipValue === null || maskValue === null || !Ipv4.isValidMask(mask)) return false
+    const hostBits = 0xffffffff - maskValue
+    if (hostBits <= 1) return true
+    const hostPart = ipValue % (hostBits + 1)
+    return hostPart !== 0 && hostPart !== hostBits
+  }
+
   static isPrivate(text: string): boolean {
     return Ipv4.inAnyBlock(text, PRIVATE_BLOCKS)
   }

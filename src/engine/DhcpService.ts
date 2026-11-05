@@ -1,8 +1,10 @@
-import type { DhcpResult } from '../domain/EngineContract'
+import type { DhcpResult, FailureReason } from '../domain/EngineContract'
 import type { Device, DhcpPool, NetworkState } from '../domain/NetworkTypes'
 import { DeviceLookup } from './DeviceLookup'
 import { Ipv4 } from './Ipv4'
 import type { SegmentFinder } from './SegmentFinder'
+
+export type DhcpReleaseResult = { ok: true; nextState: NetworkState } | { ok: false; reason: FailureReason }
 
 interface PoolOwner {
   router: Device
@@ -31,6 +33,26 @@ export class DhcpService {
     const ip = this.pickAddress(state, device, owner.pool)
     if (ip === null) return { ok: false, reason: 'dhcpPoolExhausted' }
     return { ok: true, ip, nextState: this.applyLease(state, device, owner, ip) }
+  }
+
+  /**
+   * `ipconfig /release`: the host gives its address back and keeps no ip, mask, gateway or DNS.
+   * The router keeps the lease record, like a real server remembering the client, so the next
+   * renew offers the same address again.
+   */
+  release(state: NetworkState, deviceId: string): DhcpReleaseResult {
+    const device = DeviceLookup.require(state, deviceId)
+    if (!device.host || device.host.mode !== 'dhcp') return { ok: false, reason: 'invalidConfig' }
+    if (!device.powered) return { ok: false, reason: 'powerOff' }
+
+    const attachment = this.segments.attachment(state, device)
+    if (!attachment.ok) return { ok: false, reason: attachment.reason }
+
+    const released: Device = { ...device, host: { mode: 'dhcp', ip: '', mask: '', gateway: '', dns: [] } }
+    return {
+      ok: true,
+      nextState: { ...state, devices: state.devices.map((candidate) => (candidate.id === device.id ? released : candidate)) },
+    }
   }
 
   private findPool(state: NetworkState, hostId: string, vlan: number): PoolOwner | null {

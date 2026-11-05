@@ -29,32 +29,34 @@ afterEach(() => {
 })
 
 describe('ProgressStore', () => {
-  it('starts empty and persists completions', () => {
+  it('starts empty and persists completions in the v2 format', () => {
     const storage = new MemoryStorage()
     const store = new ProgressStore(storage)
     expect(store.read()).toEqual({})
-    store.recordCompletion('posGateway', 120, 2)
-    expect(new ProgressStore(storage).read()).toEqual({ posGateway: { bestSeconds: 120, hintsUsed: 2 } })
+    store.recordCompletion('posGateway', 2)
+    expect(new ProgressStore(storage).read()).toEqual({ posGateway: { guideStepsUsed: 2 } })
+    expect(JSON.parse(storage.getItem(key) ?? 'null')).toEqual({ version: 2, completed: { posGateway: { guideStepsUsed: 2 } } })
   })
 
-  it('keeps the best time and the fewest hints', () => {
+  it('keeps the fewest guide steps', () => {
     const store = new ProgressStore(new MemoryStorage())
-    store.recordCompletion('posGateway', 120, 0)
-    expect(store.recordCompletion('posGateway', 90, 3)).toEqual({ posGateway: { bestSeconds: 90, hintsUsed: 0 } })
+    store.recordCompletion('posGateway', 0)
+    expect(store.recordCompletion('posGateway', 3)).toEqual({ posGateway: { guideStepsUsed: 0 } })
+    expect(store.recordCompletion('wrongDns', 3)).toEqual({ posGateway: { guideStepsUsed: 0 }, wrongDns: { guideStepsUsed: 3 } })
   })
 
   it('works in memory without storage', () => {
     const store = new ProgressStore(null)
-    store.recordCompletion('wrongDns', 30, 1)
-    expect(store.read()).toEqual({ wrongDns: { bestSeconds: 30, hintsUsed: 1 } })
+    store.recordCompletion('wrongDns', 1)
+    expect(store.read()).toEqual({ wrongDns: { guideStepsUsed: 1 } })
   })
 
   it('warns and keeps working when storage throws', () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
     const store = new ProgressStore(brokenStorage)
     expect(store.read()).toEqual({})
-    store.recordCompletion('kitchenVlan', 50, 0)
-    expect(store.read()).toEqual({ kitchenVlan: { bestSeconds: 50, hintsUsed: 0 } })
+    store.recordCompletion('kitchenVlan', 0)
+    expect(store.read()).toEqual({ kitchenVlan: { guideStepsUsed: 0 } })
     expect(warn).toHaveBeenCalledTimes(2)
   })
 
@@ -76,7 +78,22 @@ describe('ProgressStore', () => {
     expect(warn).toHaveBeenCalledTimes(2)
   })
 
-  it('keeps valid entries and drops invalid ones field by field', () => {
+  it('migrates v1 progress (timer era): keeps completions and hints as guide steps, drops the time', () => {
+    const storage = new MemoryStorage()
+    storage.setItem(
+      key,
+      JSON.stringify({ version: 1, completed: { posGateway: { bestSeconds: 61, hintsUsed: 1 }, wrongDns: { bestSeconds: 30, hintsUsed: 0 } } }),
+    )
+    const store = new ProgressStore(storage)
+    expect(store.read()).toEqual({ posGateway: { guideStepsUsed: 1 }, wrongDns: { guideStepsUsed: 0 } })
+    store.recordCompletion('posGateway', 2)
+    expect(JSON.parse(storage.getItem(key) ?? 'null')).toEqual({
+      version: 2,
+      completed: { posGateway: { guideStepsUsed: 1 }, wrongDns: { guideStepsUsed: 0 } },
+    })
+  })
+
+  it('keeps valid v1 entries and drops invalid ones field by field', () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
     const storage = new MemoryStorage()
     storage.setItem(
@@ -91,7 +108,18 @@ describe('ProgressStore', () => {
         },
       }),
     )
-    expect(new ProgressStore(storage).read()).toEqual({ posGateway: { bestSeconds: 61, hintsUsed: 1 } })
+    expect(new ProgressStore(storage).read()).toEqual({ posGateway: { guideStepsUsed: 1 } })
     expect(warn).toHaveBeenCalledTimes(3)
+  })
+
+  it('keeps valid v2 entries and drops invalid ones', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+    const storage = new MemoryStorage()
+    storage.setItem(
+      key,
+      JSON.stringify({ version: 2, completed: { posGateway: { guideStepsUsed: 2 }, wrongDns: { guideStepsUsed: 1.5 }, kitchenVlan: {} } }),
+    )
+    expect(new ProgressStore(storage).read()).toEqual({ posGateway: { guideStepsUsed: 2 } })
+    expect(warn).toHaveBeenCalledTimes(2)
   })
 })

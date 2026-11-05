@@ -1,5 +1,6 @@
 import { Eraser, SquareTerminal } from 'lucide-react'
 import { useEffect, useId, useRef, useState, type FormEvent, type KeyboardEvent } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { TerminalLine } from '../../domain/EngineContract'
 import { useMessageTranslator } from '../../i18n'
 import { focusRing } from '../shared/focusRing'
@@ -15,6 +16,9 @@ interface TerminalTabProps {
 
 const prompt = 'C:\\>'
 
+/** Console text reads left to right in every UI language, like on a real device. */
+const consoleDirection = 'ltr'
+
 // Classic cmd.exe palette: light grey on black.
 const lineColors: Record<TerminalLine['kind'], string> = {
   input: 'text-[#f2f2f2]',
@@ -27,8 +31,11 @@ const lineColors: Record<TerminalLine['kind'], string> = {
  * "Terminal" tab: a Windows command prompt look-alike. The component does not echo commands
  * itself; the caller appends an 'input' line (raw command text) plus the output lines.
  * `cls` is handled here (UI only): it hides the lines on screen, the session keeps them.
+ * Device text lines are shown verbatim (English, as on real devices); app message lines and the
+ * window chrome follow the UI language.
  */
 function TerminalTab({ lines, onRunCommand, hiddenLineCount = 0, onClear }: TerminalTabProps) {
+  const { t } = useTranslation('terminal')
   const [input, setInput] = useState('')
   const [history, setHistory] = useState<string[]>([])
   // Position while browsing history with the arrow keys; null = editing a new line.
@@ -76,7 +83,13 @@ function TerminalTab({ lines, onRunCommand, hiddenLineCount = 0, onClear }: Term
     }
   }
 
-  // Click anywhere in the window to type, unless the player is selecting output text.
+  /** App messages in the UI language; device text verbatim, inputs after the prompt. */
+  function lineText(line: TerminalLine): string {
+    if (line.message !== undefined) return translateMessage(line.message)
+    return line.kind === 'input' ? `${prompt}${line.text}` : line.text
+  }
+
+  // Click anywhere in the window to type, unless the user is selecting output text.
   function focusInput() {
     if (window.getSelection()?.toString()) return
     inputRef.current?.focus()
@@ -86,7 +99,7 @@ function TerminalTab({ lines, onRunCommand, hiddenLineCount = 0, onClear }: Term
     <div className="flex h-80 flex-col overflow-hidden rounded-lg border border-slate-400 bg-black shadow-md focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-sky-600 md:h-[28rem]">
       <div className="flex items-center gap-2 bg-slate-100 px-2 py-1 text-xs text-slate-700">
         <SquareTerminal className="h-4 w-4 text-slate-600" aria-hidden="true" />
-        <span className="flex-1 truncate">Komut İstemi</span>
+        <span className="flex-1 truncate">{t('windowTitle')}</span>
         {onClear && (
           <button
             type="button"
@@ -97,36 +110,31 @@ function TerminalTab({ lines, onRunCommand, hiddenLineCount = 0, onClear }: Term
             className={`flex items-center gap-1 rounded px-1.5 py-0.5 hover:bg-slate-200 ${focusRing}`}
           >
             <Eraser className="h-3.5 w-3.5" aria-hidden="true" />
-            Temizle
+            {t('clear')}
           </button>
         )}
       </div>
       <div
         ref={scrollRef}
+        dir={consoleDirection}
         onClick={focusInput}
         className="flex-1 cursor-text overflow-y-auto px-3 py-2 font-console text-[13px] leading-snug"
       >
-        <div role="log" aria-live="polite" aria-label="Komut çıktısı">
+        <div role="log" aria-live="polite" aria-label={t('outputLabel')}>
           {visibleLines.length === 0 && (
-            <p className="whitespace-pre-wrap text-[#8a8a8a]">
-              {'Komut yazıp Enter’a basın.\nKomut listesi: help · Ekranı temizlemek: cls\n\n'}
-            </p>
+            <p className="mb-9 whitespace-pre-wrap text-[#8a8a8a]">{t('emptyHint')}</p>
           )}
           {visibleLines.map((line, offset) => (
             // Lines are append-only, so the absolute index is a stable key.
             <pre key={hiddenLineCount + offset} className={`whitespace-pre-wrap break-words font-console ${lineColors[line.kind]}`}>
-              {line.message !== undefined
-                ? translateMessage(line.message)
-                : line.kind === 'input'
-                  ? `${prompt}${line.text}`
-                  : line.text}
+              {lineText(line)}
             </pre>
           ))}
         </div>
         <form onSubmit={handleSubmit} className="flex items-center text-[#f2f2f2]">
           <label htmlFor={inputId} className="shrink-0 whitespace-pre">
             {prompt}
-            <span className="sr-only"> Komut</span>
+            <span className="sr-only"> {t('inputLabel')}</span>
           </label>
           <input
             ref={inputRef}

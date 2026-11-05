@@ -1,5 +1,6 @@
 import { ControlButton, Controls, MiniMap, Panel } from '@xyflow/react'
 import { Maximize, Minimize, RotateCcw } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { focusRing } from '../shared/focusRing'
 import type { FullscreenControls } from './useFullscreen'
 
@@ -11,9 +12,10 @@ interface MapControlsProps {
 
 const fitViewOptions = { padding: 0.2, duration: 200 }
 
-/** Zoom / fit / fullscreen buttons, the minimap (not on phones) and "Düzeni sıfırla". */
+/** Zoom / fit / fullscreen buttons, the minimap (not on phones) and "Reset layout". */
 function MapControls({ fullscreen, canResetLayout, onResetLayout }: MapControlsProps) {
-  const fullscreenLabel = fullscreen.active ? 'Tam ekrandan çık (Esc)' : 'Tam ekran'
+  const { t } = useTranslation('map')
+  const fullscreenLabel = fullscreen.active ? t('controls.exitFullscreen') : t('controls.fullscreen')
 
   return (
     <>
@@ -38,11 +40,11 @@ function MapControls({ fullscreen, canResetLayout, onResetLayout }: MapControlsP
           type="button"
           onClick={onResetLayout}
           disabled={!canResetLayout}
-          title="Cihazları senaryodaki yerlerine geri koy"
+          title={t('controls.resetLayoutTitle')}
           className={`flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-1 text-xs text-slate-700 shadow-sm hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50 ${focusRing}`}
         >
           <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" />
-          Düzeni sıfırla
+          {t('controls.resetLayout')}
         </button>
       </Panel>
     </>

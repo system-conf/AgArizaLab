@@ -88,3 +88,20 @@ describe('DhcpService', () => {
     expect(dhcp.renew(state, 'pc2')).toEqual({ ok: false, reason: 'portDisabled' })
   })
 })
+
+describe('DhcpService — release', () => {
+  it('clears the address of a DHCP host and keeps the lease record', () => {
+    const state = officeNetwork()
+    const result = dhcp.release(state, 'pc2')
+    if (!result.ok) throw new Error(`release failed: ${result.reason}`)
+    expect(deviceOf(result.nextState, 'pc2').host).toEqual({ mode: 'dhcp', ip: '', mask: '', gateway: '', dns: [] })
+    expect(deviceOf(result.nextState, 'router').dhcpPools).toEqual(deviceOf(state, 'router').dhcpPools)
+    expect(deviceOf(state, 'pc2').host?.ip).toBe('192.168.1.101')
+  })
+
+  it('refuses static hosts and hosts without a link', () => {
+    expect(dhcp.release(officeNetwork(), 'pc1')).toEqual({ ok: false, reason: 'invalidConfig' })
+    const unplugged = updatePort(officeNetwork(), 'switch', 'Fa0/3', { enabled: false })
+    expect(dhcp.release(unplugged, 'pc2')).toEqual({ ok: false, reason: 'portDisabled' })
+  })
+})

@@ -1,3 +1,9 @@
 {
-  "notSolvedYet": "Henüz çözülmedi."
+  "notSolvedYet": "Henüz çözülmedi.",
+  "failedChecks": {
+    "internet": "{{device}} hâlâ internete çıkamıyor.",
+    "resolves": "{{device}} hâlâ {{name}} adresini açamıyor.",
+    "reachable": "{{from}} hâlâ {{to}} ile haberleşemiyor.",
+    "appLinksOk": "{{device}} kullandığı bazı cihazlara hâlâ ulaşamıyor."
+  }
 }

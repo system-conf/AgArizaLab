@@ -1,3 +1,33 @@
 {
-  "verify": "Doğrula"
+  "header": {
+    "back": "Alıştırmalar",
+    "backAria": "Alıştırma listesine dön",
+    "position": "Alıştırma {{order}}/{{total}}"
+  },
+  "complaint": {
+    "newMessage": "· yeni mesaj"
+  },
+  "guide": {
+    "button": "Rehber",
+    "count": "{{revealed}}/{{total}}",
+    "countAria": "{{total}} adımdan {{revealed}} tanesi açık",
+    "title": "Rehber",
+    "close": "Rehberi kapat",
+    "empty": "Henüz bir adım açmadın. Her adım bir öncekinden daha net; önce kendin denemen iyi olur.",
+    "stepLabel": "{{number}}. adım:",
+    "reveal": "{{number}}. adımı aç",
+    "allRevealed": "Tüm adımlar açıldı"
+  },
+  "layout": {
+    "mapRegion": "Ağ haritası",
+    "panelRegion": "Cihaz paneli",
+    "closePanel": "Kapat",
+    "selectDevice": "Ayrıntıları görmek için haritada bir cihaza tıklayın."
+  },
+  "footer": {
+    "notesLabel": "Not defterim",
+    "notesPlaceholder": "Bulduklarını buraya not al…",
+    "verify": "Doğrula",
+    "notSolvedYet": "Henüz çözülmedi:"
+  }
 }

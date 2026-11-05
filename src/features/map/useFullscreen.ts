@@ -30,7 +30,7 @@ export function useFullscreen(target: RefObject<HTMLElement | null>): Fullscreen
     if (!current) return
     const request = document.fullscreenElement ? document.exitFullscreen() : current.requestFullscreen()
     request.catch((error: unknown) => {
-      console.warn('Tam ekran değiştirilemedi.', error)
+      console.warn('Could not toggle fullscreen.', error)
     })
   }, [target])
 

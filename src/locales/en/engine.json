@@ -1,4 +1,26 @@
 {
   "devicePoweredOff": "The device is turned off. Turn it on before running commands.",
-  "unknownCommand": "'{{command}}' is not a recognized command. Type 'help' to see the available commands."
+  "noTerminal": "This device has no command line. The terminal is only available on computers, POS terminals and video recorders (NVR).",
+  "unknownCommand": "'{{command}}' is not a recognized command in this lab. Type 'help' to see the available commands.",
+  "pingContinuousNotSupported": "Continuous ping (-t) is not supported in this lab; 4 echo requests are sent instead.",
+  "usage": {
+    "ipconfig": "Usage: ipconfig [/all | /renew | /release]",
+    "ping": "Usage: ping [-n count] [-l size] [-t] [-4] <IP address or name>  (example: ping -n 2 8.8.8.8)",
+    "tracert": "Usage: tracert [-d] [-4] <IP address or name>  (example: tracert 8.8.8.8)",
+    "nslookup": "Usage: nslookup <name>  (example: nslookup google.com)"
+  },
+  "help": {
+    "title": "Available commands:",
+    "ipconfig": "  ipconfig               Shows the IP address, subnet mask and default gateway",
+    "ipconfigAll": "  ipconfig /all          All details, including MAC address, DHCP status and DNS servers",
+    "ipconfigRenew": "  ipconfig /renew        Asks the DHCP server for an IP address again",
+    "ipconfigRelease": "  ipconfig /release      Gives the DHCP address back; the adapter is left without an address",
+    "ping": "  ping <ip or name>      Tests whether an address can be reached",
+    "pingCount": "    -n <count>           Number of echo requests (at most 20 are shown)",
+    "pingSize": "    -l <size>            Bytes of data per request (0 to 65500)",
+    "pingContinuous": "    -t                   Continuous ping; in this lab 4 requests are sent",
+    "tracert": "  tracert <ip or name>   Lists the routers (hops) on the way to an address",
+    "nslookup": "  nslookup <name>        Asks the DNS server which IP address a name belongs to",
+    "help": "  help                   Shows this list"
+  }
 }

@@ -8,13 +8,12 @@ import AppLayout from '../layout/AppLayout'
 import NetworkMap from '../map/NetworkMap'
 import { useFullscreen } from '../map/useFullscreen'
 import ComplaintCard from '../scenario/ComplaintCard'
-import HintButton from '../scenario/HintButton'
+import GuideButton from '../scenario/GuideButton'
 import ScenarioHeader from '../scenario/ScenarioHeader'
 import SolveFooter from '../scenario/SolveFooter'
 
 export interface SolvedSummary {
-  elapsedSeconds: number
-  hintsUsed: number
+  guideStepsUsed: number
 }
 
 interface GameScreenProps {
@@ -24,20 +23,20 @@ interface GameScreenProps {
   onSolved: (summary: SolvedSummary) => void
 }
 
-/** One running scenario: header, complaint, map, device panel and the solve footer. */
+/** One open exercise: header, complaint, map, device panel and the verify footer. */
 function GameScreen({ scenario, total, onBack, onSolved }: GameScreenProps) {
   const controls = useScenarioSession(scenario)
-  // Fullscreen target: the whole game area, so the device panel stays usable in fullscreen.
+  // Fullscreen target: the whole exercise area, so the device panel stays usable in fullscreen.
   const gameAreaRef = useRef<HTMLDivElement>(null)
   const fullscreen = useFullscreen(gameAreaRef)
   const { session } = controls
   const selected = session.selectedDevice
   const failedChecks = session.lastCheck ? FailedCheckDescriber.describeFailures(session.state, session.lastCheck) : []
 
-  function handleCheck() {
+  function handleVerify() {
     const checked = controls.checkSolved()
     if (checked.isSolved) {
-      onSolved({ elapsedSeconds: checked.elapsedSeconds(Date.now()), hintsUsed: checked.hintsRevealed })
+      onSolved({ guideStepsUsed: checked.hintsRevealed })
     }
   }
 
@@ -49,9 +48,8 @@ function GameScreen({ scenario, total, onBack, onSolved }: GameScreenProps) {
             title={scenario.title}
             order={scenario.order}
             total={total}
-            elapsedSeconds={controls.elapsedSeconds}
             onBack={onBack}
-            actions={<HintButton hints={scenario.hints} revealedCount={session.hintsRevealed} onReveal={controls.revealHint} />}
+            actions={<GuideButton steps={scenario.hints} revealedCount={session.hintsRevealed} onReveal={controls.revealGuideStep} />}
           />
         }
         complaint={<ComplaintCard from={scenario.complaint.from} message={scenario.complaint.message} />}
@@ -83,7 +81,7 @@ function GameScreen({ scenario, total, onBack, onSolved }: GameScreenProps) {
           ) : null
         }
         footer={
-          <SolveFooter notes={session.notes} onNotesChange={controls.setNotes} onCheck={handleCheck} failedChecks={failedChecks} />
+          <SolveFooter notes={session.notes} onNotesChange={controls.setNotes} onVerify={handleVerify} failedChecks={failedChecks} />
         }
         onClosePanel={() => controls.selectDevice(null)}
       />

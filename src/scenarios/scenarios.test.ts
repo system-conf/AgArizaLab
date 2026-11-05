@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import type { Device, DeviceKind } from '../domain/NetworkTypes'
-import type { Scenario, SolveCondition } from '../domain/ScenarioTypes'
-import { scenarios } from './index'
+import type { ScenarioDefinition, SolveCondition } from '../domain/ScenarioTypes'
+import { scenarioDefinitions } from './scenarioDefinitions'
 
 const camelCase = /^[a-z][a-zA-Z0-9]*$/
 const macFormat = /^[0-9A-F]{2}(:[0-9A-F]{2}){5}$/
@@ -42,16 +42,16 @@ function hasDuplicates(values: string[]): boolean {
 
 describe('scenarios list', () => {
   it('has five scenarios with unique camelCase ids, sorted by order', () => {
-    expect(scenarios).toHaveLength(5)
-    const ids = scenarios.map((scenario) => scenario.id)
+    expect(scenarioDefinitions).toHaveLength(5)
+    const ids = scenarioDefinitions.map((scenario) => scenario.id)
     expect(hasDuplicates(ids)).toBe(false)
     ids.forEach((id) => expect(id).toMatch(camelCase))
-    const orders = scenarios.map((scenario) => scenario.order)
+    const orders = scenarioDefinitions.map((scenario) => scenario.order)
     expect(orders).toEqual([...orders].sort((first, second) => first - second))
   })
 })
 
-describe.each(scenarios.map((scenario): [string, Scenario] => [scenario.id, scenario]))(
+describe.each(scenarioDefinitions.map((scenario): [string, ScenarioDefinition] => [scenario.id, scenario]))(
   'scenario %s',
   (_id, scenario) => {
     const { devices, links } = scenario.initialState
@@ -119,17 +119,11 @@ describe.each(scenarios.map((scenario): [string, Scenario] => [scenario.id, scen
       })
     })
 
-    it('has three non-empty hints and complete texts', () => {
-      expect(scenario.hints).toHaveLength(3)
-      scenario.hints.forEach((hint) => expect(hint.trim()).not.toBe(''))
-      expect(scenario.title.trim()).not.toBe('')
-      expect(scenario.complaint.from.trim()).not.toBe('')
-      expect(scenario.complaint.message.trim()).not.toBe('')
-      expect(scenario.explanation.whatHappened.trim()).not.toBe('')
-      expect(scenario.explanation.realLife.trim()).not.toBe('')
-      expect(scenario.explanation.interviewAnswer.trim()).not.toBe('')
-      expect(scenario.topics.length).toBeGreaterThanOrEqual(2)
-      expect(scenario.topics.length).toBeLessThanOrEqual(4)
+    it('uses the ids as Device.name / AppLink.label placeholders (texts live in exercises.json)', () => {
+      devices.forEach((device) => {
+        expect(device.name).toBe(device.id)
+        for (const appLink of device.appLinks ?? []) expect(appLink.label).toBe(appLink.id)
+      })
     })
 
     it('places devices inside the map without overlapping', () => {

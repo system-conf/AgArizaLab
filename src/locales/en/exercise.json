@@ -1,3 +1,33 @@
 {
-  "verify": "Verify"
+  "header": {
+    "back": "Exercises",
+    "backAria": "Back to the exercise list",
+    "position": "Exercise {{order}} of {{total}}"
+  },
+  "complaint": {
+    "newMessage": "· new message"
+  },
+  "guide": {
+    "button": "Guide",
+    "count": "{{revealed}}/{{total}}",
+    "countAria": "{{revealed}} of {{total}} steps shown",
+    "title": "Guide",
+    "close": "Close the guide",
+    "empty": "No steps shown yet. Each step is more specific than the one before, so try on your own first.",
+    "stepLabel": "Step {{number}}:",
+    "reveal": "Show step {{number}}",
+    "allRevealed": "All steps shown"
+  },
+  "layout": {
+    "mapRegion": "Network map",
+    "panelRegion": "Device panel",
+    "closePanel": "Close",
+    "selectDevice": "Click a device on the map to see its details."
+  },
+  "footer": {
+    "notesLabel": "My notes",
+    "notesPlaceholder": "Write down what you find…",
+    "verify": "Verify",
+    "notSolvedYet": "Not solved yet:"
+  }
 }

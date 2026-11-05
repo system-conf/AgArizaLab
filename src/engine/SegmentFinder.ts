@@ -1,5 +1,6 @@
 import type { Device, Link, NetworkState } from '../domain/NetworkTypes'
 import { DeviceLookup } from './DeviceLookup'
+import { Ipv4 } from './Ipv4'
 
 /** What one link end lets through (PLAN §4.1). */
 type EndCarriage =
@@ -74,13 +75,32 @@ export class SegmentFinder {
     return { vlan, startId, members, parents }
   }
 
-  /** A powered member of the segment that answers on `ip`. */
+  /**
+   * The powered member of the segment that answers ARP for `ip`.
+   * A router always keeps (defends) its interface address. Hosts give up an address they share
+   * with another member (duplicate address detection) and never use a network or broadcast
+   * address, so in those cases nobody answers.
+   */
   findAddress(state: NetworkState, segment: Segment, ip: string): Device | undefined {
-    for (const memberId of segment.members) {
-      const device = DeviceLookup.find(state, memberId)
-      if (device && device.powered && DeviceLookup.hasAddress(device, ip)) return device
-    }
-    return undefined
+    const claimants = this.poweredMembers(state, segment).filter((device) => DeviceLookup.hasAddress(device, ip))
+    const router = claimants.find((device) => device.kind === 'router')
+    if (router) return router
+    const [only, ...others] = claimants
+    if (!only || others.length > 0) return undefined
+    return only.host && Ipv4.isHostAddress(only.host.ip, only.host.mask) ? only : undefined
+  }
+
+  /**
+   * Another powered member of the segment that already uses `ip`: a host with that address or a
+   * router interface of the segment's VLAN. Windows detects it with an ARP probe and drops the address.
+   */
+  conflictingDevice(state: NetworkState, segment: Segment, deviceId: string, ip: string): Device | undefined {
+    return this.poweredMembers(state, segment).find(
+      (device) =>
+        device.id !== deviceId &&
+        (device.host?.ip === ip ||
+          (device.routerInterfaces ?? []).some((routerInterface) => routerInterface.vlan === segment.vlan && routerInterface.ip === ip)),
+    )
   }
 
   /** Device ids from the segment start to `targetId` (empty when not a member). */
@@ -93,6 +113,21 @@ export class SegmentFinder {
       current = segment.parents.get(current)
     }
     return path
+  }
+
+  /** True when the host's own address is also used by another device in its segment. */
+  hasAddressConflict(state: NetworkState, host: Device): boolean {
+    const ip = host.host?.ip ?? ''
+    if (ip === '' || !host.powered) return false
+    const attachment = this.attachment(state, host)
+    if (!attachment.ok) return false
+    return this.conflictingDevice(state, this.segment(state, host.id, attachment.vlan), host.id, ip) !== undefined
+  }
+
+  private poweredMembers(state: NetworkState, segment: Segment): Device[] {
+    return [...segment.members]
+      .map((memberId) => DeviceLookup.find(state, memberId))
+      .filter((device): device is Device => device !== undefined && device.powered)
   }
 
   private attachThrough(state: NetworkState, host: Device, link: Link): HostAttachment {

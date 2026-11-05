@@ -44,3 +44,12 @@ describe('AppLinkChecker', () => {
     expect(checker.status(officeNetwork(), 'printer')).toEqual([])
   })
 })
+
+describe('AppLinkChecker — address conflicts', () => {
+  it('fails every link of a host whose address is duplicate', () => {
+    const state = updateHost(officeNetwork(), 'pc2', { ip: '192.168.1.20' })
+    expect(checker.status(state, 'pc1')).toEqual([
+      { appLinkId: 'printerLink', label: 'Yazıcı', targetIp: '192.168.1.150', ok: false, reason: 'ipConflict' },
+    ])
+  })
+})

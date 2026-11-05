@@ -1,4 +1,5 @@
 import { Power } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import type { Device } from '../../domain/NetworkTypes'
 import { focusRing } from '../shared/focusRing'
 
@@ -9,6 +10,7 @@ interface PowerToggleProps {
 
 /** Turns a device on or off. */
 function PowerToggle({ device, onUpdateDevice }: PowerToggleProps) {
+  const { t } = useTranslation('device')
   return (
     <button
       type="button"
@@ -21,7 +23,7 @@ function PowerToggle({ device, onUpdateDevice }: PowerToggleProps) {
       } ${focusRing}`}
     >
       <Power className="h-4 w-4" aria-hidden="true" />
-      {device.powered ? 'Açık — kapatmak için tıklayın' : 'Kapalı — açmak için tıklayın'}
+      {device.powered ? t('power.toggleWhenOn') : t('power.toggleWhenOff')}
     </button>
   )
 }

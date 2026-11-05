@@ -1,5 +1,144 @@
 {
   "posGateway": {
-    "title": "The cash register cannot reach the internet"
+    "title": "The POS terminal cannot reach the internet",
+    "complaint": {
+      "from": "Branch manager",
+      "message": "At the new branch the POS terminal cannot reach the internet, so we cannot take card payments."
+    },
+    "hints": [
+      "In the POS terminal's Terminal tab, first check its IP settings with ipconfig, then ping its default gateway.",
+      "Compare the \"Default gateway\" address in the POS terminal's Settings tab with the modem's LAN address (192.168.10.1).",
+      "Change the POS terminal's gateway from 192.168.1.1 to 192.168.10.1. The IP address 192.168.10.20 and the mask 255.255.255.0 can stay as they are."
+    ],
+    "explanation": {
+      "whatHappened": "The default gateway entered manually (statically) on the POS terminal, 192.168.1.1, was the modem address of the old branch. Because the POS terminal is on the 192.168.10.x network, that address was outside its own subnet, so the terminal had no way out to the internet. The devices on the same network that get their address via DHCP received the correct gateway (192.168.10.1) automatically, so they had no problem.",
+      "realLife": "This happens very often when a POS terminal, printer or PC is removed from one branch and moved to another with its old static settings: the device shows up on the local network but cannot reach the internet or the payment system. To prevent it, reset the IP settings before moving a device, use DHCP whenever possible (with a DHCP reservation on the modem if a fixed address is needed), and keep each branch's IP plan (network address, default gateway, DNS) documented.",
+      "interviewAnswer": "I start with the physical layer: is the POS terminal powered on, is the cable plugged in, is the switch port's link light on. Then I check the IP address, subnet mask and default gateway with ipconfig; here I see that the terminal is 192.168.10.20 but its gateway is 192.168.1.1, which is on a different network. I confirm this by pinging the gateway and correct the gateway to the modem's LAN address, 192.168.10.1. Then I verify internet access by pinging 8.8.8.8 and finally use nslookup to check that the payment server's name resolves."
+    },
+    "topics": ["Default gateway", "Static IP", "Subnet"],
+    "devices": {
+      "internet": "Internet",
+      "router": "Modem / Router",
+      "switch": "Switch",
+      "kasa": "POS terminal",
+      "mutfakEkrani": "Kitchen display",
+      "mudurPc": "Manager PC"
+    }
+  },
+  "printerDhcp": {
+    "title": "The printer has disappeared",
+    "complaint": {
+      "from": "Office manager",
+      "message": "The printer worked yesterday, but today nobody can print."
+    },
+    "hints": [
+      "Look up the printer address saved on the PCs (Info tab) and ping it. Then check the printer's own address.",
+      "Select the printer and look at its current address in the Info tab: is it the same as 192.168.1.150, the address the PCs expect? The printer gets its address automatically via DHCP.",
+      "Set the printer's IP configuration to Static: IP 192.168.1.150, mask 255.255.255.0, gateway 192.168.1.1, DNS 192.168.1.1. Both PCs will then find the printer again. In real life you should also exclude this address from the modem's DHCP range or assign it to the printer as a DHCP reservation."
+    ],
+    "explanation": {
+      "whatHappened": "The printer was getting its address automatically via DHCP. When its lease expired and it requested an address again, the modem gave it 192.168.1.153 instead of 192.168.1.150. The PCs were still looking for the printer at the old address, 192.168.1.150, so they could not send any print jobs.",
+      "realLife": "Every device that other devices find by its address, such as a printer, camera or video recorder, should have a fixed address. The permanent fix is to give the printer a static IP or to create a DHCP reservation for the printer's MAC address on the modem, not to change the printer address on every PC one by one, because the problem comes back the next time the printer's address changes. When you assign a static address, choosing one outside the range the modem hands out automatically, or excluding it from that range, prevents two devices from getting the same address. Documenting the fixed addresses in a list also makes the job easier.",
+      "interviewAnswer": "First I do the physical checks: is the printer on, is an error light lit, is the network cable plugged in. Then I find the address the PCs use for the printer and ping it; when there is no reply, I check the printer's current address in the network settings on its own display or on a printed network configuration page. Seeing that the printer got a new address via DHCP (192.168.1.153), I fix it permanently by giving the printer the address the PCs expect, 192.168.1.150, as a static address, or by creating a DHCP reservation for that address on the modem. Finally I ping the printer from every PC and print a test page to confirm the problem is solved."
+    },
+    "topics": ["DHCP", "Static IP", "DHCP reservation", "Printer"],
+    "devices": {
+      "internet": "Internet",
+      "router": "Modem / Router",
+      "switch": "Switch",
+      "muhasebe": "Accounting PC",
+      "satis": "Sales PC",
+      "yazici": "Printer"
+    },
+    "appLinks": {
+      "yazici": "Printer"
+    }
+  },
+  "cameraSubnet": {
+    "title": "No video from Camera 3",
+    "complaint": {
+      "from": "Store supervisor",
+      "message": "The video recorder shows no picture from camera number 3."
+    },
+    "hints": [
+      "Ping all three cameras from the video recorder's Terminal tab and find the one that does not reply.",
+      "Camera 3 appears to be powered on and cabled; compare the IP address and gateway in Camera 3's Settings tab with those of the other cameras.",
+      "Change Camera 3's IP address from 192.168.0.64 to 192.168.1.63 and its gateway to 192.168.1.1 (the mask stays 255.255.255.0)."
+    ],
+    "explanation": {
+      "whatHappened": "Camera 3 had reverted to its factory settings and started up with the manufacturer's default address, 192.168.0.64. The video recorder and the other cameras were on the 192.168.1.x network; the recorder was looking for the camera at 192.168.1.63, so it could not find it. Cabling and power were fine; the only problem was that the address was on a different network.",
+      "realLife": "Cameras can revert to factory settings after a power outage, a reset button held down too long or a firmware update, and then start up with their default address. To prevent trouble, keep a list of every camera's IP and MAC address, label the switch ports, and set up a reset camera again with the same address. Backing up the camera configuration after installation makes reconfiguring a reset camera faster. Putting the cameras in their own VLAN is a separate security and organization measure that has nothing to do with this fault.",
+      "interviewAnswer": "First I do the physical checks: is the camera's PoE light on, is the switch port active, is the cable intact. I ping the faulty camera's address from the video recorder, and when there is no reply I look at the camera's own IP settings. Seeing that it is running on its factory default address, 192.168.0.64, which is on a different network, I correct its IP address to 192.168.1.63 and its gateway to 192.168.1.1. Finally I ping it again from the recorder and check that the video comes through."
+    },
+    "topics": ["Subnet", "Static IP", "Factory reset", "IP camera"],
+    "devices": {
+      "internet": "Internet",
+      "router": "Modem / Router",
+      "switch": "Switch (PoE)",
+      "nvr": "Video recorder (NVR)",
+      "kamera1": "Camera 1",
+      "kamera2": "Camera 2",
+      "kamera3": "Camera 3"
+    },
+    "appLinks": {
+      "kamera1": "Camera 1",
+      "kamera2": "Camera 2",
+      "kamera3": "Camera 3"
+    }
+  },
+  "kitchenVlan": {
+    "title": "Orders do not reach the kitchen",
+    "complaint": {
+      "from": "Head chef",
+      "message": "Orders entered on the POS terminal do not show up on the kitchen display."
+    },
+    "hints": [
+      "Ping the kitchen display's address (192.168.10.30) from the POS terminal. If the IP settings look correct, look for the problem on the switch port the cable is plugged into.",
+      "Check the switch's port settings: the POS terminal is connected to Fa0/2, the kitchen display to Fa0/3. Are both ports in the same VLAN?",
+      "On the switch, set port Fa0/3 to access mode in VLAN 10. The phone on the guest network belongs in VLAN 20; leave it as it is."
+    ],
+    "explanation": {
+      "whatHappened": "Switch port Fa0/3, where the kitchen display is plugged in, was assigned to the guest network VLAN 20 instead of the business network VLAN 10. Although the display's IP settings were correct, the switch put it in the guest network, so the POS terminal could not find a display it assumed was on the same network. Once the port was set to VLAN 10, both were back on the same network.",
+      "realLife": "In businesses that keep the guest Wi-Fi in a separate VLAN, this problem is common when someone plugs a cable into another port or a port setting is changed by mistake. To prevent it, label switch ports and wall outlets with the VLAN they belong to, document the port-to-VLAN table and back up the switch configuration. Putting the guest network in its own VLAN separates the two networks; the fault is not the separation itself but the port being assigned to the wrong VLAN. A VLAN alone is not enough, though: to make sure guests cannot reach business devices at all, you also need an access rule on the router (an ACL or a firewall rule).",
+      "interviewAnswer": "First I do the physical checks: is the kitchen display on, is its cable plugged in, is the switch port's link light on. Then I look at both devices' network settings (ipconfig on the POS terminal, the display's own settings menu) and confirm that the IP address, mask and gateway are correct and in the same network. If the POS terminal still cannot ping the display even though the settings are correct, I check whether both devices are in the same VLAN on the switch; here I find that Fa0/3, the display's port, is in VLAN 20 and change it to VLAN 10. Finally I ping the display from the POS terminal again, confirm the fix with a test order and check that the guest network still reaches the internet."
+    },
+    "topics": ["VLAN", "Switch port", "Guest network"],
+    "devices": {
+      "internet": "Internet",
+      "router": "Modem / Router",
+      "switch": "Switch",
+      "erisimNoktasi": "Wireless access point",
+      "kasa": "POS terminal",
+      "mutfakEkrani": "Kitchen display",
+      "misafirTelefonu": "Guest phone"
+    },
+    "appLinks": {
+      "mutfakEkrani": "Kitchen display"
+    }
+  },
+  "wrongDns": {
+    "title": "The internet works, but no website opens",
+    "complaint": {
+      "from": "Accounting",
+      "message": "They say the internet is working, but no website opens on my computer."
+    },
+    "hints": [
+      "From the accounting PC, ping the address 8.8.8.8 first, then the name google.com. If one works and the other does not, try nslookup google.com.",
+      "On the accounting PC, check the DNS server address with ipconfig /all and ping that address. Compare it with the DNS setting of the Sales PC, which works.",
+      "Change the accounting PC's DNS server from 192.168.1.254 to 192.168.1.1 (the modem). 8.8.8.8 would also work as the DNS server."
+    ],
+    "explanation": {
+      "whatHappened": "The accounting PC's DNS server had been entered manually as 192.168.1.254, the address of an old modem that is no longer on the network. The PC could reach the internet (pings to 8.8.8.8 worked), but it could not translate website names into IP addresses, so no website opened. Once the DNS server was changed to the modem (192.168.1.1), names resolved again.",
+      "realLife": "The most common cause of the \"the internet works but websites do not open\" complaint is the DNS setting; especially after a modem is replaced, PCs with static settings are left pointing at the old address. To prevent it, keep PCs on DHCP whenever possible; if static settings are needed, document what was entered on which device and review that list before replacing the modem. A quick way to tell: if pinging an IP address (8.8.8.8) works but pinging a name (google.com) does not, the problem is DNS.",
+      "interviewAnswer": "First I do the physical checks: is the cable plugged in, does the network icon show as connected. Then I check the IP address, mask, gateway and DNS settings with ipconfig /all. I ping the gateway and 8.8.8.8 to confirm that internet access works; when pinging google.com and nslookup fail, I know the problem is DNS. I see that the DNS server is 192.168.1.254, an address that no longer exists, correct it to the modem's address 192.168.1.1 and verify again with nslookup."
+    },
+    "topics": ["DNS", "nslookup", "Static IP"],
+    "devices": {
+      "internet": "Internet",
+      "router": "Modem / Router",
+      "switch": "Switch",
+      "muhasebe": "Accounting PC",
+      "satis": "Sales PC"
+    }
   }
 }

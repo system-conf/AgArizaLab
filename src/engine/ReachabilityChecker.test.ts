@@ -158,3 +158,58 @@ describe('ReachabilityChecker — gateway and routing', () => {
     expect(() => checker.reach(officeNetwork(), 'nobody', '8.8.8.8')).toThrow('Unknown device id')
   })
 })
+
+describe('ReachabilityChecker — address conflicts', () => {
+  it('fails both hosts that share an address in one segment', () => {
+    const state = updateHost(officeNetwork(), 'printer', { ip: '192.168.1.20' })
+    expect(checker.reach(state, 'pc1', '192.168.1.1')).toEqual({ ok: false, reason: 'ipConflict', atDeviceId: 'pc1' })
+    expect(checker.reach(state, 'printer', '192.168.1.1')).toEqual({ ok: false, reason: 'ipConflict', atDeviceId: 'printer' })
+    expect(checker.trace(state, 'pc1', '8.8.8.8').reached).toEqual(['pc1'])
+  })
+
+  it('lets nobody else reach the duplicate address (neither host answers ARP)', () => {
+    const state = updateHost(officeNetwork(), 'printer', { ip: '192.168.1.20' })
+    expect(checker.reach(state, 'pc2', '192.168.1.20')).toEqual({
+      ok: false,
+      reason: 'destinationNotInSegment',
+      atDeviceId: 'pc2',
+    })
+  })
+
+  it('fails a host that takes the router address while the router keeps working', () => {
+    const state = updateHost(officeNetwork(), 'pc1', { ip: '192.168.1.1' })
+    expect(checker.reach(state, 'pc1', '192.168.1.150')).toMatchObject({ ok: false, reason: 'ipConflict' })
+    expect(checker.reach(state, 'pc2', '192.168.1.1')).toMatchObject({ ok: true })
+    expect(checker.reach(state, 'pc2', '8.8.8.8')).toMatchObject({ ok: true })
+  })
+
+  it('ignores the same address in another VLAN or on a powered-off device', () => {
+    const otherVlan = updateHost(vlanNetwork(), 'guestPc', { ip: '192.168.10.20' })
+    expect(checker.reach(otherVlan, 'kasa', '192.168.10.30')).toMatchObject({ ok: true })
+
+    const off = updateDevice(updateHost(officeNetwork(), 'printer', { ip: '192.168.1.20' }), 'printer', (device) => ({
+      ...device,
+      powered: false,
+    }))
+    expect(checker.reach(off, 'pc1', '192.168.1.1')).toMatchObject({ ok: true })
+  })
+})
+
+describe('ReachabilityChecker — invalid host address', () => {
+  it('rejects the network and broadcast address of the own subnet', () => {
+    for (const ip of ['192.168.1.0', '192.168.1.255']) {
+      const state = updateHost(officeNetwork(), 'pc1', { ip })
+      expect(checker.reach(state, 'pc1', '192.168.1.1')).toEqual({ ok: false, reason: 'invalidHostAddress', atDeviceId: 'pc1' })
+    }
+  })
+
+  it('accepts the same address under a wider mask', () => {
+    const state = updateHost(officeNetwork(), 'pc1', { ip: '192.168.1.0', mask: '255.255.254.0' })
+    expect(checker.reach(state, 'pc1', '192.168.1.1')).toMatchObject({ ok: true })
+  })
+
+  it('does not answer for a host configured with a broadcast address', () => {
+    const state = updateHost(officeNetwork(), 'printer', { ip: '192.168.1.255' })
+    expect(checker.reach(state, 'pc1', '192.168.1.255')).toMatchObject({ ok: false, reason: 'destinationNotInSegment' })
+  })
+})

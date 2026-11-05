@@ -1,7 +1,178 @@
 {
   "tabs": {
+    "listLabel": "Device tabs",
     "info": "Info",
     "settings": "Settings",
     "terminal": "Terminal"
+  },
+  "kinds": {
+    "internet": "Internet",
+    "router": "Router",
+    "switch": "Switch",
+    "accessPoint": "Wireless access point",
+    "pc": "PC",
+    "pos": "POS terminal",
+    "printer": "Printer",
+    "camera": "IP camera",
+    "nvr": "Network video recorder (NVR)",
+    "kitchenDisplay": "Kitchen display",
+    "phone": "Phone"
+  },
+  "power": {
+    "on": "On",
+    "off": "Off",
+    "toggleWhenOn": "On — click to turn off",
+    "toggleWhenOff": "Off — click to turn on"
+  },
+  "header": {
+    "ipAddress": "IP address:",
+    "noIp": "No IP"
+  },
+  "sections": {
+    "general": "General",
+    "ipInfo": "IP configuration",
+    "ports": "Ports",
+    "appLinks": "Application connections",
+    "wirelessNetworks": "Wireless networks",
+    "links": "Connections",
+    "power": "Power",
+    "ipSettings": "IP settings",
+    "router": "Router",
+    "cables": "Cables"
+  },
+  "facts": {
+    "kind": "Type",
+    "power": "Power",
+    "mac": "MAC address",
+    "mode": "Mode",
+    "ip": "IP address",
+    "mask": "Subnet mask",
+    "gateway": "Default gateway",
+    "dns": "DNS servers"
+  },
+  "ipMode": {
+    "dhcp": "Automatic (DHCP)",
+    "static": "Manual (static)"
+  },
+  "vlanNumber": "VLAN {{vlan}}",
+  "links": {
+    "noneConnected": "No cables connected.",
+    "noneOnDevice": "No cables are connected to this device.",
+    "unknownDevice": "Unknown device",
+    "trunkAllVlans": "trunk (all VLANs)",
+    "wirelessConnected": "Wireless ({{ssid}}) · associated",
+    "wirelessDisconnected": "Wireless ({{ssid}}) · not associated",
+    "wiredConnected": "Wired · plugged in",
+    "wiredDisconnected": "Wired · unplugged",
+    "wirelessNetwork": "Wireless network: {{ssid}}",
+    "disconnect": "Disconnect",
+    "connect": "Connect",
+    "unplug": "Unplug cable",
+    "plugIn": "Plug in cable"
+  },
+  "appLinks": {
+    "ok": "Connected",
+    "addressLabel": "{{label}} address",
+    "invalidAddress": "Enter a valid IPv4 address (e.g. 192.168.1.150).",
+    "save": "Save application addresses"
+  },
+  "failureReasons": {
+    "powerOff": "The device is turned off",
+    "cableDisconnected": "Network cable unplugged",
+    "portDisabled": "No network link",
+    "noIpAddress": "No IP address",
+    "invalidConfig": "IP settings are invalid",
+    "destinationNotInSegment": "No answer from this address",
+    "gatewayNotSet": "Destination unreachable",
+    "gatewayOutsideSubnet": "Destination unreachable",
+    "gatewayUnreachable": "Destination unreachable",
+    "noRouteToDestination": "Destination unreachable",
+    "wanDown": "No internet connection",
+    "dnsNotSet": "Name could not be resolved",
+    "dnsUnreachable": "Name could not be resolved",
+    "dnsNoAnswer": "Name could not be resolved",
+    "nameNotFound": "Name could not be resolved",
+    "wrongDeviceAtAddress": "The expected device is not at this address",
+    "dhcpNoServer": "No address received from a DHCP server",
+    "dhcpPoolExhausted": "The DHCP server has no free addresses",
+    "ipConflict": "IP address conflict",
+    "invalidHostAddress": "The IP address cannot be used on this subnet"
+  },
+  "hostForm": {
+    "modeLabel": "IP address assignment",
+    "dhcpInfo": "The address settings come from the DHCP server.",
+    "renewHint": "To get a new address, type <cmd>ipconfig /renew</cmd> in the Terminal tab.",
+    "ip": "IP address",
+    "mask": "Subnet mask",
+    "gateway": "Default gateway",
+    "dnsPrimary": "Preferred DNS server",
+    "dnsSecondary": "Alternate DNS server",
+    "save": "Save IP settings",
+    "errors": {
+      "ipRequired": "An IP address is required in static mode.",
+      "maskRequired": "A subnet mask is required in static mode.",
+      "invalidAddress": "Enter a valid IPv4 address (e.g. 192.168.1.10).",
+      "invalidMask": "Enter a valid subnet mask (e.g. 255.255.255.0).",
+      "notHostAddress": "This is the network or broadcast address of the subnet, so it cannot be assigned to a device."
+    }
+  },
+  "router": {
+    "readOnly": "Router settings are read-only in this version.",
+    "wan": "Internet connection (WAN)",
+    "wanUp": "Connected",
+    "wanDown": "Not connected",
+    "dnsForwarding": "DNS forwarding",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "lanInterfaces": "LAN interfaces",
+    "interface": "Interface",
+    "vlan": "VLAN",
+    "ipMask": "IP / Subnet mask",
+    "dhcpPools": "DHCP pools",
+    "noPools": "No DHCP pools configured.",
+    "addressRange": "Address range",
+    "mask": "Subnet mask",
+    "gateway": "Default gateway",
+    "dns": "DNS servers",
+    "leases": "Leased addresses",
+    "noLeases": "None"
+  },
+  "switchPorts": {
+    "selectHint": "Click a port to select its row in the table below.",
+    "caption": "Switch ports",
+    "port": "Port",
+    "mode": "Mode",
+    "vlan": "VLAN",
+    "enabled": "Enabled",
+    "poe": "PoE",
+    "modeAccess": "Access",
+    "modeTrunk": "Trunk",
+    "modeLabel": "{{port}} mode",
+    "vlanLabel": "{{port}} VLAN number",
+    "enabledLabel": "{{port}} enabled",
+    "allVlans": "all",
+    "invalidVlans": "The VLAN number must be between 1 and 4094: {{ports}}",
+    "save": "Save port settings"
+  },
+  "portStrip": {
+    "label": "Switch front panel",
+    "trunk": "trunk",
+    "enabled": "enabled",
+    "disabled": "disabled",
+    "linkUp": "cable plugged in",
+    "noCable": "no cable",
+    "poe": "PoE",
+    "description": "{{port}}: {{details}}",
+    "selectToEdit": "{{description}}. Select to edit",
+    "legend": {
+      "number": "Number: VLAN",
+      "trunk": "T: trunk",
+      "linkUp": "cable plugged in",
+      "dimmed": "Dimmed: port disabled"
+    }
+  },
+  "saved": "Saved",
+  "wireless": {
+    "none": "No wireless networks are broadcast."
   }
 }

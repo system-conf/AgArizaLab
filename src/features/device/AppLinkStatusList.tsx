@@ -1,19 +1,21 @@
 import { CircleCheck, CircleX } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import type { AppLinkStatus } from '../../domain/EngineContract'
+import { useMessageTranslator } from '../../i18n'
+import { failureReasonMessage } from './failureReasonMessages'
 
 interface AppLinkStatusListProps {
   statuses: AppLinkStatus[]
 }
 
-// Deliberately vague: the player sees the symptom, not the cause.
-function problemText(status: AppLinkStatus): string {
-  return status.reason === 'wrongDeviceAtAddress'
-    ? 'Bu adreste beklenen cihaz yok'
-    : 'Ulaşılamıyor'
-}
-
 /** Green / red status of each application link of a device. */
 function AppLinkStatusList({ statuses }: AppLinkStatusListProps) {
+  const { t } = useTranslation('device')
+  const translateMessage = useMessageTranslator()
+  // A failed status without a reason should not happen; it shows the most generic symptom.
+  const problemText = (status: AppLinkStatus): string =>
+    translateMessage(failureReasonMessage(status.reason ?? 'noRouteToDestination'))
+
   return (
     <ul className="flex flex-col gap-1.5 text-sm">
       {statuses.map((status) => (
@@ -31,7 +33,7 @@ function AppLinkStatusList({ statuses }: AppLinkStatusListProps) {
           <span>
             <span className="font-medium">{status.label}</span>{' '}
             <span className="font-mono text-xs">({status.targetIp})</span>
-            <span className="block text-xs">{status.ok ? 'Bağlantı var' : problemText(status)}</span>
+            <span className="block text-xs">{status.ok ? t('appLinks.ok') : problemText(status)}</span>
           </span>
         </li>
       ))}

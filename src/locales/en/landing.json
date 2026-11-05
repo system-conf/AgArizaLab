@@ -1,3 +1,57 @@
 {
-  "exercisesHeading": "Exercises"
+  "hero": {
+    "title": "A network troubleshooting lab in your browser",
+    "lead": "Real faults from small business networks: a restaurant, an office, a shop. Inspect the devices, run ping, ipconfig and nslookup, find the wrong setting and fix it. No installation, no account.",
+    "comingNext": "Coming next: a free-form workspace for your own networks and packet-level simulation.",
+    "toExercises": "Go to the exercises",
+    "viewOnGitHub": "View on GitHub"
+  },
+  "progress": {
+    "label": "Your progress",
+    "summary": "{{completed}} / {{total}} exercises solved",
+    "ariaLabel": "Solved exercises",
+    "valueText": "{{completed}} of {{total}} exercises solved"
+  },
+  "howItWorks": {
+    "title": "How the lab works",
+    "open": {
+      "title": "Open an exercise",
+      "text": "Each exercise starts with a message from a small business. Read the complaint and look at the network map."
+    },
+    "inspect": {
+      "title": "Inspect devices and run commands",
+      "text": "Click a device to see its status and settings. Run ping, ipconfig and nslookup on computers and POS terminals to see where the traffic stops."
+    },
+    "verify": {
+      "title": "Fix and verify",
+      "text": "Correct the wrong setting and press Verify. The solution report explains what happened and how to describe it in a job interview."
+    }
+  },
+  "exercisesHeading": "Exercises",
+  "exercisesHint": "Start with any exercise you like.",
+  "card": {
+    "meta": "Exercise {{order}} · {{setting}}",
+    "difficulty": "Difficulty: {{level}}",
+    "topics": "Topics",
+    "solved": "Solved",
+    "notSolved": "Not solved yet",
+    "start": "Start",
+    "solveAgain": "Solve again",
+    "startAria": "Start exercise: {{title}}",
+    "solveAgainAria": "Solve again: {{title}}"
+  },
+  "settings": {
+    "restoran": "Restaurant",
+    "ofis": "Office",
+    "magaza": "Shop"
+  },
+  "difficulty": {
+    "easy": "Easy",
+    "medium": "Medium",
+    "hard": "Hard"
+  },
+  "footer": {
+    "license": "Open-source project under the {{license}} license · {{author}}",
+    "sourceCode": "Source code (GitHub)"
+  }
 }

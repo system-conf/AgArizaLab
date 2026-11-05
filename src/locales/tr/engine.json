@@ -1,4 +1,26 @@
 {
   "devicePoweredOff": "Cihaz kapalı. Komut çalıştırmak için önce cihazı açın.",
-  "unknownCommand": "'{{command}}' komutu tanınmadı. Kullanılabilir komutları görmek için 'help' yazın."
+  "noTerminal": "Bu cihazda komut satırı yok. Terminal yalnızca bilgisayar, kasa ve kayıt cihazında (NVR) kullanılabilir.",
+  "unknownCommand": "'{{command}}' komutu bu laboratuvarda tanınmıyor. Kullanılabilir komutları görmek için 'help' yazın.",
+  "pingContinuousNotSupported": "Sürekli ping (-t) bu laboratuvarda desteklenmiyor; bunun yerine 4 istek gönderildi.",
+  "usage": {
+    "ipconfig": "Kullanım: ipconfig [/all | /renew | /release]",
+    "ping": "Kullanım: ping [-n sayı] [-l boyut] [-t] [-4] <IP adresi veya ad>  (örnek: ping -n 2 8.8.8.8)",
+    "tracert": "Kullanım: tracert [-d] [-4] <IP adresi veya ad>  (örnek: tracert 8.8.8.8)",
+    "nslookup": "Kullanım: nslookup <ad>  (örnek: nslookup google.com)"
+  },
+  "help": {
+    "title": "Kullanılabilir komutlar:",
+    "ipconfig": "  ipconfig               IP adresini, alt ağ maskesini ve varsayılan ağ geçidini gösterir",
+    "ipconfigAll": "  ipconfig /all          MAC adresi, DHCP durumu ve DNS sunucuları dahil tüm ayrıntılar",
+    "ipconfigRenew": "  ipconfig /renew        DHCP sunucusundan yeniden IP adresi ister",
+    "ipconfigRelease": "  ipconfig /release      DHCP adresini geri verir; ağ kartı adressiz kalır",
+    "ping": "  ping <ip veya ad>      Bir adrese ulaşılıp ulaşılamadığını dener",
+    "pingCount": "    -n <sayı>            Gönderilecek istek sayısı (en çok 20 tanesi gösterilir)",
+    "pingSize": "    -l <boyut>           İstek başına veri miktarı, bayt (0 ile 65500 arası)",
+    "pingContinuous": "    -t                   Sürekli ping; bu laboratuvarda 4 istek gönderilir",
+    "tracert": "  tracert <ip veya ad>   Bir adrese giden yoldaki yönlendiricileri (atlamaları) listeler",
+    "nslookup": "  nslookup <ad>          Bir adın hangi IP adresine karşılık geldiğini DNS sunucusuna sorar",
+    "help": "  help                   Bu listeyi gösterir"
+  }
 }

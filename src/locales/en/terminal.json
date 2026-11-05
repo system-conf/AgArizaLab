@@ -1,3 +1,7 @@
 {
-  "windowTitle": "Command Prompt"
+  "windowTitle": "Command Prompt",
+  "clear": "Clear",
+  "emptyHint": "Type a command and press Enter.\nCommand list: help · Clear the screen: cls",
+  "outputLabel": "Command output",
+  "inputLabel": "Command"
 }

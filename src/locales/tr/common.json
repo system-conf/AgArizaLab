@@ -2,5 +2,11 @@
   "appName": "Ağ Arıza Laboratuvarı",
   "languageSwitcher": {
     "label": "Dil"
-  }
+  },
+  "meta": {
+    "title": "Ağ Arıza Laboratuvarı — Tarayıcıda ağ arızası bul, düzelt, öğren",
+    "pageTitle": "{{page}} — {{appName}}",
+    "description": "Tarayıcıda çalışan ücretsiz ve açık kaynak ağ arıza laboratuvarı. Cihazları incele, ping, ipconfig ve nslookup çalıştır; restoran, ofis ve mağaza ağlarındaki gerçekçi arızaları bul ve düzelt."
+  },
+  "opensInNewTab": "(yeni sekmede açılır)"
 }

@@ -1,5 +1,6 @@
 import { Handle, Position, type NodeProps } from '@xyflow/react'
 import { memo, type CSSProperties } from 'react'
+import { useTranslation } from 'react-i18next'
 import { deviceIcons } from './deviceIcons'
 import type { DeviceFlowNode } from './mapTypes'
 
@@ -22,6 +23,7 @@ const hiddenHandle: CSSProperties = {
  * name and IP hang below it. Power dot: green on, grey off.
  */
 function DeviceNode({ data, selected }: NodeProps<DeviceFlowNode>) {
+  const { t } = useTranslation('map')
   const { device, ipLabel } = data
   const Icon = deviceIcons[device.kind]
 
@@ -37,10 +39,10 @@ function DeviceNode({ data, selected }: NodeProps<DeviceFlowNode>) {
         <Icon className="h-6 w-6" aria-hidden="true" />
       </span>
       <span
-        className={`absolute right-0.5 top-0.5 h-2.5 w-2.5 rounded-full border-2 border-white ${
+        className={`absolute end-0.5 top-0.5 h-2.5 w-2.5 rounded-full border-2 border-white ${
           device.powered ? 'bg-emerald-500' : 'bg-slate-400'
         }`}
-        title={device.powered ? 'Açık' : 'Kapalı'}
+        title={device.powered ? t('node.poweredOn') : t('node.poweredOff')}
         aria-hidden="true"
       />
       <span className="pointer-events-none absolute left-1/2 top-full mt-1 flex w-32 -translate-x-1/2 flex-col items-center leading-tight">

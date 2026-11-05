@@ -1,17 +1,27 @@
 import type { AriaLabelConfig } from '@xyflow/react'
+import { useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 
-/** Turkish screen-reader labels and tooltips for React Flow's built-in parts. */
-export const mapAriaLabels: Partial<AriaLabelConfig> = {
-  'node.a11yDescription.default':
-    'Cihazı seçmek için Enter veya Boşluk tuşuna basın. Taşımak için ok tuşlarını kullanın.',
-  'node.a11yDescription.keyboardDisabled': 'Cihazı seçmek için Enter veya Boşluk tuşuna basın.',
-  'node.a11yDescription.ariaLiveMessage': ({ x, y }) => `Cihaz taşındı. Yeni konum: x ${x}, y ${y}.`,
-  'edge.a11yDescription.default': 'Cihazlar arasındaki bağlantı.',
-  'controls.ariaLabel': 'Harita kontrolleri',
-  'controls.zoomIn.ariaLabel': 'Yakınlaştır',
-  'controls.zoomOut.ariaLabel': 'Uzaklaştır',
-  'controls.fitView.ariaLabel': 'Haritayı ekrana sığdır',
-  'controls.interactive.ariaLabel': 'Haritayı kilitle veya aç',
-  'minimap.ariaLabel': 'Küçük harita',
-  'handle.ariaLabel': 'Bağlantı noktası',
+/**
+ * Screen-reader labels and tooltips for React Flow's built-in parts in the current language.
+ * Rebuilt when the language changes (t changes identity then).
+ */
+export function useMapAriaLabels(): Partial<AriaLabelConfig> {
+  const { t } = useTranslation('map')
+  return useMemo(
+    () => ({
+      'node.a11yDescription.default': t('reactFlow.nodeDescription'),
+      'node.a11yDescription.keyboardDisabled': t('reactFlow.nodeDescriptionKeyboardDisabled'),
+      'node.a11yDescription.ariaLiveMessage': ({ x, y }) => t('reactFlow.nodeMoved', { x, y }),
+      'edge.a11yDescription.default': t('reactFlow.edgeDescription'),
+      'controls.ariaLabel': t('reactFlow.controls'),
+      'controls.zoomIn.ariaLabel': t('reactFlow.zoomIn'),
+      'controls.zoomOut.ariaLabel': t('reactFlow.zoomOut'),
+      'controls.fitView.ariaLabel': t('reactFlow.fitView'),
+      'controls.interactive.ariaLabel': t('reactFlow.interactive'),
+      'minimap.ariaLabel': t('reactFlow.minimap'),
+      'handle.ariaLabel': t('reactFlow.handle'),
+    }),
+    [t],
+  )
 }

@@ -1,3 +1,33 @@
 {
-  "ariaLabel": "Network map"
+  "ariaLabel": "Network map",
+  "node": {
+    "poweredOn": "On",
+    "poweredOff": "Off",
+    "ariaPoweredOff": "{{name}} (off)"
+  },
+  "edge": {
+    "ariaLabel": "Link between {{a}} and {{b}}",
+    "linkLightUp": "{{port}}: link light on",
+    "linkLightDown": "{{port}}: link light off",
+    "unplugged": "Cable unplugged"
+  },
+  "controls": {
+    "fullscreen": "Fullscreen",
+    "exitFullscreen": "Exit fullscreen (Esc)",
+    "resetLayout": "Reset layout",
+    "resetLayoutTitle": "Move the devices back to their original positions"
+  },
+  "reactFlow": {
+    "nodeDescription": "Press Enter or Space to select the device. Use the arrow keys to move it.",
+    "nodeDescriptionKeyboardDisabled": "Press Enter or Space to select the device.",
+    "nodeMoved": "Device moved. New position: x {{x}}, y {{y}}.",
+    "edgeDescription": "Link between devices.",
+    "controls": "Map controls",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "fitView": "Fit map to screen",
+    "interactive": "Lock or unlock the map",
+    "minimap": "Mini map",
+    "handle": "Connection point"
+  }
 }

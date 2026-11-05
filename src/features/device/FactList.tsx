@@ -16,7 +16,7 @@ function FactList({ facts }: FactListProps) {
       {facts.map((fact) => (
         <div key={fact.label} className="flex items-baseline justify-between gap-3 py-1.5 first:pt-0 last:pb-0">
           <dt className="shrink-0 text-slate-500">{fact.label}</dt>
-          <dd className={`min-w-0 break-words text-right text-slate-900 ${fact.mono ? 'font-mono' : ''}`}>{fact.value}</dd>
+          <dd className={`min-w-0 break-words text-end text-slate-900 ${fact.mono ? 'font-mono' : ''}`}>{fact.value}</dd>
         </div>
       ))}
     </dl>

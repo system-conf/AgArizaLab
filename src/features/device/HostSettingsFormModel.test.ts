@@ -30,12 +30,26 @@ describe('HostSettingsFormModel', () => {
   it('reports required, format and mask errors in static mode', () => {
     const errors = HostSettingsFormModel.validate(draftWith({ ip: '', mask: '255.0.255.0', gateway: '192.168.1', dnsSecondary: 'x' }))
     expect(errors).toEqual({
-      ip: 'Statik modda IP adresi gerekli.',
-      mask: 'Geçerli bir maske yazın (ör. 255.255.255.0).',
-      gateway: 'Geçerli bir IPv4 adresi yazın (ör. 192.168.1.10).',
-      dnsSecondary: 'Geçerli bir IPv4 adresi yazın (ör. 192.168.1.10).',
+      ip: { key: 'device:hostForm.errors.ipRequired' },
+      mask: { key: 'device:hostForm.errors.invalidMask' },
+      gateway: { key: 'device:hostForm.errors.invalidAddress' },
+      dnsSecondary: { key: 'device:hostForm.errors.invalidAddress' },
+    })
+    expect(HostSettingsFormModel.validate(draftWith({ mask: '' })).mask).toEqual({ key: 'device:hostForm.errors.maskRequired' })
+    expect(HostSettingsFormModel.validate(draftWith({ ip: '192.168.1.300' })).ip).toEqual({
+      key: 'device:hostForm.errors.invalidAddress',
     })
     expect(HostSettingsFormModel.validate(draftWith({}))).toEqual({})
+  })
+
+  it('rejects the network and broadcast address of the subnet as host IP', () => {
+    const notHost = { key: 'device:hostForm.errors.notHostAddress' }
+    expect(HostSettingsFormModel.validate(draftWith({ ip: '192.168.1.0' })).ip).toEqual(notHost)
+    expect(HostSettingsFormModel.validate(draftWith({ ip: '192.168.1.255' })).ip).toEqual(notHost)
+    // Same address is a valid host under a wider mask.
+    expect(HostSettingsFormModel.validate(draftWith({ ip: '192.168.1.0', mask: '255.255.254.0' }))).toEqual({})
+    // With an invalid mask only the mask error is reported.
+    expect(HostSettingsFormModel.validate(draftWith({ ip: '192.168.1.0', mask: '255.0.255.0' })).ip).toBeUndefined()
   })
 
   it('shows only errors of non-empty fields while typing', () => {

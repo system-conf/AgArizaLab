@@ -5,7 +5,7 @@ interface SettingsSectionProps {
   title: string
   /** Small icon before the title. */
   icon?: LucideIcon
-  /** Shown on the right of the title, e.g. a "Kaydedildi" badge. */
+  /** Shown on the right of the title, e.g. a "Saved" badge. */
   status?: ReactNode
   children: ReactNode
 }

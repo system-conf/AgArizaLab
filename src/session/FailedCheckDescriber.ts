@@ -1,38 +1,50 @@
+import type { LocalizedMessage } from '../domain/Messages'
 import type { NetworkState } from '../domain/NetworkTypes'
 import type { SolveCondition } from '../domain/ScenarioTypes'
 import type { ConditionResult } from '../engine'
+import { localizedMessage } from '../i18n/messageKeys'
 
 /**
- * Turns unmet solve conditions into plain Turkish sentences for the player.
- * Sentences state the symptom only, never the cause, so the fault stays hidden.
+ * Turns unmet solve conditions into messages for the player (`session:failedChecks.*`).
+ * Messages state the symptom only, never the cause, so the fault stays hidden.
  */
 export class FailedCheckDescriber {
-  /** One sentence per failing condition, without duplicates, in condition order. */
-  static describeFailures(state: NetworkState, results: readonly ConditionResult[]): string[] {
-    const sentences = results
-      .filter((result) => !result.ok)
-      .map((result) => FailedCheckDescriber.describe(state, result.condition))
-    return [...new Set(sentences)]
+  /** One message per failing condition, without duplicates, in condition order. */
+  static describeFailures(state: NetworkState, results: readonly ConditionResult[]): LocalizedMessage[] {
+    const unique = new Map<string, LocalizedMessage>()
+    for (const result of results) {
+      if (result.ok) continue
+      const message = FailedCheckDescriber.describe(state, result.condition)
+      const identity = JSON.stringify(message)
+      if (!unique.has(identity)) unique.set(identity, message)
+    }
+    return [...unique.values()]
   }
 
-  static describe(state: NetworkState, condition: SolveCondition): string {
+  static describe(state: NetworkState, condition: SolveCondition): LocalizedMessage {
     switch (condition.type) {
       case 'internet':
-        return `${FailedCheckDescriber.nameOf(state, condition.fromDeviceId)} hâlâ internete çıkamıyor.`
+        return localizedMessage('session:failedChecks.internet', {
+          device: FailedCheckDescriber.nameOf(state, condition.fromDeviceId),
+        })
       case 'resolves':
-        return `${FailedCheckDescriber.nameOf(state, condition.fromDeviceId)} hâlâ '${condition.name}' sitesini açamıyor.`
-      case 'reachable': {
-        const from = FailedCheckDescriber.nameOf(state, condition.fromDeviceId)
-        const to = FailedCheckDescriber.nameOf(state, condition.toDeviceId)
-        // "cihazına" avoids a vowel-harmony suffix that would depend on the device name.
-        return `${from} hâlâ ${to} cihazına ulaşamıyor.`
-      }
+        return localizedMessage('session:failedChecks.resolves', {
+          device: FailedCheckDescriber.nameOf(state, condition.fromDeviceId),
+          name: condition.name,
+        })
+      case 'reachable':
+        return localizedMessage('session:failedChecks.reachable', {
+          from: FailedCheckDescriber.nameOf(state, condition.fromDeviceId),
+          to: FailedCheckDescriber.nameOf(state, condition.toDeviceId),
+        })
       case 'appLinksOk':
-        return `${FailedCheckDescriber.nameOf(state, condition.deviceId)} bazı cihazlara hâlâ ulaşamıyor.`
+        return localizedMessage('session:failedChecks.appLinksOk', {
+          device: FailedCheckDescriber.nameOf(state, condition.deviceId),
+        })
     }
   }
 
-  /** Display name of a device; falls back to the id so a sentence is never empty. */
+  /** Display name of a device; falls back to the id so a message is never empty. */
   private static nameOf(state: NetworkState, deviceId: string): string {
     return state.devices.find((device) => device.id === deviceId)?.name ?? deviceId
   }

@@ -1,3 +1,23 @@
 {
-  "title": "Çözüm raporu"
+  "title": "Çözüm raporu",
+  "verified": "Doğrulandı: arıza giderildi",
+  "summaryAria": "Özet",
+  "guideUsed": "Kullanılan rehber adımı: {{used}}/{{total}}",
+  "topicsAria": "Konular",
+  "sections": {
+    "whatHappened": "Ne olmuştu?",
+    "realLife": "Gerçek hayatta",
+    "interviewAnswer": "Mülakatta böyle anlatabilirsin"
+  },
+  "share": {
+    "title": "Öğrendiğini paylaş",
+    "text": "Ağ arızası çözmeyi pratik eden arkadaşlarına da göster.",
+    "button": "LinkedIn’de paylaş"
+  },
+  "nav": {
+    "aria": "Sonraki adım",
+    "backToList": "Alıştırma listesine dön",
+    "solveAgain": "Tekrar çöz",
+    "next": "Sonraki alıştırma"
+  }
 }

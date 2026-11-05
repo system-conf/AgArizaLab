@@ -1,23 +1,18 @@
-import type { Scenario } from '../domain/ScenarioTypes'
+import type { ScenarioDefinition } from '../domain/ScenarioTypes'
 import { buildSwitchPorts } from './switchPorts'
 
 const mask = '255.255.255.0'
 
-export const posGateway: Scenario = {
+export const posGateway: ScenarioDefinition = {
   id: 'posGateway',
   order: 1,
-  title: 'Kasa internete çıkmıyor',
   setting: 'restoran',
-  complaint: {
-    from: 'Şube müdürü',
-    message: 'Yeni şubede kasa internete çıkmıyor, kartla ödeme alamıyoruz.',
-  },
   initialState: {
     devices: [
       {
         id: 'internet',
         kind: 'internet',
-        name: 'İnternet',
+        name: 'internet',
         mac: '00:00:5E:00:01:01',
         position: { x: 500, y: 60 },
         powered: true,
@@ -25,7 +20,7 @@ export const posGateway: Scenario = {
       {
         id: 'router',
         kind: 'router',
-        name: 'Modem / Router',
+        name: 'router',
         mac: '00:1A:2B:10:00:01',
         position: { x: 500, y: 180 },
         powered: true,
@@ -51,7 +46,7 @@ export const posGateway: Scenario = {
       {
         id: 'switch',
         kind: 'switch',
-        name: 'Switch',
+        name: 'switch',
         mac: '00:1A:2B:10:00:02',
         position: { x: 500, y: 320 },
         powered: true,
@@ -60,7 +55,7 @@ export const posGateway: Scenario = {
       {
         id: 'kasa',
         kind: 'pos',
-        name: 'Kasa (POS)',
+        name: 'kasa',
         mac: '00:1A:2B:10:00:20',
         position: { x: 250, y: 500 },
         powered: true,
@@ -75,7 +70,7 @@ export const posGateway: Scenario = {
       {
         id: 'mutfakEkrani',
         kind: 'kitchenDisplay',
-        name: 'Mutfak Ekranı',
+        name: 'mutfakEkrani',
         mac: '00:1A:2B:10:00:21',
         position: { x: 500, y: 500 },
         powered: true,
@@ -90,7 +85,7 @@ export const posGateway: Scenario = {
       {
         id: 'mudurPc',
         kind: 'pc',
-        name: 'Müdür PC',
+        name: 'mudurPc',
         mac: '00:1A:2B:10:00:22',
         position: { x: 750, y: 500 },
         powered: true,
@@ -140,18 +135,4 @@ export const posGateway: Scenario = {
     { type: 'internet', fromDeviceId: 'kasa' },
     { type: 'resolves', fromDeviceId: 'kasa', name: 'odeme.ornekbanka.com.tr' },
   ],
-  hints: [
-    'Kasanın terminalinde önce ipconfig ile IP ayarlarına bak, sonra ağ geçidine ping at.',
-    'Kasanın Ayarlar sekmesindeki "Ağ geçidi" adresini modemin LAN adresiyle (192.168.10.1) karşılaştır.',
-    'Kasanın ağ geçidini 192.168.1.1 yerine 192.168.10.1 yap. IP 192.168.10.20, maske 255.255.255.0 kalabilir.',
-  ],
-  explanation: {
-    whatHappened:
-      'Kasaya elle (statik) girilen ağ geçidi 192.168.1.1, eski şubenin modem adresiydi. Kasa 192.168.10.x ağında olduğu için bu adres kendi ağının dışında kaldı; kasa internete giden kapıyı bulamadı. Aynı ağdaki DHCP ile adres alan cihazlar doğru ağ geçidini (192.168.10.1) otomatik aldığı için onlarda sorun yoktu.',
-    realLife:
-      'Bir şubeden sökülüp başka şubeye taşınan kasa, yazıcı veya PC eski statik ayarlarıyla gelirse bu durum çok sık yaşanır: cihaz yerel ağda görünür ama internete ve ödeme sistemine çıkamaz. Önlemek için cihazı taşımadan önce IP ayarlarını sıfırlamak, mümkünse DHCP kullanmak (sabit adres gerekiyorsa modemde DHCP rezervasyonu yapmak) ve her şubenin IP planını (ağ adresi, ağ geçidi, DNS) bir belgede tutmak gerekir.',
-    interviewAnswer:
-      'Önce fiziksel katmana bakarım: kasa açık mı, kablo takılı mı, switch portunun ışığı yanıyor mu. Sonra ipconfig ile IP, maske ve ağ geçidini kontrol ederim; burada kasa 192.168.10.20 iken ağ geçidinin 192.168.1.1 olduğunu, yani başka bir ağda kaldığını görürüm. Ağ geçidine ping atarak bunu doğrular, ağ geçidini modemin LAN adresi 192.168.10.1 olarak düzeltirim. Ardından 8.8.8.8 adresine ping ile internete çıkışı, son olarak nslookup ile ödeme sunucusunun adının çözüldüğünü kontrol ederim.',
-  },
-  topics: ['Ağ geçidi', 'Statik IP', 'Alt ağ'],
 }

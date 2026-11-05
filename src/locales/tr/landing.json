@@ -1,3 +1,57 @@
 {
-  "exercisesHeading": "Alıştırmalar"
+  "hero": {
+    "title": "Tarayıcında ağ arıza laboratuvarı",
+    "lead": "Restoran, ofis ve mağaza ağlarında gerçekte yaşanan arızalar. Cihazları incele, ping, ipconfig ve nslookup çalıştır, yanlış ayarı bul ve düzelt. Kurulum yok, üyelik yok.",
+    "comingNext": "Sırada: kendi ağını kurabileceğin serbest çalışma alanı ve paket düzeyinde simülasyon.",
+    "toExercises": "Alıştırmalara geç",
+    "viewOnGitHub": "GitHub’da incele"
+  },
+  "progress": {
+    "label": "İlerlemen",
+    "summary": "{{completed}}/{{total}} alıştırma çözüldü",
+    "ariaLabel": "Çözülen alıştırmalar",
+    "valueText": "{{total}} alıştırmadan {{completed}} tanesi çözüldü"
+  },
+  "howItWorks": {
+    "title": "Laboratuvar nasıl çalışır?",
+    "open": {
+      "title": "Bir alıştırma aç",
+      "text": "Her alıştırma küçük bir işletmeden gelen bir mesajla başlar. Şikâyeti oku, ağ haritasına bak."
+    },
+    "inspect": {
+      "title": "Cihazları incele, komut çalıştır",
+      "text": "Bir cihaza tıklayıp durumunu ve ayarlarını incele. Bilgisayar ve kasalarda ping, ipconfig ve nslookup çalıştır; trafiğin nerede takıldığını gör."
+    },
+    "verify": {
+      "title": "Düzelt ve doğrula",
+      "text": "Yanlış ayarı düzelt, “Doğrula” düğmesine bas. Çözüm raporu ne olduğunu ve mülakatta nasıl anlatacağını açıklar."
+    }
+  },
+  "exercisesHeading": "Alıştırmalar",
+  "exercisesHint": "İstediğin alıştırmadan başlayabilirsin.",
+  "card": {
+    "meta": "Alıştırma {{order}} · {{setting}}",
+    "difficulty": "Zorluk: {{level}}",
+    "topics": "Konular",
+    "solved": "Çözüldü",
+    "notSolved": "Henüz çözülmedi",
+    "start": "Başla",
+    "solveAgain": "Tekrar çöz",
+    "startAria": "Alıştırmayı başlat: {{title}}",
+    "solveAgainAria": "Tekrar çöz: {{title}}"
+  },
+  "settings": {
+    "restoran": "Restoran",
+    "ofis": "Ofis",
+    "magaza": "Mağaza"
+  },
+  "difficulty": {
+    "easy": "Kolay",
+    "medium": "Orta",
+    "hard": "Zor"
+  },
+  "footer": {
+    "license": "{{license}} lisanslı açık kaynak proje · {{author}}",
+    "sourceCode": "Kaynak kod (GitHub)"
+  }
 }

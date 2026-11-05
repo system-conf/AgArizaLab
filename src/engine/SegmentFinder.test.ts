@@ -7,6 +7,7 @@ import {
   makeRouter,
   officeNetwork,
   updateDevice,
+  updateHost,
   updateLink,
   updatePort,
   vlanNetwork,
@@ -75,5 +76,29 @@ describe('SegmentFinder', () => {
   it('treats a powered-off switch as a dead link', () => {
     const state = updateDevice(officeNetwork(), 'switch', (device) => ({ ...device, powered: false }))
     expect(finder.attachment(state, deviceOf(state, 'pc1'))).toMatchObject({ ok: false, reason: 'cableDisconnected' })
+  })
+})
+
+describe('SegmentFinder — address owners', () => {
+  it('finds nobody for an address two hosts share, and the router over a host', () => {
+    const shared = updateHost(officeNetwork(), 'printer', { ip: '192.168.1.20' })
+    const segment = finder.segment(shared, 'pc2', 1)
+    expect(finder.findAddress(shared, segment, '192.168.1.20')).toBeUndefined()
+
+    const routerAddress = updateHost(officeNetwork(), 'printer', { ip: '192.168.1.1' })
+    expect(finder.findAddress(routerAddress, finder.segment(routerAddress, 'pc2', 1), '192.168.1.1')?.id).toBe('router')
+  })
+
+  it('detects a conflict with a host or a router interface of the same VLAN only', () => {
+    const shared = updateHost(officeNetwork(), 'printer', { ip: '192.168.1.20' })
+    expect(finder.hasAddressConflict(shared, deviceOf(shared, 'pc1'))).toBe(true)
+    expect(finder.hasAddressConflict(shared, deviceOf(shared, 'printer'))).toBe(true)
+    expect(finder.hasAddressConflict(shared, deviceOf(shared, 'pc2'))).toBe(false)
+
+    // kasa (VLAN 10) using the router's VLAN 20 address: the router does not answer for it on VLAN 10.
+    const otherVlan = updateHost(vlanNetwork(), 'kasa', { ip: '192.168.20.1' })
+    expect(finder.hasAddressConflict(otherVlan, deviceOf(otherVlan, 'kasa'))).toBe(false)
+    const sameVlan = updateHost(vlanNetwork(), 'kasa', { ip: '192.168.10.1' })
+    expect(finder.hasAddressConflict(sameVlan, deviceOf(sameVlan, 'kasa'))).toBe(true)
   })
 })

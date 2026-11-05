@@ -166,15 +166,17 @@ describe('CommandRunner — nslookup', () => {
 })
 
 describe('CommandRunner — other commands', () => {
-  it('lists commands in Turkish for help', () => {
+  it('lists commands as translated messages for help', () => {
     const result = run(officeNetwork(), 'pc1', 'help')
-    expect(result.lines[0]).toEqual({ kind: 'info', text: 'Kullanılabilir komutlar:' })
-    expect(textOf(result)).toContain('ipconfig /renew')
+    expect(result.lines[0]).toEqual({ kind: 'info', message: { key: 'engine:help.title' } })
+    expect(result.lines.map((line) => line.message?.key)).toContain('engine:help.tracert')
   })
 
-  it('rejects unknown commands with a Turkish error', () => {
-    expect(run(officeNetwork(), 'pc1', 'tracert 8.8.8.8').lines).toEqual([
-      { kind: 'error', text: "'tracert' komutu tanınmadı. Kullanılabilir komutları görmek için 'help' yazın." },
+  it('rejects unknown commands like cmd.exe, plus a translated hint', () => {
+    expect(run(officeNetwork(), 'pc1', 'Foo bar').lines).toEqual([
+      { kind: 'error', text: "'Foo' is not recognized as an internal or external command," },
+      { kind: 'error', text: 'operable program or batch file.' },
+      { kind: 'info', message: { key: 'engine:unknownCommand', params: { command: 'Foo' } } },
     ])
   })
 
@@ -184,18 +186,17 @@ describe('CommandRunner — other commands', () => {
 
   it('refuses to run on a powered-off device or a device without a terminal', () => {
     const off = updateDevice(officeNetwork(), 'pc1', (device) => ({ ...device, powered: false }))
-    expect(run(off, 'pc1', 'ipconfig').lines[0]).toMatchObject({ kind: 'error' })
+    expect(run(off, 'pc1', 'ipconfig').lines).toEqual([{ kind: 'error', message: { key: 'engine:devicePoweredOff' } }])
+    expect(run(off, 'pc1', 'foo').lines).toEqual([{ kind: 'error', message: { key: 'engine:devicePoweredOff' } }])
     expect(run(officeNetwork(), 'switch', 'ipconfig').lines[0]).toMatchObject({ kind: 'error' })
   })
 
   it('offers a terminal only on PCs, POS terminals and NVRs', () => {
-    const noTerminal = {
-      kind: 'error',
-      text: 'Bu cihazda komut satırı yok. Terminal yalnızca bilgisayar, kasa ve kayıt cihazında kullanılabilir.',
-    }
+    const noTerminal = { kind: 'error', message: { key: 'engine:noTerminal' } }
     expect(run(officeNetwork(), 'printer', 'ipconfig').lines).toEqual([noTerminal])
     expect(run(vlanNetwork(), 'kitchen', 'ping 192.168.10.20').lines).toEqual([noTerminal])
     expect(run(vlanNetwork(), 'phone', 'nslookup google.com').lines).toEqual([noTerminal])
+    expect(run(vlanNetwork(), 'phone', 'tracert 8.8.8.8').lines).toEqual([noTerminal])
     const camera = updateDevice(officeNetwork(), 'printer', (device) => ({ ...device, kind: 'camera' }))
     expect(run(camera, 'printer', 'ipconfig').lines).toEqual([noTerminal])
 
@@ -206,5 +207,102 @@ describe('CommandRunner — other commands', () => {
 
   it('is deterministic', () => {
     expect(run(officeNetwork(), 'pc1', 'ping google.com')).toEqual(run(officeNetwork(), 'pc1', 'ping google.com'))
+  })
+})
+
+describe('CommandRunner — ipconfig /release and options', () => {
+  it('releases a DHCP address and returns the next state', () => {
+    const result = run(officeNetwork(), 'pc2', 'ipconfig /release')
+    expect(result.nextState && deviceOf(result.nextState, 'pc2').host).toEqual({ mode: 'dhcp', ip: '', mask: '', gateway: '', dns: [] })
+    const output = textOf(result)
+    expect(output).toContain('Ethernet adapter Ethernet:')
+    expect(output).toContain('   Default Gateway . . . . . . . . . : ')
+    expect(output).not.toContain('IPv4 Address')
+  })
+
+  it('gets the same address back on the next renew', () => {
+    const released = run(officeNetwork(), 'pc2', 'ipconfig /release').nextState
+    if (!released) throw new Error('release returned no state')
+    const renewed = run(released, 'pc2', 'ipconfig /renew').nextState
+    expect(renewed && deviceOf(renewed, 'pc2').host?.ip).toBe('192.168.1.101')
+  })
+
+  it('refuses /release on a static host and without a link', () => {
+    const staticResult = run(officeNetwork(), 'pc1', 'ipconfig /release')
+    expect(staticResult.nextState).toBeUndefined()
+    expect(textOf(staticResult)).toContain('no adapter is in the state permissible')
+
+    const unplugged = updateLink(officeNetwork(), 'pc2Link', { connected: false })
+    for (const line of ['ipconfig /release', 'ipconfig /renew']) {
+      const result = run(unplugged, 'pc2', line)
+      expect(result.nextState).toBeUndefined()
+      expect(textOf(result)).toContain('No operation can be performed on Ethernet while it has its media disconnected.')
+    }
+  })
+
+  it('rejects an unknown ipconfig option with the Windows error and a usage hint', () => {
+    expect(run(officeNetwork(), 'pc1', 'ipconfig /flush').lines).toEqual([
+      { kind: 'error', text: 'Error: unrecognized or incomplete command line.' },
+      { kind: 'error', message: { key: 'engine:usage.ipconfig' } },
+    ])
+  })
+
+  it('shows a duplicate address as unusable', () => {
+    const state = updateHost(officeNetwork(), 'printer', { ip: '192.168.1.20' })
+    const output = textOf(run(state, 'pc1', 'ipconfig'))
+    expect(output).toContain('   IPv4 Address. . . . . . . . . . . : 192.168.1.20(Duplicate)')
+    expect(output).toContain('   Autoconfiguration IPv4 Address. . : 169.254.')
+    expect(textOf(run(officeNetwork(), 'pc1', 'ipconfig'))).not.toContain('Duplicate')
+  })
+})
+
+describe('CommandRunner — ping options', () => {
+  it('sends the requested number of requests with the requested size', () => {
+    const output = textOf(run(officeNetwork(), 'pc1', 'ping -n 2 192.168.1.150 -L 1000'))
+    expect(output).toContain('Pinging 192.168.1.150 with 1000 bytes of data:')
+    expect(output.match(/Reply from 192\.168\.1\.150: bytes=1000 time=\d+ms TTL=128/g)).toHaveLength(2)
+    expect(output).toContain('Packets: Sent = 2, Received = 2, Lost = 0 (0% loss),')
+  })
+
+  it('shows at most 20 requests', () => {
+    const output = textOf(run(officeNetwork(), 'pc1', 'ping -n 500 8.8.8.8'))
+    expect(output.match(/Reply from 8\.8\.8\.8/g)).toHaveLength(20)
+    expect(output).toContain('Packets: Sent = 20, Received = 20, Lost = 0 (0% loss),')
+  })
+
+  it('answers -t with four requests and a note', () => {
+    const result = run(officeNetwork(), 'pc1', 'ping -t -4 8.8.8.8')
+    expect(result.lines[0]).toEqual({ kind: 'info', message: { key: 'engine:pingContinuousNotSupported' } })
+    expect(textOf(result).match(/Reply from 8\.8\.8\.8/g)).toHaveLength(4)
+    expect(result.trace?.ok).toBe(true)
+  })
+
+  it('rejects bad options and values without sending anything', () => {
+    const badOption = run(officeNetwork(), 'pc1', 'ping -x 8.8.8.8')
+    expect(badOption.lines).toEqual([
+      { kind: 'error', text: 'Bad option -x.' },
+      { kind: 'error', message: { key: 'engine:usage.ping' } },
+    ])
+    expect(badOption.trace).toBeUndefined()
+    expect(run(officeNetwork(), 'pc1', 'ping -l 70000 8.8.8.8').lines).toEqual([
+      { kind: 'error', text: 'Bad value for option -l, valid range is from 0 to 65500.' },
+    ])
+    expect(run(officeNetwork(), 'pc1', 'ping -n').lines[0]).toEqual({ kind: 'error', text: 'Value must be supplied for option -n.' })
+    expect(run(officeNetwork(), 'pc1', 'ping').lines).toEqual([{ kind: 'error', message: { key: 'engine:usage.ping' } }])
+  })
+
+  it('fails at the source when the own address is duplicate or not a host address', () => {
+    const conflict = updateHost(officeNetwork(), 'printer', { ip: '192.168.1.20' })
+    const conflictResult = run(conflict, 'pc1', 'ping 192.168.1.1')
+    expect(textOf(conflictResult).match(/PING: transmit failed\. General failure\./g)).toHaveLength(4)
+    expect(conflictResult.trace).toEqual({ ok: false, path: ['pc1'] })
+
+    const broadcast = updateHost(officeNetwork(), 'pc1', { ip: '192.168.1.255' })
+    expect(textOf(run(broadcast, 'pc1', 'ping 192.168.1.1'))).toContain('PING: transmit failed. General failure.')
+  })
+
+  it('gets no answer from a duplicate address', () => {
+    const conflict = updateHost(officeNetwork(), 'printer', { ip: '192.168.1.20' })
+    expect(textOf(run(conflict, 'pc2', 'ping 192.168.1.20'))).toContain('Reply from 192.168.1.101: Destination host unreachable.')
   })
 })

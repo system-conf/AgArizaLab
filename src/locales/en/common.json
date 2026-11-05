@@ -2,5 +2,11 @@
   "appName": "Network Troubleshooting Lab",
   "languageSwitcher": {
     "label": "Language"
-  }
+  },
+  "meta": {
+    "title": "Network Troubleshooting Lab — find and fix network faults in your browser",
+    "pageTitle": "{{page}} — {{appName}}",
+    "description": "A free, open-source network troubleshooting lab in your browser. Inspect devices, run ping, ipconfig and nslookup, and fix realistic faults in restaurant, office and shop networks."
+  },
+  "opensInNewTab": "(opens in a new tab)"
 }

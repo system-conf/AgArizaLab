@@ -108,7 +108,7 @@ export class ScenarioSession {
     return this.data.notes
   }
 
-  /** Result of the latest "Çözdüm, kontrol et"; null before the first check. */
+  /** Result of the latest verify; null before the first check. */
   get lastCheck(): readonly ConditionResult[] | null {
     return this.data.lastCheck
   }

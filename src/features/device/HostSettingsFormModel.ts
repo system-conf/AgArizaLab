@@ -1,5 +1,7 @@
+import type { LocalizedMessage } from '../../domain/Messages'
 import type { HostNetworkConfig, IpMode } from '../../domain/NetworkTypes'
 import { Ipv4 } from '../../engine'
+import { localizedMessage } from '../../i18n/messageKeys'
 
 /** What the player is typing into the IP settings form (all fields as raw text). */
 export interface HostDraft {
@@ -11,12 +13,13 @@ export interface HostDraft {
   dnsSecondary: string
 }
 
-export type DraftErrors = Partial<Record<keyof HostDraft, string>>
+/** Validation messages per field (`device:hostForm.errors.*`); the form translates them. */
+export type DraftErrors = Partial<Record<keyof HostDraft, LocalizedMessage>>
 
-const formatError = 'Geçerli bir IPv4 adresi yazın (ör. 192.168.1.10).'
+const formatError = localizedMessage('device:hostForm.errors.invalidAddress')
 const optionalFields = ['gateway', 'dnsPrimary', 'dnsSecondary'] as const
 
-/** Form logic of HostSettingsForm: draft ↔ host config conversion and Turkish validation messages. */
+/** Form logic of HostSettingsForm: draft ↔ host config conversion and validation messages. */
 export class HostSettingsFormModel {
   static toDraft(host: HostNetworkConfig): HostDraft {
     return {
@@ -35,10 +38,14 @@ export class HostSettingsFormModel {
     const errors: DraftErrors = {}
     const ip = draft.ip.trim()
     const mask = draft.mask.trim()
-    if (ip === '') errors.ip = 'Statik modda IP adresi gerekli.'
+    if (ip === '') errors.ip = localizedMessage('device:hostForm.errors.ipRequired')
     else if (!Ipv4.isValid(ip)) errors.ip = formatError
-    if (mask === '') errors.mask = 'Statik modda alt ağ maskesi gerekli.'
-    else if (!Ipv4.isValidMask(mask)) errors.mask = 'Geçerli bir maske yazın (ör. 255.255.255.0).'
+    if (mask === '') errors.mask = localizedMessage('device:hostForm.errors.maskRequired')
+    else if (!Ipv4.isValidMask(mask)) errors.mask = localizedMessage('device:hostForm.errors.invalidMask')
+    // Checkable only once both are valid: network and broadcast address depend on the mask.
+    if (errors.ip === undefined && errors.mask === undefined && !Ipv4.isHostAddress(ip, mask)) {
+      errors.ip = localizedMessage('device:hostForm.errors.notHostAddress')
+    }
     for (const field of optionalFields) {
       const value = draft[field].trim()
       if (value !== '' && !Ipv4.isValid(value)) errors[field] = formatError

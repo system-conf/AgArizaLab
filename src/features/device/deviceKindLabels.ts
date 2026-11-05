@@ -1,16 +1,16 @@
 import type { DeviceKind } from '../../domain/NetworkTypes'
 
-/** Turkish name of each device kind. */
-export const deviceKindLabels: Record<DeviceKind, string> = {
-  internet: 'İnternet',
-  router: 'Modem / Router',
-  switch: 'Switch',
-  accessPoint: 'Kablosuz erişim noktası',
-  pc: 'Bilgisayar',
-  pos: 'Kasa (POS)',
-  printer: 'Yazıcı',
-  camera: 'IP kamera',
-  nvr: 'Kayıt cihazı (NVR)',
-  kitchenDisplay: 'Mutfak ekranı',
-  phone: 'Telefon',
-}
+/** `device` namespace key of each device kind's name; translate with t() at render time. */
+export const deviceKindKeys = {
+  internet: 'kinds.internet',
+  router: 'kinds.router',
+  switch: 'kinds.switch',
+  accessPoint: 'kinds.accessPoint',
+  pc: 'kinds.pc',
+  pos: 'kinds.pos',
+  printer: 'kinds.printer',
+  camera: 'kinds.camera',
+  nvr: 'kinds.nvr',
+  kitchenDisplay: 'kinds.kitchenDisplay',
+  phone: 'kinds.phone',
+} as const satisfies Record<DeviceKind, `kinds.${string}`>

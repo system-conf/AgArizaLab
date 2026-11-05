@@ -31,6 +31,31 @@ describe('Ipv4', () => {
     expect(Ipv4.sameSubnet('192.168.1.20', '192.168.1.1', '255.0.255.0')).toBe(false)
   })
 
+  it('rejects the network and broadcast address as host addresses', () => {
+    expect(Ipv4.isHostAddress('192.168.1.20', '255.255.255.0')).toBe(true)
+    expect(Ipv4.isHostAddress('192.168.1.0', '255.255.255.0')).toBe(false)
+    expect(Ipv4.isHostAddress('192.168.1.255', '255.255.255.0')).toBe(false)
+    expect(Ipv4.isHostAddress('192.168.1.0', '255.255.254.0')).toBe(true)
+    expect(Ipv4.isHostAddress('192.168.1.255', '255.255.254.0')).toBe(false)
+    expect(Ipv4.isHostAddress('192.168.0.0', '255.255.254.0')).toBe(false)
+    expect(Ipv4.isHostAddress('10.0.0.1', '255.255.255.252')).toBe(true)
+    expect(Ipv4.isHostAddress('10.0.0.2', '255.255.255.252')).toBe(true)
+    expect(Ipv4.isHostAddress('10.0.0.3', '255.255.255.252')).toBe(false)
+    expect(Ipv4.isHostAddress('10.0.0.4', '255.255.255.252')).toBe(false)
+  })
+
+  it('treats both /31 addresses and the single /32 address as host addresses', () => {
+    expect(Ipv4.isHostAddress('10.0.0.0', '255.255.255.254')).toBe(true)
+    expect(Ipv4.isHostAddress('10.0.0.1', '255.255.255.254')).toBe(true)
+    expect(Ipv4.isHostAddress('10.0.0.0', '255.255.255.255')).toBe(true)
+  })
+
+  it('is false for an invalid address or mask', () => {
+    expect(Ipv4.isHostAddress('', '255.255.255.0')).toBe(false)
+    expect(Ipv4.isHostAddress('192.168.1.20', '255.0.255.0')).toBe(false)
+    expect(Ipv4.isHostAddress('192.168.1.20', '')).toBe(false)
+  })
+
   it('detects private and loopback ranges', () => {
     expect(Ipv4.isPrivate('10.1.2.3')).toBe(true)
     expect(Ipv4.isPrivate('172.16.0.1')).toBe(true)

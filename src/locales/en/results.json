@@ -1,3 +1,23 @@
 {
-  "title": "Solution report"
+  "title": "Solution report",
+  "verified": "Verified: the fault is fixed",
+  "summaryAria": "Summary",
+  "guideUsed": "Guide steps used: {{used}}/{{total}}",
+  "topicsAria": "Topics",
+  "sections": {
+    "whatHappened": "What happened?",
+    "realLife": "In real life",
+    "interviewAnswer": "How to explain it in an interview"
+  },
+  "share": {
+    "title": "Share what you learned",
+    "text": "Show the lab to friends who are practising network troubleshooting.",
+    "button": "Share on LinkedIn"
+  },
+  "nav": {
+    "aria": "Next step",
+    "backToList": "Back to the exercises",
+    "solveAgain": "Solve again",
+    "next": "Next exercise"
+  }
 }

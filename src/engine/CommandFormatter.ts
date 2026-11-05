@@ -1,5 +1,8 @@
 import type { TerminalLine } from '../domain/EngineContract'
 import type { HostNetworkConfig } from '../domain/NetworkTypes'
+import { type AppMessageKey, localizedMessage } from '../i18n/messageKeys'
+import type { OptionError } from './CommandOptions'
+import { messageLine, textLines } from './terminalLines'
 
 /** What ipconfig needs to know about the host's single adapter. */
 export interface AdapterView {
@@ -9,98 +12,101 @@ export interface AdapterView {
   connected: boolean
   mac: string
   host: HostNetworkConfig
+  /** Another device in the segment uses the same address (Windows duplicate address detection). */
+  duplicateAddress: boolean
 }
 
-/** How every echo request of a ping ended (all four behave the same: deterministic engine). */
-export type PingOutcome =
-  | { kind: 'reply'; fromIp: string; ttl: number; baseTimeMs: number }
-  /** "Reply from X: Destination host unreachable." (X = own IP for ARP failures, gateway for routing). */
-  | { kind: 'unreachable'; fromIp: string }
-  | { kind: 'timeout' }
-  /** No usable adapter/route at all: "PING: transmit failed. General failure." */
-  | { kind: 'generalFailure' }
+/** Commands with an app usage hint. */
+export type UsageCommand = 'ipconfig' | 'ping' | 'tracert' | 'nslookup'
 
-const ECHO_COUNT = 4
-/** Fixed per-reply jitter so times look natural yet tests stay stable. */
-const TIME_JITTER_MS: readonly number[] = [0, 1, 0, 2]
 /** Width of "IPv4 Address. . . . . . . . . . . " before the colon, as printed by Windows. */
 const LABEL_WIDTH = 34
 const FIELD_INDENT = '   '
+const APIPA_MASK = '255.255.0.0'
 
-const HELP_LINES: readonly string[] = [
-  'Kullanılabilir komutlar:',
-  '  ipconfig            IP adresini, alt ağ maskesini ve varsayılan ağ geçidini gösterir',
-  '  ipconfig /all       MAC adresi, DHCP durumu ve DNS sunucuları dahil tüm ayrıntılar',
-  '  ipconfig /renew     DHCP sunucusundan yeniden IP adresi ister',
-  '  ping <ip veya ad>   Bir adrese ulaşılıp ulaşılamadığını dener',
-  '  nslookup <ad>       Bir adın hangi IP adresine karşılık geldiğini DNS sunucusuna sorar',
-  '  help                Bu listeyi gösterir',
+const USAGE_KEYS: Readonly<Record<UsageCommand, AppMessageKey>> = {
+  ipconfig: 'engine:usage.ipconfig',
+  ping: 'engine:usage.ping',
+  tracert: 'engine:usage.tracert',
+  nslookup: 'engine:usage.nslookup',
+}
+
+const HELP_KEYS: readonly AppMessageKey[] = [
+  'engine:help.title',
+  'engine:help.ipconfig',
+  'engine:help.ipconfigAll',
+  'engine:help.ipconfigRenew',
+  'engine:help.ipconfigRelease',
+  'engine:help.ping',
+  'engine:help.pingCount',
+  'engine:help.pingSize',
+  'engine:help.pingContinuous',
+  'engine:help.tracert',
+  'engine:help.nslookup',
+  'engine:help.help',
 ]
 
-/** Windows-style (English) command output. Pure string building, no network logic. */
+/**
+ * Windows-style (English) ipconfig / nslookup output as text lines, plus the app messages around
+ * commands (help, usage, unknown command, device off) as translated message lines.
+ * Pure line building, no network logic. Ping and tracert have their own formatters.
+ */
 export class CommandFormatter {
   ipconfig(view: AdapterView, all: boolean): TerminalLine[] {
     const lines: string[] = ['', 'Windows IP Configuration', '']
     if (all) {
       lines.push(this.field('Host Name', view.hostName), '')
     }
-    lines.push(`${view.wireless ? 'Wireless LAN adapter Wi-Fi' : 'Ethernet adapter Ethernet'}:`, '')
+    lines.push(`${this.adapterTitle(view.wireless)}:`, '')
 
     if (!view.connected) {
       lines.push(this.field('Media State', 'Media disconnected'), this.field('Connection-specific DNS Suffix', ''))
       if (all) lines.push(...this.hardwareFields(view))
-      return this.output(lines)
+      return textLines(lines)
     }
 
     lines.push(this.field('Connection-specific DNS Suffix', ''))
     if (all) lines.push(...this.hardwareFields(view))
     lines.push(...this.addressFields(view, all))
-    return this.output(lines)
+    return textLines(lines)
   }
 
-  renewNotPermitted(): TerminalLine[] {
-    return this.output(['', 'Windows IP Configuration', '', 'The operation failed as no adapter is in the state permissible for this operation.'])
-  }
-
-  renewTimedOut(wireless: boolean): TerminalLine[] {
-    const adapter = wireless ? 'Wi-Fi' : 'Ethernet'
-    return this.output([
+  /** `ipconfig /release`: the adapter is left without an IPv4 address. */
+  released(view: AdapterView): TerminalLine[] {
+    return textLines([
       '',
       'Windows IP Configuration',
       '',
-      `An error occurred while renewing interface ${adapter} : unable to contact your DHCP server. Request has timed out.`,
+      `${this.adapterTitle(view.wireless)}:`,
+      '',
+      this.field('Connection-specific DNS Suffix', ''),
+      this.field('Default Gateway', ''),
     ])
   }
 
-  ping(targetIp: string, resolvedName: string | null, outcome: PingOutcome): TerminalLine[] {
-    const header = resolvedName === null ? targetIp : `${resolvedName} [${targetIp}]`
-    const lines: string[] = ['', `Pinging ${header} with 32 bytes of data:`]
-    for (let index = 0; index < ECHO_COUNT; index += 1) lines.push(this.echoLine(outcome, index))
-
-    const received = outcome.kind === 'reply' || outcome.kind === 'unreachable' ? ECHO_COUNT : 0
-    const lost = ECHO_COUNT - received
-    lines.push(
-      '',
-      `Ping statistics for ${targetIp}:`,
-      `    Packets: Sent = ${ECHO_COUNT}, Received = ${received}, Lost = ${lost} (${(lost / ECHO_COUNT) * 100}% loss),`,
-    )
-    if (outcome.kind === 'reply') {
-      const times = this.times(outcome.baseTimeMs)
-      const average = Math.round(times.reduce((sum, time) => sum + time, 0) / times.length)
-      lines.push(
-        'Approximate round trip times in milli-seconds:',
-        `    Minimum = ${Math.min(...times)}ms, Maximum = ${Math.max(...times)}ms, Average = ${average}ms`,
-      )
-    }
-    return this.output(lines)
+  /** /renew or /release on a static adapter. */
+  dhcpNotPermitted(): TerminalLine[] {
+    return this.windowsIpError('The operation failed as no adapter is in the state permissible for this operation.')
   }
 
-  pingHostNotFound(name: string): TerminalLine[] {
-    return this.output([`Ping request could not find host ${name}. Please check the name and try again.`])
+  /** /renew or /release without a link (unplugged cable, disabled switch port). */
+  mediaDisconnected(wireless: boolean): TerminalLine[] {
+    return this.windowsIpError(`No operation can be performed on ${this.adapterName(wireless)} while it has its media disconnected.`)
+  }
+
+  renewTimedOut(wireless: boolean): TerminalLine[] {
+    return this.windowsIpError(
+      `An error occurred while renewing interface ${this.adapterName(wireless)} : unable to contact your DHCP server. Request has timed out.`,
+    )
+  }
+
+  /** ipconfig with an option it does not know. */
+  ipconfigBadOption(): TerminalLine[] {
+    return [...textLines(['Error: unrecognized or incomplete command line.'], 'error'), this.usageLine('ipconfig')]
   }
 
   nslookupAnswer(serverName: string, serverIp: string, name: string, ip: string): TerminalLine[] {
-    return this.output([
+    return textLines([
       ...this.serverLines(serverName, serverIp),
       '',
       'Non-authoritative answer:',
@@ -110,15 +116,15 @@ export class CommandFormatter {
   }
 
   nslookupNotFound(serverName: string, serverIp: string, name: string): TerminalLine[] {
-    return this.output([...this.serverLines(serverName, serverIp), '', `*** ${serverName} can't find ${name}: Non-existent domain`])
+    return textLines([...this.serverLines(serverName, serverIp), '', `*** ${serverName} can't find ${name}: Non-existent domain`])
   }
 
   nslookupNoAnswer(serverIp: string, name: string): TerminalLine[] {
-    return this.output([...this.serverLines('UnKnown', serverIp), '', `*** UnKnown can't find ${name}: No response from server`])
+    return textLines([...this.serverLines('UnKnown', serverIp), '', `*** UnKnown can't find ${name}: No response from server`])
   }
 
   nslookupTimedOut(serverIp: string): TerminalLine[] {
-    return this.output([
+    return textLines([
       'DNS request timed out.',
       '    timeout was 2 seconds.',
       ...this.serverLines('UnKnown', serverIp),
@@ -130,31 +136,63 @@ export class CommandFormatter {
   }
 
   nslookupNoServers(): TerminalLine[] {
-    return this.output(['*** Default servers are not available', ...this.serverLines('UnKnown', '127.0.0.1')])
+    return textLines(['*** Default servers are not available', ...this.serverLines('UnKnown', '127.0.0.1')])
   }
 
   help(): TerminalLine[] {
-    return HELP_LINES.map((text) => ({ kind: 'info', text }))
+    return HELP_KEYS.map((key) => messageLine(localizedMessage(key), 'info'))
   }
 
+  /** What cmd.exe prints, followed by a translated hint about the lab's commands. */
   unknownCommand(command: string): TerminalLine[] {
-    return this.error(`'${command}' komutu tanınmadı. Kullanılabilir komutları görmek için 'help' yazın.`)
+    return [
+      ...textLines([`'${command}' is not recognized as an internal or external command,`, 'operable program or batch file.'], 'error'),
+      messageLine(localizedMessage('engine:unknownCommand', { command }), 'info'),
+    ]
   }
 
-  usage(text: string): TerminalLine[] {
-    return this.error(`Kullanım: ${text}`)
+  usage(command: UsageCommand): TerminalLine[] {
+    return [this.usageLine(command)]
   }
 
-  unknownOption(option: string): TerminalLine[] {
-    return this.error(`'${option}' seçeneği tanınmadı. 'help' yazarak desteklenen komutları görebilirsiniz.`)
+  /** Windows' own wording for ping / tracert argument errors, plus the usage hint where Windows prints its usage. */
+  optionError(error: OptionError, command: UsageCommand): TerminalLine[] {
+    switch (error.kind) {
+      case 'badOption':
+        return [...textLines([`Bad option ${error.option}.`], 'error'), this.usageLine(command)]
+      case 'missingValue':
+        return [...textLines([`Value must be supplied for option ${error.option}.`], 'error'), this.usageLine(command)]
+      case 'badValue':
+        return textLines([`Bad value for option ${error.option}, valid range is from ${error.min} to ${error.max}.`], 'error')
+      case 'badParameter':
+        return textLines([`Bad parameter ${error.value}.`], 'error')
+      case 'missingTarget':
+        return [this.usageLine(command)]
+    }
   }
 
   devicePoweredOff(): TerminalLine[] {
-    return this.error('Cihaz kapalı. Komut çalıştırmak için önce cihazı açın.')
+    return [messageLine(localizedMessage('engine:devicePoweredOff'))]
   }
 
   noTerminal(): TerminalLine[] {
-    return this.error('Bu cihazda komut satırı yok. Terminal yalnızca bilgisayar, kasa ve kayıt cihazında kullanılabilir.')
+    return [messageLine(localizedMessage('engine:noTerminal'))]
+  }
+
+  private usageLine(command: UsageCommand): TerminalLine {
+    return messageLine(localizedMessage(USAGE_KEYS[command]))
+  }
+
+  private windowsIpError(text: string): TerminalLine[] {
+    return textLines(['', 'Windows IP Configuration', '', text])
+  }
+
+  private adapterName(wireless: boolean): string {
+    return wireless ? 'Wi-Fi' : 'Ethernet'
+  }
+
+  private adapterTitle(wireless: boolean): string {
+    return wireless ? 'Wireless LAN adapter Wi-Fi' : 'Ethernet adapter Ethernet'
   }
 
   private hardwareFields(view: AdapterView): string[] {
@@ -169,11 +207,20 @@ export class CommandFormatter {
     const { host } = view
     const lines: string[] = []
     const suffix = all ? '(Preferred)' : ''
-    if (host.ip !== '') {
+    if (host.ip !== '' && view.duplicateAddress) {
+      // Windows marks a duplicate address unusable and falls back to APIPA. Real Windows shows the
+      // "(Duplicate)" line only with /all; the lab shows it always so the cause stays visible.
+      lines.push(
+        this.field('IPv4 Address', `${host.ip}(Duplicate)`),
+        this.field('Subnet Mask', host.mask),
+        this.field('Autoconfiguration IPv4 Address', `${this.apipa(view.mac)}${suffix}`),
+        this.field('Subnet Mask', APIPA_MASK),
+      )
+    } else if (host.ip !== '') {
       lines.push(this.field('IPv4 Address', `${host.ip}${suffix}`), this.field('Subnet Mask', host.mask))
     } else if (host.mode === 'dhcp') {
       // Windows falls back to APIPA when no DHCP answer arrived.
-      lines.push(this.field('Autoconfiguration IPv4 Address', `${this.apipa(view.mac)}${suffix}`), this.field('Subnet Mask', '255.255.0.0'))
+      lines.push(this.field('Autoconfiguration IPv4 Address', `${this.apipa(view.mac)}${suffix}`), this.field('Subnet Mask', APIPA_MASK))
     }
     lines.push(this.field('Default Gateway', host.ip === '' ? '' : host.gateway))
     if (all) lines.push(...this.multiField('DNS Servers', host.dns))
@@ -187,25 +234,6 @@ export class CommandFormatter {
     const fourth = bytes[5]
     if (third === undefined || fourth === undefined || Number.isNaN(third) || Number.isNaN(fourth)) return '169.254.1.1'
     return `169.254.${Math.max(1, Math.min(254, third))}.${Math.max(1, Math.min(254, fourth))}`
-  }
-
-  private echoLine(outcome: PingOutcome, index: number): string {
-    switch (outcome.kind) {
-      case 'reply': {
-        const time = this.times(outcome.baseTimeMs)[index] ?? outcome.baseTimeMs
-        return `Reply from ${outcome.fromIp}: bytes=32 time=${time}ms TTL=${outcome.ttl}`
-      }
-      case 'unreachable':
-        return `Reply from ${outcome.fromIp}: Destination host unreachable.`
-      case 'timeout':
-        return 'Request timed out.'
-      case 'generalFailure':
-        return 'PING: transmit failed. General failure.'
-    }
-  }
-
-  private times(baseTimeMs: number): number[] {
-    return TIME_JITTER_MS.map((jitter) => baseTimeMs + jitter)
   }
 
   private serverLines(serverName: string, serverIp: string): string[] {
@@ -233,13 +261,5 @@ export class CommandFormatter {
     const [first, ...rest] = values
     const indent = ' '.repeat(FIELD_INDENT.length + LABEL_WIDTH + 2)
     return [this.field(label, first ?? ''), ...rest.map((value) => `${indent}${value}`)]
-  }
-
-  private output(lines: string[]): TerminalLine[] {
-    return lines.map((text) => ({ kind: 'output', text }))
-  }
-
-  private error(text: string): TerminalLine[] {
-    return [{ kind: 'error', text }]
   }
 }

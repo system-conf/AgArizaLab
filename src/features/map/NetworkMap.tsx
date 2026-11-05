@@ -1,14 +1,15 @@
 import { Background, ReactFlow, type CoordinateExtent, type NodeChange } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 import { useCallback, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { PacketTrace } from '../../domain/EngineContract'
 import type { MapPosition, NetworkState } from '../../domain/NetworkTypes'
 import { networkEngine } from '../../engine'
 import DeviceNode from './DeviceNode'
-import { buildEdges, buildNodes, type MeasuredSizes } from './flowElements'
+import { buildEdges, buildNodes, type FlowLabels, type MeasuredSizes } from './flowElements'
 import LinkEdge from './LinkEdge'
 import MapControls from './MapControls'
-import { mapAriaLabels } from './mapLabels'
+import { useMapAriaLabels } from './mapLabels'
 import type { DeviceFlowNode } from './mapTypes'
 import PacketOverlay from './PacketOverlay'
 import { usePacketAnimation } from './usePacketAnimation'
@@ -49,11 +50,21 @@ function NetworkMap({
   trace,
   fullscreen,
 }: NetworkMapProps) {
+  const { t } = useTranslation('map')
+  const ariaLabels = useMapAriaLabels()
   const [measured, setMeasured] = useState<MeasuredSizes>({})
   const reducedMotion = usePrefersReducedMotion()
   const frame = usePacketAnimation(trace, positionOf, reducedMotion)
-  const nodes = buildNodes(state, positionOf, selectedDeviceId, measured)
-  const edges = useMemo(() => buildEdges(state, networkEngine), [state])
+  // Rebuilt when the language changes (t changes identity then).
+  const labels = useMemo<FlowLabels>(
+    () => ({
+      device: (device) => (device.powered ? device.name : t('node.ariaPoweredOff', { name: device.name })),
+      link: (a, b) => t('edge.ariaLabel', { a: a.name, b: b.name }),
+    }),
+    [t],
+  )
+  const nodes = buildNodes(state, positionOf, selectedDeviceId, measured, labels)
+  const edges = useMemo(() => buildEdges(state, networkEngine, labels), [state, labels])
 
   const handleNodesChange = useCallback(
     (changes: NodeChange<DeviceFlowNode>[]) => {
@@ -72,7 +83,7 @@ function NetworkMap({
     <div
       className="h-[55vh] min-h-80 w-full overflow-hidden rounded-xl border border-slate-200 bg-slate-50 md:h-full md:min-h-96"
       role="group"
-      aria-label="Ağ haritası"
+      aria-label={t('ariaLabel')}
     >
       <ReactFlow<DeviceFlowNode>
         nodes={nodes}
@@ -94,7 +105,7 @@ function NetworkMap({
         selectionKeyCode={null}
         multiSelectionKeyCode={null}
         zoomOnDoubleClick={false}
-        ariaLabelConfig={mapAriaLabels}
+        ariaLabelConfig={ariaLabels}
       >
         <Background gap={24} color="#e2e8f0" />
         <MapControls fullscreen={fullscreen} canResetLayout={canResetLayout} onResetLayout={onResetLayout} />

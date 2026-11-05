@@ -1,4 +1,5 @@
 import { useRef, useState, type FormEvent } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { Device, SwitchPort, SwitchPortMode } from '../../domain/NetworkTypes'
 import { focusRing } from '../shared/focusRing'
 import SwitchPortStrip from './SwitchPortStrip'
@@ -31,6 +32,7 @@ function isValidVlan(text: string): boolean {
  * ports change from outside.
  */
 function SwitchPortsTable({ device, ports, onUpdateDevice, connectedPortIds = noPorts }: SwitchPortsTableProps) {
+  const { t } = useTranslation('device')
   const [drafts, setDrafts] = useState<PortDraft[]>(() =>
     ports.map((port) => ({ id: port.id, vlanText: String(port.vlan), mode: port.mode, enabled: port.enabled })),
   )
@@ -73,16 +75,16 @@ function SwitchPortsTable({ device, ports, onUpdateDevice, connectedPortIds = no
         selectedPortId={selectedPortId}
         onSelectPort={selectPort}
       />
-      <p className="text-xs text-slate-500">Bir porta tıkla, aşağıdaki tabloda o satır seçilsin.</p>
+      <p className="text-xs text-slate-500">{t('switchPorts.selectHint')}</p>
       <div className="overflow-x-auto">
-        <table className="w-full text-left text-sm">
-          <caption className="sr-only">Switch portları</caption>
+        <table className="w-full text-start text-sm">
+          <caption className="sr-only">{t('switchPorts.caption')}</caption>
           <thead className="text-xs text-slate-500">
             <tr>
-              <th scope="col" className="py-1 pr-2 font-medium">Port</th>
-              <th scope="col" className="py-1 pr-2 font-medium">Mod</th>
-              <th scope="col" className="py-1 pr-2 font-medium">VLAN</th>
-              <th scope="col" className="py-1 pr-2 font-medium">Açık</th>
+              <th scope="col" className="py-1 pe-2 font-medium">{t('switchPorts.port')}</th>
+              <th scope="col" className="py-1 pe-2 font-medium">{t('switchPorts.mode')}</th>
+              <th scope="col" className="py-1 pe-2 font-medium">{t('switchPorts.vlan')}</th>
+              <th scope="col" className="py-1 pe-2 font-medium">{t('switchPorts.enabled')}</th>
             </tr>
           </thead>
           <tbody>
@@ -94,45 +96,45 @@ function SwitchPortsTable({ device, ports, onUpdateDevice, connectedPortIds = no
                   key={draft.id}
                   className={`border-t border-slate-100 ${draft.id === selectedPortId ? 'bg-sky-50' : ''}`}
                 >
-                  <th scope="row" className="py-1.5 pr-2 font-mono font-normal">
+                  <th scope="row" className="py-1.5 pe-2 font-mono font-normal">
                     {draft.id}
-                    {poe && <span className="ml-1 rounded bg-amber-100 px-1 text-[10px] text-amber-800">PoE</span>}
+                    {poe && <span className="ms-1 rounded bg-amber-100 px-1 text-[10px] text-amber-800">{t('switchPorts.poe')}</span>}
                   </th>
-                  <td className="py-1.5 pr-2">
+                  <td className="py-1.5 pe-2">
                     <select
                       ref={(element) => {
                         if (element) modeSelects.current.set(draft.id, element)
                         else modeSelects.current.delete(draft.id)
                       }}
-                      aria-label={`${draft.id} modu`}
+                      aria-label={t('switchPorts.modeLabel', { port: draft.id })}
                       value={draft.mode}
                       onChange={(e) => updateDraft(draft.id, { mode: e.target.value === 'trunk' ? 'trunk' : 'access' })}
                       className={`rounded border border-slate-300 bg-white px-1 py-1 ${focusRing}`}
                     >
-                      <option value="access">access</option>
-                      <option value="trunk">trunk</option>
+                      <option value="access">{t('switchPorts.modeAccess')}</option>
+                      <option value="trunk">{t('switchPorts.modeTrunk')}</option>
                     </select>
                   </td>
-                  <td className="py-1.5 pr-2">
+                  <td className="py-1.5 pe-2">
                     <input
                       type="number"
                       min={1}
                       max={4094}
-                      aria-label={`${draft.id} VLAN numarası`}
+                      aria-label={t('switchPorts.vlanLabel', { port: draft.id })}
                       aria-invalid={invalid ? true : undefined}
                       disabled={draft.mode === 'trunk'}
                       value={draft.mode === 'trunk' ? '' : draft.vlanText}
-                      placeholder={draft.mode === 'trunk' ? 'hepsi' : undefined}
+                      placeholder={draft.mode === 'trunk' ? t('switchPorts.allVlans') : undefined}
                       onChange={(e) => updateDraft(draft.id, { vlanText: e.target.value })}
                       className={`w-20 rounded border px-1 py-1 font-mono disabled:bg-slate-100 ${
                         invalid ? 'border-rose-400' : 'border-slate-300'
                       } ${focusRing}`}
                     />
                   </td>
-                  <td className="py-1.5 pr-2">
+                  <td className="py-1.5 pe-2">
                     <input
                       type="checkbox"
-                      aria-label={`${draft.id} açık`}
+                      aria-label={t('switchPorts.enabledLabel', { port: draft.id })}
                       checked={draft.enabled}
                       onChange={(e) => updateDraft(draft.id, { enabled: e.target.checked })}
                       className={`h-4 w-4 accent-sky-700 ${focusRing}`}
@@ -146,7 +148,7 @@ function SwitchPortsTable({ device, ports, onUpdateDevice, connectedPortIds = no
       </div>
       {invalidIds.length > 0 && (
         <p className="text-xs text-rose-700" role="alert">
-          VLAN numarası 1 ile 4094 arasında olmalı: {invalidIds.join(', ')}
+          {t('switchPorts.invalidVlans', { ports: invalidIds.join(', ') })}
         </p>
       )}
       <button
@@ -154,7 +156,7 @@ function SwitchPortsTable({ device, ports, onUpdateDevice, connectedPortIds = no
         disabled={invalidIds.length > 0}
         className={`self-start rounded-md bg-sky-700 px-4 py-2 text-sm font-medium text-white hover:bg-sky-800 disabled:bg-slate-300 ${focusRing}`}
       >
-        Port ayarlarını kaydet
+        {t('switchPorts.save')}
       </button>
     </form>
   )
