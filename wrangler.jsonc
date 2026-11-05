@@ -1,0 +1,11 @@
+// Cloudflare Workers static assets deployment (no Worker script; build output only).
+// Name must be lowercase: Cloudflare requirement.
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "agarizalab",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "single-page-application"
+  }
+}
