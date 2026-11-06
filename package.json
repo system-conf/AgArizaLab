@@ -11,7 +11,10 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint .",
-    "deploy": "npm run build && wrangler deploy"
+    "deploy": "npm run build && wrangler deploy",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "typecheck:e2e": "tsc -p tsconfig.e2e.json"
   },
   "dependencies": {
     "@xyflow/react": "^12.12.1",
@@ -27,6 +30,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.65.0",
     "@tailwindcss/vite": "^4.3.4",
     "@types/node": "^26.6.6",
     "@types/react": "^19.3.0",

@@ -148,3 +148,72 @@ describe('PortFactory', () => {
     expect(cable).toBe('copperStraight')
   })
 })
+
+describe('the models added with the palette redesign', () => {
+  const factory = seededFactory(11)
+  const devices = [
+    ['isp', 'internetCloud'],
+    ['dsl', 'dslModem'],
+    ['cable', 'cableModem'],
+    ['desk', 'switch5'],
+    ['tv', 'smartTv'],
+    ['mfp', 'multifunctionPrinter'],
+    ['edge', 'router3Port'],
+    ['hq', 'router4PortSerial'],
+    ['branch', 'router2PortSerial'],
+    ['floor', 'switch16Poe'],
+    ['access', 'switch16'],
+    ['core', 'switch24Gig'],
+    ['poeCore', 'switch24GigPoe'],
+    ['rack', 'rackServer'],
+  ].map(([id = '', modelId = '']) => factory.createDevice(modelOf(modelId), id, id))
+  const cables: readonly [string, string, string, string][] = [
+    ['dsl', 'DSL', 'isp', 'eth0'],
+    ['cable', 'Cable', 'isp', 'eth1'],
+    ['dsl', 'LAN1', 'desk', 'Gi0/1'],
+    ['desk', 'Gi0/2', 'tv', 'eth0'],
+    ['edge', 'Gi0/0', 'isp', 'eth2'],
+    ['edge', 'Gi0/1', 'floor', 'Fa0/1'],
+    ['floor', 'Fa0/2', 'mfp', 'eth0'],
+    ['hq', 'Se0/1/0', 'branch', 'Se0/0/0'],
+    ['hq', 'Gi0/0', 'core', 'Gi1/0/1'],
+    ['core', 'Gi1/1/1', 'poeCore', 'Gi1/1/1'],
+    ['core', 'Gi1/0/2', 'rack', 'eth0'],
+    ['core', 'Gi1/0/3', 'rack', 'eth1'],
+    ['access', 'Gi0/1', 'core', 'Gi1/0/4'],
+  ]
+
+  it('can be cabled into one lab that passes StateInvariants', () => {
+    const rules = new CableRules()
+    let state: NetworkState = { devices, links: [] }
+    cables.forEach(([deviceA, portA, deviceB, portB], index) => {
+      const a = { deviceId: deviceA, portId: portA }
+      const b = { deviceId: deviceB, portId: portB }
+      const cable = rules.autoCable(state, a, b)
+      expect(cable, `${deviceA} ${portA} – ${deviceB} ${portB}`).not.toBeNull()
+      if (cable === null || cable === 'wireless') return
+      const link = cable === 'serial' ? { cable, dceEnd: 'a' as const } : { cable }
+      state = { ...state, links: [...state.links, { id: `link${index}`, a, b, connected: true, ...link }] }
+    })
+    expect(state.links).toHaveLength(cables.length)
+    expect(invariants.violations(state)).toEqual([])
+  })
+
+  it('sets the modems up like the wireless home router (DHCP line port, LAN 192.168.0.1)', () => {
+    for (const id of ['dsl', 'cable']) {
+      const modem = devices.find((device) => device.id === id)
+      const linePort = modem?.ports.find((port) => port.role === 'routed')
+      expect(linePort, id).toMatchObject({ adminUp: true, l3: { ipv4: { addressing: 'dhcp' } } })
+      expect(modem?.routing?.staticRoutes[0]?.exitInterfaceId, id).toBe(linePort?.id)
+      expect(modem?.switching?.svis[0]?.l3.ipv4.address, id).toBe(HOME_ROUTER_LAN.address)
+    }
+  })
+
+  it('gives the smart TV and the multifunction printer host settings and a Wi-Fi NIC', () => {
+    for (const id of ['tv', 'mfp']) {
+      const device = devices.find((candidate) => candidate.id === id)
+      expect(device?.host, id).toEqual({ defaultGateway: '', dnsServers: [], appLinks: [] })
+      expect(device?.ports.map((port) => port.id), id).toEqual(['eth0', 'wlan0'])
+    }
+  })
+})

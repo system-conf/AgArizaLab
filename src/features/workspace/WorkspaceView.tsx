@@ -2,9 +2,10 @@ import { useReactFlow } from '@xyflow/react'
 import { LayoutGrid, X } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { Device } from '../../domain'
+import type { CableTool, Device } from '../../domain'
 import { focusRing } from '../shared/focusRing'
 import { useMediaQuery } from '../shared/useMediaQuery'
+import { SimplePduHint, SimulationMapLayer, SimulationPanel, SimulationToolbar, useSimulation } from '../simulation'
 import CableHint from './cable/CableHint'
 import PortPicker from './cable/PortPicker'
 import SsidPicker from './cable/SsidPicker'
@@ -76,6 +77,8 @@ function WorkspaceView(props: WorkspaceViewProps) {
     (deviceId: string) => doc.state.devices.find((device) => device.id === deviceId)?.name ?? deviceId,
     [doc],
   )
+  // Simulation (U3): mode switch, Simple PDU tool, map packets, panel.
+  const simulation = useSimulation({ network: doc.state, nameOf, notify: toasts.show, title: doc.meta.title })
 
   // A different lab was opened (autosave restore, File menu, exercise): show all of it.
   useEffect(() => {
@@ -111,6 +114,17 @@ function WorkspaceView(props: WorkspaceViewProps) {
     setPaletteOpen(false)
   }
 
+  function chooseCableFromPalette(tool: CableTool) {
+    chooseCable(tool)
+    setPaletteOpen(false)
+  }
+
+  /** Simulation (U3): a cable tool and the Simple PDU tool never run together. */
+  function chooseCable(tool: CableTool) {
+    simulation.pduTool.cancel()
+    cable.choose(tool)
+  }
+
   function runCommand(command: WorkspaceCommand) {
     switch (command.kind) {
       case 'undo':
@@ -122,6 +136,7 @@ function WorkspaceView(props: WorkspaceViewProps) {
       case 'escape':
         if (shortcutsOpen) return setShortcutsOpen(false)
         if (cable.state.active) return cable.back()
+        if (simulation.pduTool.active) return simulation.pduTool.back()
         return setSelection(EMPTY_SELECTION)
       case 'cableTool':
         if (!editable) return undefined
@@ -142,6 +157,7 @@ function WorkspaceView(props: WorkspaceViewProps) {
         const annotationId = annotationIdOf(nodeId)
         if (annotationId !== null) setEditingId(annotationId)
         else if (cable.state.active) cable.clickDevice(nodeId)
+        else if (simulation.pduTool.active) simulation.pduTool.click(nodeId)
       },
     },
     snapToGrid,
@@ -214,24 +230,33 @@ function WorkspaceView(props: WorkspaceViewProps) {
             <h2 id="palette-heading" className="mb-2 text-sm font-semibold text-slate-900">
               {t('palette.title')}
             </h2>
-            <DevicePalette models={deviceCatalog} onAdd={addModel} />
+            <DevicePalette models={deviceCatalog} onAdd={addModel} onChooseCable={chooseCableFromPalette} activeCable={cable.state.tool} />
           </aside>
         )}
         <main className="flex min-w-0 flex-1 flex-col">
-          <CanvasToolbar
-            activeTool={cable.state.tool}
-            onSelectTool={cable.stop}
-            onChooseCable={cable.choose}
-            cablesEnabled={editable}
-            lockedNote={lockedNote}
-            onAddNote={addNote}
-            canDelete={deletableCount > 0}
-            onDelete={actions.deleteSelection}
-            snapToGrid={snapToGrid}
-            onToggleSnap={() => setSnapToGrid((snap) => !snap)}
-            canAlign={(editable ? selection.deviceIds.length : 0) + selection.annotationIds.length > 1}
-            onAlign={actions.align}
-          />
+          {/* Simulation (U3): the mode switch sits at the end of the canvas toolbar. */}
+          <div className="flex min-w-0">
+            <div className="min-w-0 flex-1">
+              <CanvasToolbar
+                activeTool={cable.state.tool}
+                onSelectTool={() => {
+                  cable.stop()
+                  simulation.pduTool.cancel()
+                }}
+                onChooseCable={chooseCable}
+                cablesEnabled={editable}
+                lockedNote={lockedNote}
+                onAddNote={addNote}
+                canDelete={deletableCount > 0}
+                onDelete={actions.deleteSelection}
+                snapToGrid={snapToGrid}
+                onToggleSnap={() => setSnapToGrid((snap) => !snap)}
+                canAlign={(editable ? selection.deviceIds.length : 0) + selection.annotationIds.length > 1}
+                onAlign={actions.align}
+              />
+            </div>
+            <SimulationToolbar simulation={simulation} onToolStart={cable.stop} />
+          </div>
           <div className="relative min-h-0 flex-1">
             <AnnotationActionsContext.Provider value={annotationActions}>
               <WorkspaceCanvas
@@ -242,8 +267,10 @@ function WorkspaceView(props: WorkspaceViewProps) {
                 onDropModel={actions.addModelAt}
                 onDeviceClick={(deviceId) => {
                   if (cable.state.active) cable.clickDevice(deviceId)
+                  else if (simulation.pduTool.active) simulation.pduTool.click(deviceId)
                 }}
-                cableActive={cable.state.active}
+                // Simulation (U3): picking Simple PDU ends works like cabling (no selection, crosshair).
+                cableActive={cable.state.active || simulation.pduTool.active}
                 cableHighlight={cable.highlightOf}
                 snapToGrid={snapToGrid}
                 devicesDraggable={editable}
@@ -252,6 +279,9 @@ function WorkspaceView(props: WorkspaceViewProps) {
               >
                 <PacketTraceLayer trace={terminals.trace} layout={doc.layout} />
                 <CableHint state={cable.state} nameOf={nameOf} />
+                {/* Simulation (U3) */}
+                <SimulationMapLayer simulation={simulation} layout={doc.layout} links={doc.state.links} nameOf={nameOf} />
+                <SimplePduHint state={simulation.pduTool.state} nameOf={nameOf} />
                 {menu && menuDevice && (
                   <PortPicker
                     device={menuDevice}
@@ -279,6 +309,8 @@ function WorkspaceView(props: WorkspaceViewProps) {
             )}
             <ToastRegion toasts={toasts.toasts} onDismiss={toasts.dismiss} />
           </div>
+          {/* Simulation (U3) */}
+          {simulation.mode === 'simulation' && <SimulationPanel simulation={simulation} nameOf={nameOf} />}
         </main>
         {wide && <aside className="w-80 shrink-0 border-s border-slate-200 bg-white xl:w-96">{properties()}</aside>}
         {!wide && selectedCount > 0 && !paletteOpen && (
@@ -312,7 +344,7 @@ function WorkspaceView(props: WorkspaceViewProps) {
                 <X className="h-5 w-5" aria-hidden="true" />
               </button>
             </div>
-            <DevicePalette models={deviceCatalog} onAdd={addModel} />
+            <DevicePalette models={deviceCatalog} onAdd={addModel} onChooseCable={chooseCableFromPalette} activeCable={cable.state.tool} />
           </div>
         )}
         {shortcutsOpen && <ShortcutsHelp onClose={() => setShortcutsOpen(false)} />}

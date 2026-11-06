@@ -518,3 +518,40 @@ Interim agreement: S2 needs S1 for real frames; S2's tests may use a test `LinkL
 6. Yes — I3 prints per-echo lines when echoes differ (Windows behaviour).
 7. Added to Phase 3 (BACKLOG items 4–6): `.pcap` export (U3 builds the encoder; I3 wires the download),
    simulator in a Web Worker (I3), Playwright e2e + GitHub Actions CI (separate track T1, before V3).
+
+### Additions after S2 (2026-11-06)
+- **Accepted divergence (§10.3):** when a router has no route to a private address, or fails ARP for a
+  connected destination, the simulator's tracert shows that router once as a normal hop (time exceeded
+  at TTL n) and then "reports: Destination host unreachable" at TTL n+1 (Cisco/Windows behaviour); the
+  rule engine prints only the "reports:" line at hop n. O3 skips this case; I3 updates the expectation.
+- **Result mapping (§10.1):** a ping from a router with no route to a public address is a timeout; with
+  no route to a private address it is unreachable from the router's own source address.
+- **Phase 4 note:** unresolved static routes stay in `runtime.network.routes` with `exitInterfaceId: null`;
+  `show ip route` hides them.
+- The cloud hands UDP/TCP to services only when `serviceLayer.listens()` is true; otherwise it drops
+  silently (no ICMP). S3 listens on TCP 80 for public addresses if it wants to answer with RST itself.
+
+### Additions after S1 (2026-11-06) — to do in wave 3.2 (I3 owns the kernel change)
+1. Add optional `LinkLayer.onSettled?(ctx)`, called by `SimulationKernel.create` per device after the
+   settle `runUntilIdle`; S1's interim `boot`-flow rule (learn but never store start-up traffic) is then
+   replaced by flushing in `onSettled`.
+2. Router counting for §10.1: a router waiting for ARP produces `buffered` (layer 3) then `sent`, not
+   `forwarded` — count `forwarded`, `buffered` and `sent` layer-3 events per router.
+3. New `SimReason` codes: `noEgressPort` (frame with no other port in its VLAN; S1 uses `filtered`) and
+   `noDestinationMac` (cloud asked to send without a destination; S1 uses `unsupported`).
+4. §7.1 per-interface ARP reference → MODEL_V2 §11 migration notes ("v2 answers ARP per interface").
+
+### Additions after S3 and U3 (2026-11-06) — to do in wave 3.2
+5. `Ipv4Send.notes?: readonly SimNote[]` — S2 adds them as out-notes on the `created` event (S3 already
+   passes them via `NotedIpv4Send`; S2's `PacketSender` currently drops them).
+6. Optional DHCP pool id on the wire model is NOT added; S3's configuration lookup stays.
+7. No automatic DHCP DORA at start/link-up for now (keeps fresh engines identical to the rule engine);
+   revisit when the UI can show it nicely.
+8. `SimTransmission` gets the arrival event id (or `SimEvent` the arriving transmission id) so the UI no
+   longer matches by time/device/port/frame.
+9. `IpQuote.totalLength` so ICMP error quotes in .pcap are exact.
+10. Docs: `InspectorLayer.title` is a protocol/port label; the layer name comes from `SimMessages.layer`.
+11. Later: PCAPNG writer to export serial frames (Cisco HDLC) on a second interface.
+12. U3's player exists only after Simulation mode opened once — I3 creates it up front; terminal requests
+    go to the same player (simulation mode: queued; realtime: `runUntilDone`); DHCP effects are applied to
+    the lab document so `reconfigure` after edits keeps them; the player is the Web Worker seam.

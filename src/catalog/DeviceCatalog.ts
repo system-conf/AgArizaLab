@@ -1,5 +1,5 @@
 // The device catalog: every model the workspace palette offers (docs/MODEL_V2.md §7).
-import type { DeviceCategory, DeviceModel } from '../domain'
+import type { DeviceCategory, DeviceModel, DeviceSubcategory } from '../domain'
 import { cloudModels } from './models/cloud'
 import type { CatalogDeviceModel } from './models/defineModel'
 import { endDeviceModels } from './models/endDevices'
@@ -37,6 +37,11 @@ export class DeviceCatalog {
   /** Models of one palette category, in catalog order. */
   inCategory(category: DeviceCategory): CatalogDeviceModel[] {
     return this.models.filter((model) => model.category === category)
+  }
+
+  /** Models of one palette sub-category, in catalog order. */
+  inSubcategory(subcategory: DeviceSubcategory): CatalogDeviceModel[] {
+    return this.models.filter((model) => model.subcategory === subcategory)
   }
 }
 

@@ -31,103 +31,188 @@
   "models": {
     "router2Port": {
       "name": "Router (2 port)",
-      "description": "İki Gigabit Ethernet portu (LAN ve WAN) ve konsol portu olan şube router’ı."
+      "description": "İki Gigabit Ethernet portu (LAN ve WAN) ve konsol portu olan şube router’ı.",
+      "useCase": "Bir LAN’ı internete ya da başka bir şubeye bağlamak için kullan."
     },
     "router4Port": {
       "name": "Router (4 port)",
-      "description": "Birden fazla LAN veya bağlantı için dört Gigabit Ethernet portlu router."
+      "description": "Birden fazla LAN veya bağlantı için dört Gigabit Ethernet portlu router.",
+      "useCase": "Küçük bir merkez için: birkaç LAN, başka router’lara bağlantılar ya da boş portu kalan router-on-a-stick."
     },
     "router2PortSerial": {
       "name": "Router (2 port + seri)",
-      "description": "İki Gigabit Ethernet portu ve iki portlu seri WAN kartı olan router."
+      "description": "İki Gigabit Ethernet portu ve iki portlu seri WAN kartı olan router.",
+      "useCase": "Klasik WAN çalışmaları: iki şubeyi seri hatla bağla, statik route’ları dene."
     },
     "switch8": {
       "name": "Switch (8 port)",
-      "description": "Sekiz Fast Ethernet portlu küçük yönetilebilir switch."
+      "description": "Sekiz Fast Ethernet portlu küçük yönetilebilir switch.",
+      "useCase": "Birkaç cihazlık küçük ofis ya da çalışma; VLAN’ın temelleri için ideal."
     },
     "switch8Poe": {
       "name": "PoE switch (8 port)",
-      "description": "Telefon, kamera ve erişim noktalarına elektrik de veren (PoE) sekiz Fast Ethernet port."
+      "description": "Telefon, kamera ve erişim noktalarına elektrik de veren (PoE) sekiz Fast Ethernet port.",
+      "useCase": "Birkaç IP telefonu, kamerayı ya da erişim noktasını adaptörsüz beslemek için kullan."
     },
     "switch24": {
       "name": "Switch (24 port)",
-      "description": "24 Fast Ethernet port ve iki Gigabit uplink portu."
+      "description": "24 Fast Ethernet port ve iki Gigabit uplink portu.",
+      "useCase": "Bir ofis katı için klasik erişim switch’i; uplink’lerden merkeze trunk çek."
     },
     "switch24Poe": {
       "name": "PoE switch (24 port)",
-      "description": "24 Fast Ethernet PoE port ve iki Gigabit uplink portu."
+      "description": "24 Fast Ethernet PoE port ve iki Gigabit uplink portu.",
+      "useCase": "Elektrik isteyen IP telefonlar ve erişim noktaları olan ofis katı için seç."
     },
     "switch48": {
       "name": "Switch (48 port)",
-      "description": "48 Fast Ethernet port ve dört Gigabit fiber uplink portu."
+      "description": "48 Fast Ethernet port ve dört Gigabit fiber uplink portu.",
+      "useCase": "Büyük kat ya da kabin; merkeze uzun mesafe için fiber uplink’leri kullan."
     },
     "switch48Poe": {
       "name": "PoE switch (48 port)",
-      "description": "48 Fast Ethernet PoE port ve dört Gigabit fiber uplink portu."
+      "description": "48 Fast Ethernet PoE port ve dört Gigabit fiber uplink portu.",
+      "useCase": "Çok sayıda telefon, kamera ya da erişim noktası olan büyük kat için seç."
     },
     "l3Switch24": {
       "name": "Katman 3 switch (24 port)",
-      "description": "24 Gigabit port ve dört fiber uplink; VLAN’lar arasında yönlendirme yapabilir."
+      "description": "24 Gigabit port ve dört fiber uplink; VLAN’lar arasında yönlendirme yapabilir.",
+      "useCase": "Merkez / dağıtım katmanı: bina içinde VLAN’lar arasında router’sız yönlendirme yap."
     },
     "hub8": {
       "name": "Hub (8 port)",
-      "description": "Eski tip hub: her çerçeveyi bütün portlara tekrarlar."
+      "description": "Eski tip hub: her çerçeveyi bütün portlara tekrarlar.",
+      "useCase": "Switch’lerin neden hub’ların yerini aldığını gör: her cihaz her çerçeveyi alır."
     },
     "accessPoint": {
       "name": "Erişim noktası",
-      "description": "Wi-Fi istemcilerini kablolu ağa bağlar; tek uplink portu vardır."
+      "description": "Wi-Fi istemcilerini kablolu ağa bağlar; tek uplink portu vardır.",
+      "useCase": "Var olan kablolu ağa Wi-Fi eklemek için; bir switch portuna bağla."
     },
     "wirelessRouter": {
       "name": "Kablosuz router",
-      "description": "Ev / küçük ofis router’ı: internet portu, dört LAN portu, Wi-Fi, DHCP."
+      "description": "Ev / küçük ofis router’ı: internet portu, dört LAN portu, Wi-Fi, DHCP.",
+      "useCase": "Ev ya da çok küçük ofis: internet, Wi-Fi ve otomatik adres için tek kutu."
     },
     "pc": {
       "name": "Bilgisayar",
-      "description": "Kablolu ağ kartı ve komut istemi olan masaüstü bilgisayar."
+      "description": "Kablolu ağ kartı ve komut istemi olan masaüstü bilgisayar.",
+      "useCase": "Bir kullanıcının masasındaki bilgisayar; ağı ping ve ipconfig ile test et."
     },
     "laptop": {
       "name": "Dizüstü bilgisayar",
-      "description": "Kablolu ve Wi-Fi ağ kartı olan dizüstü bilgisayar."
+      "description": "Kablolu ve Wi-Fi ağ kartı olan dizüstü bilgisayar.",
+      "useCase": "Kablo ile Wi-Fi arasında geçiş yapan kullanıcı için seç."
     },
     "printer": {
       "name": "Ağ yazıcısı",
-      "description": "Kablolu portla ağa bağlanan yazıcı."
+      "description": "Kablolu portla ağa bağlanan yazıcı.",
+      "useCase": "Ofisin ortak yazıcısı; bilgisayarlar bulabilsin diye sabit adres ver."
     },
     "ipPhone": {
       "name": "IP telefon",
-      "description": "Ağ üzerinden konuşan masa telefonu."
+      "description": "Ağ üzerinden konuşan masa telefonu.",
+      "useCase": "Ses VLAN’ı ve PoE çalışması için; PoE switch portuna bağla."
     },
     "pos": {
       "name": "Kasa (POS)",
-      "description": "Kablolu portu olan kasa / ödeme terminali."
+      "description": "Kablolu portu olan kasa / ödeme terminali.",
+      "useCase": "Dükkân ya da restoran kasası; ödeme servisine ve mutfak ekranına ulaşmalı."
     },
     "ipCamera": {
       "name": "IP kamera",
-      "description": "Görüntüyü ağ üzerinden gönderen güvenlik kamerası."
+      "description": "Görüntüyü ağ üzerinden gönderen güvenlik kamerası.",
+      "useCase": "PoE switch’e bağlı güvenlik kamerası; NVR’a ulaşabilmeli."
     },
     "kitchenDisplay": {
       "name": "Mutfak ekranı",
-      "description": "Kasadan gelen siparişleri gösteren mutfak ekranı."
+      "description": "Kasadan gelen siparişleri gösteren mutfak ekranı.",
+      "useCase": "Restoran senaryoları: kasadan gelen siparişleri gösterir."
     },
     "smartphone": {
       "name": "Akıllı telefon",
-      "description": "Ağa Wi-Fi ile bağlanan telefon."
+      "description": "Ağa Wi-Fi ile bağlanan telefon.",
+      "useCase": "Wi-Fi kullanıcısı: SSID, şifre ve misafir ağlarını test et."
     },
     "tablet": {
       "name": "Tablet",
-      "description": "Ağa Wi-Fi ile bağlanan tablet."
+      "description": "Ağa Wi-Fi ile bağlanan tablet.",
+      "useCase": "Garson tableti ya da misafir cihazı gibi bir Wi-Fi cihazı."
     },
     "server": {
       "name": "Sunucu",
-      "description": "İki ağ kartlı sunucu; DHCP ve DNS çalıştırabilir."
+      "description": "İki ağ kartlı sunucu; DHCP ve DNS çalıştırabilir.",
+      "useCase": "Küçük bir ağ için dosya, DHCP ya da DNS sunucusu."
     },
     "nvr": {
       "name": "Kayıt cihazı (NVR)",
-      "description": "IP kameraların görüntüsünü kaydeder."
+      "description": "IP kameraların görüntüsünü kaydeder.",
+      "useCase": "Kameraları kaydeder; kamera VLAN’ına koy ya da kameralara ulaşmasını sağla."
     },
     "internetCloud": {
       "name": "İnternet (servis sağlayıcı)",
-      "description": "İnternet servis sağlayıcısı: her port bir internet hattıdır."
+      "description": "İnternet servis sağlayıcısı: her port bir internet hattıdır.",
+      "useCase": "Laboratuvarın internete çıkması gerekiyorsa ekle; router’ın WAN portunu bir portuna bağla."
+    },
+    "router3Port": {
+      "name": "Router (3 port)",
+      "description": "Üç Gigabit Ethernet portlu router: örneğin LAN, WAN ve ikinci bir LAN ya da DMZ.",
+      "useCase": "Bir yerde iki ayrı ağ (örneğin personel ve misafir) ve bir internet hattı varsa bunu seç."
+    },
+    "router4PortSerial": {
+      "name": "Router (4 port + seri)",
+      "description": "Dört Gigabit Ethernet portu ve iki portlu seri WAN modülü olan router.",
+      "useCase": "Merkez ofis router’ı: birkaç LAN ve şubelere giden seri hatlar."
+    },
+    "switch5": {
+      "name": "Masaüstü switch (5 port)",
+      "description": "Beş Gigabit portlu, konsol portu olmayan, tak-çalıştır küçük switch.",
+      "useCase": "Bir masaya ya da küçük bir odaya birkaç port daha eklemek için kullan."
+    },
+    "switch16": {
+      "name": "Switch (16 port)",
+      "description": "16 Fast Ethernet port ve iki Gigabit uplink portu.",
+      "useCase": "8 portun yetmediği bir kat ya da dükkân için seç."
+    },
+    "switch16Poe": {
+      "name": "PoE switch (16 port)",
+      "description": "16 Fast Ethernet PoE port ve iki Gigabit uplink portu.",
+      "useCase": "Orta büyüklükte kamera ya da telefon kurulumları: elektrik ve veri tek kabloda."
+    },
+    "switch24Gig": {
+      "name": "Gigabit switch (24 port)",
+      "description": "24 Gigabit port ve dört Gigabit fiber uplink portu.",
+      "useCase": "Kullanıcılar büyük dosyalar taşıyorsa ya da sunucular erişim katmanındaysa seç."
+    },
+    "switch24GigPoe": {
+      "name": "Gigabit PoE switch (24 port)",
+      "description": "24 Gigabit PoE port ve dört Gigabit fiber uplink portu.",
+      "useCase": "Modern erişim katmanı: hızlı masalar, switch’ten beslenen erişim noktaları ve kameralar."
+    },
+    "dslModem": {
+      "name": "DSL modem (Wi-Fi)",
+      "description": "İnternet sağlayıcının verdiği modem-router: DSL hat portu, dört LAN portu, Wi-Fi, DHCP. Laboratuvarda telefon hattı, İnternet bulutuna giden bakır kablodur.",
+      "useCase": "Telefon hattından internet alan ev ya da dükkân; DSL portunu İnternet bulutuna bağla."
+    },
+    "cableModem": {
+      "name": "Kablo modem (Wi-Fi)",
+      "description": "Kablo TV internetinin modem-router’ı: kablo hat portu, iki LAN portu, Wi-Fi, DHCP. Laboratuvarda koaksiyel hat, İnternet bulutuna giden bakır kablodur.",
+      "useCase": "Kablo TV sağlayıcısından gelen ev interneti; kablosuz router gibi çalışır."
+    },
+    "multifunctionPrinter": {
+      "name": "Çok fonksiyonlu yazıcı",
+      "description": "Kablolu portu ve Wi-Fi’si olan yazıcı, tarayıcı ve fotokopi makinesi.",
+      "useCase": "Kabloyla ya da Wi-Fi ile bağlanan ofis yazıcısı; sabit adres ver."
+    },
+    "smartTv": {
+      "name": "Akıllı TV / ekran",
+      "description": "Kablolu portu ve Wi-Fi’si olan televizyon ya da bilgi ekranı; içeriği ağdan oynatır.",
+      "useCase": "Toplantı odası, lobi ya da ev: internete ya da medya sunucusuna ihtiyaç duyan ekran."
+    },
+    "rackServer": {
+      "name": "Rack sunucu (4 ağ kartı)",
+      "description": "Dört ağ kartlı sistem odası sunucusu; DHCP ve DNS çalıştırabilir.",
+      "useCase": "Sistem odası senaryoları: kullanıcı, yedekleme ve yönetim için ayrı ağlar."
     }
   },
   "media": {
@@ -195,5 +280,25 @@
       "name": "Diğer portlar",
       "description": "Bu modelde normalde olmayan portlar."
     }
+  },
+  "sections": {
+    "network": "Ağ cihazları",
+    "endDevices": "Uç cihazlar",
+    "iot": "IoT / endüstriyel",
+    "misc": "Diğer"
+  },
+  "subcategories": {
+    "router": "Router’lar",
+    "switch": "Switch’ler",
+    "hub": "Hub’lar",
+    "wireless": "Kablosuz",
+    "security": "Güvenlik",
+    "wanIsp": "WAN / İnternet",
+    "pcLaptop": "Bilgisayarlar",
+    "server": "Sunucular",
+    "printer": "Yazıcılar",
+    "phoneTablet": "Telefon ve tablet",
+    "cameraNvr": "Kamera ve NVR",
+    "posDisplay": "Kasa ve ekranlar"
   }
 }

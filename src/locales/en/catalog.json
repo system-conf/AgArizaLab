@@ -31,103 +31,188 @@
   "models": {
     "router2Port": {
       "name": "Router (2 ports)",
-      "description": "Branch router with two Gigabit Ethernet ports (LAN and WAN) and a console port."
+      "description": "Branch router with two Gigabit Ethernet ports (LAN and WAN) and a console port.",
+      "useCase": "To connect one LAN to the internet or to another site."
     },
     "router4Port": {
       "name": "Router (4 ports)",
-      "description": "Router with four Gigabit Ethernet ports for several LANs or links."
+      "description": "Router with four Gigabit Ethernet ports for several LANs or links.",
+      "useCase": "For a small core: several LANs, links to other routers, or router-on-a-stick with ports to spare."
     },
     "router2PortSerial": {
       "name": "Router (2 ports + serial)",
-      "description": "Router with two Gigabit Ethernet ports and a two-port serial WAN card."
+      "description": "Router with two Gigabit Ethernet ports and a two-port serial WAN card.",
+      "useCase": "Classic WAN labs: join two sites over a serial line and practise static routes."
     },
     "switch8": {
       "name": "Switch (8 ports)",
-      "description": "Small managed switch with eight Fast Ethernet ports."
+      "description": "Small managed switch with eight Fast Ethernet ports.",
+      "useCase": "Small office or a lab with a handful of devices; VLAN basics."
     },
     "switch8Poe": {
       "name": "PoE switch (8 ports)",
-      "description": "Eight Fast Ethernet ports that also power phones, cameras and access points (PoE)."
+      "description": "Eight Fast Ethernet ports that also power phones, cameras and access points (PoE).",
+      "useCase": "To power a few IP phones, cameras or an access point without adapters."
     },
     "switch24": {
       "name": "Switch (24 ports)",
-      "description": "24 Fast Ethernet ports and two Gigabit uplink ports."
+      "description": "24 Fast Ethernet ports and two Gigabit uplink ports.",
+      "useCase": "Classic access switch for an office floor; trunk to the core over the uplinks."
     },
     "switch24Poe": {
       "name": "PoE switch (24 ports)",
-      "description": "24 Fast Ethernet PoE ports and two Gigabit uplink ports."
+      "description": "24 Fast Ethernet PoE ports and two Gigabit uplink ports.",
+      "useCase": "An office floor with IP phones and access points that need power."
     },
     "switch48": {
       "name": "Switch (48 ports)",
-      "description": "48 Fast Ethernet ports and four Gigabit fiber uplink ports."
+      "description": "48 Fast Ethernet ports and four Gigabit fiber uplink ports.",
+      "useCase": "A large floor or wiring closet; fiber uplinks for long runs to the core."
     },
     "switch48Poe": {
       "name": "PoE switch (48 ports)",
-      "description": "48 Fast Ethernet PoE ports and four Gigabit fiber uplink ports."
+      "description": "48 Fast Ethernet PoE ports and four Gigabit fiber uplink ports.",
+      "useCase": "A large floor with many phones, cameras or access points."
     },
     "l3Switch24": {
       "name": "Layer 3 switch (24 ports)",
-      "description": "24 Gigabit ports and four fiber uplinks; can route between VLANs."
+      "description": "24 Gigabit ports and four fiber uplinks; can route between VLANs.",
+      "useCase": "Core / distribution: route between VLANs inside the building without a router."
     },
     "hub8": {
       "name": "Hub (8 ports)",
-      "description": "Old-style hub: repeats every frame to every port."
+      "description": "Old-style hub: repeats every frame to every port.",
+      "useCase": "To see why switches replaced hubs: every device gets every frame."
     },
     "accessPoint": {
       "name": "Access point",
-      "description": "Brings Wi-Fi clients into the wired network; one uplink port."
+      "description": "Brings Wi-Fi clients into the wired network; one uplink port.",
+      "useCase": "To add Wi-Fi to an existing wired network; cable it to a switch port."
     },
     "wirelessRouter": {
       "name": "Wireless router",
-      "description": "Home / small-office router: internet port, four LAN ports, Wi-Fi, DHCP."
+      "description": "Home / small-office router: internet port, four LAN ports, Wi-Fi, DHCP.",
+      "useCase": "Home or very small office: one box for internet, Wi-Fi and automatic addresses."
     },
     "pc": {
       "name": "PC",
-      "description": "Desktop computer with a wired network card and a command prompt."
+      "description": "Desktop computer with a wired network card and a command prompt.",
+      "useCase": "A user’s desk computer; test the network with ping and ipconfig."
     },
     "laptop": {
       "name": "Laptop",
-      "description": "Laptop with a wired and a Wi-Fi network card."
+      "description": "Laptop with a wired and a Wi-Fi network card.",
+      "useCase": "A user who switches between cable and Wi-Fi."
     },
     "printer": {
       "name": "Network printer",
-      "description": "Printer on the network with a wired port."
+      "description": "Printer on the network with a wired port.",
+      "useCase": "Shared office printer; give it a fixed address so the PCs can find it."
     },
     "ipPhone": {
       "name": "IP phone",
-      "description": "Desk phone that talks over the network."
+      "description": "Desk phone that talks over the network.",
+      "useCase": "Voice VLAN and PoE practice; cable it to a PoE switch port."
     },
     "pos": {
       "name": "POS terminal",
-      "description": "Cash register / payment terminal with a wired port."
+      "description": "Cash register / payment terminal with a wired port.",
+      "useCase": "Shop or restaurant checkout; it must reach the payment service and the kitchen display."
     },
     "ipCamera": {
       "name": "IP camera",
-      "description": "Security camera that streams over the network."
+      "description": "Security camera that streams over the network.",
+      "useCase": "Security camera on a PoE switch; it must reach the NVR."
     },
     "kitchenDisplay": {
       "name": "Kitchen display",
-      "description": "Screen in the kitchen that shows orders from the POS."
+      "description": "Screen in the kitchen that shows orders from the POS.",
+      "useCase": "Restaurant labs: shows the orders the POS terminal sends."
     },
     "smartphone": {
       "name": "Smartphone",
-      "description": "Phone that joins the network over Wi-Fi."
+      "description": "Phone that joins the network over Wi-Fi.",
+      "useCase": "A Wi-Fi user: test SSIDs, passwords and guest networks."
     },
     "tablet": {
       "name": "Tablet",
-      "description": "Tablet that joins the network over Wi-Fi."
+      "description": "Tablet that joins the network over Wi-Fi.",
+      "useCase": "A Wi-Fi device such as a waiter’s tablet or a guest’s device."
     },
     "server": {
       "name": "Server",
-      "description": "Server with two network cards; can run DHCP and DNS."
+      "description": "Server with two network cards; can run DHCP and DNS.",
+      "useCase": "File, DHCP or DNS server for a small network."
     },
     "nvr": {
       "name": "Video recorder (NVR)",
-      "description": "Records the IP cameras' video."
+      "description": "Records the IP cameras' video.",
+      "useCase": "Records the cameras; put it in the camera VLAN or let it reach them."
     },
     "internetCloud": {
       "name": "Internet (ISP)",
-      "description": "The internet service provider: each port is one internet line."
+      "description": "The internet service provider: each port is one internet line.",
+      "useCase": "Whenever the lab needs the internet; cable a router’s WAN port to one of its ports."
+    },
+    "router3Port": {
+      "name": "Router (3 ports)",
+      "description": "Router with three Gigabit Ethernet ports, e.g. LAN, WAN and a second LAN or a DMZ.",
+      "useCase": "When one site has two separate networks (e.g. staff and guests) plus an internet line."
+    },
+    "router4PortSerial": {
+      "name": "Router (4 ports + serial)",
+      "description": "Router with four Gigabit Ethernet ports and a two-port serial WAN module.",
+      "useCase": "Head-office router: several LANs plus serial lines to the branches."
+    },
+    "switch5": {
+      "name": "Desktop switch (5 ports)",
+      "description": "Compact plug-and-play switch with five Gigabit ports and no console port.",
+      "useCase": "To add a few more sockets on a desk or in a small room."
+    },
+    "switch16": {
+      "name": "Switch (16 ports)",
+      "description": "16 Fast Ethernet ports and two Gigabit uplink ports.",
+      "useCase": "A floor or a shop with more devices than an 8-port switch can take."
+    },
+    "switch16Poe": {
+      "name": "PoE switch (16 ports)",
+      "description": "16 Fast Ethernet PoE ports and two Gigabit uplink ports.",
+      "useCase": "Medium camera or phone installations: power and data on one cable."
+    },
+    "switch24Gig": {
+      "name": "Gigabit switch (24 ports)",
+      "description": "24 Gigabit ports and four Gigabit fiber uplink ports.",
+      "useCase": "When users move large files or servers sit on the access layer."
+    },
+    "switch24GigPoe": {
+      "name": "Gigabit PoE switch (24 ports)",
+      "description": "24 Gigabit PoE ports and four Gigabit fiber uplink ports.",
+      "useCase": "Modern access layer: fast desks plus access points and cameras powered by the switch."
+    },
+    "dslModem": {
+      "name": "DSL modem (Wi-Fi)",
+      "description": "Modem-router from the internet provider: DSL line port, four LAN ports, Wi-Fi, DHCP. In the lab the phone line is a copper cable to the Internet cloud.",
+      "useCase": "Typical home or shop internet over a phone line; cable its DSL port to the Internet cloud."
+    },
+    "cableModem": {
+      "name": "Cable modem (Wi-Fi)",
+      "description": "Modem-router for cable TV internet: cable line port, two LAN ports, Wi-Fi, DHCP. In the lab the coax line is a copper cable to the Internet cloud.",
+      "useCase": "Home internet from a cable TV provider; it works like the wireless router."
+    },
+    "multifunctionPrinter": {
+      "name": "Multifunction printer",
+      "description": "Printer, scanner and copier with a wired port and Wi-Fi.",
+      "useCase": "Office printer on cable or Wi-Fi; give it a fixed address."
+    },
+    "smartTv": {
+      "name": "Smart TV / display",
+      "description": "Television or info screen with a wired port and Wi-Fi; plays content from the network.",
+      "useCase": "Meeting room, lobby or home: a screen that needs the internet or a media server."
+    },
+    "rackServer": {
+      "name": "Rack server (4 NICs)",
+      "description": "Server-room server with four network cards; can run DHCP and DNS.",
+      "useCase": "Server-room labs: separate networks for users, backup and management."
     }
   },
   "media": {
@@ -195,5 +280,25 @@
       "name": "Other ports",
       "description": "Ports this model does not normally have."
     }
+  },
+  "sections": {
+    "network": "Network devices",
+    "endDevices": "End devices",
+    "iot": "IoT / industrial",
+    "misc": "Other"
+  },
+  "subcategories": {
+    "router": "Routers",
+    "switch": "Switches",
+    "hub": "Hubs",
+    "wireless": "Wireless",
+    "security": "Security",
+    "wanIsp": "WAN / ISP",
+    "pcLaptop": "PCs & laptops",
+    "server": "Servers",
+    "printer": "Printers",
+    "phoneTablet": "Phones & tablets",
+    "cameraNvr": "Cameras & NVR",
+    "posDisplay": "POS & displays"
   }
 }

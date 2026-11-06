@@ -33,6 +33,7 @@ export interface AppResources {
   lab: typeof lab
   deviceConfig: typeof deviceConfig
   simulation: typeof simulation
+  design: typeof import('../locales/en/design.json')
 }
 
 declare module 'i18next' {

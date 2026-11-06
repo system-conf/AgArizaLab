@@ -38,5 +38,17 @@
 13. **Product name** — the name now covers only part of the product (troubleshooting); decide a
     broader name before the public release (owner's decision).
 
+## Follow-ups from wave 3.1 (small, schedule with the next integration wave)
+- Canvas node and device info panel should pass `modelId` to `DeviceKindIcon` (smart TV shows the chef-hat icon).
+- Default device names per model, not per kind (smart TV → "Smart TV 1", modems → "DSL modem 1").
+- `switch5` (unmanaged) has no CLI but its VLANs are editable — capability-based lock in deviceConfig.
+- One shared cable-tool list for toolbar and palette (`CanvasToolbar` private `CABLE_TOOLS`).
+- Touch: long-press on a palette tile shows the details card.
+- MODEL_V2 §7: document `subcategory`, `useCaseKey`, catalog sections.
+- Lint after P1 (reported by T1): `react-hooks/static-components` in `catalog/icons/DeviceKindIcon.tsx`,
+  `react-refresh/only-export-components` in `palette/CablePalette.tsx` and `palette/PaletteNavigation.tsx`.
+- Exercise screen on phones: refit the map when the canvas is resized (failed-check list grows the footer).
+- e2e selectors use en locale texts — renaming en labels requires the same change in `e2e/`.
+
 ## Proposed (awaiting decision)
 —

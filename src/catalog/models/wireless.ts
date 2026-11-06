@@ -11,6 +11,7 @@ export const wirelessModels: readonly CatalogDeviceModel[] = [
     id: 'accessPoint',
     kind: 'accessPoint',
     category: 'wireless',
+    subcategory: 'wireless',
     ports: [portTemplate('Gi0', 'copper', 'switched', PORT_SPEEDS.gigabit, 'uplink'), radioTemplate()],
     capabilities: ['wireless'],
   }),
@@ -18,6 +19,7 @@ export const wirelessModels: readonly CatalogDeviceModel[] = [
     id: 'wirelessRouter',
     kind: 'wirelessRouter',
     category: 'wireless',
+    subcategory: 'wireless',
     ports: [
       portTemplate(WIRELESS_ROUTER_WAN_PORT, 'copper', 'routed', PORT_SPEEDS.gigabit, 'wan'),
       ...numberedPorts('LAN', 1, 4, (id) => portTemplate(id, 'copper', 'switched', PORT_SPEEDS.gigabit, 'lan')),

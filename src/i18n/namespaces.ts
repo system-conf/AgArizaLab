@@ -18,6 +18,7 @@ export const namespaces = [
   'lab',
   'deviceConfig',
   'simulation',
+  'design',
 ] as const
 
 export type Namespace = (typeof namespaces)[number]

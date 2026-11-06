@@ -1,6 +1,7 @@
 // Runtime state and timers of the network layer (S2, docs/SIMULATION.md §4).
 // Owner-extensible: S2 may ADD optional fields, session fields and timer members here during wave 3.1.
 // RouteEntry is read by Phase 4 (`show ip route`, `route print`): frozen.
+import type { EchoResult, TracertHopResult } from './Requests'
 
 /** Route source; dynamic protocols (rip, ospf, eigrp, bgp) are added by pack 5.3 / 5.7. */
 export type RouteCode = 'connected' | 'local' | 'static'
@@ -45,6 +46,8 @@ export interface PingSession {
   /** Echoes sent so far. */
   readonly sent: number
   readonly awaiting: AwaitedProbe | null
+  /** S2: results of the echoes so far, in sequence order (reported with every update). */
+  readonly echoes?: readonly EchoResult[]
 }
 
 /** `tracert` client: `probesPerHop` echoes per TTL, stops at the destination, an unreachable, `maxHops` or `maxSilentHops`. */
@@ -60,6 +63,17 @@ export interface TracertSession {
   /** Hops in a row without any answer. */
   readonly silentHops: number
   readonly awaiting: AwaitedProbe | null
+  /** S2: limits of the request. */
+  readonly limits?: TracertLimits
+  /** S2: hops so far; the last one may be the hop in progress (`ttl` = `hop`). */
+  readonly hops?: readonly TracertHopResult[]
+}
+
+/** Limits of a tracert (copied from SimTracertRequest; absent = Windows defaults 30 / 3 / 4). */
+export interface TracertLimits {
+  readonly maxHops: number
+  readonly probesPerHop: number
+  readonly maxSilentHops: number
 }
 
 export type NetworkSession = PingSession | TracertSession

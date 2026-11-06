@@ -2,6 +2,7 @@
 // Owner-extensible: S3 may ADD optional fields, session members and timer members here during wave 3.1.
 // DhcpBinding, DhcpClientLease and DnsCacheEntry are read by Phase 4 (`show ip dhcp binding`,
 // `ipconfig /all`, `ipconfig /displaydns`): frozen.
+import type { DhcpAdapterResult, StateEffect } from './Requests'
 
 /** A DHCP server's view of one client (`show ip dhcp binding`). CLI. */
 export interface DhcpBinding {
@@ -49,6 +50,8 @@ export interface DnsClientSession {
   readonly srcPort: number
   /** A server answered with ICMP port unreachable (no DNS there): the result becomes dnsNoAnswer. */
   readonly sawNoDns: boolean
+  /** Read and write the resolver cache (name lookup before ping); absent = false (nslookup). S3 addition. */
+  readonly useCache?: boolean
 }
 
 /** A DNS server forwarding a query it cannot answer from its records. */
@@ -60,6 +63,9 @@ export interface DnsForwardSession {
   readonly srcPort: number
   /** Who asked: answered when the forwarders answer, silently dropped when they all fail. */
   readonly client: { readonly ip: string; readonly port: number; readonly queryId: number }
+  /** S3 additions: the address the client asked (source of the answer) and the flow of its query. */
+  readonly serverIp?: string
+  readonly flowId?: string
 }
 
 /** Minimal HTTP/1.0 client: handshake, GET, response, close. */
@@ -72,9 +78,24 @@ export interface HttpClientSession {
   readonly srcPort: number
   readonly state: 'synSent' | 'requestSent' | 'closing' | 'done'
   readonly seq: number
+  /** S3 addition: next byte expected from the server (acknowledgment number); absent before SYN-ACK. */
+  readonly ack?: number
 }
 
-export type ServiceSession = DnsClientSession | DnsForwardSession | HttpClientSession
+/**
+ * S3 addition: progress of one `ipconfig /renew` over its NICs. Windows renews the adapters one after
+ * the other, so the most recent lease decides the host gateway (DhcpService rule) in NIC order.
+ */
+export interface DhcpRenewSession {
+  readonly kind: 'dhcpRenew'
+  readonly requestId: string
+  /** NICs still to renew; the first one is running. */
+  readonly queue: readonly string[]
+  readonly adapters: readonly DhcpAdapterResult[]
+  readonly effects: readonly StateEffect[]
+}
+
+export type ServiceSession = DnsClientSession | DnsForwardSession | HttpClientSession | DhcpRenewSession
 
 export interface ServiceRuntime {
   /** CLI */
@@ -90,7 +111,15 @@ export interface ServiceRuntime {
 
 /** Timers of the services layer. */
 export type ServiceTimer =
-  | { readonly layer: 'services'; readonly kind: 'dhcpRetransmit'; readonly portId: string; readonly transactionId: number }
+  | {
+      readonly layer: 'services'
+      readonly kind: 'dhcpRetransmit'
+      readonly portId: string
+      readonly transactionId: number
+      /** S3 additions: the phase and attempt the timer belongs to (a later phase / attempt makes it stale). */
+      readonly phase?: 'selecting' | 'requesting'
+      readonly attempt?: number
+    }
   | { readonly layer: 'services'; readonly kind: 'dnsTimeout'; readonly queryId: number }
   | { readonly layer: 'services'; readonly kind: 'dnsForwardTimeout'; readonly upstreamQueryId: number }
   | { readonly layer: 'services'; readonly kind: 'httpTimeout'; readonly requestId: string }

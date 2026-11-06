@@ -1,0 +1,60 @@
+{
+  "units": {
+    "price": "{{amount, number}} birim"
+  },
+  "requirements": {
+    "reachable": "“{{from}}” içindeki her cihaz “{{to}}” içindeki her cihaza erişebiliyor.",
+    "notReachable": "“{{from}}” içindeki hiçbir cihaz “{{to}}” içindeki cihazlara erişemiyor ve iki taraf da ağda çalışıyor.",
+    "internet": "“{{group}}” içindeki her cihaz internete çıkabiliyor.",
+    "resolves": "“{{group}}” içindeki her cihaz {{name}} adını çözebiliyor.",
+    "dhcpServes": "“{{group}}” içindeki her cihaz adresini otomatik alıyor (DHCP).",
+    "separateSubnets": "“{{groupA}}” ve “{{groupB}}” ayrı alt ağlarda.",
+    "sameVlan": "“{{group}}” içindeki tüm cihazlar aynı ağ bölümünde (VLAN).",
+    "addressPlan": "“{{group}}” içindeki her cihaz {{prefix}} aralığından adres kullanıyor.",
+    "maxCost": "Eklenen ekipmanın maliyeti en fazla {{amount, number}} birim.",
+    "maxDevices": {
+      "any": "Eklenen cihaz sayısı: en fazla {{count}}.",
+      "other": "Eklenen {{kind}} türü cihaz sayısı: en fazla {{count}}.",
+      "internet": "İnternet bağlantısı sayısı: en fazla {{count}}.",
+      "router": "Router sayısı: en fazla {{count}}.",
+      "wirelessRouter": "Kablosuz router sayısı: en fazla {{count}}.",
+      "switch": "Switch sayısı: en fazla {{count}}.",
+      "l3Switch": "Katman 3 switch sayısı: en fazla {{count}}.",
+      "hub": "Hub sayısı: en fazla {{count}}.",
+      "accessPoint": "Erişim noktası sayısı: en fazla {{count}}.",
+      "pc": "PC sayısı: en fazla {{count}}.",
+      "laptop": "Dizüstü bilgisayar sayısı: en fazla {{count}}.",
+      "server": "Sunucu sayısı: en fazla {{count}}.",
+      "printer": "Yazıcı sayısı: en fazla {{count}}.",
+      "ipPhone": "IP telefon sayısı: en fazla {{count}}.",
+      "pos": "POS cihazı sayısı: en fazla {{count}}.",
+      "camera": "IP kamera sayısı: en fazla {{count}}.",
+      "nvr": "Kayıt cihazı sayısı: en fazla {{count}}.",
+      "kitchenDisplay": "Ekran sayısı: en fazla {{count}}.",
+      "smartphone": "Akıllı telefon sayısı: en fazla {{count}}.",
+      "tablet": "Tablet sayısı: en fazla {{count}}."
+    },
+    "uses": {
+      "other": "Tasarımda “{{capability}}” özelliğine sahip bir cihaz var.",
+      "routing": "Tasarımda bir router var (ağlar arası yönlendirme).",
+      "l2Switching": "Tasarımda bir switch var.",
+      "l3Switching": "Tasarımda bir katman 3 switch var.",
+      "wireless": "Tasarımda Wi-Fi var (erişim noktası ya da kablosuz router).",
+      "wirelessClient": "Tasarımda bir Wi-Fi istemci cihazı var.",
+      "dhcpServer": "Tasarımda DHCP sunucusu çalıştırabilen bir cihaz var.",
+      "dnsServer": "Tasarımda DNS sunucusu çalıştırabilen bir cihaz var.",
+      "poe": "Tasarımda PoE destekli switch var (ağ kablosundan güç).",
+      "hostTerminal": "Tasarımda komut istemi olan bir cihaz var.",
+      "deviceCli": "Tasarımda yönetilebilir bir ağ cihazı (CLI) var.",
+      "appLinks": "Tasarımda başka cihazlardaki uygulamaları kullanan bir cihaz var.",
+      "internetService": "Tasarımda bir internet bağlantısı var.",
+      "repeater": "Tasarımda bir hub var."
+    }
+  },
+  "failures": {
+    "device": "… {{device}} çalışmadığında bile.",
+    "link": "… {{a}} ile {{b}} arasındaki kablo çıktığında bile.",
+    "anyDevice": "… herhangi bir ağ cihazı arızalandığında bile (cihazların doğrudan takılı olduğu cihaz hariç).",
+    "anyLink": "… ağ cihazları arasındaki herhangi bir kablo koptuğunda bile."
+  }
+}

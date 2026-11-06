@@ -30,6 +30,28 @@ npm run lint       # ESLint
 npm run build      # type-check and production build
 ```
 
+## Testing
+
+- **Unit tests:** `npm test` (Vitest, `src/**/*.test.ts`).
+- **End-to-end tests:** `npm run test:e2e` (Playwright, `e2e/`). It builds the app and serves it
+  with `vite preview` on port 4199, then runs a smoke suite in Chromium (desktop) and at a
+  360 × 740 phone size (tests tagged `@mobile`): landing in both languages, building and cabling a
+  lab and pinging, undo / redo, export / import, share link, one exercise from fault to report,
+  redirects, and no console errors. First time: `npx playwright install chromium`.
+  `npm run test:e2e:ui` opens Playwright's UI mode. Variables: `E2E_SKIP_BUILD=1` serves the
+  existing `dist/`; `E2E_BASE_URL=<url>` tests a running app instead (e.g. a preview deploy).
+  Selectors use English accessible names (`?lang=en`); renaming a label in `src/locales/en`
+  may need the same change in `e2e/`.
+- **CI** (`.github/workflows/ci.yml`, every push and pull request): lint, e2e type-check, unit
+  tests, build, Playwright; the Playwright report is uploaded as an artifact when a step fails.
+- **Preview deploys** (`.github/workflows/preview.yml`, optional): every pushed branch is uploaded
+  as a Cloudflare Workers preview version (`wrangler versions upload --preview-alias <branch>`);
+  production is not changed. It runs only if the repository has these Actions secrets, and is
+  skipped otherwise:
+  - `CLOUDFLARE_API_TOKEN` — API token with the *Workers Scripts: Edit* permission.
+  - `CLOUDFLARE_ACCOUNT_ID` — the Cloudflare account id (needed if the token can see several
+    accounts).
+
 ## Add a language
 
 1. Copy `src/locales/en/` to `src/locales/<code>/` and translate every value (keep the keys and

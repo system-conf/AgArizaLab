@@ -1,0 +1,60 @@
+{
+  "units": {
+    "price": "{{amount, number}} units"
+  },
+  "requirements": {
+    "reachable": "Every device in “{{from}}” can reach every device in “{{to}}”.",
+    "notReachable": "No device in “{{from}}” can reach a device in “{{to}}”, and both stay online.",
+    "internet": "Every device in “{{group}}” has internet access.",
+    "resolves": "Every device in “{{group}}” can resolve {{name}}.",
+    "dhcpServes": "Every device in “{{group}}” gets its address automatically (DHCP).",
+    "separateSubnets": "“{{groupA}}” and “{{groupB}}” are in separate subnets.",
+    "sameVlan": "All devices in “{{group}}” are in the same network segment (VLAN).",
+    "addressPlan": "Every device in “{{group}}” uses an address in {{prefix}}.",
+    "maxCost": "The added equipment costs at most {{amount, number}} units.",
+    "maxDevices": {
+      "any": "Added devices: at most {{count}}.",
+      "other": "Added devices of type {{kind}}: at most {{count}}.",
+      "internet": "Internet connections: at most {{count}}.",
+      "router": "Routers: at most {{count}}.",
+      "wirelessRouter": "Wireless routers: at most {{count}}.",
+      "switch": "Switches: at most {{count}}.",
+      "l3Switch": "Layer 3 switches: at most {{count}}.",
+      "hub": "Hubs: at most {{count}}.",
+      "accessPoint": "Access points: at most {{count}}.",
+      "pc": "PCs: at most {{count}}.",
+      "laptop": "Laptops: at most {{count}}.",
+      "server": "Servers: at most {{count}}.",
+      "printer": "Printers: at most {{count}}.",
+      "ipPhone": "IP phones: at most {{count}}.",
+      "pos": "POS terminals: at most {{count}}.",
+      "camera": "IP cameras: at most {{count}}.",
+      "nvr": "Video recorders: at most {{count}}.",
+      "kitchenDisplay": "Displays: at most {{count}}.",
+      "smartphone": "Smartphones: at most {{count}}.",
+      "tablet": "Tablets: at most {{count}}."
+    },
+    "uses": {
+      "other": "The design includes a device with the capability “{{capability}}”.",
+      "routing": "The design includes a router (routing between networks).",
+      "l2Switching": "The design includes a switch.",
+      "l3Switching": "The design includes a layer 3 switch.",
+      "wireless": "The design includes Wi-Fi (an access point or a wireless router).",
+      "wirelessClient": "The design includes a Wi-Fi client device.",
+      "dhcpServer": "The design includes a device that can run a DHCP server.",
+      "dnsServer": "The design includes a device that can run a DNS server.",
+      "poe": "The design includes PoE switching (power over the network cable).",
+      "hostTerminal": "The design includes a device with a command prompt.",
+      "deviceCli": "The design includes a managed network device (CLI).",
+      "appLinks": "The design includes a device that uses applications on other devices.",
+      "internetService": "The design includes an internet connection.",
+      "repeater": "The design includes a hub."
+    }
+  },
+  "failures": {
+    "device": "… even when {{device}} is down.",
+    "link": "… even when the cable between {{a}} and {{b}} is unplugged.",
+    "anyDevice": "… even when any single network device fails (except the one a device is plugged into).",
+    "anyLink": "… even when any single cable between network devices fails."
+  }
+}

@@ -6,6 +6,24 @@ import type { CopperPinout, PortMedium, PortRole } from './PortTypes'
 export type DeviceCategory = 'routers' | 'switches' | 'wireless' | 'endDevices' | 'servers' | 'wan'
 
 /**
+ * Palette sub-category of a model (tab under a top-level palette category). Extensible: a pack
+ * adds values here (e.g. 'industrial', 'cellular') and maps them to a top level in the catalog.
+ */
+export type DeviceSubcategory =
+  | 'router'
+  | 'switch'
+  | 'hub'
+  | 'wireless'
+  | 'security'
+  | 'wanIsp'
+  | 'pcLaptop'
+  | 'server'
+  | 'printer'
+  | 'phoneTablet'
+  | 'cameraNvr'
+  | 'posDisplay'
+
+/**
  * What a model can do. Drives which settings sections, terminals and cable ends the UI offers and
  * what the lab validator accepts. The engine reads the device's own ports and settings, not this list.
  */
@@ -57,8 +75,12 @@ export interface DeviceModel {
   id: string
   kind: DeviceKind
   category: DeviceCategory
+  /** Palette tab (second level); the top level is derived from it in the catalog. */
+  subcategory: DeviceSubcategory
   /** i18n key of the model name in the `catalog` namespace, e.g. 'catalog:models.router2Port.name'. */
   nameKey: string
+  /** i18n key of the "when to use it" text, e.g. 'catalog:models.router2Port.useCase'. */
+  useCaseKey: string
   ports: readonly PortTemplate[]
   capabilities: readonly DeviceCapability[]
 }

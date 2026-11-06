@@ -28,6 +28,15 @@ export {
   type LabParseResult,
 } from '../../lab'
 export { DEVICE_CATEGORIES, DeviceKindIcon, deviceCatalog, findDeviceModel, PortFactory } from '../../catalog'
+export {
+  modelDescriptionKey,
+  PortSummary,
+  sectionOfModel,
+  sectionsWithModels,
+  subcategoriesWithModels,
+  type CatalogSection,
+  type PortSummaryInfo,
+} from '../../catalog'
 export { ExerciseLockPolicy, type EditAccess } from '../../session/ExerciseLockPolicy'
 
 /** Physical link light of a cable (engine: plugged, powered, admin up, SSID offered, pinouts…). */

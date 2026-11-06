@@ -1,0 +1,86 @@
+import { Boxes, Cable, Cpu, History, MonitorSmartphone, Network, Star, type LucideIcon } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+import type { DeviceSubcategory } from '../../../domain'
+import { useMessageTranslator } from '../../../i18n'
+import { focusRing } from '../../shared/focusRing'
+import { usePaletteViewName, type PaletteView, type SubcategoryChoice } from './paletteViews'
+
+const VIEW_ICONS: Readonly<Record<PaletteView, LucideIcon>> = {
+  network: Network,
+  endDevices: MonitorSmartphone,
+  iot: Cpu,
+  misc: Boxes,
+  cables: Cable,
+  favourites: Star,
+  recent: History,
+}
+
+interface PaletteSectionBarProps {
+  views: readonly PaletteView[]
+  /** null while a search shows results from every section. */
+  current: PaletteView | null
+  onSelect: (view: PaletteView) => void
+}
+
+/** Top level of the palette: one icon button per section, plus cables, favourites and recent. */
+export function PaletteSectionBar({ views, current, onSelect }: PaletteSectionBarProps) {
+  const { t } = useTranslation('workspace')
+  const nameOf = usePaletteViewName()
+  return (
+    <div role="group" aria-label={t('palette.sectionsLabel')} className="flex flex-wrap justify-between gap-0.5">
+      {views.map((view) => {
+        const Icon = VIEW_ICONS[view]
+        const pressed = view === current
+        const name = nameOf(view)
+        return (
+          <button
+            key={view}
+            type="button"
+            onClick={() => onSelect(view)}
+            aria-pressed={pressed}
+            aria-label={name}
+            title={name}
+            className={`flex h-8 w-8 items-center justify-center rounded-md transition ${
+              pressed ? 'bg-sky-100 text-sky-800 ring-1 ring-sky-300' : 'text-slate-600 hover:bg-slate-100'
+            } ${focusRing}`}
+          >
+            <Icon className="h-5 w-5" aria-hidden="true" />
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
+interface SubcategoryTabsProps {
+  subcategories: readonly DeviceSubcategory[]
+  current: SubcategoryChoice
+  onSelect: (choice: SubcategoryChoice) => void
+}
+
+/** Second level: "All" plus the section's sub-categories that have models. */
+export function SubcategoryTabs({ subcategories, current, onSelect }: SubcategoryTabsProps) {
+  const { t } = useTranslation('workspace')
+  const translate = useMessageTranslator()
+  const choices: readonly SubcategoryChoice[] = ['all', ...subcategories]
+  return (
+    <div role="group" aria-label={t('palette.subcategoriesLabel')} className="flex flex-wrap gap-1">
+      {choices.map((choice) => {
+        const pressed = choice === current
+        return (
+          <button
+            key={choice}
+            type="button"
+            onClick={() => onSelect(choice)}
+            aria-pressed={pressed}
+            className={`rounded-full border px-2 py-0.5 text-xs ${
+              pressed ? 'border-sky-300 bg-sky-100 text-sky-800' : 'border-slate-200 text-slate-600 hover:bg-slate-100'
+            } ${focusRing}`}
+          >
+            {choice === 'all' ? t('palette.all') : translate({ key: `catalog:subcategories.${choice}` })}
+          </button>
+        )
+      })}
+    </div>
+  )
+}

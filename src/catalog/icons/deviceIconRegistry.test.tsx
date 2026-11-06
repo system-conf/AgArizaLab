@@ -1,7 +1,8 @@
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
 import type { DeviceKind } from '../../domain'
-import { deviceIconFor, deviceIconRegistry } from './deviceIconRegistry'
+import { findDeviceModel } from '../DeviceCatalog'
+import { deviceIconFor, deviceIconForModel, deviceIconRegistry, modelIconOverrides } from './deviceIconRegistry'
 import { DeviceKindIcon } from './DeviceKindIcon'
 
 const KINDS = Object.keys(deviceIconRegistry) as DeviceKind[]
@@ -25,5 +26,17 @@ describe('deviceIconFor', () => {
   it('gives each network-gear kind its own icon', () => {
     const gear: DeviceKind[] = ['internet', 'router', 'wirelessRouter', 'switch', 'l3Switch', 'hub', 'accessPoint']
     expect(new Set(gear.map(deviceIconFor)).size).toBe(gear.length)
+  })
+})
+
+describe('deviceIconForModel', () => {
+  it('uses the kind icon unless the model has its own', () => {
+    expect(deviceIconForModel('kitchenDisplay', 'kitchenDisplay')).toBe(deviceIconFor('kitchenDisplay'))
+    expect(deviceIconForModel('pc', undefined)).toBe(deviceIconFor('pc'))
+    expect(deviceIconForModel('kitchenDisplay', 'smartTv')).not.toBe(deviceIconFor('kitchenDisplay'))
+  })
+
+  it('only overrides models that exist in the catalog', () => {
+    for (const modelId of Object.keys(modelIconOverrides)) expect(findDeviceModel(modelId), modelId).toBeDefined()
   })
 })

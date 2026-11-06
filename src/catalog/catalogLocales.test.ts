@@ -4,6 +4,7 @@ import type { DeviceKind, PortMedium, PortRole } from '../domain'
 import en from '../locales/en/catalog.json'
 import tr from '../locales/tr/catalog.json'
 import { DEVICE_CATEGORIES, deviceCatalog, modelDescriptionKey } from './DeviceCatalog'
+import { CATALOG_SECTIONS, DEVICE_SUBCATEGORIES } from './catalogSections'
 import { deviceIconRegistry } from './icons/deviceIconRegistry'
 import { PORT_GROUPS } from './portTemplates'
 import { PortStrip } from './PortStrip'
@@ -34,11 +35,14 @@ describe.each([
     for (const model of deviceCatalog) {
       expectText(resource, model.nameKey)
       expectText(resource, modelDescriptionKey(model))
+      expectText(resource, model.useCaseKey)
     }
   })
 
-  it('names every category, kind, medium and role', () => {
+  it('names every category, section, sub-category, kind, medium and role', () => {
     for (const category of DEVICE_CATEGORIES) expectText(resource, `catalog:categories.${category}`)
+    for (const section of CATALOG_SECTIONS) expectText(resource, `catalog:sections.${section}`)
+    for (const subcategory of DEVICE_SUBCATEGORIES) expectText(resource, `catalog:subcategories.${subcategory}`)
     for (const kind of KINDS) expectText(resource, `catalog:kinds.${kind}`)
     for (const medium of MEDIA) expectText(resource, `catalog:media.${medium}`)
     for (const role of ROLES) expectText(resource, `catalog:portRoles.${role}`)
