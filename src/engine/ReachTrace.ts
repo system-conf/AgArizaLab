@@ -21,6 +21,12 @@ export interface ReachTrace {
   loopStart?: number
   /** ttlExpired: address of the router where the TTL ran out. */
   expiredAtIp?: string
+  /**
+   * !ok: no answer reaches the sender although the reason would normally produce an ICMP error: the
+   * destination is a network / broadcast address, or the reporting router has no route back to the
+   * sender (the error is lost). Ping and tracert time out.
+   */
+  silent?: boolean
 }
 
 /** The part of a journey every result carries. */

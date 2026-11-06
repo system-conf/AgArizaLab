@@ -23,6 +23,8 @@ const SPECIAL_BLOCKS: ReadonlyArray<{ base: string; prefix: number }> = [
   { base: '240.0.0.0', prefix: 4 },
 ]
 
+const LIMITED_BROADCAST = '255.255.255.255'
+
 export class Ipv4 {
   /** Returns the address as an unsigned 32-bit number, or null when not a dotted-quad IPv4. */
   static parse(text: string): number | null {
@@ -107,6 +109,17 @@ export class Ipv4 {
     if (hostBits <= 1) return true
     const hostPart = ipValue % (hostBits + 1)
     return hostPart !== 0 && hostPart !== hostBits
+  }
+
+  /**
+   * True when a packet to `ip` sent out of an interface with `address` / `mask` is a broadcast:
+   * 255.255.255.255, or the directed broadcast of that interface's subnet (/31 and /32 have none).
+   */
+  static isBroadcastFor(ip: string, address: string, mask: string): boolean {
+    if (ip === LIMITED_BROADCAST) return true
+    if (!Ipv4.isValid(address) || !Ipv4.sameSubnet(address, ip, mask) || Ipv4.isHostAddress(ip, mask)) return false
+    const network = Ipv4.network(ip, mask)
+    return network !== null && Ipv4.format(network) !== ip
   }
 
   static isPrivate(text: string): boolean {

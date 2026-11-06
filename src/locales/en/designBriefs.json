@@ -33,7 +33,13 @@
       "presentation": "To Ms Yıldız: \"We install one router and one switch. The PCs get their addresses by themselves and your printer stays at its usual 192.168.1.10. Printing and file sharing inside the office keep working when the internet is down. The total is 875 units, under budget. Note that every switch port is in use: for a seventh employee we would move to a 16-port switch.\"",
       "interviewAnswer": "A small office needs one broadcast domain. The router is the default gateway and the DHCP server; clients get addresses by DHCP, while devices everyone must find, such as printers and servers, get static addresses (or DHCP reservations) outside the pool. The router reaches the internet with a default route out of its WAN interface and forwards DNS. I size the switch and the budget with growth in mind."
     },
-    "topics": ["DHCP pool", "Static address", "Default gateway", "DNS", "Quotation / budget"]
+    "topics": [
+      "DHCP pool",
+      "Static address",
+      "Default gateway",
+      "DNS",
+      "Quotation / budget"
+    ]
   },
   "restaurant": {
     "title": "Restaurant: POS and guest Wi-Fi",
@@ -74,7 +80,13 @@
       "presentation": "To Mr Kaya: \"Your tills and the kitchen screen are on their own closed network; guests go online through a separate device and a separate line and cannot see your till network. This separation is the basis of what card-payment standards (PCI DSS) expect. Orders keep reaching the kitchen even when the internet is down. Total: 1010 units.\"",
       "interviewAnswer": "I separate the guest network from the payment (POS) network; PCI DSS expects that segmentation for card payments too. The usual solution is separate VLANs with ACLs or firewall rules between them; without those, the safest way is physical separation: guest Wi-Fi reaches the internet through its own router and line. When testing isolation I check that both networks work on their own and that a ping from a guest to a POS fails."
     },
-    "topics": ["Network segmentation", "Guest Wi-Fi", "DHCP", "DNS", "Local traffic during an internet outage"]
+    "topics": [
+      "Network segmentation",
+      "Guest Wi-Fi",
+      "DHCP",
+      "DNS",
+      "Local traffic during an internet outage"
+    ]
   },
   "schoolLab": {
     "title": "School: three computer classrooms",
@@ -123,7 +135,13 @@
       "presentation": "To Mr Demir: \"Every classroom is in its own VLAN and in the address range from the district plan, and the PCs get their addresses automatically. You reach every classroom from the IT room. One router was enough, 1550 units in total; a new classroom means one more VLAN, sub-interface and DHCP pool.\"",
       "interviewAnswer": "I put each classroom into its own VLAN and subnet: smaller broadcast domains, and problems stay local. For inter-VLAN routing there are two options: router-on-a-stick (one physical port, one dot1Q sub-interface per VLAN; cheap, but all routed traffic shares that link) or an L3 switch (SVIs; faster, more expensive). Links between switches are trunks, and every VLAN gets its own DHCP pool."
     },
-    "topics": ["VLAN", "Trunk (802.1Q)", "Router-on-a-stick", "DHCP per VLAN", "Address plan"]
+    "topics": [
+      "VLAN",
+      "Trunk (802.1Q)",
+      "Router-on-a-stick",
+      "DHCP per VLAN",
+      "Address plan"
+    ]
   },
   "factory": {
     "title": "Factory: two buildings, four networks",
@@ -176,7 +194,14 @@
       "presentation": "To Ms Arslan: \"We built four separate networks: office, production, cameras and guests. The buildings are joined by fiber, because copper does not work over 200 metres. Production and the cameras work independently of the internet, and guests cannot see any company device. Budget 3500, cost 3200; the rest can go towards a second fiber link. As a next step we recommend a backup link between the buildings and access rules for the production network.\"",
       "interviewAnswer": "In industrial sites I separate the OT (production) network from IT (the zones and conduits idea of IEC 62443); cameras and guests get their own networks too. Links over 100 metres and between buildings are fiber. I carry the VLANs between buildings on trunks and route them on a router or an L3 switch; I add ACLs or a firewall to separate OT from the office, and a redundant link (STP or EtherChannel) against a failure between buildings. Production and video recording must not depend on the internet."
     },
-    "topics": ["IT/OT separation", "Fiber link", "VLANs and trunks", "Router-on-a-stick", "Guest network", "Quotation / budget"]
+    "topics": [
+      "IT/OT separation",
+      "Fiber link",
+      "VLANs and trunks",
+      "Router-on-a-stick",
+      "Guest network",
+      "Quotation / budget"
+    ]
   },
   "hotel": {
     "title": "Hotel: floors, guest Wi-Fi and a backup line",
@@ -224,10 +249,17 @@
       "poe": "On the floor switches the APs and cameras are powered over Ethernet (PoE), with no extra adapters or sockets. The lab does not model power, but choosing PoE models in the quotation is the right call."
     },
     "reference": {
-      "explanation": "The core on the ground floor is an L3 switch: VLAN 10 reception (SVI 10.40.10.1), VLAN 20 security (SVI 10.40.20.1), VLAN 30 guests (no SVI). It serves DHCP to reception and the cameras; the NVR is static on 10.40.20.10. Two of its ports are routed ports to the modems (192.168.0.2 and 192.168.1.2); the default route points to the main modem (distance 1), a backup route to the backup modem (distance 10). When the main modem goes down, that link drops and the backup route takes over. On every floor a PoE 8-port switch trunks to the core; an AP bridging the same 'Hotel-Guest' SSID into VLAN 30 and the floor camera are plugged into it. The guest VLAN's only gateway is a separate guest router on the provider's eth2 line (192.168.50.1, DHCP and DNS); the core has no IP interface in that VLAN, so guests cannot reach hotel devices. Cost: L3 switch 2400 + two PoE switches 640 + two APs 440 + router 650 + fourteen cables 70 = 4200 units.",
+      "explanation": "The core on the ground floor is an L3 switch: VLAN 10 reception (SVI 10.40.10.1), VLAN 20 security (SVI 10.40.20.1), VLAN 30 guests (no SVI). It serves DHCP to reception and the cameras; the NVR is static on 10.40.20.10. Two of its ports are routed ports to the modems (192.168.0.2 and 192.168.1.2); the default route points to the main modem (distance 1), a backup route to the backup modem (distance 10). When the main modem goes down, that link drops and the backup route takes over. On every floor a PoE 8-port switch trunks to the core; an AP bridging the same 'Hotel-Guest' SSID into VLAN 30 and the floor camera are plugged into it. The guest VLAN's only gateway is a separate guest router on the provider's eth2 line (192.168.50.1, DHCP and DNS); the core has no IP interface in that VLAN, so guests cannot reach hotel devices. Because the modems do no NAT (NAT is not in the lab yet), both modems got a route back to the hotel networks: 10.40.0.0/16 via 192.168.0.2 on the main modem and via 192.168.1.2 on the backup modem. Without it, replies from the internet stop at the modem and reception has no internet. Cost: L3 switch 2400 + two PoE switches 640 + two APs 440 + router 650 + fourteen cables 70 = 4200 units.",
       "presentation": "To Mr Şahin: \"Reception now works with two lines: if the main line fails, the network switches to the backup line by itself. Guests are on the same Wi-Fi on every floor, go online over their own line and cannot see hotel systems. The cameras are on a separate network and keep recording even without internet. Total: 4200 units; a new floor means one switch, one AP and two cables.\"",
       "interviewAnswer": "In a multi-storey building I use a hierarchical design: an access switch per floor and a core (an L3 switch) that routes between the VLANs. I separate guests, staff and security with VLANs and isolate guests with ACLs / a firewall or a gateway of their own. For critical services I add WAN redundancy: two different providers and a floating static route (or a route tracked with IP SLA); for first-hop gateway redundancy there is HSRP / VRRP."
     },
-    "topics": ["Hierarchical design (access / core)", "L3 switch and SVIs", "Floating static route", "WAN redundancy", "Guest VLAN", "PoE"]
+    "topics": [
+      "Hierarchical design (access / core)",
+      "L3 switch and SVIs",
+      "Floating static route",
+      "WAN redundancy",
+      "Guest VLAN",
+      "PoE"
+    ]
   }
 }

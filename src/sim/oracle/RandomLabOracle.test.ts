@@ -52,7 +52,8 @@ function shrink(kind: CheckKind): string {
 }
 
 describe('simulator vs rule engine on random labs (SIMULATION.md §10.2)', () => {
-  it('agrees on ping, tracert, resolve, renew, AppLinks and terminal text', () => {
+  // Simulating every lab takes seconds (≈ 6 s for 100 labs alone, more in the full parallel suite).
+  it('agrees on ping, tracert, resolve, renew, AppLinks and terminal text', { timeout: 60_000 + ORACLE_SETTINGS.numRuns * 1_000 }, () => {
     const labs = fc.sample(randomLabArbitrary, ORACLE_SETTINGS)
     const tally = new OracleTally()
     const examples = survey(labs, tally)

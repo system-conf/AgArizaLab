@@ -62,6 +62,15 @@ export class L3Interfaces {
     return iface.kind !== 'nic'
   }
 
+  /**
+   * Duplicate address detection (SIMULATION.md §7.1, coordinator decision 4): NICs and SVIs of a device
+   * that does not route (a switch's management SVI) probe their address and lose it on a conflict, like
+   * hosts; the other interfaces defend their address and never give up.
+   */
+  static givesUpOnConflict(device: Device, iface: L3Interface): boolean {
+    return !L3Interfaces.isRouter(device) && (iface.kind === 'nic' || iface.kind === 'svi')
+  }
+
   /** A valid address with a valid mask: the interface has a connected subnet. */
   static isAddressed(iface: L3Interface): boolean {
     return Ipv4.isValid(iface.address) && Ipv4.isValidMask(iface.mask)

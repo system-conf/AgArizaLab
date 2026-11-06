@@ -329,7 +329,9 @@ layer 3) → … → destination `network.onPacket` → echo reply via `network.
 - Duplicate address detection: every addressed NIC and SVI of a non-routing device probes when the device
   starts, its address changes or its link comes up. A probe answered by anyone, or a probe for the same
   address from someone else, marks the claim `duplicate` (both NICs lose it, engine parity); router-side
-  interfaces answer probes and never give up. DHCP-assigned addresses are not probed (the server checked).
+  interfaces answer probes and never give up. DHCP-assigned addresses are probed too (a DHCP client
+  probes a lease before using it); a duplicate leased address is lost by both, like a static one. A
+  duplicate NIC or management SVI neither answers ARP nor echoes.
 - Cloud ports (`isp`): only frames from a far-end `routed` port are served (else `dropped ispNoService`);
   handoff `serviceUp: false` → `dropped ispServiceDown` (link light stays on). The cloud answers ARP for any
   public address (proxy ARP) and hands IPv4 to S2 with `interfaceId` = port id.
@@ -447,6 +449,7 @@ On every generated topology (fresh engine, `settle`), for every host pair / publ
 | `destinationNotInSegment`, `noRouteToDestination` at a router | `unreachable` from that router's ingress address |
 | `gatewayUnreachable` elsewhere, `wanDown` | `timeout` |
 | `ttlExpired` | `ttlExpired` from the engine's `expiredAtIp` |
+| any of the above with `ReachTrace.silent` (broadcast target; ICMP error lost, decisions 3 / 7) | `timeout`; reason unchanged |
 | `resolve` | equal `ResolveResult` |
 | `renewDhcp` ok / fail | same address and `nextState` (after effects) / adapter failure |
 | `appLinkStatus` | same ok and reason (via §10.1) |
@@ -569,3 +572,49 @@ Interim agreement: S2 needs S1 for real frames; S2's tests may use a test `LinkL
 - `arp -a | -g | /a [ip]` (Windows table), `arp -d` / `arp -d *` (clear cache); single-entry delete is future work.
 - Golden tests: accepted terminal differences = router reply TTL (§10.3.2), extra hop line before "reports:"
   (S2 addition), gateway-is-a-host timeouts (§10.3.1).
+
+### Coordinator decisions on the O3 oracle mismatches (2026-11-06)
+Principle: the simulator is the reference for realistic behaviour; the rule engine (still used by the design
+checker and as oracle) is brought in line unless the simulator is the one that is wrong.
+1. ISP service down → silence (timeouts) in both. Simulator: the cloud keeps answering ARP and drops IPv4
+   (I3a already changed this — re-verify; if the router still gets ARP failures, fix S1/S2).
+2. Native VLAN mismatch / native sub-interface semantics → simulator is right (IOS behaviour: untagged
+   frames belong to the trunk's native VLAN). Engine (`VlanRules`/segments in src/net + engine) adopts it.
+3. Ping to a network/broadcast address → simulator is right (no reply → timeout). Engine adopts it.
+4. Management SVIs on non-routing switches behave like hosts: duplicate-address detection, the loser
+   neither answers ARP nor echoes. Fix the simulator's inconsistency (answered ARP, dropped echo) and make
+   the engine treat a duplicate management SVI like a host conflict.
+5. DHCP-assigned addresses are probed too (DHCP clients ARP-probe before using a lease); a duplicate
+   leased address → both lose it, like static (engine parity). Simulator changes; §7.1 updated.
+6. Return path to private sources: the engine must check that replies from the internet (and from any
+   destination) can be routed back hop by hop; missing route → timeout. Engine gap, fix engine.
+7. ICMP errors / time-exceeded need a way back to the source; if the router cannot route to the source,
+   the error is lost → timeout / `*`. Engine gap, fix engine.
+8. Static route whose next hop is one of the router's own addresses → ignored in both (IOS refuses it).
+9. AppLink/probe failure reasons: the simulator maps reasons from the actual drop/decision events so they
+   equal the engine's reasons; the oracle keeps comparing reasons.
+After the fixes the oracle must be green at 200 runs; any remaining class needs a documented decision.
+
+### Engine side of the decisions — implemented by Q1 (2026-11-06)
+- 2: segments need frames both ways (`SegmentFinder`): a native sub-interface takes frames tagged with its
+  VLAN but answers untagged, so with another trunk native VLAN it is no member (gateway lost, DHCP silent);
+  a tagged-native frame between switches with different native VLANs is one-way too. Members reached over
+  links that carry the answer straight back skip the extra search (no cost in ordinary labs).
+- 3: echo to a directed broadcast (or 255.255.255.255) → no answer: reason `destinationNotInSegment` (at the
+  sender for its own subnet, at the last router otherwise) with `ReachTrace.silent`; ping / tracert time out.
+  The network address is an address nobody owns: ARP fails, the sender / router reports unreachable (as the
+  simulator does). Shared helper `Ipv4.isBroadcastFor(ip, address, mask)`.
+- 4: `L3Interfaces.givesUpOnConflict(device, iface)` (NICs and SVIs of a non-routing device): such claimants
+  lose a shared address (both sides); interfaces of routing devices and routed ports defend it.
+- 5: confirmed: the engine never looked at the addressing mode; a duplicate leased address → `ipConflict`
+  on both (test added).
+- 6: replies from the internet need the WAN router (and every router after it) to route back to the sender;
+  else `gatewayUnreachable` at the cloud (like "destination with no way back" at any destination) → timeout.
+- 7: an ICMP error (unreachable, TTL expired) reaches the sender only if the reporting router can route back;
+  else the reach result keeps its reason but is `silent` (timeout). Tracert: a router that cannot route back
+  is a `*` hop (`TracertRoute.hops` may hold `null`); four such hops in a row end the trace like Windows.
+  The `tracertRouterReports` skip (Additions after S2) now applies only when the "unreachable" gets back.
+- 8: `RoutingTable` ignores a static route whose next hop is one of the router's configured addresses
+  (with or without exit interface), like the simulator's `RouteTableBuilder`.
+- Oracle: 0 mismatches at 200 labs (seed 20261106); `RandomLabOracle` has an explicit timeout
+  (60 s + 1 s per lab). §10.3 is unchanged: none of its divergences disappeared.

@@ -1,4 +1,5 @@
 import type { Device, StaticRoute } from '../domain'
+import { DeviceAddresses } from './DeviceAddresses'
 import { Ipv4 } from './Ipv4'
 import { InterfaceStatus } from '../net/InterfaceStatus'
 import { type L3Interface, L3Interfaces } from './L3Interfaces'
@@ -19,7 +20,8 @@ const MAX_RECURSION = 4
 
 /**
  * Routing table of a v2 device (MODEL_V2 §13): connected subnets of up interfaces plus static
- * routes whose exit interface is up or whose next hop resolves. Longest prefix wins, then the
+ * routes whose exit interface is up or whose next hop resolves; a static route whose next hop is one
+ * of the device's own addresses is ignored (IOS refuses it). Longest prefix wins, then the
  * lowest administrative distance, then table order (connected first, then static order).
  */
 export class RoutingTable {
@@ -69,6 +71,7 @@ export class RoutingTable {
   private static resolveStatic(topology: Topology, device: Device, route: StaticRoute, depth: number): Route | null {
     const prefixLength = Ipv4.prefixLength(route.mask)
     if (prefixLength === null) return null
+    if (route.nextHop !== undefined && DeviceAddresses.has(device, route.nextHop)) return null
     const base = { prefixLength, adminDistance: route.adminDistance }
     if (route.exitInterfaceId !== undefined) {
       const exit = L3Interfaces.find(device, route.exitInterfaceId)

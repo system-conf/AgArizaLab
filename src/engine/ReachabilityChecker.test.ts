@@ -104,13 +104,26 @@ describe('ReachabilityChecker — gateway and routing', () => {
   })
 
   it('fails with noRouteToDestination for special-purpose addresses instead of a public reply', () => {
-    for (const ip of ['0.1.2.3', '169.254.1.1', '100.64.0.1', '224.0.0.1', '240.0.0.1', '255.255.255.255']) {
+    for (const ip of ['0.1.2.3', '169.254.1.1', '100.64.0.1', '224.0.0.1', '240.0.0.1']) {
       expect(checker.reach(officeLab(), 'pc1', ip), ip).toEqual({
         ok: false,
         reason: 'noRouteToDestination',
         atDeviceId: 'router',
       })
     }
+  })
+
+  it('gets no answer from a broadcast address, near or behind the router', () => {
+    for (const ip of ['192.168.10.255', '255.255.255.255']) {
+      expect(checker.trace(vlanLab(), 'kasa', ip), ip).toMatchObject({
+        result: { ok: false, reason: 'destinationNotInSegment', atDeviceId: 'kasa' },
+        silent: true,
+      })
+    }
+    expect(checker.trace(vlanLab(), 'kasa', '192.168.20.255')).toMatchObject({ result: { ok: false, atDeviceId: 'router' }, silent: true })
+    // The network address is just an address nobody owns: ARP fails, the router reports it.
+    expect(checker.trace(vlanLab(), 'kasa', '192.168.20.0')).toMatchObject({ result: { ok: false, reason: 'destinationNotInSegment', atDeviceId: 'router' } })
+    expect(checker.trace(vlanLab(), 'kasa', '192.168.20.0').silent).toBeUndefined()
   })
 
   it('routes between VLANs through the router', () => {
@@ -181,6 +194,14 @@ describe('ReachabilityChecker — address conflicts', () => {
     expect(checker.reach(state, 'pc1', '192.168.1.150')).toMatchObject({ ok: false, reason: 'ipConflict' })
     expect(checker.reach(state, 'pc2', '192.168.1.1')).toMatchObject({ ok: true })
     expect(checker.reach(state, 'pc2', '8.8.8.8')).toMatchObject({ ok: true })
+  })
+
+  it('treats a DHCP-assigned duplicate like a static one: both lose it', () => {
+    // pc2 leased 192.168.1.101 (DHCP clients probe a lease before using it); the printer takes it statically.
+    const state = editNic(officeLab(), 'printer', { address: '192.168.1.101' })
+    expect(checker.reach(state, 'pc2', '192.168.1.1')).toEqual({ ok: false, reason: 'ipConflict', atDeviceId: 'pc2' })
+    expect(checker.reach(state, 'printer', '192.168.1.1')).toEqual({ ok: false, reason: 'ipConflict', atDeviceId: 'printer' })
+    expect(checker.reach(state, 'pc1', '192.168.1.101')).toMatchObject({ ok: false, reason: 'destinationNotInSegment' })
   })
 
   it('ignores the same address in another VLAN or on a powered-off device', () => {

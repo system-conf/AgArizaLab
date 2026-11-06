@@ -283,10 +283,18 @@ device, static-route interface ids exist, pool subnets match an interface.
   DCE end has `clockRate` (may be relaxed until 5.7).
 - VLANs: access port → its `accessVlan` if in the database; trunk → `allowedVlans ∩ database`, untagged
   = `nativeVlan`; trunk ↔ access mismatches behave like IOS (untagged frames land in the native VLAN).
-  Routed port: untagged → physical `l3`, tagged `v` → sub-interface with `vlan = v` (or `native`).
-  AP: SSID VLANs bridged to the uplink trunk. Hub: repeats everything.
-- Routing: connected subnets of up interfaces + static routes, longest prefix, then AD. Hosts need the
-  gateway in their own subnet; the reply path is checked like v1. Public destinations follow §5.
+  Routed port: untagged → native sub-interface, else physical `l3`; tagged `v` → sub-interface with
+  `vlan = v` (a native one sends untagged). AP: SSID VLANs bridged to the uplink trunk. Hub: repeats
+  everything. Two interfaces share a segment only if frames get through both ways (a native
+  sub-interface whose VLAN is not the trunk's native VLAN hears its hosts but its answers land elsewhere).
+- Duplicate addresses: NICs and SVIs of non-routing devices (management SVIs) lose a shared address on
+  both sides, however it was assigned (static or DHCP); interfaces of routing devices keep it.
+- Routing: connected subnets of up interfaces + static routes, longest prefix, then AD; a static route
+  whose next hop is one of the router's own addresses is ignored (IOS refuses it). Hosts need the gateway
+  in their own subnet. Every reply needs a way back, hop by hop, internet replies included (no NAT before
+  pack 5.2); an ICMP error reaches the sender only if the reporting router can route back to it, else
+  ping times out and tracert shows `*` for that router. Echo to a broadcast address gets no answer.
+  Public destinations follow §5.
 - DNS forwarding: router with `services.dns.enabled` resolves via `forwarders` (reachability from
   the router), so v1 "dnsForwarding + wanUp" is preserved by the migrated `8.8.8.8` forwarder.
 - DHCP: pool chosen by the subnet of the router interface the request arrives on (§4).

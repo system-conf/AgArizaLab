@@ -6,6 +6,7 @@
 import type { DesignExerciseDefinition } from '../../domain'
 import {
   accessPorts,
+  addRoutes,
   defaultRouteVia,
   dhcpServer,
   dnsProxy,
@@ -29,6 +30,9 @@ const BUDGET = 5000
 const GUEST_SSID = 'Hotel-Guest'
 const RECEPTION = { vlan: 10, prefix: '10.40.10' }
 const CAMERA_NET = { vlan: 20, prefix: '10.40.20' }
+/** Summary of every hotel network behind the core switch (route back on the modems). */
+const HOTEL_NETWORKS = '10.40.0.0'
+const HOTEL_MASK = '255.255.0.0'
 const GUEST_VLAN = 30
 const VLAN_DATABASE = [
   { id: RECEPTION.vlan, name: 'RECEPTION' },
@@ -76,6 +80,9 @@ function customer(): LabBuilder {
 function reference(): LabBuilder {
   const lab = customer()
     .edit('nvr', staticHost(`${CAMERA_NET.prefix}.10`, `${CAMERA_NET.prefix}.1`, [PUBLIC_DNS]))
+    // Without NAT the modems must know the way back to the hotel networks behind the core switch.
+    .edit('modemMain', addRoutes([routeTo(HOTEL_NETWORKS, HOTEL_MASK, '192.168.0.2')]))
+    .edit('modemBackup', addRoutes([routeTo(HOTEL_NETWORKS, HOTEL_MASK, '192.168.1.2')]))
     .add(
       'l3Switch24',
       'core',

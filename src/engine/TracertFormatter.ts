@@ -40,7 +40,8 @@ export class TracertFormatter {
   /** "Request timed out." lines printed after the last answering hop. */
   static readonly maxTimeoutLines = MAX_TIMEOUT_LINES
 
-  tracert(targetIp: string, resolvedName: string | null, hops: readonly TracertHop[], ending: TracertEnding): TerminalLine[] {
+  /** A `null` hop is a hop nobody answered ("*  *  *  Request timed out."). */
+  tracert(targetIp: string, resolvedName: string | null, hops: readonly (TracertHop | null)[], ending: TracertEnding): TerminalLine[] {
     return this.tracertLines(targetIp, resolvedName, hops, ending)
   }
 

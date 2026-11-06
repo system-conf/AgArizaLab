@@ -1,4 +1,5 @@
 import type { Device, StaticRoute } from '../../domain'
+import { DeviceAddresses } from '../../net/DeviceAddresses'
 import { HostAttachment } from '../../net/HostAttachment'
 import { Ipv4 } from '../../net/Ipv4'
 import { type L3Interface, L3Interfaces } from '../../net/L3Interfaces'
@@ -24,7 +25,8 @@ interface Candidate {
 /**
  * Builds a device's routing table from its configuration (docs/SIMULATION.md §4, MODEL_V2 §13):
  * per up interface its connected subnet and `local` /32, then the static routes in configuration order
- * (exit interface up, or next hop resolving recursively; unresolved ones are listed with a null exit),
+ * (exit interface up, or next hop resolving recursively; unresolved ones are listed with a null exit;
+ * a next hop that is one of the device's own addresses is refused, as IOS does: coordinator decision 8),
  * and for hosts a default route via the on-link gateway. Table order breaks ties in RouteLookup.
  */
 export class RouteTableBuilder {
@@ -56,10 +58,10 @@ export class RouteTableBuilder {
     ]
   }
 
-  /** null = not in the table (invalid mask, exit interface missing or down). */
+  /** null = not in the table (invalid mask, own next hop, exit interface missing or down). */
   private static staticEntry(topology: Topology, device: Device, route: StaticRoute): RouteEntry | null {
     const prefixLength = Ipv4.prefixLength(route.mask)
-    if (prefixLength === null || !Ipv4.isValid(route.prefix)) return null
+    if (prefixLength === null || !Ipv4.isValid(route.prefix) || RouteTableBuilder.ownNextHop(device, route)) return null
     const network = Ipv4.network(route.prefix, route.mask)
     const base = {
       code: 'static' as const,
@@ -108,11 +110,16 @@ export class RouteTableBuilder {
     }
     for (const route of device.routing?.staticRoutes ?? []) {
       const prefixLength = Ipv4.prefixLength(route.mask)
-      if (prefixLength === null || !Ipv4.inNetwork(ip, route.prefix, route.mask)) continue
+      if (prefixLength === null || !Ipv4.inNetwork(ip, route.prefix, route.mask) || RouteTableBuilder.ownNextHop(device, route)) continue
       const exit = RouteTableBuilder.resolveExit(topology, device, route, depth)
       if (exit) list.push({ prefixLength, adminDistance: route.adminDistance, exit })
     }
     return list
+  }
+
+  /** IOS refuses a static route whose next hop is the router itself ("Invalid next hop address"). */
+  private static ownNextHop(device: Device, route: StaticRoute): boolean {
+    return route.nextHop !== undefined && DeviceAddresses.has(device, route.nextHop)
   }
 
   /** Hosts (and switches with a management SVI): 0.0.0.0/0 via the gateway when it is on-link. */

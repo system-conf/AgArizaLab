@@ -84,7 +84,7 @@ export class TerminalChecks {
   private probeDivergence(deviceId: string, targetIp: string, command: string): Divergence | null {
     const reach = networkEngine.reach(this.state, deviceId, targetIp)
     if (Divergences.gatewayNotRouter(this.state, deviceId, targetIp, reach)) return 'gatewayNotRouter'
-    if (command === 'tracert') return Divergences.tracertRouterReports(deviceId, reach) ? 'tracertRouterReports' : null
+    if (command === 'tracert') return Divergences.tracertRouterReports(this.state, deviceId, targetIp, reach) ? 'tracertRouterReports' : null
     if (!reach.ok) return null
     const topology = Topology.of(this.state)
     const routers = reach.path.filter((id) => {

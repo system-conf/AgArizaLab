@@ -12,10 +12,14 @@ function via(prefix: string, mask: string, nextHop: string, adminDistance = 1): 
 }
 
 /**
- * pcA 10.1.1.10 — r1 — r2 — pcB 10.2.2.10, plus r3 behind r1 (10.0.13.0/30) with no routes.
- * r1: 10.2.2.0/24 via r2; r2: 10.1.1.0/24 via r1.
+ * pcA 10.1.1.10 — r1 — r2 — pcB 10.2.2.10, plus r3 behind r1 (10.0.13.0/30).
+ * r1: 10.2.2.0/24 via r2; r2: 10.1.1.0/24 via r1; r3: `r3Routes` (none by default).
  */
-function twoRouters(r1Routes: StaticRoute[] = [via('10.2.2.0', '255.255.255.0', '10.0.12.2')], r2Routes = [via('10.1.1.0', '255.255.255.0', '10.0.12.1')]): NetworkState {
+function twoRouters(
+  r1Routes: StaticRoute[] = [via('10.2.2.0', '255.255.255.0', '10.0.12.2')],
+  r2Routes = [via('10.1.1.0', '255.255.255.0', '10.0.12.1')],
+  r3Routes: StaticRoute[] = [],
+): NetworkState {
   return {
     devices: [
       labHost('pcA', '10.1.1.10', { gateway: '10.1.1.1' }),
@@ -29,7 +33,7 @@ function twoRouters(r1Routes: StaticRoute[] = [via('10.2.2.0', '255.255.255.0', 
         r1Routes,
       ),
       labRouter('r2', [{ id: 'Gi0/0', ip: '10.2.2.1' }, { id: 'Gi0/1', ip: '10.0.12.2', mask: P2P }], r2Routes),
-      labRouter('r3', [{ id: 'Gi0/0', ip: '10.0.13.2', mask: P2P }]),
+      labRouter('r3', [{ id: 'Gi0/0', ip: '10.0.13.2', mask: P2P }], r3Routes),
       labHost('pcB', '10.2.2.10', { gateway: '10.2.2.1' }),
     ],
     links: [
@@ -70,12 +74,30 @@ describe('static routing over several routers', () => {
   it('needs a route back: the destination host cannot answer otherwise', () => {
     const state = twoRouters(undefined, [])
     expect(engine.reach(state, 'pcA', '10.2.2.10')).toEqual({ ok: false, reason: 'gatewayUnreachable', atDeviceId: 'pcB' })
+    // r2's "TTL expired" has no way back either: its hop is silent too.
     const lines = textOf(engine.runCommand(state, 'pcA', 'tracert 10.2.2.10').lines)
     expect(hopLines(lines).slice(0, 3)).toEqual([
       '  1    <1 ms    <1 ms    <1 ms  10.1.1.1',
-      '  2     1 ms     2 ms     1 ms  10.0.12.2',
+      '  2     *        *        *     Request timed out.',
       '  3     *        *        *     Request timed out.',
     ])
+  })
+
+  it('loses the ICMP error of a router without a route back to the sender', () => {
+    const state = twoRouters([via('10.0.0.0', '255.0.0.0', '10.0.13.2')])
+    // r3 has no route for 10.5.5.5 and none back to pcA: the "unreachable" never arrives.
+    expect(engine.reach(state, 'pcA', '10.5.5.5')).toEqual({ ok: false, reason: 'noRouteToDestination', atDeviceId: 'r3' })
+    expect(textOf(engine.runCommand(state, 'pcA', 'ping 10.5.5.5').lines)).toContain('Request timed out.')
+    const withWayBack = twoRouters([via('10.0.0.0', '255.0.0.0', '10.0.13.2')], undefined, [via('10.1.1.0', '255.255.255.0', '10.0.13.1')])
+    expect(textOf(engine.runCommand(withWayBack, 'pcA', 'ping 10.5.5.5').lines)).toContain('Reply from 10.0.13.2: Destination host unreachable.')
+  })
+
+  it('ignores a static route whose next hop is one of the router own addresses', () => {
+    const state = twoRouters([via('10.2.2.0', '255.255.255.0', '10.0.12.1'), via('10.2.2.0', '255.255.255.0', '10.0.12.2', 5)])
+    // IOS refuses the first route ("Invalid next hop address"), so the floating one is used.
+    expect(engine.reach(state, 'pcA', '10.2.2.10')).toEqual({ ok: true, path: ['pcA', 'r1', 'r2', 'pcB'] })
+    const onlyOwn = twoRouters([{ prefix: '10.2.2.0', mask: '255.255.255.0', exitInterfaceId: 'Gi0/1', nextHop: '10.1.1.1', adminDistance: 1 }])
+    expect(engine.reach(onlyOwn, 'pcA', '10.2.2.10')).toEqual({ ok: false, reason: 'noRouteToDestination', atDeviceId: 'r1' })
   })
 
   it('works with an exit-interface-only static route', () => {
@@ -94,11 +116,11 @@ describe('static routing over several routers', () => {
 
 describe('route selection', () => {
   it('prefers the longest prefix over a default and a shorter route', () => {
-    const state = twoRouters([
-      via('0.0.0.0', '0.0.0.0', '10.0.13.2'),
-      via('10.0.0.0', '255.0.0.0', '10.0.13.2'),
-      via('10.2.2.0', '255.255.255.0', '10.0.12.2'),
-    ])
+    const state = twoRouters(
+      [via('0.0.0.0', '0.0.0.0', '10.0.13.2'), via('10.0.0.0', '255.0.0.0', '10.0.13.2'), via('10.2.2.0', '255.255.255.0', '10.0.12.2')],
+      undefined,
+      [via('10.1.1.0', '255.255.255.0', '10.0.13.1')],
+    )
     expect(engine.reach(state, 'pcA', '10.2.2.10')).toEqual({ ok: true, path: ['pcA', 'r1', 'r2', 'pcB'] })
     // Anything else in 10/8 follows the shorter route to r3, which has no route for it.
     expect(engine.reach(state, 'pcA', '10.5.5.5')).toEqual({ ok: false, reason: 'noRouteToDestination', atDeviceId: 'r3' })

@@ -112,6 +112,14 @@ export function routes(staticRoutes: readonly StaticRoute[]): DeviceChange {
   return (device) => ({ ...device, routing: { ...device.routing, ipRouting: true, staticRoutes: [...staticRoutes] } })
 }
 
+/** Adds static routes and keeps the device's existing ones (e.g. a modem's default route). */
+export function addRoutes(staticRoutes: readonly StaticRoute[]): DeviceChange {
+  return (device) => ({
+    ...device,
+    routing: { ...device.routing, ipRouting: true, staticRoutes: [...(device.routing?.staticRoutes ?? []), ...staticRoutes] },
+  })
+}
+
 /** Default route out of a WAN interface cabled to the ISP. */
 export function defaultRouteVia(exitInterfaceId: string): StaticRoute {
   return { prefix: '0.0.0.0', mask: '0.0.0.0', exitInterfaceId, adminDistance: 1 }

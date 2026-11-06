@@ -108,7 +108,7 @@ export class OracleChecks {
       this.tally.skip('gatewayNotRouter')
       return []
     }
-    if (Divergences.tracertRouterReports(fromId, reach)) {
+    if (Divergences.tracertRouterReports(this.state, fromId, targetIp, reach)) {
       this.tally.skip('tracertRouterReports')
       return []
     }
@@ -180,10 +180,10 @@ export class OracleChecks {
     return mismatches
   }
 
-  /** "ip ip ip | ending" of the engine's route. */
+  /** "ip ip ip | ending" of the engine's route ('*' = a hop whose answer is lost). */
   private static routeView(route: TracertRoute): string {
     const ending = route.ending.kind === 'unreachable' ? `unreachable ${route.ending.reporterIp}` : route.ending.kind
-    return `${route.hops.map((hop) => hop.ip).join(' ')} | ${ending}`
+    return `${route.hops.map((hop) => hop?.ip ?? '*').join(' ')} | ${ending}`
   }
 
   /** §10.1 tracert mapping: hop = first answering probe; trailing silent hops are the timeout lines. */

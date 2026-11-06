@@ -15,11 +15,14 @@ export type ProbeFailure =
 export interface FailedReach {
   reason: FailureReason
   atDeviceId?: string
+  /** No answer comes back whatever the reason (ReachTrace.silent). */
+  silent?: boolean
 }
 
 /** Maps a failed reach result to what Windows shows; shared by ping and tracert. */
 export class ProbeFailures {
   static classify(reach: FailedReach, sourceId: string): ProbeFailure {
+    if (reach.silent === true) return { kind: 'silent' }
     const atSource = reach.atDeviceId === sourceId
     switch (reach.reason) {
       case 'destinationNotInSegment':

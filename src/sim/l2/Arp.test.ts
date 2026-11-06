@@ -163,13 +163,13 @@ describe('link layer: duplicate address detection', () => {
     expect(noteKeys(defences[0])).toEqual(expect.arrayContaining(['probeForOurAddress', 'addressConflict']))
   })
 
-  it('a router interface defends its address and keeps it; DHCP addresses are not probed', () => {
+  it('a router interface defends its address and keeps it; DHCP addresses are probed too', () => {
     const router = labRouter('r1', [{ id: 'Gi0/0', ip: '10.0.0.254' }])
     let lab = lanLab(['10.0.0.254', '10.0.0.3'], [router])
     lab = editAddress(lab, 'pc2', 'eth0', { addressing: 'dhcp' })
     const engine = startLab(lab, { settle: false })
     engine.runUntilIdle()
-    expect(engine.events().filter((event) => noteKeys(event).includes('arpProbe')).map((event) => event.deviceId)).toEqual(['pc1'])
+    expect(engine.events().filter((event) => noteKeys(event).includes('arpProbe')).map((event) => event.deviceId)).toEqual(['pc1', 'pc2'])
     expect(engine.runtime('pc2')?.link.claims).toEqual([{ interfaceId: 'eth0', address: '10.0.0.3', duplicate: false, probedAt: 0 }])
     expect(engine.runtime('pc1')?.link.claims[0]?.duplicate).toBe(true)
     expect(engine.runtime('r1')?.link.claims).toEqual([])
@@ -177,6 +177,19 @@ describe('link layer: duplicate address detection', () => {
     const ping = engine.inject(pingRequest('pc2', '10.0.0.254'))
     engine.runUntilDone(ping)
     expect(engine.request(ping)?.result).toMatchObject({ echoes: [{ kind: 'reply', fromIp: '10.0.0.254' }] })
+  })
+
+  it('a duplicate DHCP-assigned address is lost by both, like a static one (coordinator decision 5)', () => {
+    const lab = editAddress(lanLab(['10.0.0.5', '10.0.0.5', '10.0.0.3']), 'pc2', 'eth0', { addressing: 'dhcp' })
+    const engine = startLab(lab)
+    expect(engine.runtime('pc1')?.link.claims[0]?.duplicate).toBe(true)
+    expect(engine.runtime('pc2')?.link.claims[0]?.duplicate).toBe(true)
+    const own = engine.inject(pingRequest('pc2', '10.0.0.3'))
+    engine.runUntilDone(own)
+    expect(engine.request(own)?.result).toMatchObject({ echoes: [{ kind: 'localFailure', reason: 'ipConflict' }] })
+    const other = engine.inject(pingRequest('pc3', '10.0.0.5'))
+    engine.runUntilDone(other)
+    expect(engine.request(other)?.result).toMatchObject({ echoes: [{ kind: 'unreachable' }] })
   })
 })
 

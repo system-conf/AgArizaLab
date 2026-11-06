@@ -1,7 +1,7 @@
 // Test-only (O3): detectors for the accepted divergences of docs/SIMULATION.md §10.3 and the later
 // "Additions" sections. A comparison that falls under one is skipped (and counted), never weakened.
 import type { Device, NetworkState, ReachResult } from '../../domain'
-import { DeviceAddresses, HostAttachment, Ipv4, L3Interfaces, SegmentFinder, Topology, type L3Interface } from '../../engine'
+import { DeviceAddresses, HostAttachment, Ipv4, L3Interfaces, ReachabilityChecker, SegmentFinder, Topology, type L3Interface } from '../../engine'
 
 /** Why a comparison was skipped; the value names the doc line. */
 export const DIVERGENCES = {
@@ -24,6 +24,7 @@ export const DIVERGENCES = {
 export type Divergence = keyof typeof DIVERGENCES
 
 const segments = new SegmentFinder()
+const reachability = new ReachabilityChecker(segments)
 
 /** The NIC a host would send to `toIp` from, as the engine picks it. */
 function sourceInterface(state: NetworkState, device: Device, toIp: string): L3Interface | null {
@@ -92,10 +93,14 @@ export class Divergences {
     return [...new Set(byAddress.values())].some((device) => longest(device, new Set([device.id])) > 4)
   }
 
-  /** Additions after S2: a router (not the source) had no route to a private address or failed ARP. */
-  static tracertRouterReports(fromId: string, reach: ReachResult): boolean {
+  /**
+   * Additions after S2: a router (not the source) had no route to a private address or failed ARP, and
+   * its "unreachable" gets back (a lost one, decision 7, or a broadcast, decision 3, is plain silence).
+   */
+  static tracertRouterReports(state: NetworkState, fromId: string, toIp: string, reach: ReachResult): boolean {
     if (reach.ok || reach.atDeviceId === fromId) return false
-    return reach.reason === 'noRouteToDestination' || reach.reason === 'destinationNotInSegment'
+    if (reach.reason !== 'noRouteToDestination' && reach.reason !== 'destinationNotInSegment') return false
+    return reachability.trace(state, fromId, toIp).silent !== true
   }
 
   private static helpersOf(device: Device, member: L3Interface): string[] {

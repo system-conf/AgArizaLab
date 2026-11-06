@@ -33,7 +33,13 @@
       "presentation": "Ayşe Hanım'a: \"Bir router ve bir switch kuruyoruz. Bilgisayarlar adreslerini kendiliğinden alıyor, yazıcınız her zamanki 192.168.1.10 adresinde. İnternet kesilse bile ofis içinde yazdırma ve dosya paylaşımı sürer. Toplam 875 birim, bütçenin altında. Yalnız switch'in bütün portları dolu: yedinci bir çalışan gelirse 16 portlu switch'e geçmemiz gerekir.\"",
       "interviewAnswer": "Küçük bir ofiste tek bir yayın alanı yeterlidir. Router hem varsayılan ağ geçidi hem DHCP sunucusudur; istemciler adresi DHCP ile alır, yazıcı ve sunucu gibi herkesin bulması gereken cihazlar havuzun dışında statik adres (ya da DHCP rezervasyonu) alır. Router WAN arayüzünden çıkan varsayılan rota ile internete ulaşır ve DNS'i yönlendirir. Switch'i ve bütçeyi büyümeyi düşünerek boyutlandırırım."
     },
-    "topics": ["DHCP havuzu", "Statik adres", "Varsayılan ağ geçidi", "DNS", "Teklif / bütçe"]
+    "topics": [
+      "DHCP havuzu",
+      "Statik adres",
+      "Varsayılan ağ geçidi",
+      "DNS",
+      "Teklif / bütçe"
+    ]
   },
   "restaurant": {
     "title": "Restoran: POS ve misafir Wi-Fi",
@@ -74,7 +80,13 @@
       "presentation": "Murat Bey'e: \"Kasalarınız ve mutfak ekranınız kendi kapalı ağında; misafirler ayrı bir cihazdan ve ayrı bir hattan internete çıkıyor, kasa ağınızı göremiyorlar. Bu ayrım, kartlı ödeme standartlarının (PCI DSS) beklediği yapının temelidir. İnternet kesilse bile siparişler mutfağa gitmeye devam eder. Toplam 1010 birim.\"",
       "interviewAnswer": "Misafir ağını ödeme (POS) ağından ayırırım; kartlı ödemede PCI DSS de bu ayrımı bekler. Olağan çözüm ayrı VLAN'lar ve aralarında ACL ya da firewall kurallarıdır; bunlar yoksa en güvenli yol fiziksel ayrımdır: misafir Wi-Fi'ı internete kendi router'ı ve hattı üzerinden çıkar. Yalıtımı test ederken iki ağın da kendi içinde çalıştığını ve misafirden POS'a ping'in gitmediğini doğrularım."
     },
-    "topics": ["Ağ ayrımı (segmentasyon)", "Misafir Wi-Fi", "DHCP", "DNS", "İnternet kesintisinde yerel trafik"]
+    "topics": [
+      "Ağ ayrımı (segmentasyon)",
+      "Misafir Wi-Fi",
+      "DHCP",
+      "DNS",
+      "İnternet kesintisinde yerel trafik"
+    ]
   },
   "schoolLab": {
     "title": "Okul: üç bilişim sınıfı",
@@ -123,7 +135,13 @@
       "presentation": "Hakan Bey'e: \"Her sınıf kendi VLAN'ında ve ilçenin verdiği adres aralığında; bilgisayarlar adreslerini otomatik alıyor. Siz BT odasından bütün sınıflara ulaşıyorsunuz. Tek bir router yetti, toplam 1550 birim; yeni bir sınıf eklemek bir VLAN, bir alt arayüz ve bir DHCP havuzu demek.\"",
       "interviewAnswer": "Her sınıfı kendi VLAN'ına ve alt ağına koyarım: yayın alanları küçülür, sorunlar yerel kalır. VLAN'lar arası yönlendirme için iki seçenek var: router-on-a-stick (tek fiziksel port, VLAN başına bir dot1Q alt arayüz; ucuz ama yönlendirilen tüm trafik o bağlantıyı paylaşır) ya da L3 switch (SVI'lar; daha hızlı, daha pahalı). Switch'ler arası bağlantılar trunk olur ve her VLAN'a ayrı bir DHCP havuzu verilir."
     },
-    "topics": ["VLAN", "Trunk (802.1Q)", "Router-on-a-stick", "VLAN başına DHCP", "Adres planı"]
+    "topics": [
+      "VLAN",
+      "Trunk (802.1Q)",
+      "Router-on-a-stick",
+      "VLAN başına DHCP",
+      "Adres planı"
+    ]
   },
   "factory": {
     "title": "Fabrika: iki bina, dört ağ",
@@ -176,7 +194,14 @@
       "presentation": "Selin Hanım'a: \"Dört ayrı ağ kurduk: ofis, üretim, kameralar ve misafirler. Binaları fiberle bağladık, çünkü 200 metrede bakır kablo çalışmaz. Üretim ve kameralar internetten bağımsız çalışıyor, misafirler hiçbir şirket cihazını göremiyor. Bütçe 3500, maliyet 3200; kalan pay ikinci bir fiber bağlantıya ayrılabilir. Sonraki adım olarak binalar arası yedek bağlantı ve üretim ağı için erişim kuralları öneriyoruz.\"",
       "interviewAnswer": "Endüstriyel tesislerde OT (üretim) ağını IT ağından ayırırım (IEC 62443'teki bölge ve kanal yaklaşımı); kameralar ve misafirler de kendi ağlarını alır. 100 metreyi aşan ve binalar arası bağlantılar fiber olur. VLAN'ları binalar arasında trunk ile taşır, bir router ya da L3 switch'te yönlendiririm; OT'yi ofisten ayırmak için ACL ya da firewall, binalar arası bir arızaya karşı yedek bağlantı (STP ya da EtherChannel) eklerim. Üretim ve kamera kaydı internete bağımlı olmamalı."
     },
-    "topics": ["IT/OT ayrımı", "Fiber bağlantı", "VLAN ve trunk", "Router-on-a-stick", "Misafir ağı", "Teklif / bütçe"]
+    "topics": [
+      "IT/OT ayrımı",
+      "Fiber bağlantı",
+      "VLAN ve trunk",
+      "Router-on-a-stick",
+      "Misafir ağı",
+      "Teklif / bütçe"
+    ]
   },
   "hotel": {
     "title": "Otel: katlar, misafir Wi-Fi ve yedek hat",
@@ -224,10 +249,17 @@
       "poe": "Kat switch'lerinde AP'ler ve kameralar Ethernet üzerinden beslenir (PoE); ayrı adaptör ya da priz gerekmez. Laboratuvar enerjiyi modellemez ama teklifte PoE'li model seçmek doğru karardır."
     },
     "reference": {
-      "explanation": "Zemin kattaki çekirdek bir L3 switch: VLAN 10 resepsiyon (SVI 10.40.10.1), VLAN 20 güvenlik (SVI 10.40.20.1), VLAN 30 misafirler (SVI yok). Resepsiyona ve kameralara DHCP veriyor; NVR statik 10.40.20.10 adresinde. İki portu modemlere giden yönlendirilmiş port (192.168.0.2 ve 192.168.1.2); varsayılan rota ana modemi gösteriyor (uzaklık 1), yedek rota yedek modemi (uzaklık 10). Ana modem kapanınca o bağlantı düşer ve yedek rota devreye girer. Her katta PoE'li 8 portlu bir switch çekirdeğe trunk ile bağlı; aynı 'Hotel-Guest' SSID'sini VLAN 30'a bağlayan bir AP ve kat kamerası ona takılı. Misafir VLAN'ının tek ağ geçidi, operatörün eth2 hattındaki ayrı misafir router'ı (192.168.50.1, DHCP ve DNS); çekirdeğin bu VLAN'da IP arayüzü olmadığı için misafirler otel cihazlarına ulaşamıyor. Maliyet: L3 switch 2400 + iki PoE switch 640 + iki AP 440 + router 650 + on dört kablo 70 = 4200 birim.",
+      "explanation": "Zemin kattaki çekirdek bir L3 switch: VLAN 10 resepsiyon (SVI 10.40.10.1), VLAN 20 güvenlik (SVI 10.40.20.1), VLAN 30 misafirler (SVI yok). Resepsiyona ve kameralara DHCP veriyor; NVR statik 10.40.20.10 adresinde. İki portu modemlere giden yönlendirilmiş port (192.168.0.2 ve 192.168.1.2); varsayılan rota ana modemi gösteriyor (uzaklık 1), yedek rota yedek modemi (uzaklık 10). Ana modem kapanınca o bağlantı düşer ve yedek rota devreye girer. Her katta PoE'li 8 portlu bir switch çekirdeğe trunk ile bağlı; aynı 'Hotel-Guest' SSID'sini VLAN 30'a bağlayan bir AP ve kat kamerası ona takılı. Misafir VLAN'ının tek ağ geçidi, operatörün eth2 hattındaki ayrı misafir router'ı (192.168.50.1, DHCP ve DNS); çekirdeğin bu VLAN'da IP arayüzü olmadığı için misafirler otel cihazlarına ulaşamıyor. Modemler NAT yapmadığı için (laboratuvarda NAT henüz yok) her iki modeme de otel ağlarına dönüş rotası eklendi: 10.40.0.0/16, ana modemde 192.168.0.2, yedek modemde 192.168.1.2 üzerinden. Bu rota olmadan internetten gelen cevaplar modemde kalır ve resepsiyon internete çıkamaz. Maliyet: L3 switch 2400 + iki PoE switch 640 + iki AP 440 + router 650 + on dört kablo 70 = 4200 birim.",
       "presentation": "Emre Bey'e: \"Resepsiyonunuz artık iki hatla çalışıyor: ana hat kesilirse ağ kendiliğinden yedek hatta geçiyor. Misafirler her katta aynı Wi-Fi ağında, kendi hatlarından internete çıkıyor ve otel sistemlerini göremiyor. Kameralar ayrı bir ağda ve internet olmadan da kayıt sürüyor. Toplam 4200 birim; yeni bir kat bir switch, bir AP ve iki kablo demek.\"",
       "interviewAnswer": "Çok katlı bir binada hiyerarşik tasarım kullanırım: her katta bir erişim switch'i, merkezde VLAN'lar arası yönlendirmeyi yapan bir çekirdek (L3 switch). Misafir, personel ve güvenlik ağlarını VLAN'larla ayırır, misafirleri ACL / firewall ya da kendilerine ait bir ağ geçidiyle yalıtırım. Kritik servisler için WAN yedekliliği eklerim: iki farklı operatör ve floating static route (ya da IP SLA ile izlenen bir rota); ilk atlama ağ geçidi yedekliliği için HSRP / VRRP vardır."
     },
-    "topics": ["Hiyerarşik tasarım (erişim / çekirdek)", "L3 switch ve SVI", "Floating static route", "WAN yedekliliği", "Misafir VLAN'ı", "PoE"]
+    "topics": [
+      "Hiyerarşik tasarım (erişim / çekirdek)",
+      "L3 switch ve SVI",
+      "Floating static route",
+      "WAN yedekliliği",
+      "Misafir VLAN'ı",
+      "PoE"
+    ]
   }
 }

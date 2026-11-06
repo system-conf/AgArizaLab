@@ -6,10 +6,8 @@ import { InterfaceStatus } from '../../net/InterfaceStatus'
 import {
   BROADCAST_MAC,
   type DeviceContext,
-  DeviceProfiles,
   type Ipv4Packet,
   type Ipv4SendResult,
-  LIMITED_BROADCAST_IP,
   type LinkSend,
   type OsiLayer,
   PduLayers,
@@ -56,26 +54,24 @@ export class LinkInterfaces {
   }
 
   /**
-   * Interfaces that run duplicate address detection and can lose their address (engine parity): NICs
-   * and SVIs of a device that does not route. Router-side interfaces defend their address instead.
+   * The interface lost its address to duplicate address detection: only NICs and SVIs of a device that
+   * does not route can (L3Interfaces.givesUpOnConflict, engine parity); the others defend their address.
    */
-  static hasClaim(device: Device, iface: L3Interface): boolean {
-    return DeviceProfiles.of(device).ipRole !== 'router' && (iface.kind === 'nic' || iface.kind === 'svi')
-  }
-
-  static isDuplicate(ctx: DeviceContext, iface: L3Interface): boolean {
+  static lostAddress(ctx: DeviceContext, iface: L3Interface): boolean {
+    if (!L3Interfaces.givesUpOnConflict(ctx.device, iface)) return false
     const claim = LinkTables.claim(ctx, iface.id)
     return claim !== undefined && claim.duplicate && claim.address === iface.address
   }
 
   /**
    * Does the interface answer ARP for its own address? NICs never answer for an address that is not a
-   * valid host address of their subnet, nor for a duplicate; router-side interfaces always answer.
+   * valid host address of their subnet; NICs and management SVIs of a non-routing device never answer
+   * for a duplicate (coordinator decision 4); router-side interfaces of routers always answer.
    */
   static answersFor(ctx: DeviceContext, iface: L3Interface, ip: string): boolean {
     if (iface.address !== ip || !L3Interfaces.isAddressed(iface) || !iface.adminUp) return false
-    if (!L3Interfaces.isNetworkSide(iface)) return Ipv4.isHostAddress(iface.address, iface.mask) && !LinkInterfaces.isDuplicate(ctx, iface)
-    return true
+    if (LinkInterfaces.lostAddress(ctx, iface)) return false
+    return L3Interfaces.isNetworkSide(iface) || Ipv4.isHostAddress(iface.address, iface.mask)
   }
 
   /** Link up and the interface administratively up (InterfaceStatus.isUp: SVIs need their VLAN). */
@@ -93,7 +89,7 @@ export class LinkInterfaces {
       const port = iface.portId === undefined ? undefined : LinkInterfaces.port(ctx.device, iface.portId)
       return { ok: false, reason: !iface.adminUp || port?.adminUp === false ? 'portDisabled' : 'cableDisconnected' }
     }
-    if (LinkInterfaces.hasClaim(ctx.device, iface) && LinkInterfaces.isDuplicate(ctx, iface)) return { ok: false, reason: 'ipConflict' }
+    if (LinkInterfaces.lostAddress(ctx, iface)) return { ok: false, reason: 'ipConflict' }
     return { ok: true, src: iface.address === '' ? UNSPECIFIED_IP : iface.address, interfaceId: iface.id }
   }
 
@@ -104,10 +100,7 @@ export class LinkInterfaces {
 
   /** The next hop is a broadcast (limited, or the directed broadcast of the interface's subnet). */
   static isBroadcastHop(iface: L3Interface, ip: string): boolean {
-    if (ip === LIMITED_BROADCAST_IP) return true
-    if (!L3Interfaces.isAddressed(iface) || !Ipv4.sameSubnet(iface.address, ip, iface.mask)) return false
-    const network = Ipv4.network(ip, iface.mask)
-    return !Ipv4.isHostAddress(ip, iface.mask) && network !== null && Ipv4.format(network) !== ip
+    return Ipv4.isBroadcastFor(ip, iface.address, iface.mask)
   }
 
   /** Group bit of the first octet: broadcast and multicast MACs. */

@@ -41,6 +41,19 @@ describe('RouteTableBuilder', () => {
     ])
   })
 
+  it('ignores a static route whose next hop is one of its own addresses, as IOS (decision 8)', () => {
+    const lab = twoRouterLab({
+      r1: [staticRoute('10.0.2.0', MASK, '10.0.12.1'), staticRoute('10.0.3.0', MASK, '10.0.1.1'), staticRoute('0.0.0.0', '0.0.0.0', '10.0.12.2', 250)],
+    })
+    expect(brief(routesOf(lab, 'r1'))).toEqual([
+      'connected 10.0.1.0/24 [0] - Gi0/0',
+      'local 10.0.1.1/32 [0] - Gi0/0',
+      'connected 10.0.12.0/24 [0] - Gi0/1',
+      'local 10.0.12.1/32 [0] - Gi0/1',
+      'static 0.0.0.0/0 [250] 10.0.12.2 Gi0/1',
+    ])
+  })
+
   it('drops the routes of an interface whose link is down (and static routes that relied on it)', () => {
     const lab = editLink(twoRouterLab(), 'l3', (link) => ({ ...link, connected: false }))
     expect(brief(routesOf(lab, 'r1'))).toEqual([

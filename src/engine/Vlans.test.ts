@@ -110,6 +110,27 @@ describe('trunks', () => {
     expect(engine.reach(lab(99), 'hostA', '192.168.50.2')).toEqual({ ok: true, path: ['hostA', 'swA', 'swB', 'hostB'] })
     expect(engine.reach(lab(1), 'hostA', '192.168.50.2')).toMatchObject({ ok: false, reason: 'destinationNotInSegment' })
   })
+
+  /** stick() with Gi0/0.10 as the native sub-interface and the trunk's native VLAN `trunkNative`. */
+  const nativeStick = (trunkNative: number): NetworkState => {
+    const state = editPort(stick(), 'r', 'Gi0/0', (port) =>
+      port.role === 'routed' ? { ...port, subInterfaces: port.subInterfaces.map((sub) => (sub.vlan === 10 ? { ...sub, native: true } : sub)) } : port,
+    )
+    return editSwitchport(state, 'sw', 'Fa0/1', { nativeVlan: trunkNative })
+  }
+
+  it('uses a native sub-interface for the untagged native VLAN of the trunk', () => {
+    expect(engine.reach(nativeStick(10), 'pc10', '192.168.10.1')).toEqual({ ok: true, path: ['pc10', 'sw', 'r'] })
+    expect(engine.reach(nativeStick(10), 'pc10', '192.168.20.5')).toMatchObject({ ok: true })
+  })
+
+  it('loses the gateway when the native sub-interface answers untagged into another native VLAN', () => {
+    // VLAN 10 frames reach Gi0/0.10 tagged, but its answers leave untagged and land in the trunk's VLAN 1.
+    const state = nativeStick(1)
+    expect(engine.reach(state, 'pc10', '192.168.10.1')).toEqual({ ok: false, reason: 'destinationNotInSegment', atDeviceId: 'pc10' })
+    expect(engine.reach(state, 'pc10', '8.8.8.8')).toEqual({ ok: false, reason: 'gatewayUnreachable', atDeviceId: 'pc10' })
+    expect(engine.reach(state, 'pc20', '192.168.20.1')).toMatchObject({ ok: true })
+  })
 })
 
 describe('VLAN database', () => {
@@ -176,5 +197,19 @@ describe('other layer-2 devices', () => {
     }))
     expect(engine.reach(state, 'sw', '192.168.20.5')).toEqual({ ok: true, path: ['sw', 'r', 'sw', 'pc20'] })
     expect(engine.reach(state, 'pc20', '192.168.10.2')).toMatchObject({ ok: true })
+  })
+
+  it('treats a duplicate management SVI like a host: both lose the address', () => {
+    // pc10b (192.168.10.6) and the switch's management SVI claim the same address.
+    const state = editDevice(stick(), 'sw', (device) => ({
+      ...device,
+      ...(device.switching ? { switching: { ...device.switching, svis: [svi(10, '192.168.10.6')], defaultGateway: '192.168.10.1' } } : {}),
+    }))
+    expect(engine.reach(state, 'pc10', '192.168.10.6')).toEqual({ ok: false, reason: 'destinationNotInSegment', atDeviceId: 'pc10' })
+    expect(engine.reach(state, 'pc10b', '192.168.10.1')).toEqual({ ok: false, reason: 'ipConflict', atDeviceId: 'pc10b' })
+    expect(engine.reach(state, 'sw', '192.168.10.1')).toEqual({ ok: false, reason: 'ipConflict', atDeviceId: 'sw' })
+    // An SVI of a routing switch keeps (defends) its address, like a router interface.
+    const routing = editDevice(state, 'sw', (device) => ({ ...device, routing: { ipRouting: true, staticRoutes: [] } }))
+    expect(engine.reach(routing, 'pc10', '192.168.10.6')).toEqual({ ok: true, path: ['pc10', 'sw'] })
   })
 })

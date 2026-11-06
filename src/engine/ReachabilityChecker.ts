@@ -33,7 +33,12 @@ export class ReachabilityChecker {
 
   constructor(segments: SegmentFinder) {
     this.segments = segments
-    this.forwarder = new RouterForwarder(segments, (state, fromDeviceId, toIp) => this.oneWay(state, fromDeviceId, toIp).result.ok)
+    this.forwarder = new RouterForwarder(segments, (state, fromDeviceId, toIp) => this.canSend(state, fromDeviceId, toIp))
+  }
+
+  /** Can the device get a packet to `toIp` (no reply check)? The way back of a reply or an ICMP error. */
+  canSend(state: NetworkState, fromDeviceId: string, toIp: string): boolean {
+    return this.oneWay(state, fromDeviceId, toIp).result.ok
   }
 
   reach(state: NetworkState, fromDeviceId: string, toIp: string): ReachResult {
@@ -65,6 +70,10 @@ export class ReachabilityChecker {
     if (!Ipv4.isValid(toIp)) return ReachTraces.atSource('invalidConfig', from.id, sourceIp)
     if (L3Interfaces.of(from).some((iface) => iface.address === toIp)) {
       return ReachTraces.success({ reached: [from.id], routerHops: [], sourceIp })
+    }
+    // A broadcast reaches everyone in the segment, and nobody answers an echo sent to one.
+    if (Ipv4.isBroadcastFor(toIp, sourceIp, source.iface.mask)) {
+      return { ...ReachTraces.atSource('destinationNotInSegment', from.id, sourceIp), silent: true }
     }
     if (Ipv4.sameSubnet(sourceIp, toIp, source.iface.mask)) return this.reachLocal(state, source, toIp)
     return this.reachThroughGateway(state, source, toIp, checkReply)

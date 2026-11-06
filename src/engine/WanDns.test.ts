@@ -70,6 +70,31 @@ describe('internet through a routed port cabled to the cloud', () => {
     expect(engine.reach(wanLab(), 'pc', '10.20.30.40')).toEqual({ ok: false, reason: 'noRouteToDestination', atDeviceId: 'r' })
   })
 
+  it('needs a way back for internet replies: every router on the return path needs a route to the sender', () => {
+    // pc2 10.2.2.10 behind r2, which hangs off r (Gi0/2, 10.0.0.0/30) and sends everything to r.
+    const withInner = (routeBack: boolean): NetworkState => {
+      const base = wanLab()
+      const inner = { prefix: '10.2.2.0', mask: '255.255.255.0', nextHop: '10.0.0.2', adminDistance: 1 }
+      const edge = labRouter('r', [{ id: 'Gi0/0', ip: '192.168.1.1' }, { id: 'Gi0/1', addressing: 'dhcp' }, { id: 'Gi0/2', ip: '10.0.0.1', mask: '255.255.255.252' }], [
+        { prefix: '0.0.0.0', mask: '0.0.0.0', exitInterfaceId: 'Gi0/1', adminDistance: 1 },
+        ...(routeBack ? [inner] : []),
+      ])
+      const r2 = labRouter('r2', [{ id: 'Gi0/0', ip: '10.2.2.1' }, { id: 'Gi0/1', ip: '10.0.0.2', mask: '255.255.255.252' }], [
+        { prefix: '0.0.0.0', mask: '0.0.0.0', nextHop: '10.0.0.1', adminDistance: 1 },
+      ])
+      return {
+        devices: [...base.devices.map((device) => (device.id === 'r' ? edge : device)), r2, labHost('pc2', '10.2.2.10', { gateway: '10.2.2.1' })],
+        links: [...base.links, labLink('rToR2', ['r', 'Gi0/2'], ['r2', 'Gi0/1'], { cable: 'copperCross' }), labLink('pc2Link', ['pc2', 'eth0'], ['r2', 'Gi0/0'], { cable: 'copperCross' })],
+      }
+    }
+    expect(engine.reach(withInner(true), 'pc2', '8.8.8.8')).toEqual({ ok: true, path: ['pc2', 'r2', 'r', 'internet'] })
+    // Without the route the reply reaches r and dies there; r's own "TTL expired" is lost too.
+    expect(engine.reach(withInner(false), 'pc2', '8.8.8.8')).toEqual({ ok: false, reason: 'gatewayUnreachable', atDeviceId: 'internet' })
+    expect(textOf(engine.runCommand(withInner(false), 'pc2', 'ping 8.8.8.8').lines)).toContain('Request timed out.')
+    const hops = textOf(engine.runCommand(withInner(false), 'pc2', 'tracert 8.8.8.8').lines).filter((line) => /^ {2}\d/.test(line))
+    expect(hops.slice(0, 2)).toEqual(['  1    <1 ms    <1 ms    <1 ms  10.2.2.1', '  2     *        *        *     Request timed out.'])
+  })
+
   it('gives an end device cabled straight to the cloud no service', () => {
     const state: NetworkState = {
       devices: [labCloud(), labHost('pc', '203.0.113.99', { gateway: '203.0.113.1' })],

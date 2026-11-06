@@ -131,6 +131,25 @@ describe('link layer: endpoints', () => {
     expect(noteKeys(run.events.find((event) => event.deviceId === 'sw' && event.protocol === 'icmp'))).toContain('sviDelivered')
   })
 
+  it('a duplicate management SVI loses its address like a host: no ARP answer, so no echo (decision 4)', () => {
+    const base = labSwitch('sw', [accessMode(1), accessMode(1)])
+    const sw: Device = {
+      ...base,
+      switching: { vlans: base.switching?.vlans ?? [], svis: [{ vlan: 1, adminUp: true, l3: { ipv4: { addressing: 'static', address: '10.0.0.250', mask: '255.255.255.0' } } }], defaultGateway: '' },
+    }
+    const engine = startLab({
+      devices: [labHost('pc1', '10.0.0.1'), labHost('pc2', '10.0.0.250'), sw],
+      links: [labLink('l1', ['pc1', 'eth0'], ['sw', 'Fa0/1']), labLink('l2', ['pc2', 'eth0'], ['sw', 'Fa0/2'])],
+    })
+    expect(engine.runtime('sw')?.link.claims[0]?.duplicate).toBe(true)
+    expect(engine.runtime('pc2')?.link.claims[0]?.duplicate).toBe(true)
+    const id = engine.inject(pingRequest('pc1', '10.0.0.250'))
+    const run = engine.runUntilDone(id)
+    expect(engine.request(id)?.result).toMatchObject({ echoes: [{ kind: 'unreachable', fromIp: '10.0.0.1' }] })
+    expect(run.events.filter((event) => event.deviceId === 'sw' && event.protocol === 'arp' && event.action === 'replied')).toEqual([])
+    expect(run.events.some((event) => event.deviceId === 'sw' && event.protocol === 'icmp')).toBe(false)
+  })
+
   it('routes between SVIs; a broadcast for the SVI is flooded in its VLAN and answered', () => {
     const engine = startLab(sviLab())
     const id = engine.inject(pingRequest('pc1', '10.0.20.3'))
