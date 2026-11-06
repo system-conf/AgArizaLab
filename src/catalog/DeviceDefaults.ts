@@ -1,18 +1,18 @@
 // Device-wide settings groups of a newly created device, per kind (docs/MODEL_V2.md §3).
 // Port-level defaults live in PortFactory.
 import type {
-  DeviceKindV2,
+  Device,
+  DeviceKind,
   DeviceServices,
-  DeviceV2,
   L3Settings,
   Port,
   RoutingSettings,
   SwitchingSettings,
   WirelessSettings,
-} from '../domain/v2'
+} from '../domain'
 
-/** The settings bags of DeviceV2 (everything except identity and ports). */
-export type DeviceSettingsGroups = Pick<DeviceV2, 'host' | 'switching' | 'routing' | 'wireless' | 'services' | 'internet'>
+/** The settings bags of Device (everything except identity and ports). */
+export type DeviceSettingsGroups = Pick<Device, 'host' | 'switching' | 'routing' | 'wireless' | 'services' | 'internet'>
 
 /** SSID a new access point / wireless router broadcasts (open, VLAN 1). User content afterwards. */
 export const DEFAULT_SSID = 'Default'
@@ -36,7 +36,7 @@ function noAddress(): L3Settings {
 
 export class DeviceDefaults {
   /** Settings groups for a new device of `kind` with the given (already created) ports. */
-  settingsFor(kind: DeviceKindV2, ports: readonly Port[]): DeviceSettingsGroups {
+  settingsFor(kind: DeviceKind, ports: readonly Port[]): DeviceSettingsGroups {
     switch (kind) {
       case 'internet':
         return { internet: { handoffs: [] } }

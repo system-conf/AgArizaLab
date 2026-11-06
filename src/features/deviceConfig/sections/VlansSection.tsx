@@ -1,7 +1,7 @@
 import { Layers } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { SwitchingSettings } from '../../../domain/v2'
+import type { SwitchingSettings } from '../../../domain'
 import { focusRing } from '../../shared/focusRing'
 import InputField from '../fields/InputField'
 import RowList from '../fields/RowList'

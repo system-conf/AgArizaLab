@@ -7,13 +7,13 @@ import {
   StateInvariants,
   type Annotation,
   type CableType,
-  type DeviceKindV2,
-  type DeviceV2,
+  type DeviceKind,
+  type Device,
   type L3Settings,
   type LabDocument,
-  type LinkV2,
+  type Link,
   type Port,
-} from '../domain/v2'
+} from '../domain'
 import { LabEditor } from './LabEditor'
 import { LabSerializer } from './LabSerializer'
 import { sampleLab } from './testLabs'
@@ -49,7 +49,7 @@ function port(id: string, role: Port['role'], medium: Port['medium']): Port {
   }
 }
 
-const BUILDERS: Readonly<Partial<Record<DeviceKindV2, () => Port[]>>> = {
+const BUILDERS: Readonly<Partial<Record<DeviceKind, () => Port[]>>> = {
   pc: () => [port('eth0', 'host', 'copper'), port('wlan0', 'host', 'wireless'), port('RS232', 'console', 'console')],
   laptop: () => [port('wlan0', 'host', 'wireless')],
   switch: () => [port('Fa0/1', 'switched', 'copper'), port('Fa0/2', 'switched', 'copper'), port('Gi0/1', 'switched', 'fiber'), port('Console', 'console', 'console')],
@@ -57,12 +57,12 @@ const BUILDERS: Readonly<Partial<Record<DeviceKindV2, () => Port[]>>> = {
   accessPoint: () => [port('Gi0', 'switched', 'copper'), port('Radio0', 'radio', 'wireless')],
   hub: () => [port('Eth0', 'passive', 'copper'), port('Eth1', 'passive', 'copper')],
 }
-const KINDS = Object.keys(BUILDERS) as DeviceKindV2[]
+const KINDS = Object.keys(BUILDERS) as DeviceKind[]
 const CABLES: CableType[] = ['copperStraight', 'copperCross', 'fiber', 'serial', 'console', 'coaxial', 'wireless']
 
-function build(kind: DeviceKindV2, id: string): DeviceV2 {
+function build(kind: DeviceKind, id: string): Device {
   const ports = BUILDERS[kind]?.() ?? []
-  const base: DeviceV2 = { id, kind, modelId: kind, name: id, powered: true, baseMac: nextMac(), ports }
+  const base: Device = { id, kind, modelId: kind, name: id, powered: true, baseMac: nextMac(), ports }
   return kind === 'accessPoint' ? { ...base, wireless: { ssids: [{ ssid: 'Office', vlan: 1, security: { mode: 'open' } }] } } : base
 }
 
@@ -73,7 +73,7 @@ function pick<Item>(items: readonly Item[], index: number): Item | undefined {
 type Step = (doc: LabDocument) => LabDocument
 
 /** Ports without a cable (radio ports always count as free). */
-function freePorts(doc: LabDocument, device: DeviceV2): Port[] {
+function freePorts(doc: LabDocument, device: Device): Port[] {
   const used = new Set(doc.state.links.flatMap((link) => [link.a, link.b]).filter((end) => end.deviceId === device.id).map((end) => end.portId))
   return device.ports.filter((item) => item.role === 'radio' || !used.has(item.id))
 }
@@ -112,7 +112,7 @@ const connectStep = fc
         if (!first || !second || !portA || !portB) return doc
         const ends = { id: editor.nextLinkId(doc), a: { deviceId: first.id, portId: portA.id }, b: { deviceId: second.id, portId: portB.id }, connected: true }
         const cable = tool === 'auto' ? (cableRules.autoCable(doc.state, ends.a, ends.b) ?? 'copperStraight') : tool
-        const link: LinkV2 =
+        const link: Link =
           cable === 'serial' ? { ...ends, cable, dceEnd: 'a' } : cable === 'wireless' ? { ...ends, cable, ssid } : { ...ends, cable }
         const result = editor.connect(doc, link)
         if (result.ok) {
@@ -140,7 +140,7 @@ const updateStep = fc.record({ i: index, p: index, change: fc.constantFrom(...PO
       const target = pick(doc.state.devices, i)
       const chosen = target && pick(target.ports, p)
       if (!target || !chosen) return doc
-      const replacePort = (next: Port): DeviceV2 => ({ ...target, ports: target.ports.map((item) => (item === chosen ? next : item)) })
+      const replacePort = (next: Port): Device => ({ ...target, ports: target.ports.map((item) => (item === chosen ? next : item)) })
       switch (change) {
         case 'dropPort': {
           const next = editor.updateDevice(doc, { ...target, ports: target.ports.filter((item) => item !== chosen) })
@@ -163,7 +163,7 @@ const updateStep = fc.record({ i: index, p: index, change: fc.constantFrom(...PO
     },
 )
 
-function expectRefused(doc: LabDocument, device: DeviceV2): LabDocument {
+function expectRefused(doc: LabDocument, device: Device): LabDocument {
   const next = editor.updateDevice(doc, device)
   expect(next).toBe(doc)
   seen.updateRefused += 1

@@ -1,5 +1,5 @@
 // Shared helper of the catalog data files: fills in the model's i18n key.
-import type { DeviceModel } from '../../domain/v2'
+import type { DeviceModel } from '../../domain'
 import type { CatalogPortTemplate } from '../portTemplates'
 
 /** A catalog model: every port template carries a typed strip group. */

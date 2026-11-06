@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { cableLab } from '../../../domain/v2/testDevicesV2'
+import { cableLab } from '../../../domain/testDevices'
 import { CableToolState } from './CableToolState'
 
 const lab = cableLab()

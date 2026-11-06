@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { findDeviceModel, PortFactory } from '../../../catalog'
-import type { DeviceModel, DeviceV2, RoutingSettings, SwitchingSettings } from '../../../domain/v2'
+import type { Device, DeviceModel, RoutingSettings, SwitchingSettings } from '../../../domain'
 import { routingSettingsSchema, switchingSettingsSchema } from '../../../lab/schemas/deviceSchemas'
 import { StaticRouteFormModel, type StaticRouteDraft } from './StaticRouteFormModel'
 import { SviFormModel } from './SviFormModel'
@@ -12,7 +12,7 @@ function model(id: string): DeviceModel {
   return found
 }
 
-function switching(device: DeviceV2): SwitchingSettings {
+function switching(device: Device): SwitchingSettings {
   if (!device.switching) throw new Error('no switching')
   return device.switching
 }
@@ -55,7 +55,7 @@ describe('VlanDatabaseModel', () => {
       if (port.id === 'Fa0/3') return { ...port, l2: { ...port.l2, mode: 'trunk' as const } }
       return port
     })
-    const device: DeviceV2 = {
+    const device: Device = {
       ...base,
       ports,
       switching: { ...switching(base), svis: [{ vlan: 10, adminUp: true, l3: { ipv4: { addressing: 'static', address: '', mask: '' } } }] },

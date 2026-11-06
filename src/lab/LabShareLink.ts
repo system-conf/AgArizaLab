@@ -1,7 +1,7 @@
 // Share links: the whole lab, compressed (lz-string, URL-safe), in the URL hash `#lab=…`. The hash
 // never reaches a server; the limit keeps links usable in chat apps and mail.
 import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from 'lz-string'
-import type { LabDocument } from '../domain/v2'
+import type { LabDocument } from '../domain'
 import type { LocalizedMessage } from '../domain/Messages'
 import { localizedMessage } from '../i18n/messageKeys'
 import { labSerializer, type LabParseResult, type LabSerializer } from './LabSerializer'

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { DeviceV2 } from '../domain/v2'
+import type { Device } from '../domain'
 import { SeededBaseMacSource } from './BaseMacSource'
 import { deviceCatalog, findDeviceModel } from './DeviceCatalog'
 import { PortFactory } from './PortFactory'
@@ -39,7 +39,7 @@ describe('PortStrip', () => {
   it('lays out a device by its own ports: unknown ports last, missing model ports left out', () => {
     const model = modelOf('pc')
     const pc = new PortFactory(new SeededBaseMacSource(1)).createDevice(model, 'pc', 'pc')
-    const extra: DeviceV2 = {
+    const extra: Device = {
       ...pc,
       ports: [{ id: 'wlan0', medium: 'wireless', role: 'host', adminUp: false, l3: { ipv4: { addressing: 'dhcp', address: '', mask: '' } } }],
     }

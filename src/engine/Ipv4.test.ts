@@ -104,7 +104,7 @@ describe('Ipv4', () => {
   })
 })
 
-describe('Ipv4 — prefixes (v2 routing)', () => {
+describe('Ipv4 — prefixes (routing)', () => {
   it('counts the one bits of a mask', () => {
     expect(Ipv4.prefixLength('0.0.0.0')).toBe(0)
     expect(Ipv4.prefixLength('255.0.0.0')).toBe(8)

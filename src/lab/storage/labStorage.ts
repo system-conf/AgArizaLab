@@ -1,5 +1,5 @@
 // The app's lab storage: IndexedDB database 'agArizaLab', object store 'labs', in-memory fallback.
-import type { LabDocument } from '../../domain/v2'
+import type { LabDocument } from '../../domain'
 import type { LabParseResult } from '../LabSerializer'
 import { IdbKeyValueStore, ResilientKeyValueStore } from './LabKeyValueStore'
 import { LabLibrary, newLabId, type RecentLabEntry, type StoredLab } from './LabLibrary'

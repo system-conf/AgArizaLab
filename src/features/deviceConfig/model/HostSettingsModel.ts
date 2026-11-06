@@ -1,5 +1,5 @@
 // End-device "global settings": default gateway, DNS servers and app links (MODEL_V2 §3).
-import type { AppLinkV2, DeviceKindV2, HostSettings } from '../../../domain/v2'
+import type { AppLink, DeviceKind, HostSettings } from '../../../domain'
 import { localizedMessage } from '../../../i18n/messageKeys'
 import { newRowKey, type FieldErrors } from './formTypes'
 import { Ipv4Fields } from './Ipv4Fields'
@@ -18,7 +18,7 @@ export interface AppLinkDraft {
   id: string
   label: string
   targetIp: string
-  targetKind: DeviceKindV2
+  targetKind: DeviceKind
 }
 
 export type AppLinkField = 'label' | 'targetIp'
@@ -76,7 +76,7 @@ export class HostSettingsModel {
       used.add(id)
       return id
     }
-    const appLinks = rows.map((row): AppLinkV2 => ({
+    const appLinks = rows.map((row): AppLink => ({
       id: row.id === '' ? freshId() : row.id,
       label: row.label.trim(),
       targetIp: row.targetIp.trim(),

@@ -1,9 +1,9 @@
-import type { DeviceKindV2 } from '../../domain/v2'
+import type { DeviceKind } from '../../domain'
 import { deviceIconRegistry } from './deviceIconRegistry'
 import type { DeviceIconProps } from './deviceIconTypes'
 
 interface DeviceKindIconProps extends DeviceIconProps {
-  kind: DeviceKindV2
+  kind: DeviceKind
 }
 
 /**

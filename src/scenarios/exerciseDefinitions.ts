@@ -1,7 +1,7 @@
 // The five exercises as v2 ExerciseDefinitions: the v1 data migrated with migrateV1Exercise until
 // the exercises are rewritten as v2 data (PLAN_V2 wave 2.2). Imported by the exercise screen only
 // (lazy chunk), so the migration code stays out of the landing chunk.
-import type { ExerciseDefinition, ExerciseLock } from '../domain/v2'
+import type { ExerciseDefinition, ExerciseLock } from '../domain'
 import { migrateV1Exercise } from '../lab/migrations'
 import { scenarioDefinitions } from './scenarioDefinitions'
 

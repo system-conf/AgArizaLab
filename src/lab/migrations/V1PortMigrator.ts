@@ -1,7 +1,7 @@
 // Builds the explicit v2 ports of one v1 device, with their port-level settings, and records
 // where every v1 link end lands (mapping table: docs/MODEL_V2.md §11).
-import type { Device, Link, RouterInterface } from '../../domain/NetworkTypes'
-import { MacAddress, type L3Settings, type Port, type PortMedium, type SubInterface } from '../../domain/v2'
+import type { V1Device, V1Link, V1RouterInterface } from './v1Types'
+import { MacAddress, type L3Settings, type Port, type PortMedium, type SubInterface } from '../../domain'
 import { V1_HOST_KINDS } from './v1DeviceMap'
 
 export const ROUTER_LAN_PORT = 'Gi0/0'
@@ -51,7 +51,7 @@ function consolePort(): DraftPort {
 }
 
 export class V1PortMigrator {
-  migrate(device: Device, links: readonly Link[]): PortPlan {
+  migrate(device: V1Device, links: readonly V1Link[]): PortPlan {
     const ends = this.endsOf(device.id, links)
     const draft = this.draftFor(device, ends)
     this.addUnknownPorts(device, ends, draft)
@@ -66,7 +66,7 @@ export class V1PortMigrator {
     }
   }
 
-  private endsOf(deviceId: string, links: readonly Link[]): V1End[] {
+  private endsOf(deviceId: string, links: readonly V1Link[]): V1End[] {
     const ends: V1End[] = []
     for (const link of links) {
       for (const end of [link.a, link.b]) {
@@ -78,7 +78,7 @@ export class V1PortMigrator {
     return ends
   }
 
-  private draftFor(device: Device, ends: V1End[]): Draft {
+  private draftFor(device: V1Device, ends: V1End[]): Draft {
     switch (device.kind) {
       case 'router':
         return this.routerDraft(device)
@@ -94,7 +94,7 @@ export class V1PortMigrator {
   }
 
   /** v1 'lan' → Gi0/0 (VLAN-1 interface on the port, other VLANs as dot1Q sub-interfaces), 'wan' → Gi0/1. */
-  private routerDraft(device: Device): Draft {
+  private routerDraft(device: V1Device): Draft {
     const interfaces = device.routerInterfaces ?? []
     const native = interfaces.find((candidate) => candidate.vlan === 1)
     const lan: Port = {
@@ -118,7 +118,7 @@ export class V1PortMigrator {
   }
 
   /** Sub-interface number = VLAN id; on a clash (two interfaces in one VLAN) +1000 until free. */
-  private subInterfaces(interfaces: RouterInterface[]): SubInterface[] {
+  private subInterfaces(interfaces: V1RouterInterface[]): SubInterface[] {
     const used = new Set<number>()
     return interfaces.map((routerInterface) => {
       let number = routerInterface.vlan
@@ -134,7 +134,7 @@ export class V1PortMigrator {
     })
   }
 
-  private switchDraft(device: Device): Draft {
+  private switchDraft(device: V1Device): Draft {
     const ports: DraftPort[] = (device.switchPorts ?? []).map((switchPort) => ({
       port: {
         id: switchPort.id,
@@ -185,7 +185,7 @@ export class V1PortMigrator {
    * eth0 (smartphones: wlan0) plus any of eth0 / wlan0 a v1 link uses. The v1 IP settings and MAC
    * go to the primary NIC: the first linked one (eth0 before wlan0), else the first NIC.
    */
-  private hostDraft(device: Device, ends: V1End[]): Draft {
+  private hostDraft(device: V1Device, ends: V1End[]): Draft {
     const linked = new Set(ends.map((end) => end.portId))
     const nicIds = ['eth0', 'wlan0'].filter(
       (id) => linked.has(id) || (id === 'wlan0' ? device.kind === 'phone' : device.kind !== 'phone'),
@@ -206,7 +206,7 @@ export class V1PortMigrator {
    * A v1 link may name a port the v1 device did not have (v1 treated that end as dead). The port
    * is created with that id and `adminUp: false`, which keeps the link dead in v2.
    */
-  private addUnknownPorts(device: Device, ends: V1End[], draft: Draft): void {
+  private addUnknownPorts(device: V1Device, ends: V1End[], draft: Draft): void {
     for (const end of ends) {
       if (draft.byLink.has(end.linkId) || draft.byV1Port.has(end.portId)) continue
       if (!draft.ports.some((existing) => existing.port.id === end.portId)) {
@@ -216,7 +216,7 @@ export class V1PortMigrator {
     }
   }
 
-  private deadPort(device: Device, end: V1End): Port {
+  private deadPort(device: V1Device, end: V1End): Port {
     const medium: PortMedium = end.wireless ? 'wireless' : 'copper'
     const base = { id: end.portId, medium, adminUp: false }
     if (device.kind === 'switch') {
@@ -228,7 +228,7 @@ export class V1PortMigrator {
   }
 
   /** Primary port keeps the v1 MAC; other Ethernet / Wi-Fi ports get MacAddress.derive(mac, index + 1). */
-  private assignMacs(device: Device, drafts: DraftPort[]): Port[] {
+  private assignMacs(device: V1Device, drafts: DraftPort[]): Port[] {
     return drafts.map((draft, index) => {
       if (draft.port.medium === 'console' || draft.port.medium === 'serial') return draft.port
       const mac = draft.primary ? device.mac : MacAddress.derive(device.mac, index + 1)

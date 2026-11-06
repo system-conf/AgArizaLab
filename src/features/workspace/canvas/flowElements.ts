@@ -1,11 +1,15 @@
 // LabDocument → React Flow nodes and edges. Positions and selection come from the workspace,
 // never from React Flow's own state (controlled flow).
-import type { Annotation, CanvasPoint, DeviceV2, LabDocument, LinkV2 } from '../../../domain/v2'
-import type { LinkLight } from '../../../domain/EngineContract'
-import type { Link } from '../../../domain/NetworkTypes'
-import type { LinkFlowEdge } from '../../map/mapTypes'
+import type { Annotation, CanvasPoint, Device, LabDocument, Link, LinkLight } from '../../../domain'
 import { ANNOTATION_NODE_PREFIX } from '../workspaceConstants'
-import type { AnnotationNode, CableHighlight, WorkspaceDeviceNode, WorkspaceNode, WorkspaceSelection } from './canvasTypes'
+import type {
+  AnnotationNode,
+  CableHighlight,
+  LinkFlowEdge,
+  WorkspaceDeviceNode,
+  WorkspaceNode,
+  WorkspaceSelection,
+} from './canvasTypes'
 
 export type MeasuredSizes = Readonly<Record<string, { width: number; height: number }>>
 
@@ -39,10 +43,10 @@ export function annotationText(annotation: Annotation): string {
 
 /** Translated texts the builders need (rebuilt when the language changes). */
 export interface FlowLabels {
-  device: (device: DeviceV2) => string
-  modelName: (device: DeviceV2) => string
+  device: (device: Device) => string
+  modelName: (device: Device) => string
   annotation: (annotation: Annotation) => string
-  link: (link: LinkV2, a: DeviceV2, b: DeviceV2) => string
+  link: (link: Link, a: Device, b: Device) => string
 }
 
 export interface NodeInput {
@@ -92,16 +96,10 @@ export function buildNodes(input: NodeInput): WorkspaceNode[] {
   return [...annotationNodes, ...deviceNodes]
 }
 
-/** The v1 link shape the map's LinkEdge draws (it only reads ends, `connected` and the SSID). */
-function asMapLink(link: LinkV2): Link {
-  const base = { id: link.id, a: link.a, b: link.b, connected: link.connected }
-  return link.cable === 'wireless' ? { ...base, ssid: link.ssid } : base
-}
-
 export function buildEdges(
   doc: LabDocument,
   selection: WorkspaceSelection,
-  lightOf: (link: LinkV2) => LinkLight,
+  lightOf: (link: Link) => LinkLight,
   labels: FlowLabels,
 ): LinkFlowEdge[] {
   const devicesById = new Map(doc.state.devices.map((device) => [device.id, device]))
@@ -121,7 +119,7 @@ export function buildEdges(
       selected: selection.linkIds.includes(link.id),
       ariaLabel: labels.link(link, deviceA, deviceB),
       data: {
-        link: asMapLink(link),
+        link,
         light: lightOf(link),
         wireless: link.cable === 'wireless',
         switchEnds: [

@@ -1,6 +1,6 @@
 // Static routes (`ip route <prefix> <mask> {<next hop> | <interface> [<next hop>]} [<distance>]`)
 // and the `ip routing` switch of an L3 switch.
-import type { DeviceV2, RoutingSettings, StaticRoute } from '../../../domain/v2'
+import type { Device, RoutingSettings, StaticRoute } from '../../../domain'
 import { L3Interfaces } from '../../../engine'
 import { localizedMessage } from '../../../i18n/messageKeys'
 import { newRowKey, parseWholeNumber, type FieldErrors } from './formTypes'
@@ -45,7 +45,7 @@ export class StaticRouteFormModel {
   }
 
   /** Interfaces a route can leave through: routed ports, sub-interfaces and SVIs (not NICs). */
-  static exitInterfaces(device: DeviceV2): string[] {
+  static exitInterfaces(device: Device): string[] {
     return L3Interfaces.of(device)
       .filter((iface) => L3Interfaces.isNetworkSide(iface))
       .map((iface) => iface.id)

@@ -1,7 +1,7 @@
-// Engine contract: what the UI and scenario checks may call.
-// The engine is pure: it never mutates the NetworkState it receives.
+// Engine contract: what the UI and exercise checks may ask of a NetworkState (src/engine implements
+// it). The engine is pure: it never mutates the state it receives.
 import type { LocalizedMessage } from './Messages'
-import type { NetworkState } from './NetworkTypes'
+import type { NetworkState } from './NetworkState'
 
 export type FailureReason =
   | 'powerOff'
@@ -26,6 +26,8 @@ export type FailureReason =
   | 'ipConflict'
   /** The host IP is the network or broadcast address of its own subnet. */
   | 'invalidHostAddress'
+  /** The packet looped between routers until its TTL ran out (tracert shows the loop). */
+  | 'ttlExpired'
 
 export type ReachResult =
   | { ok: true; path: string[] }
@@ -69,7 +71,7 @@ export interface TerminalMessageLine {
 export type TerminalLine = TerminalTextLine | TerminalMessageLine
 
 /**
- * Route a ping packet took, for map animation (v1.1).
+ * Route a ping packet took, for the canvas animation.
  * ok: path = full route source → destination (reply goes back the same way).
  * !ok: path = route from source to the device where the packet was dropped (may be just [source]).
  */
@@ -87,8 +89,9 @@ export interface CommandResult {
 }
 
 /**
- * Physical link light, like a switch port LED (v1.1). 'up' = cable connected, both ends powered,
- * switch port(s) enabled. Says nothing about IP/VLAN/DNS, so it never reveals a config fault.
+ * Physical link light, like a switch port LED. 'up' = cable connected, both ends powered and
+ * enabled, a working cable for the ports. Says nothing about IP/VLAN/DNS, so it never reveals a
+ * config fault.
  */
 export type LinkLight = 'up' | 'down'
 
@@ -97,16 +100,16 @@ export type DhcpResult =
   | { ok: false; reason: FailureReason }
 
 export interface NetworkEngine {
-  /** Can `fromDeviceId` reach `toIp` (ICMP)? */
+  /** Can `fromDeviceId` (any device with an L3 address) reach `toIp` (ICMP)? */
   reach(state: NetworkState, fromDeviceId: string, toIp: string): ReachResult
   /** Resolve a host name using the device's configured DNS servers. */
   resolve(state: NetworkState, fromDeviceId: string, name: string): ResolveResult
   /** Status of every AppLink on a device. */
   appLinkStatus(state: NetworkState, deviceId: string): AppLinkStatus[]
-  /** Request an address from the DHCP server in the device's VLAN. */
-  renewDhcp(state: NetworkState, deviceId: string): DhcpResult
-  /** Run a terminal command line on a host: ipconfig, ipconfig /all, ipconfig /renew, ping, nslookup, help. */
+  /** DHCP on one NIC (`portId`), or on every NIC of the host in 'dhcp' mode when omitted. */
+  renewDhcp(state: NetworkState, deviceId: string, portId?: string): DhcpResult
+  /** Run a terminal command line on a host: ipconfig (/all, /renew, /release), ping, tracert, nslookup, help. */
   runCommand(state: NetworkState, deviceId: string, commandLine: string): CommandResult
-  /** Physical light of one link (v1.1). */
+  /** Physical light of one link. */
   linkLight(state: NetworkState, linkId: string): LinkLight
 }

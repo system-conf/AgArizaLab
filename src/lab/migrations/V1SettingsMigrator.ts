@@ -1,16 +1,16 @@
 // Device-level v2 settings (host, switching, routing, wireless, services, internet) from a v1
 // device (mapping table: docs/MODEL_V2.md §11).
-import type { Device, DhcpPool, NetworkState } from '../../domain/NetworkTypes'
+import type { V1Device, V1DhcpPool, V1NetworkState } from './v1Types'
 import type {
   DeviceServices,
-  DhcpPoolV2,
+  DhcpPool,
   HostSettings,
   InternetSettings,
   RoutingSettings,
   SwitchingSettings,
   VlanEntry,
   WirelessSettings,
-} from '../../domain/v2'
+} from '../../domain'
 import { V1_DEVICE_MAP, V1_HOST_KINDS } from './v1DeviceMap'
 import { V1MigrationError } from './V1MigrationError'
 import { ROUTER_WAN_PORT } from './V1PortMigrator'
@@ -37,12 +37,12 @@ const ALL_BAGS: readonly V1Bag[] = [
 /** One cable of the cloud device: the v2 cloud port and the v1 device at the other end. */
 export interface CloudConnection {
   portId: string
-  neighbour: Device | undefined
+  neighbour: V1Device | undefined
 }
 
 export class V1SettingsMigrator {
   /** Every VLAN id the v1 state uses anywhere (plus VLAN 1), ascending. */
-  static vlansOf(state: NetworkState): number[] {
+  static vlansOf(state: V1NetworkState): number[] {
     const vlans = new Set<number>([1])
     for (const device of state.devices) {
       for (const port of device.switchPorts ?? []) vlans.add(port.vlan)
@@ -54,7 +54,7 @@ export class V1SettingsMigrator {
   }
 
   /** Throws when a v1 settings bag sits on a kind that has no v2 place for it (data would be lost). */
-  checkBags(device: Device): void {
+  checkBags(device: V1Device): void {
     const allowed = this.allowedBags(device)
     for (const bag of ALL_BAGS) {
       if (device[bag] !== undefined && !allowed.includes(bag)) {
@@ -63,7 +63,7 @@ export class V1SettingsMigrator {
     }
   }
 
-  host(device: Device): HostSettings | undefined {
+  host(device: V1Device): HostSettings | undefined {
     if (!V1_HOST_KINDS.includes(device.kind)) return undefined
     return {
       defaultGateway: device.host?.gateway ?? '',
@@ -76,13 +76,13 @@ export class V1SettingsMigrator {
   }
 
   /** The VLAN database holds every VLAN of the state, because v1 trunks carried every VLAN. */
-  switching(device: Device, vlans: readonly number[]): SwitchingSettings | undefined {
+  switching(device: V1Device, vlans: readonly number[]): SwitchingSettings | undefined {
     if (device.kind !== 'switch') return undefined
     return { vlans: vlans.map((id) => this.vlanEntry(id)), svis: [], defaultGateway: '' }
   }
 
   /** v1 routers sent every public destination to the WAN: an explicit default route out Gi0/1. */
-  routing(device: Device): RoutingSettings | undefined {
+  routing(device: V1Device): RoutingSettings | undefined {
     if (device.kind !== 'router') return undefined
     return {
       ipRouting: true,
@@ -90,7 +90,7 @@ export class V1SettingsMigrator {
     }
   }
 
-  wireless(device: Device): WirelessSettings | undefined {
+  wireless(device: V1Device): WirelessSettings | undefined {
     if (device.kind !== 'accessPoint') return undefined
     return {
       ssids: (device.wirelessNetworks ?? []).map((network) => ({
@@ -101,7 +101,7 @@ export class V1SettingsMigrator {
     }
   }
 
-  services(device: Device): DeviceServices | undefined {
+  services(device: V1Device): DeviceServices | undefined {
     if (device.kind !== 'router') return undefined
     const dns = { enabled: device.dnsForwarding === true, forwarders: [V1_DNS_FORWARDER], records: [] }
     if (device.dhcpPools === undefined) return { dns }
@@ -112,7 +112,7 @@ export class V1SettingsMigrator {
   }
 
   /** Each cabled cloud port gets a handoff; its service is up when the v1 router had `wanUp: true`. */
-  internet(device: Device, connections: readonly CloudConnection[]): InternetSettings | undefined {
+  internet(device: V1Device, connections: readonly CloudConnection[]): InternetSettings | undefined {
     if (device.kind !== 'internet') return undefined
     return {
       handoffs: connections.map(({ portId, neighbour }) => ({
@@ -122,7 +122,7 @@ export class V1SettingsMigrator {
     }
   }
 
-  private allowedBags(device: Device): readonly V1Bag[] {
+  private allowedBags(device: V1Device): readonly V1Bag[] {
     if (V1_HOST_KINDS.includes(device.kind)) return ['host', 'appLinks']
     switch (device.kind) {
       case 'router':
@@ -144,7 +144,7 @@ export class V1SettingsMigrator {
    * v1 pools were bound to a VLAN and handed out rangeStart..rangeEnd. v2 binds a pool to the
    * interface whose subnet contains `network` and keeps the range as the allocation window.
    */
-  private pool(pool: DhcpPool): DhcpPoolV2 {
+  private pool(pool: V1DhcpPool): DhcpPool {
     return {
       id: pool.id,
       network: this.networkOf(pool.rangeStart, pool.mask),

@@ -1,4 +1,4 @@
-import type { CommandResult } from '../domain/EngineContract'
+import type { CommandResult, NetworkState } from '../domain'
 import type { CommandFormatter } from './CommandFormatter'
 import { CommandOptions, type OptionSpec } from './CommandOptions'
 import type { Prober } from './ProbeReports'
@@ -8,21 +8,21 @@ import { TracertFormatter } from './TracertFormatter'
 const SPEC: OptionSpec = { flags: ['d', '4'], valued: [] }
 
 /**
- * `tracert [-d] [-4] <ip|name>`, for any state model. Hops are the layer-3 devices of the probe:
+ * `tracert [-d] [-4] <ip|name>`. Hops are the layer-3 devices of the probe:
  * the routers (each answering from the address the probe arrived on), then the destination.
  * Switches and access points are invisible to tracert; the internet adds no fictional ISP hops.
  */
-export class TracertCommand<State> {
-  private readonly prober: Prober<State>
+export class TracertCommand {
+  private readonly prober: Prober
   private readonly formatter: CommandFormatter
   private readonly tracertFormatter = new TracertFormatter()
 
-  constructor(prober: Prober<State>, formatter: CommandFormatter) {
+  constructor(prober: Prober, formatter: CommandFormatter) {
     this.prober = prober
     this.formatter = formatter
   }
 
-  run(state: State, deviceId: string, args: readonly string[]): Omit<CommandResult, 'nextState'> {
+  run(state: NetworkState, deviceId: string, args: readonly string[]): Omit<CommandResult, 'nextState'> {
     const parsed = CommandOptions.parse(args, SPEC)
     if (!parsed.ok) return { lines: this.formatter.optionError(parsed.error, 'tracert') }
     const name = parsed.options.target

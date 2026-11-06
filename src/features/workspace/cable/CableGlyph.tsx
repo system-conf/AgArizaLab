@@ -1,5 +1,5 @@
 import { Sparkles, Wifi } from 'lucide-react'
-import type { CableTool } from '../../../domain/v2'
+import type { CableTool } from '../../../domain'
 
 /** Stroke colour and dash of each cable glyph (our own colour code, readable on white). */
 const CABLE_STYLE: Readonly<Record<Exclude<CableTool, 'auto' | 'wireless'>, { stroke: string; dash?: string }>> = {

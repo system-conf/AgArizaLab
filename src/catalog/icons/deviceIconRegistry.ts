@@ -1,6 +1,6 @@
-// Icon of every v2 device kind: the catalog's own network-gear icons plus lucide icons for end devices.
+// Icon of every device kind: the catalog's own network-gear icons plus lucide icons for end devices.
 import { Cctv, ChefHat, CreditCard, HardDrive, Laptop, Monitor, Phone, Printer, Server, Smartphone, Tablet } from 'lucide-react'
-import type { DeviceKindV2 } from '../../domain/v2'
+import type { DeviceKind } from '../../domain'
 import type { DeviceIcon } from './deviceIconTypes'
 import {
   AccessPointIcon,
@@ -12,7 +12,7 @@ import {
   WirelessRouterIcon,
 } from './NetworkDeviceIcons'
 
-export const deviceIconRegistry: Readonly<Record<DeviceKindV2, DeviceIcon>> = {
+export const deviceIconRegistry: Readonly<Record<DeviceKind, DeviceIcon>> = {
   internet: InternetCloudIcon,
   router: RouterIcon,
   wirelessRouter: WirelessRouterIcon,
@@ -34,6 +34,6 @@ export const deviceIconRegistry: Readonly<Record<DeviceKindV2, DeviceIcon>> = {
 }
 
 /** Icon component for a device kind (workspace palette, canvas, device panel, map). */
-export function deviceIconFor(kind: DeviceKindV2): DeviceIcon {
+export function deviceIconFor(kind: DeviceKind): DeviceIcon {
   return deviceIconRegistry[kind]
 }

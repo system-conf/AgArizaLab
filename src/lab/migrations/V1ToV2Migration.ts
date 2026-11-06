@@ -1,19 +1,18 @@
 // v1 NetworkState / ScenarioDefinition → v2 (docs/MODEL_V2.md §11). Pure and deterministic:
 // the same input always gives the same output, device and link ids are kept unchanged.
-import type { Device, Link, NetworkState } from '../../domain/NetworkTypes'
-import type { ScenarioDefinition } from '../../domain/ScenarioTypes'
+import type { V1Device, V1Link, V1NetworkState, V1ScenarioDefinition } from './v1Types'
 import {
   CableRules,
   type CableType,
-  type DeviceV2,
+  type Device,
   type ExerciseDefinition,
   type LabLayout,
+  type Link,
   type LinkCable,
-  type LinkEndV2,
-  type LinkV2,
-  type NetworkStateV2,
+  type LinkEnd,
+  type NetworkState,
   type PlainCableType,
-} from '../../domain/v2'
+} from '../../domain'
 import { V1_DEVICE_MAP, V1_POE_SWITCH_MODEL_ID, V1_SETTING_MAP } from './v1DeviceMap'
 import { V1MigrationError } from './V1MigrationError'
 import { V1PortMigrator, type PortPlan } from './V1PortMigrator'
@@ -23,7 +22,7 @@ function isPlainCable(cable: CableType | null): cable is PlainCableType {
   return cable !== null && cable !== 'serial' && cable !== 'wireless'
 }
 
-function linksOf(state: NetworkState, deviceId: string): Link[] {
+function linksOf(state: V1NetworkState, deviceId: string): V1Link[] {
   return state.links.filter((link) => link.a.deviceId === deviceId || link.b.deviceId === deviceId)
 }
 
@@ -32,7 +31,7 @@ export class V1ToV2Migration {
   private readonly settingsMigrator = new V1SettingsMigrator()
   private readonly cableRules = new CableRules()
 
-  state(state: NetworkState): NetworkStateV2 {
+  state(state: V1NetworkState): NetworkState {
     this.checkLinkDevices(state)
     const vlans = V1SettingsMigrator.vlansOf(state)
     const plans = new Map<string, PortPlan>(
@@ -45,13 +44,13 @@ export class V1ToV2Migration {
   }
 
   /** Device positions of the v1 map become the lab layout (same coordinates). */
-  layout(state: NetworkState): LabLayout {
+  layout(state: V1NetworkState): LabLayout {
     return {
       devices: Object.fromEntries(state.devices.map((device) => [device.id, { x: device.position.x, y: device.position.y }])),
     }
   }
 
-  exercise(definition: ScenarioDefinition): ExerciseDefinition {
+  exercise(definition: V1ScenarioDefinition): ExerciseDefinition {
     return {
       id: definition.id,
       order: definition.order,
@@ -62,11 +61,11 @@ export class V1ToV2Migration {
     }
   }
 
-  private device(state: NetworkState, device: Device, plan: PortPlan, vlans: readonly number[]): DeviceV2 {
+  private device(state: V1NetworkState, device: V1Device, plan: PortPlan, vlans: readonly number[]): Device {
     this.settingsMigrator.checkBags(device)
     const mapping = V1_DEVICE_MAP[device.kind]
     const poeSwitch = device.kind === 'switch' && (device.switchPorts ?? []).some((port) => port.poe)
-    const migrated: DeviceV2 = {
+    const migrated: Device = {
       id: device.id,
       kind: mapping.kind,
       modelId: poeSwitch ? V1_POE_SWITCH_MODEL_ID : mapping.modelId,
@@ -90,7 +89,7 @@ export class V1ToV2Migration {
     return migrated
   }
 
-  private cloudConnections(state: NetworkState, device: Device, plan: PortPlan): CloudConnection[] {
+  private cloudConnections(state: V1NetworkState, device: V1Device, plan: PortPlan): CloudConnection[] {
     if (device.kind !== 'internet') return []
     return linksOf(state, device.id).map((link) => {
       const own = link.a.deviceId === device.id ? link.a : link.b
@@ -102,14 +101,14 @@ export class V1ToV2Migration {
     })
   }
 
-  private link(link: Link, plans: Map<string, PortPlan>, devices: DeviceV2[]): LinkV2 {
-    const a: LinkEndV2 = { deviceId: link.a.deviceId, portId: this.planOf(plans, link.a.deviceId).portIdFor(link.id, link.a.portId) }
-    const b: LinkEndV2 = { deviceId: link.b.deviceId, portId: this.planOf(plans, link.b.deviceId).portIdFor(link.id, link.b.portId) }
+  private link(link: V1Link, plans: Map<string, PortPlan>, devices: Device[]): Link {
+    const a: LinkEnd = { deviceId: link.a.deviceId, portId: this.planOf(plans, link.a.deviceId).portIdFor(link.id, link.a.portId) }
+    const b: LinkEnd = { deviceId: link.b.deviceId, portId: this.planOf(plans, link.b.deviceId).portIdFor(link.id, link.b.portId) }
     return { id: link.id, a, b, connected: link.connected, ...this.cableFor(link, a, b, devices) }
   }
 
   /** Wireless when the v1 link had an SSID or joins a Wi-Fi port; otherwise the textbook copper cable. */
-  private cableFor(link: Link, a: LinkEndV2, b: LinkEndV2, devices: DeviceV2[]): LinkCable {
+  private cableFor(link: V1Link, a: LinkEnd, b: LinkEnd, devices: Device[]): LinkCable {
     const wirelessEnd = [a, b].some(
       (end) =>
         devices.find((device) => device.id === end.deviceId)?.ports.find((port) => port.id === end.portId)?.medium ===
@@ -126,7 +125,7 @@ export class V1ToV2Migration {
     return plan
   }
 
-  private checkLinkDevices(state: NetworkState): void {
+  private checkLinkDevices(state: V1NetworkState): void {
     const ids = new Set(state.devices.map((device) => device.id))
     for (const link of state.links) {
       for (const end of [link.a, link.b]) {
@@ -136,7 +135,7 @@ export class V1ToV2Migration {
   }
 
   /** A v2 port takes one cable (radio ports excepted); v1 let several links share e.g. router 'lan'. */
-  private checkSharedPorts(devices: DeviceV2[], links: LinkV2[]): void {
+  private checkSharedPorts(devices: Device[], links: Link[]): void {
     const seen = new Set<string>()
     for (const link of links) {
       for (const end of [link.a, link.b]) {
@@ -153,15 +152,15 @@ export class V1ToV2Migration {
 const migration = new V1ToV2Migration()
 
 /** v1 network → v2 network (ports, cables, settings). Layout: migrateV1Layout. */
-export function migrateV1ToV2(state: NetworkState): NetworkStateV2 {
+export function migrateV1ToV2(state: V1NetworkState): NetworkState {
   return migration.state(state)
 }
 
-export function migrateV1Layout(state: NetworkState): LabLayout {
+export function migrateV1Layout(state: V1NetworkState): LabLayout {
   return migration.layout(state)
 }
 
 /** v1 exercise → v2 exercise (lab state + layout, English setting id, no locks). */
-export function migrateV1Exercise(definition: ScenarioDefinition): ExerciseDefinition {
+export function migrateV1Exercise(definition: V1ScenarioDefinition): ExerciseDefinition {
   return migration.exercise(definition)
 }

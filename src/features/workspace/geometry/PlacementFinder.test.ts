@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { CanvasPoint } from '../../../domain/v2'
+import type { CanvasPoint } from '../../../domain'
 import { DEVICE_SPACING } from '../workspaceConstants'
 import { PlacementFinder } from './PlacementFinder'
 

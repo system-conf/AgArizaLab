@@ -1,5 +1,5 @@
 // VLAN database of a switch (`vlan <id>` / `name <name>`): rows, validation, and who uses a VLAN.
-import type { DeviceV2, VlanEntry } from '../../../domain/v2'
+import type { Device, VlanEntry } from '../../../domain'
 import { localizedMessage } from '../../../i18n/messageKeys'
 import { newRowKey, type FieldErrors } from './formTypes'
 import { VlanListParser } from './VlanListParser'
@@ -63,7 +63,7 @@ export class VlanDatabaseModel {
    * Interfaces and SSIDs of the device that name this VLAN explicitly: access ports, trunk native /
    * allowed lists, the SVI `Vlan<id>` and SSIDs. Trunks allowing 'all' are not listed.
    */
-  static usage(device: DeviceV2, vlan: number): string[] {
+  static usage(device: Device, vlan: number): string[] {
     const users: string[] = []
     for (const port of device.ports) {
       if (port.role !== 'switched') continue

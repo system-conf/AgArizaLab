@@ -1,4 +1,4 @@
-import type { ExerciseTexts } from '../domain/v2'
+import type { ExerciseTexts } from '../domain'
 import { translateList, translateMessage, type AnyTFunction } from '../i18n/localizedMessage'
 
 /**

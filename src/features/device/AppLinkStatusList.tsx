@@ -1,6 +1,6 @@
 import { CircleCheck, CircleX } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import type { AppLinkStatusV2 as AppLinkStatus } from '../../domain/v2'
+import type { AppLinkStatus } from '../../domain'
 import { useMessageTranslator } from '../../i18n'
 import { failureReasonMessage } from './failureReasonMessages'
 

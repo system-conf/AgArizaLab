@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { LabDocument } from '../../domain/v2'
+import type { LabDocument } from '../../domain'
 import { findDeviceModel, PortFactory } from '../../catalog'
 import { createEmptyLab, labEditor } from '../../lab'
 import { EMPTY_SELECTION } from './canvas/canvasTypes'

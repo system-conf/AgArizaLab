@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import type { ExerciseLock } from '../../../domain/v2'
-import { cableLab } from '../../../domain/v2/testDevicesV2'
+import type { ExerciseLock } from '../../../domain'
+import { cableLab } from '../../../domain/testDevices'
 import { findDeviceModel } from '../../../catalog'
 import { ConfigLocks } from './ConfigLocks'
 import { DeviceSections } from './DeviceSections'

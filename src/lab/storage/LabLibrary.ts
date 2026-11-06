@@ -2,7 +2,7 @@
 // document goes through the LabSerializer when it is read back, so a damaged or outdated entry is
 // migrated or reported, never trusted blindly.
 import { z } from 'zod'
-import type { LabDocument } from '../../domain/v2'
+import type { LabDocument } from '../../domain'
 import { localizedMessage } from '../../i18n/messageKeys'
 import { labSerializer, type LabParseResult, type LabSerializer } from '../LabSerializer'
 import type { LabKeyValueStore } from './LabKeyValueStore'

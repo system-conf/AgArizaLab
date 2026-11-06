@@ -1,15 +1,15 @@
 import { describe, expect, it } from 'vitest'
-import type { DeviceV2, ExerciseLock, Port } from '../domain/v2'
-import { hostNic, makeDevice, switchPort } from '../domain/v2/testDevicesV2'
+import type { Device, ExerciseLock, Port } from '../domain'
+import { hostNic, makeDevice, switchPort } from '../domain/testDevices'
 import { ExerciseLockPolicy } from './ExerciseLockPolicy'
 
-const pc: DeviceV2 = {
+const pc: Device = {
   ...makeDevice('pc', 'pc', [hostNic('eth0'), hostNic('wlan0', 'wireless')]),
   host: { defaultGateway: '192.168.1.1', dnsServers: ['192.168.1.1'], appLinks: [] },
 }
-const sw: DeviceV2 = makeDevice('sw', 'switch', [switchPort('Fa0/1'), switchPort('Fa0/2')])
+const sw: Device = makeDevice('sw', 'switch', [switchPort('Fa0/1'), switchPort('Fa0/2')])
 
-function withPort(device: DeviceV2, portId: string, change: (port: Port) => Port): DeviceV2 {
+function withPort(device: Device, portId: string, change: (port: Port) => Port): Device {
   return { ...device, ports: device.ports.map((port) => (port.id === portId ? change(port) : port)) }
 }
 
@@ -82,7 +82,7 @@ describe('ExerciseLockPolicy', () => {
     const policy = new ExerciseLockPolicy([{ scope: 'device', deviceId: 'pc', access: 'readOnly' }])
     const host = pc.host
     if (!host) throw new Error('pc needs host settings')
-    const reordered: DeviceV2 = { ...pc, host: { appLinks: [], dnsServers: [...host.dnsServers], defaultGateway: host.defaultGateway } }
+    const reordered: Device = { ...pc, host: { appLinks: [], dnsServers: [...host.dnsServers], defaultGateway: host.defaultGateway } }
     expect(policy.allowsDeviceUpdate(pc, reordered)).toBe(true)
     expect(policy.allowsDeviceUpdate(pc, { ...pc, name: 'Renamed' })).toBe(false)
   })

@@ -55,7 +55,7 @@ describe('PingFormatter', () => {
   })
 })
 
-describe('PingFormatter — TTL expired (v2 routing loops)', () => {
+describe('PingFormatter — TTL expired (routing loops)', () => {
   it('prints the router reply and counts it as received', () => {
     const text = formatter.ping('10.9.1.1', null, { kind: 'ttlExpired', fromIp: '10.0.12.2' }, { count: 2, size: 32 }).map((line) => line.text ?? '')
     expect(text).toEqual([

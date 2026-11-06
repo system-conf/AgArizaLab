@@ -1,7 +1,7 @@
 import { Globe } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { HostSettings } from '../../../domain/v2'
+import type { HostSettings } from '../../../domain'
 import InputField from '../fields/InputField'
 import SectionCard from '../fields/SectionCard'
 import SectionForm from '../fields/SectionForm'

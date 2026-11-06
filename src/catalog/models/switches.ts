@@ -1,6 +1,6 @@
 // Switch, L3 switch and hub models. switch8 / switch8Poe are what v1 switches migrate to
 // (MODEL_V2 §11): exactly Fa0/1…Fa0/8 plus Console, so they carry no uplink ports.
-import type { DeviceCapability } from '../../domain/v2'
+import type { DeviceCapability } from '../../domain'
 import {
   consoleTemplate,
   numberedPorts,

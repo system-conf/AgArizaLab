@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { LAB_SCHEMA_VERSION, type LabDocument } from '../domain/v2'
+import { LAB_SCHEMA_VERSION, type LabDocument } from '../domain'
 import { scenarioDefinitions } from '../scenarios/scenarioDefinitions'
 import { createEmptyLab, createLabFromExercise } from './createLab'
 import { MAX_REPORTED_ERRORS } from './LabMessages'

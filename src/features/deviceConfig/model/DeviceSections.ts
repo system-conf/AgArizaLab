@@ -1,6 +1,6 @@
 // Which configuration cards a device gets: from its settings groups and port roles (the device is
 // authoritative), plus model capabilities for services a device may switch on later.
-import type { DeviceModel, DeviceSection, DeviceV2 } from '../../../domain/v2'
+import type { Device, DeviceModel, DeviceSection } from '../../../domain'
 
 export type ConfigSectionId =
   | 'general'
@@ -32,7 +32,7 @@ export const LOCK_SECTION_OF: Record<ConfigSectionId, DeviceSection | null> = {
 
 export class DeviceSections {
   /** Cards in display order. */
-  static of(device: DeviceV2, model: DeviceModel | undefined): ConfigSectionId[] {
+  static of(device: Device, model: DeviceModel | undefined): ConfigSectionId[] {
     const capabilities = new Set(model?.capabilities ?? [])
     const shown: Record<ConfigSectionId, boolean> = {
       general: true,
@@ -51,7 +51,7 @@ export class DeviceSections {
   }
 
   /** Console and passive ports (hub, cloud handoffs) have nothing to set. */
-  static isConfigurablePort(role: DeviceV2['ports'][number]['role']): boolean {
+  static isConfigurablePort(role: Device['ports'][number]['role']): boolean {
     return role === 'switched' || role === 'routed' || role === 'host' || role === 'radio'
   }
 }

@@ -1,6 +1,6 @@
 // Field-level spot checks per exercise: the fault of each exercise must survive the migration.
 import { describe, expect, it } from 'vitest'
-import type { DeviceV2, NetworkStateV2, Port } from '../../domain/v2'
+import type { Device, NetworkState, Port } from '../../domain'
 import { cameraSubnet } from '../../scenarios/cameraSubnet'
 import { kitchenVlan } from '../../scenarios/kitchenVlan'
 import { posGateway } from '../../scenarios/posGateway'
@@ -8,13 +8,13 @@ import { printerDhcp } from '../../scenarios/printerDhcp'
 import { wrongDns } from '../../scenarios/wrongDns'
 import { migrateV1Exercise, migrateV1ToV2 } from './V1ToV2Migration'
 
-function deviceOf(state: NetworkStateV2, id: string): DeviceV2 {
+function deviceOf(state: NetworkState, id: string): Device {
   const device = state.devices.find((candidate) => candidate.id === id)
   if (!device) throw new Error(`no device ${id}`)
   return device
 }
 
-function portOf(state: NetworkStateV2, deviceId: string, portId: string): Port {
+function portOf(state: NetworkState, deviceId: string, portId: string): Port {
   const port = deviceOf(state, deviceId).ports.find((candidate) => candidate.id === portId)
   if (!port) throw new Error(`no port ${deviceId}:${portId}`)
   return port

@@ -1,4 +1,4 @@
-import type { FailureReasonV2 } from '../domain/v2'
+import type { FailureReason } from '../domain'
 
 /** How a failed ping / tracert probe looks to the sender. */
 export type ProbeFailure =
@@ -8,16 +8,16 @@ export type ProbeFailure =
   | { kind: 'unreachable'; reporter: 'self' | 'gateway' }
   /** The packet is lost on the way or the reply has no way back: silence. */
   | { kind: 'silent' }
-  /** The packet looped between routers until a router answered "TTL expired in transit" (v2). */
+  /** The packet looped between routers until a router answered "TTL expired in transit". */
   | { kind: 'ttlExpired' }
 
-/** A failed reach result of either model (v1 reasons are a subset of v2 reasons). */
+/** A failed reach result. */
 export interface FailedReach {
-  reason: FailureReasonV2
+  reason: FailureReason
   atDeviceId?: string
 }
 
-/** Maps a failed reach result to what Windows shows; shared by ping and tracert of v1 and v2. */
+/** Maps a failed reach result to what Windows shows; shared by ping and tracert. */
 export class ProbeFailures {
   static classify(reach: FailedReach, sourceId: string): ProbeFailure {
     const atSource = reach.atDeviceId === sourceId

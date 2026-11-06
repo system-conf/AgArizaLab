@@ -1,8 +1,8 @@
 import { Lock, type LucideIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
-import SavedBadge from '../../device/SavedBadge'
-import SettingsSection from '../../device/SettingsSection'
+import SavedBadge from './SavedBadge'
+import SettingsSection from './SettingsSection'
 import type { ConfigAccess } from '../model/ConfigLocks'
 
 interface SectionCardProps {

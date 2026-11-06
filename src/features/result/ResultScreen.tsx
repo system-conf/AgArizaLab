@@ -1,7 +1,7 @@
 import { ArrowRight, Briefcase, Building2, CircleCheck, Compass, FlaskConical, List, RotateCcw, Search, type LucideIcon } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { ExerciseTexts } from '../../domain/v2'
+import type { ExerciseTexts } from '../../domain'
 import SiteHeader from '../layout/SiteHeader'
 import { useNumberFormat } from '../layout/useNumberFormat'
 import { focusRing } from '../shared/focusRing'

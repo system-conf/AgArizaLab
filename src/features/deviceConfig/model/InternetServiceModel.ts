@@ -1,5 +1,5 @@
 // Service lines of the internet cloud (`IspHandoff.serviceUp`, MODEL_V2 §5).
-import type { DeviceV2, InternetSettings } from '../../../domain/v2'
+import type { Device, InternetSettings } from '../../../domain'
 
 export interface ServiceLineDraft {
   portId: string
@@ -8,7 +8,7 @@ export interface ServiceLineDraft {
 
 export class InternetServiceModel {
   /** One line per port of the cloud; a port without a handoff entry has service. */
-  static serviceLines(device: DeviceV2): ServiceLineDraft[] {
+  static serviceLines(device: Device): ServiceLineDraft[] {
     const handoffs = device.internet?.handoffs ?? []
     return device.ports.map((port) => ({
       portId: port.id,
@@ -17,7 +17,7 @@ export class InternetServiceModel {
   }
 
   /** Keeps an entry for every port that had one or is now down; ports without entries stay up. */
-  static apply(lines: readonly ServiceLineDraft[], device: DeviceV2): InternetSettings {
+  static apply(lines: readonly ServiceLineDraft[], device: Device): InternetSettings {
     const previous = device.internet?.handoffs ?? []
     const handoffs = lines
       .filter((line) => !line.serviceUp || previous.some((handoff) => handoff.portId === line.portId))

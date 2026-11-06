@@ -1,5 +1,5 @@
 // Multi-step document edits of the workspace, built from LabEditor calls so each is one undo step.
-import type { CanvasPoint, LabDocument, TextAnnotation } from '../../domain/v2'
+import type { CanvasPoint, LabDocument, TextAnnotation } from '../../domain'
 import type { WorkspaceSelection } from './canvas/canvasTypes'
 import { annotationIdOf, moveAnnotation } from './canvas/flowElements'
 import type { DeviceMove, LabEditor } from './labServices'

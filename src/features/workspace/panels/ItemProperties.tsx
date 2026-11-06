@@ -1,7 +1,7 @@
 import { Plug, Trash2, Unplug } from 'lucide-react'
 import { useId } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { Annotation, LabDocument, LinkV2, TextAnnotation } from '../../../domain/v2'
+import type { Annotation, LabDocument, Link, TextAnnotation } from '../../../domain'
 import { focusRing } from '../../shared/focusRing'
 import { ANNOTATION_COLORS } from '../canvas/annotationActions'
 import CommitField from './CommitField'
@@ -13,7 +13,7 @@ const selectClasses = `w-full rounded-md border border-slate-300 bg-white px-2 p
 
 interface LinkPropertiesProps {
   doc: LabDocument
-  link: LinkV2
+  link: Link
   /** Absent: the exercise does not allow removing this cable. */
   onDisconnect?: () => void
   /** Plug / unplug without removing the cable; absent when the cable is locked. */

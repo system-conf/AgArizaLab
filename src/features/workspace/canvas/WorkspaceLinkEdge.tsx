@@ -1,10 +1,10 @@
 import { getStraightPath, type EdgeProps } from '@xyflow/react'
 import { memo } from 'react'
-import LinkEdge from '../../map/LinkEdge'
-import type { LinkFlowEdge } from '../../map/mapTypes'
+import LinkEdge from './LinkEdge'
+import type { LinkFlowEdge } from './canvasTypes'
 
 /**
- * A cable on the workspace: the exercise map's LinkEdge (port labels at both ends, link lights,
+ * A cable on the workspace: LinkEdge (port labels at both ends, link lights,
  * dashed wireless) plus a sky halo while the cable is selected.
  */
 function WorkspaceLinkEdge(props: EdgeProps<LinkFlowEdge>) {

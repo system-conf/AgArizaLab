@@ -1,10 +1,10 @@
 import { Cloud, EthernetPort, Globe, Layers, Route, Server, Wifi } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { DeviceKindIcon, findDeviceModel } from '../../catalog'
-import type { DeviceV2, ExerciseLock, NetworkStateV2 } from '../../domain/v2'
+import type { Device, ExerciseLock, NetworkState } from '../../domain'
 import { useMessageTranslator } from '../../i18n'
-import FactList, { type Fact } from '../device/FactList'
-import SettingsSection from '../device/SettingsSection'
+import FactList, { type Fact } from './fields/FactList'
+import SettingsSection from './fields/SettingsSection'
 import { cidrText } from './info/addressText'
 import PortInfoList from './info/PortInfoList'
 import RoutingTableView from './info/RoutingTableView'
@@ -13,13 +13,13 @@ import { DeviceInfoModel } from './model/DeviceInfoModel'
 import { InternetServiceModel } from './model/InternetServiceModel'
 
 export interface DeviceInfoPanelProps {
-  device: DeviceV2
-  state: NetworkStateV2
+  device: Device
+  state: NetworkState
   /** The exercise's whole `ExerciseDefinition.locks`; hidden areas are left out of the summary. */
   locks?: readonly ExerciseLock[]
 }
 
-/** Read-only summary of a v2 device: model, power, ports with link lights, addressing, routes, services. */
+/** Read-only summary of a device: model, power, ports with link lights, addressing, routes, services. */
 function DeviceInfoPanel({ device, state, locks = [] }: DeviceInfoPanelProps) {
   const { t } = useTranslation(['deviceConfig', 'catalog'])
   const translate = useMessageTranslator()

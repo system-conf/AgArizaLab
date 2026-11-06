@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { Exercise, ExerciseTexts } from '../domain/v2'
+import type { Exercise, ExerciseTexts } from '../domain'
 import { labEditor } from '../lab/LabEditor'
 import { exerciseDefinitions } from '../scenarios/exerciseDefinitions'
 import { ExerciseLabs } from './ExerciseLabs'

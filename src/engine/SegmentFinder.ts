@@ -1,235 +1,220 @@
-import type { Device, Link, NetworkState } from '../domain/NetworkTypes'
-import { DeviceLookup } from './DeviceLookup'
+import type { Device, Link, NetworkState } from '../domain'
 import { Ipv4 } from './Ipv4'
+import { type L3Interface, L3Interfaces } from './L3Interfaces'
+import { type FarEnd, Topology } from './Topology'
+import { VlanRules, type WireTag } from './VlanRules'
 
-/** What one link end lets through (PLAN §4.1). */
-type EndCarriage =
-  | { kind: 'dead' }
-  | { kind: 'all' }
-  | { kind: 'vlan'; vlan: number }
-  /** A host NIC: sends untagged frames, takes the VLAN of the other side. */
-  | { kind: 'host' }
+/** Where a frame is inside the layer-2 domain. */
+type Node =
+  /** Inside a bridging device (switch, AP, wireless router LAN) in one VLAN. */
+  | { type: 'bridge'; deviceId: string; vlan: number }
+  /** Inside a hub, which repeats the frame unchanged (tag included). */
+  | { type: 'hub'; deviceId: string; tag: WireTag }
+  /** Delivered to a layer-3 interface (leaf, except the start). */
+  | { type: 'endpoint'; iface: L3Interface }
 
-/** VLANs a whole link carries: every VLAN, exactly one, or none. */
-type LinkVlans = 'all' | number | null
-
-/** VLAN used for untagged host traffic on a trunk-like port (router lan, trunk, AP uplink). */
-const NATIVE_VLAN = 1
-
-const HOST_PORTS: readonly string[] = ['eth0', 'wlan0']
-
-export type HostAttachment =
-  | { ok: true; vlan: number; portId: string; neighborId: string }
-  | { ok: false; reason: 'cableDisconnected' | 'portDisabled'; atDeviceId?: string }
-
-/** Devices that share one layer-2 broadcast domain (one VLAN). */
+/** The layer-2 broadcast domain of one interface (MODEL_V2 §13). */
 export interface Segment {
-  vlan: number
-  startId: string
-  /** Includes the start device. */
-  members: Set<string>
-  /** BFS tree used to rebuild display paths; the start maps to null. */
-  parents: Map<string, string | null>
+  start: L3Interface
+  /** Layer-3 interfaces in the domain, in discovery order; the start first. */
+  members: L3Interface[]
+  /** BFS tree over node keys; the start maps to null. */
+  parents: ReadonlyMap<string, string | null>
+  deviceOfNode: ReadonlyMap<string, string>
 }
 
+function nodeKey(node: Node): string {
+  switch (node.type) {
+    case 'bridge':
+      return `b|${node.deviceId}|${node.vlan}`
+    case 'hub':
+      return `h|${node.deviceId}|${node.tag ?? 'untagged'}`
+    case 'endpoint':
+      return `e|${L3Interfaces.key(node.iface)}`
+  }
+}
+
+function deviceOf(node: Node): string {
+  return node.type === 'endpoint' ? node.iface.deviceId : node.deviceId
+}
+
+/**
+ * Finds layer-2 domains by following frames: access / trunk tagging with native and allowed VLANs,
+ * the VLAN database, dot1Q sub-interfaces, SVIs, SSID → VLAN on radios and hubs repeating
+ * everything. Only links that are up count (Topology.isUp). Results are cached per state.
+ */
 export class SegmentFinder {
-  /** How a host is plugged in and which VLAN it lands in. */
-  attachment(state: NetworkState, host: Device): HostAttachment {
-    const hostLinks = state.links.filter((link) => this.hostPortOf(link, host.id) !== null)
-    const connected = hostLinks.filter((link) => link.connected)
-    if (connected.length === 0) return { ok: false, reason: 'cableDisconnected' }
+  private readonly cache = new WeakMap<NetworkState, Map<string, Segment>>()
 
-    let firstFailure: HostAttachment | null = null
-    for (const link of this.preferWired(connected, host.id)) {
-      const result = this.attachThrough(state, host, link)
-      if (result.ok) return result
-      firstFailure ??= result
+  segment(state: NetworkState, start: L3Interface): Segment {
+    let perState = this.cache.get(state)
+    if (!perState) {
+      perState = new Map()
+      this.cache.set(state, perState)
     }
-    return firstFailure ?? { ok: false, reason: 'cableDisconnected' }
-  }
-
-  /** BFS from `startId` inside `vlan`, crossing only switches and access points. */
-  segment(state: NetworkState, startId: string, vlan: number): Segment {
-    const members = new Set<string>([startId])
-    const parents = new Map<string, string | null>([[startId, null]])
-    const queue: string[] = [startId]
-
-    while (queue.length > 0) {
-      const currentId = queue.shift()
-      if (currentId === undefined) break
-      const current = DeviceLookup.find(state, currentId)
-      if (!current) continue
-      if (currentId !== startId && !this.isLayer2(current)) continue
-
-      for (const link of state.links) {
-        const neighborId = this.otherEnd(link, currentId)
-        if (neighborId === null || parents.has(neighborId)) continue
-        if (!this.linkCarries(state, link, vlan)) continue
-        const neighbor = DeviceLookup.find(state, neighborId)
-        if (!neighbor || !this.joinsVlan(neighbor, vlan)) continue
-        parents.set(neighborId, currentId)
-        members.add(neighborId)
-        queue.push(neighborId)
-      }
+    const key = L3Interfaces.key(start)
+    let segment = perState.get(key)
+    if (!segment) {
+      segment = this.search(Topology.of(state), start)
+      perState.set(key, segment)
     }
-    return { vlan, startId, members, parents }
+    return segment
   }
 
-  /**
-   * The powered member of the segment that answers ARP for `ip`.
-   * A router always keeps (defends) its interface address. Hosts give up an address they share
-   * with another member (duplicate address detection) and never use a network or broadcast
-   * address, so in those cases nobody answers.
-   */
-  findAddress(state: NetworkState, segment: Segment, ip: string): Device | undefined {
-    const claimants = this.poweredMembers(state, segment).filter((device) => DeviceLookup.hasAddress(device, ip))
-    const router = claimants.find((device) => device.kind === 'router')
-    if (router) return router
-    const [only, ...others] = claimants
-    if (!only || others.length > 0) return undefined
-    return only.host && Ipv4.isHostAddress(only.host.ip, only.host.mask) ? only : undefined
-  }
-
-  /**
-   * Another powered member of the segment that already uses `ip`: a host with that address or a
-   * router interface of the segment's VLAN. Windows detects it with an ARP probe and drops the address.
-   */
-  conflictingDevice(state: NetworkState, segment: Segment, deviceId: string, ip: string): Device | undefined {
-    return this.poweredMembers(state, segment).find(
-      (device) =>
-        device.id !== deviceId &&
-        (device.host?.ip === ip ||
-          (device.routerInterfaces ?? []).some((routerInterface) => routerInterface.vlan === segment.vlan && routerInterface.ip === ip)),
-    )
-  }
-
-  /** Device ids from the segment start to `targetId` (empty when not a member). */
-  pathTo(segment: Segment, targetId: string): string[] {
-    if (!segment.parents.has(targetId)) return []
+  /** Device ids from the segment start to `target` (consecutive repeats collapsed); empty when not a member. */
+  pathTo(segment: Segment, target: L3Interface): string[] {
+    let current: string | null | undefined = nodeKey({ type: 'endpoint', iface: target })
+    if (!segment.parents.has(current)) return []
     const path: string[] = []
-    let current: string | null | undefined = targetId
     while (current !== null && current !== undefined) {
-      path.unshift(current)
+      const deviceId = segment.deviceOfNode.get(current)
+      if (deviceId !== undefined && path[0] !== deviceId) path.unshift(deviceId)
       current = segment.parents.get(current)
     }
     return path
   }
 
-  /** True when the host's own address is also used by another device in its segment. */
-  hasAddressConflict(state: NetworkState, host: Device): boolean {
-    const ip = host.host?.ip ?? ''
-    if (ip === '' || !host.powered) return false
-    const attachment = this.attachment(state, host)
-    if (!attachment.ok) return false
-    return this.conflictingDevice(state, this.segment(state, host.id, attachment.vlan), host.id, ip) !== undefined
+  /**
+   * The interface that answers ARP for `ip`. A router-side interface always keeps (defends) its
+   * address. NICs give up an address they share with another member (duplicate address detection)
+   * and never use a network or broadcast address, so in those cases nobody answers.
+   */
+  findAddress(state: NetworkState, segment: Segment, ip: string): L3Interface | undefined {
+    const claimants = this.poweredMembers(state, segment).filter((member) => member.address === ip)
+    const networkSide = claimants.find((member) => L3Interfaces.isNetworkSide(member))
+    if (networkSide) return networkSide
+    const [only, ...others] = claimants
+    if (!only || others.length > 0) return undefined
+    return Ipv4.isHostAddress(only.address, only.mask) ? only : undefined
   }
 
-  private poweredMembers(state: NetworkState, segment: Segment): Device[] {
-    return [...segment.members]
-      .map((memberId) => DeviceLookup.find(state, memberId))
-      .filter((device): device is Device => device !== undefined && device.powered)
+  /** Another powered device in the segment that uses `ip` (Windows detects it with an ARP probe). */
+  conflictingInterface(state: NetworkState, segment: Segment, deviceId: string, ip: string): L3Interface | undefined {
+    return this.poweredMembers(state, segment).find((member) => member.deviceId !== deviceId && member.address === ip)
   }
 
-  private attachThrough(state: NetworkState, host: Device, link: Link): HostAttachment {
-    const hostPort = this.hostPortOf(link, host.id)
-    const neighborEnd = link.a.deviceId === host.id ? link.b : link.a
-    const neighbor = DeviceLookup.find(state, neighborEnd.deviceId)
-    if (hostPort === null || !neighbor || !neighbor.powered) {
-      return { ok: false, reason: 'cableDisconnected', atDeviceId: neighborEnd.deviceId }
-    }
-    if (neighbor.kind === 'switch') {
-      const port = neighbor.switchPorts?.find((candidate) => candidate.id === neighborEnd.portId)
-      if (!port || !port.enabled) {
-        return { ok: false, reason: 'portDisabled', atDeviceId: neighbor.id }
+  private poweredMembers(state: NetworkState, segment: Segment): L3Interface[] {
+    const topology = Topology.of(state)
+    return segment.members.filter((member) => topology.find(member.deviceId)?.powered === true)
+  }
+
+  private search(topology: Topology, start: L3Interface): Segment {
+    const startNode: Node = { type: 'endpoint', iface: start }
+    const startKey = nodeKey(startNode)
+    const parents = new Map<string, string | null>([[startKey, null]])
+    const deviceOfNode = new Map<string, string>([[startKey, start.deviceId]])
+    const members: L3Interface[] = [start]
+    const queue: Node[] = [startNode]
+
+    for (let node = queue.shift(); node !== undefined; node = queue.shift()) {
+      const parentKey = nodeKey(node)
+      for (const next of this.neighbours(topology, node, node === startNode)) {
+        const key = nodeKey(next)
+        if (parents.has(key)) continue
+        parents.set(key, parentKey)
+        deviceOfNode.set(key, deviceOf(next))
+        if (next.type === 'endpoint') members.push(next.iface)
+        else queue.push(next)
       }
     }
-    const vlans = this.linkVlans(state, link)
-    if (typeof vlans !== 'number') {
-      // A host end always narrows the link to one VLAN; anything else means no usable link.
-      return { ok: false, reason: 'cableDisconnected', atDeviceId: neighbor.id }
-    }
-    return { ok: true, vlan: vlans, portId: hostPort, neighborId: neighbor.id }
+    return { start, members, parents, deviceOfNode }
   }
 
-  private preferWired(links: Link[], hostId: string): Link[] {
-    return [...links].sort((first, second) => {
-      const firstRank = this.hostPortOf(first, hostId) === 'eth0' ? 0 : 1
-      const secondRank = this.hostPortOf(second, hostId) === 'eth0' ? 0 : 1
-      return firstRank - secondRank
+  private neighbours(topology: Topology, node: Node, isStart: boolean): Node[] {
+    switch (node.type) {
+      case 'endpoint':
+        return isStart ? this.fromEndpoint(topology, node.iface) : []
+      case 'bridge':
+        return this.fromBridge(topology, node.deviceId, node.vlan)
+      case 'hub':
+        return this.fromHub(topology, node.deviceId, node.tag)
+    }
+  }
+
+  private fromEndpoint(topology: Topology, iface: L3Interface): Node[] {
+    const device = topology.find(iface.deviceId)
+    if (!device?.powered || !iface.adminUp) return []
+    if (iface.kind === 'svi') {
+      const vlan = iface.vlan ?? 0
+      return VlanRules.inDatabase(device, vlan) ? [{ type: 'bridge', deviceId: device.id, vlan }] : []
+    }
+    if (iface.portId === undefined) return []
+    const tag: WireTag = iface.kind === 'subInterface' && !iface.native ? (iface.vlan ?? null) : null
+    return this.across(topology, topology.linksAt(device.id, iface.portId), device.id, iface.portId, tag)
+  }
+
+  private fromBridge(topology: Topology, deviceId: string, vlan: number): Node[] {
+    const device = topology.find(deviceId)
+    if (!device) return []
+    const next: Node[] = L3Interfaces.of(device)
+      .filter((iface) => iface.kind === 'svi' && iface.vlan === vlan && iface.adminUp)
+      .map((iface) => ({ type: 'endpoint', iface }))
+    for (const link of topology.linksOf(deviceId)) {
+      const own = topology.ownEnd(link, deviceId)
+      const port = device.ports.find((candidate) => candidate.id === own.portId)
+      if (port?.role === 'switched') {
+        const tag = VlanRules.egress(device, port, vlan)
+        if (tag !== undefined) next.push(...this.across(topology, [link], deviceId, port.id, tag))
+      } else if (port?.role === 'radio' && link.cable === 'wireless' && this.ssidVlan(device, link.ssid) === vlan) {
+        next.push(...this.across(topology, [link], deviceId, port.id, null))
+      }
+    }
+    return next
+  }
+
+  private fromHub(topology: Topology, deviceId: string, tag: WireTag): Node[] {
+    return topology.linksOf(deviceId).flatMap((link) => {
+      const own = topology.ownEnd(link, deviceId)
+      return this.across(topology, [link], deviceId, own.portId, tag)
     })
   }
 
-  private hostPortOf(link: Link, hostId: string): string | null {
-    if (link.a.deviceId === hostId && HOST_PORTS.includes(link.a.portId)) return link.a.portId
-    if (link.b.deviceId === hostId && HOST_PORTS.includes(link.b.portId)) return link.b.portId
-    return null
-  }
-
-  private otherEnd(link: Link, deviceId: string): string | null {
-    if (link.a.deviceId === deviceId) return link.b.deviceId
-    if (link.b.deviceId === deviceId) return link.a.deviceId
-    return null
-  }
-
-  private isLayer2(device: Device): boolean {
-    return device.kind === 'switch' || device.kind === 'accessPoint'
-  }
-
-  /** Routers belong to a VLAN only when they have an interface for it. */
-  private joinsVlan(device: Device, vlan: number): boolean {
-    if (device.kind !== 'router') return true
-    return (device.routerInterfaces ?? []).some((routerInterface) => routerInterface.vlan === vlan)
-  }
-
-  private linkCarries(state: NetworkState, link: Link, vlan: number): boolean {
-    const vlans = this.linkVlans(state, link)
-    return vlans === 'all' || vlans === vlan
-  }
-
-  private linkVlans(state: NetworkState, link: Link): LinkVlans {
-    if (!link.connected) return null
-    const deviceA = DeviceLookup.find(state, link.a.deviceId)
-    const deviceB = DeviceLookup.find(state, link.b.deviceId)
-    if (!deviceA || !deviceB || !deviceA.powered || !deviceB.powered) return null
-    return this.combine(
-      this.endCarriage(deviceA, link.a.portId, link),
-      this.endCarriage(deviceB, link.b.portId, link),
-    )
-  }
-
-  private combine(first: EndCarriage, second: EndCarriage): LinkVlans {
-    if (first.kind === 'dead' || second.kind === 'dead') return null
-    if (first.kind === 'vlan' && second.kind === 'vlan') {
-      return first.vlan === second.vlan ? first.vlan : null
+  /** Frames sent out of `portId` with `tag` over the links that are up, as they arrive at the far ends. */
+  private across(topology: Topology, links: readonly Link[], deviceId: string, portId: string, tag: WireTag): Node[] {
+    const arrivals: Node[] = []
+    for (const link of links) {
+      if (!topology.isUp(link)) continue
+      const arrival = this.arrive(topology.farEnd(link, deviceId, portId), tag)
+      if (arrival) arrivals.push(arrival)
     }
-    if (first.kind === 'vlan') return first.vlan
-    if (second.kind === 'vlan') return second.vlan
-    if (first.kind === 'host' || second.kind === 'host') return NATIVE_VLAN
-    return 'all'
+    return arrivals
   }
 
-  private endCarriage(device: Device, portId: string, link: Link): EndCarriage {
-    switch (device.kind) {
-      case 'switch': {
-        const port = device.switchPorts?.find((candidate) => candidate.id === portId)
-        if (!port || !port.enabled) return { kind: 'dead' }
-        return port.mode === 'trunk' ? { kind: 'all' } : { kind: 'vlan', vlan: port.vlan }
+  private arrive(far: FarEnd, tag: WireTag): Node | null {
+    const { device, port, link } = far
+    if (!device || !port) return null
+    switch (port.role) {
+      case 'switched': {
+        const vlan = VlanRules.ingress(device, port, tag)
+        return vlan === null ? null : { type: 'bridge', deviceId: device.id, vlan }
       }
-      case 'router':
-        return portId === 'lan' ? { kind: 'all' } : { kind: 'dead' }
-      case 'accessPoint':
-        return this.accessPointCarriage(device, portId, link)
-      case 'internet':
-        return { kind: 'dead' }
-      default:
-        return HOST_PORTS.includes(portId) ? { kind: 'host' } : { kind: 'dead' }
+      case 'radio': {
+        const vlan = link.cable === 'wireless' && tag === null ? this.ssidVlan(device, link.ssid) : null
+        return vlan !== null && VlanRules.inDatabase(device, vlan) ? { type: 'bridge', deviceId: device.id, vlan } : null
+      }
+      case 'routed':
+      case 'host': {
+        const iface = this.receivingInterface(device, port.id, tag)
+        return iface ? { type: 'endpoint', iface } : null
+      }
+      case 'passive':
+        return device.kind === 'hub' ? { type: 'hub', deviceId: device.id, tag } : null
+      case 'console':
+        return null
     }
   }
 
-  private accessPointCarriage(device: Device, portId: string, link: Link): EndCarriage {
-    if (portId === 'uplink') return { kind: 'all' }
-    if (portId !== 'radio') return { kind: 'dead' }
-    const network = device.wirelessNetworks?.find((candidate) => candidate.ssid === link.ssid)
-    return network ? { kind: 'vlan', vlan: network.vlan } : { kind: 'dead' }
+  /** Untagged → native sub-interface or the port itself; tagged v → the sub-interface for v. */
+  private receivingInterface(device: Device, portId: string, tag: WireTag): L3Interface | undefined {
+    const onPort = L3Interfaces.of(device).filter((iface) => iface.portId === portId)
+    const subInterfaces = onPort.filter((iface) => iface.kind === 'subInterface' && iface.adminUp)
+    if (tag === null) {
+      return subInterfaces.find((iface) => iface.native) ?? onPort.find((iface) => iface.kind === 'nic' || iface.kind === 'routed')
+    }
+    return subInterfaces.find((iface) => iface.vlan === tag)
+  }
+
+  private ssidVlan(device: Device, ssid: string): number | null {
+    return device.wireless?.ssids.find((entry) => entry.ssid === ssid)?.vlan ?? null
   }
 }

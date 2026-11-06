@@ -10,7 +10,7 @@
 // - MACs: the first Ethernet / Wi-Fi port of non-switching devices uses the base MAC (for end
 //   devices = primary NIC); every other port gets MacAddress.derive(base, portIndex + 1). Switches,
 //   L3 switches and hubs derive every port (the base is the bridge identity), as in the migration.
-import { MacAddress, type DeviceKindV2, type DeviceModel, type DeviceV2, type Port, type PortTemplate } from '../domain/v2'
+import { MacAddress, type DeviceKind, type DeviceModel, type Device, type Port, type PortTemplate } from '../domain'
 import { RandomBaseMacSource, type BaseMacSource } from './BaseMacSource'
 import { DeviceDefaults } from './DeviceDefaults'
 
@@ -20,7 +20,7 @@ export interface CreateDeviceOptions {
 }
 
 /** Kinds whose ports all get derived MACs (the base MAC is the bridge identity). */
-const BRIDGE_KINDS: ReadonlySet<DeviceKindV2> = new Set<DeviceKindV2>(['switch', 'l3Switch', 'hub'])
+const BRIDGE_KINDS: ReadonlySet<DeviceKind> = new Set<DeviceKind>(['switch', 'l3Switch', 'hub'])
 
 function carriesMac(template: PortTemplate): boolean {
   return template.medium !== 'serial' && template.medium !== 'console'
@@ -37,12 +37,12 @@ export class PortFactory {
   }
 
   /** Same as `new PortFactory().createDevice(…)` with random base MACs. */
-  static createDevice(model: DeviceModel, id: string, name: string, options: CreateDeviceOptions = {}): DeviceV2 {
+  static createDevice(model: DeviceModel, id: string, name: string, options: CreateDeviceOptions = {}): Device {
     return PortFactory.shared.createDevice(model, id, name, options)
   }
 
   /** A powered device with every port of the model and the kind's default settings groups. */
-  createDevice(model: DeviceModel, id: string, name: string, options: CreateDeviceOptions = {}): DeviceV2 {
+  createDevice(model: DeviceModel, id: string, name: string, options: CreateDeviceOptions = {}): Device {
     const baseMac = MacAddress.normalize(options.baseMac ?? this.macSource.next())
     const ports = this.createPorts(model, baseMac)
     return {
@@ -58,7 +58,7 @@ export class PortFactory {
   }
 
   /** Default port for one template on a device of `kind`; `mac` is ignored for serial / console. */
-  createPort(template: PortTemplate, kind: DeviceKindV2, mac?: string): Port {
+  createPort(template: PortTemplate, kind: DeviceKind, mac?: string): Port {
     const base = {
       id: template.id,
       medium: template.medium,

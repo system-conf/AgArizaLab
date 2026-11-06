@@ -1,4 +1,4 @@
-import type { PacketTrace } from '../domain/EngineContract'
+import type { NetworkState, PacketTrace } from '../domain'
 import { Ipv4 } from './Ipv4'
 import type { PingOutcome } from './PingFormatter'
 import type { ProbeFailure } from './ProbeFailures'
@@ -22,19 +22,19 @@ export interface ProbeReport {
 export type ResolvedTarget = { ok: true; ip: string; name: string | null } | { ok: false }
 
 /**
- * Network side of ping and tracert for one state model (v1 or v2): resolves the target and probes
- * it. The commands themselves (PingCommand, TracertCommand) are model independent.
+ * Network side of ping and tracert: resolves the target and probes it. The commands themselves
+ * (PingCommand, TracertCommand) only parse options and format the reports.
  */
-export interface Prober<State> {
-  resolveTarget(state: State, deviceId: string, target: string): ResolvedTarget
-  probe(state: State, deviceId: string, targetIp: string): ProbeReport
+export interface Prober {
+  resolveTarget(state: NetworkState, deviceId: string, target: string): ResolvedTarget
+  probe(state: NetworkState, deviceId: string, targetIp: string): ProbeReport
 }
 
 /** Addresses a failed probe is reported with. */
 export interface FailureView {
   /** The sender's address ('' when it has none). */
   ownIp: string
-  /** Address of the router that reported or dropped the packet (v1: always the gateway). */
+  /** Address of the router that reported or dropped the packet. */
   reporterIp: string
   /** Routers before the reporting router (tracert hop lines above its "reports:" line). */
   hopsBeforeReporter: readonly TracertHop[]
@@ -42,7 +42,7 @@ export interface FailureView {
   hopsPassed: readonly TracertHop[]
 }
 
-/** Builds ping outcomes and tracert routes from probe results; shared by the v1 and v2 probers. */
+/** Builds ping outcomes and tracert routes from probe results. */
 export class ProbeReports {
   /** An address is used as is; anything else is looked up as a name (`name` is then set). */
   static target(target: string, resolve: (name: string) => { ok: true; ip: string } | { ok: false }): ResolvedTarget {

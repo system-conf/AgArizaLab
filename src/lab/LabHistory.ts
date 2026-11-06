@@ -1,6 +1,6 @@
 // Undo / redo over immutable lab documents. A LabHistory is itself immutable: every operation returns
 // a new history (or the same one when nothing changes), which makes it a plain React state value.
-import type { LabDocument } from '../domain/v2'
+import type { LabDocument } from '../domain'
 
 export const DEFAULT_HISTORY_LIMIT = 200
 

@@ -1,6 +1,6 @@
 // Lab files on disk: export downloads `<title>.agl.json`, import reads a picked File through the
 // LabSerializer (so v1 networks / exercises and older formats are upgraded too).
-import type { LabDocument } from '../domain/v2'
+import type { LabDocument } from '../domain'
 import { localizedMessage } from '../i18n/messageKeys'
 import { LAB_FILE_EXTENSION } from './labFileTypes'
 import { labSerializer, type LabParseResult, type LabSerializer } from './LabSerializer'

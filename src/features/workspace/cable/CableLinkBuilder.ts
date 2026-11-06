@@ -1,6 +1,6 @@
-// Turns the cable tool's choices (tool + two ports + SSID) into a CableRequest / LinkV2.
-import { CableRules } from '../../../domain/v2'
-import type { CableRequest, CableTool, CableType, LinkEndV2, LinkV2, NetworkStateV2 } from '../../../domain/v2'
+// Turns the cable tool's choices (tool + two ports + SSID) into a CableRequest / Link.
+import { CableRules } from '../../../domain'
+import type { CableRequest, CableTool, CableType, Link, LinkEnd, NetworkState } from '../../../domain'
 
 export class CableLinkBuilder {
   private readonly rules: CableRules
@@ -10,12 +10,12 @@ export class CableLinkBuilder {
   }
 
   /** The cable to lay: the tool itself, or the textbook cable for 'auto' (null = no cable fits). */
-  resolveCable(network: NetworkStateV2, tool: CableTool, a: LinkEndV2, b: LinkEndV2): CableType | null {
+  resolveCable(network: NetworkState, tool: CableTool, a: LinkEnd, b: LinkEnd): CableType | null {
     return tool === 'auto' ? this.rules.autoCable(network, a, b) : tool
   }
 
   /** Serial: the first end (`a`) is the DCE. Wireless: `ssid` names the joined network. */
-  request(cable: CableType, a: LinkEndV2, b: LinkEndV2, ssid = ''): CableRequest {
+  request(cable: CableType, a: LinkEnd, b: LinkEnd, ssid = ''): CableRequest {
     switch (cable) {
       case 'serial':
         return { a, b, cable, dceEnd: 'a' }
@@ -27,12 +27,12 @@ export class CableLinkBuilder {
   }
 
   /** A new, plugged-in link from a checked request. */
-  link(request: CableRequest, id: string): LinkV2 {
+  link(request: CableRequest, id: string): Link {
     return { ...request, id, connected: true }
   }
 
   /** SSIDs offered by the radio end(s) of a wireless association, for the SSID picker. */
-  ssidOptions(network: NetworkStateV2, a: LinkEndV2, b: LinkEndV2): string[] {
+  ssidOptions(network: NetworkState, a: LinkEnd, b: LinkEnd): string[] {
     const options: string[] = []
     for (const end of [a, b]) {
       const device = network.devices.find((candidate) => candidate.id === end.deviceId)

@@ -1,16 +1,16 @@
 import type { LocalizedMessage } from '../domain/Messages'
-import type { NetworkStateV2, SolveConditionV2 } from '../domain/v2'
-import type { ConditionResultV2 } from '../engine'
+import type { NetworkState, SolveCondition } from '../domain'
+import type { ConditionResult } from '../engine'
 import { localizedMessage } from '../i18n/messageKeys'
 
 /**
- * Turns unmet solve conditions of a v2 exercise into messages for the learner
+ * Turns unmet solve conditions of an exercise into messages for the learner
  * (`session:failedChecks.*`). Messages state the symptom only, never the cause, so the fault
  * stays hidden. Device names are taken from the lab (already localized for exercises).
  */
 export class FailedCheckDescriber {
   /** One message per failing condition, without duplicates, in condition order. */
-  static describeFailures(state: NetworkStateV2, results: readonly ConditionResultV2[]): LocalizedMessage[] {
+  static describeFailures(state: NetworkState, results: readonly ConditionResult[]): LocalizedMessage[] {
     const unique = new Map<string, LocalizedMessage>()
     for (const result of results) {
       if (result.ok) continue
@@ -21,7 +21,7 @@ export class FailedCheckDescriber {
     return [...unique.values()]
   }
 
-  static describe(state: NetworkStateV2, condition: SolveConditionV2): LocalizedMessage {
+  static describe(state: NetworkState, condition: SolveCondition): LocalizedMessage {
     switch (condition.type) {
       case 'internet':
         return localizedMessage('session:failedChecks.internet', {
@@ -45,7 +45,7 @@ export class FailedCheckDescriber {
   }
 
   /** Display name of a device; falls back to the id so a message is never empty. */
-  private static nameOf(state: NetworkStateV2, deviceId: string): string {
+  private static nameOf(state: NetworkState, deviceId: string): string {
     return state.devices.find((device) => device.id === deviceId)?.name ?? deviceId
   }
 }

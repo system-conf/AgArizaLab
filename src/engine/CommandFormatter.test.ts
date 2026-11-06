@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { TerminalLine } from '../domain/EngineContract'
+import type { TerminalLine } from '../domain'
 import { type AdapterView, CommandFormatter } from './CommandFormatter'
 
 const formatter = new CommandFormatter()
@@ -105,7 +105,7 @@ describe('CommandFormatter — app messages', () => {
   })
 })
 
-describe('CommandFormatter — several adapters (v2 hosts)', () => {
+describe('CommandFormatter — several adapters (multi-NIC hosts)', () => {
   it('numbers repeated adapter types and separates the blocks', () => {
     const wifi = { ...view, wireless: true, host: { ...view.host, ip: '192.168.2.5' } }
     const lines = texts(formatter.adapters([view, { ...view, connected: false }, wifi], true))

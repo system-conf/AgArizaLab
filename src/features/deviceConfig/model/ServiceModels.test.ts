@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import type { DeviceV2, HostSettings } from '../../../domain/v2'
-import { cableLab } from '../../../domain/v2/testDevicesV2'
+import type { Device, HostSettings } from '../../../domain'
+import { cableLab } from '../../../domain/testDevices'
 import { deviceServicesSchema, internetSettingsSchema } from '../../../lab/schemas/serviceSchemas'
 import { hostSettingsSchema, wirelessSettingsSchema } from '../../../lab/schemas/deviceSchemas'
 import { DhcpPoolFormModel, type DhcpDraft } from './DhcpPoolFormModel'
@@ -169,8 +169,8 @@ describe('GeneralFormModel and InternetServiceModel', () => {
   })
 
   it('maps cloud ports to service lines and back', () => {
-    const cloud = cableLab().devices.find((device) => device.id === 'cloud') as DeviceV2
-    const withTwo: DeviceV2 = { ...cloud, ports: [...cloud.ports, { id: 'eth1', medium: 'copper', role: 'passive', adminUp: true }], internet: { handoffs: [{ portId: 'eth1', serviceUp: true }] } }
+    const cloud = cableLab().devices.find((device) => device.id === 'cloud') as Device
+    const withTwo: Device = { ...cloud, ports: [...cloud.ports, { id: 'eth1', medium: 'copper', role: 'passive', adminUp: true }], internet: { handoffs: [{ portId: 'eth1', serviceUp: true }] } }
     const lines = InternetServiceModel.serviceLines(withTwo)
     expect(lines).toEqual([{ portId: 'coax0', serviceUp: true }, { portId: 'eth1', serviceUp: true }])
     const applied = InternetServiceModel.apply([{ portId: 'coax0', serviceUp: false }, { portId: 'eth1', serviceUp: true }], withTwo)

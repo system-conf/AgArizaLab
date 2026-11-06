@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { findDeviceModel, PortFactory } from '../../../catalog'
-import type { DeviceModel, Port } from '../../../domain/v2'
+import type { DeviceModel, Port } from '../../../domain'
 import { portSchema } from '../../../lab/schemas/portSchemas'
 import { PortEditorModel, type PortDraft } from './PortEditorModel'
 import { SubInterfaceFormModel } from './SubInterfaceFormModel'

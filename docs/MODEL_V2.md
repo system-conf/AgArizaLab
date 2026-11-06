@@ -1,13 +1,13 @@
 # AgArizaLab — v2 data model
 
 Contract of Phase 2 (wave 2.0, K2). Everything the workspace, the engine, the simulator (Phase 3), the
-CLIs (Phase 4) and the protocol packs (Phase 5+) build on. Code: `src/domain/v2/**` (types + two pure
-classes), `src/lab/migrations/**` (v1 → v2). v1 (`src/domain/NetworkTypes.ts`, `ScenarioTypes.ts`)
-stays untouched until integration is done, then it is deleted.
+CLIs (Phase 4) and the protocol packs (Phase 5+) build on. Code: `src/domain/**` (types + two pure
+classes), `src/lab/migrations/**` (v1 → v2). The v1 model and engine were deleted after integration
+(wave 2.3); only the v1 types the migration reads remain, in `src/lab/migrations/v1Types.ts`.
 
 ## 1. Principles
 
-- **State vs. canvas.** `NetworkStateV2 { devices, links }` is what the engine reads. Positions, notes
+- **State vs. canvas.** `NetworkState { devices, links }` is what the engine reads. Positions, notes
   and annotations live in the `LabDocument`; the engine never depends on the canvas.
 - **Explicit ports.** Every device has `ports: Port[]`. Links join *physical* ports. Layer-2/3 settings
   sit on the port (or its sub-interfaces); only truly device-wide settings sit on the device.
@@ -16,29 +16,30 @@ stays untouched until integration is done, then it is deleted.
 - **Behaviour from configuration, not from `kind`.** The engine decides from port roles and settings
   bags (a port with `l2` switches, a device with `routing.ipRouting` routes). `kind` is for icons,
   palette, defaults and a few kind-only behaviours (hub repeats, cloud provides internet).
-- **Illegal states unrepresentable where cheap.** `Port` is a union on `role`, `LinkV2` a union on
+- **Illegal states unrepresentable where cheap.** `Port` is a union on `role`, `Link` a union on
   `cable`, `StaticRoute` needs a next hop or an exit interface. What types cannot express is checked by
   `StateInvariants` (§12).
 - **Extension points are typed now.** Reserved optional keys of type `never` (e.g. `stp?: never`)
   mark where each pack adds its settings; the pack replaces `never` with its type — non-breaking for
   stored labs and existing code (§8).
-- **Naming.** Types that also exist in v1 carry a `V2` suffix (`DeviceV2`, `LinkV2`, `NetworkStateV2`,
-  `DhcpPoolV2`, `SolveConditionV2`, …) so the two models cannot be mixed up by auto-import during
-  Phase 2. When v1 is deleted, the suffix is dropped in one rename. Import from `src/domain/v2`.
+- **Naming.** During Phase 2 the types that also existed in v1 carried a `V2` suffix (`DeviceV2`,
+  `LinkV2`, `NetworkStateV2`, …). Wave 2.3 deleted v1 and dropped the suffix everywhere (`Device`,
+  `Link`, `NetworkState`, `NetworkEngine`, `networkEngine`, …); the v1 shapes the migration reads are
+  `V1Device`, `V1NetworkState`, … in `src/lab/migrations/v1Types.ts`. Import from `src/domain`.
 - Immutable everywhere; ids camelCase; MACs `AA:BB:CC:DD:EE:FF`; IPv4 and masks dotted strings
   (`''` = none), like v1.
 
 | File | Content |
 |---|---|
 | `PortTypes.ts` | `Port` union, `L3Settings`, `SwitchportSettings`, `SubInterface`, port enums |
-| `DeviceTypes.ts` | `DeviceV2`, `DeviceKindV2`, host / switching / routing / wireless settings |
+| `DeviceTypes.ts` | `Device`, `DeviceKind`, host / switching / routing / wireless settings |
 | `ServiceTypes.ts` | DHCP, DNS, internet cloud (`InternetSettings`) |
-| `LinkTypes.ts` | `CableType`, `LinkV2`, `CableRequest`, `CableTool` |
-| `NetworkStateV2.ts` | root state |
+| `LinkTypes.ts` | `CableType`, `Link`, `CableRequest`, `CableTool` |
+| `NetworkState.ts` | root state |
 | `DeviceModel.ts` | catalog contract: `DeviceModel`, `PortTemplate`, `DeviceCapability` |
 | `LabDocument.ts` | lab file: meta, layout, annotations, notes |
-| `ExerciseTypes.ts` | `ExerciseDefinition`, locks, `SolveConditionV2`, localized `Exercise` |
-| `EngineContractV2.ts` | `NetworkEngineV2`, results with `FailureReasonV2` |
+| `ExerciseTypes.ts` | `ExerciseDefinition`, locks, `SolveCondition`, localized `Exercise` |
+| `EngineContract.ts` | `NetworkEngine`, results with `FailureReason`, terminal lines, packet traces, link lights |
 | `CableRules.ts` | class: may cable X join port P1 and P2? (§6) |
 | `StateInvariants.ts` | class: semantic validation of a state (§12) |
 | `MacAddress.ts` | class: validate / normalize / derive MACs |
@@ -77,7 +78,7 @@ stays untouched until integration is done, then it is deleted.
 
 ## 3. Devices
 
-`DeviceV2 { id, kind, modelId, name, powered, baseMac, ports, host?, switching?, routing?, wireless?, services?, internet?, features? }`
+`Device { id, kind, modelId, name, powered, baseMac, ports, host?, switching?, routing?, wireless?, services?, internet?, features? }`
 
 - `kind`: `internet, router, wirelessRouter, switch, l3Switch, hub, accessPoint, pc, laptop, server,
   printer, ipPhone, pos, camera, nvr, kitchenDisplay, smartphone, tablet`. `END_DEVICE_KINDS` /
@@ -87,7 +88,7 @@ stays untouched until integration is done, then it is deleted.
 
 | Bag | On | Content |
 |---|---|---|
-| `host: HostSettings` | end devices | `defaultGateway`, `dnsServers[]`, `appLinks: AppLinkV2[]` (PT-style "global settings"; DHCP overwrites gateway/DNS, last lease wins) |
+| `host: HostSettings` | end devices | `defaultGateway`, `dnsServers[]`, `appLinks: AppLink[]` (PT-style "global settings"; DHCP overwrites gateway/DNS, last lease wins) |
 | `switching: SwitchingSettings` | switch, L3 switch, wireless router | `vlans: VlanEntry[]` (database, always has 1), `svis: Svi[]` (`Vlan<n>`), `defaultGateway` (`ip default-gateway`) |
 | `routing: RoutingSettings` | router, L3 switch, wireless router | `ipRouting`, `staticRoutes: StaticRoute[]` |
 | `wireless: WirelessSettings` | AP, wireless router | `ssids: { ssid, vlan, security: { mode: 'open' } }[]` |
@@ -102,8 +103,8 @@ A wireless router (home router) is: `routing` + WAN `routed` port + LAN `switche
 
 ## 4. Services
 
-- **DHCP** `DhcpServerSettings { enabled, pools: DhcpPoolV2[], excludedRanges: AddressRange[] }`;
-  `DhcpPoolV2 { id, network, mask, range?, defaultRouter, dnsServers, leases: { mac, ip }[] }`.
+- **DHCP** `DhcpServerSettings { enabled, pools: DhcpPool[], excludedRanges: AddressRange[] }`;
+  `DhcpPool { id, network, mask, range?, defaultRouter, dnsServers, leases: { mac, ip }[] }`.
   A pool serves requests arriving on the interface whose subnet contains `network` (IOS rule; works
   with relay later). Allocation window = host addresses of `network` ∩ `range` (if set) − exclusions −
   addresses in use; an existing lease for the client NIC's MAC is reused. `range` covers the
@@ -129,11 +130,11 @@ Only routed ports get service; an end device cabled straight to the cloud gets n
 ## 6. Cables and `CableRules`
 
 `CableType = copperStraight | copperCross | fiber | serial | console | coaxial | wireless`;
-`LinkV2 = { id, a, b, connected } & ({ cable: plain } | { cable: 'serial', dceEnd: 'a'|'b' } | { cable: 'wireless', ssid })`.
+`Link = { id, a, b, connected } & ({ cable: plain } | { cable: 'serial', dceEnd: 'a'|'b' } | { cable: 'wireless', ssid })`.
 `'auto'` is only a builder tool (`CableTool`); `CableRules.autoCable` resolves it before a link exists.
 `connected: false` = unplugged; the link still reserves both ports.
 
-`CableRules` (pure class in `src/domain/v2`, because B1, B2, E2 and the migration all need it):
+`CableRules` (pure class in `src/domain`, because B1, B2, E2 and the migration all need it):
 `check(state, request, ignoreLinkId?)`, `validateLink(state, link)`, `checkEnd(state, end, cable)` (to
 highlight usable ports), `autoCable(state, a, b)`, `pinoutOf(device, port)`, `CableRules.mediumOf(cable)`.
 Checks in order, first failure wins; `side` names the bad end where it applies:
@@ -213,8 +214,8 @@ layout: { devices: Record<deviceId, {x,y}>, viewport? }, notes, annotations }`. 
 ## 10. Exercises
 
 `ExerciseDefinition { id, order, setting: 'restaurant'|'office'|'shop', lab: { state, layout },
-solvedWhen: SolveConditionV2[], locks: ExerciseLock[] }` — data only; texts stay in the `exercises`
-namespace keyed by id (I18N.md §5). `SolveConditionV2` = v1 conditions (`internet`, `resolves`,
+solvedWhen: SolveCondition[], locks: ExerciseLock[] }` — data only; texts stay in the `exercises`
+namespace keyed by id (I18N.md §5). `SolveCondition` = v1 conditions (`internet`, `resolves`,
 `reachable`, `appLinksOk`). `ExerciseLock`: `{ scope: 'topology' }`, `{ scope: 'link', linkId }`,
 `{ scope: 'device' | 'section' | 'port', …, access: 'readOnly' | 'hidden' }`; sections `power, ports,
 host, switching, routing, wireless, services, internet, terminal`. Anything not locked is editable.
@@ -259,7 +260,9 @@ v1 `wanUp: true` without a cloud link (no place → dropped, no internet in v2);
 tagged sub-interface `Gi0/0.1`, unreachable through a native-VLAN-1 trunk); v1 let a router answer a
 same-subnet ping on an address of another VLAN's interface, v2 answers ARP per interface (found by E2).
 **Behavioural equivalence through the engine is E2's job**: every existing engine and scenario test
-must pass on `migrateV1ToV2(fixture)` with identical results.
+must pass on `migrateV1ToV2(fixture)` with identical results. (Done in wave 2.1 by an equivalence suite
+against the v1 engine; when v1 was deleted in wave 2.3, its fixtures became `officeLab()` / `vlanLab()` in
+`src/engine/testNetworks.ts` and every v1 engine test was kept as a plain test with unchanged expectations.)
 
 ## 12. Invariants (`StateInvariants.violations(state)`)
 
@@ -272,8 +275,8 @@ device, static-route interface ids exist, pool subnets match an interface.
 
 ## 13. Engine rules on v2 (guidance for E2)
 
-`NetworkEngineV2` = v1 methods on `NetworkStateV2` (`renewDhcp` takes an optional `portId`),
-`FailureReasonV2 = FailureReason | 'ttlExpired'` (static-route loops). Reuse v1 reasons otherwise
+`NetworkEngine` = v1 methods on `NetworkState` (`renewDhcp` takes an optional `portId`),
+`FailureReason` = the v1 reasons plus `'ttlExpired'` (static-route loops). Reuse v1 reasons otherwise
 (shut router interface → `gatewayUnreachable`, shut host NIC → `portDisabled`).
 - Link carries traffic: `connected`, both devices powered, both ports `adminUp`; wireless: client SSID
   offered by the radio device; copper pinout rule of §6 when auto-MDIX is off on both ends; serial:

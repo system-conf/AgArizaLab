@@ -1,14 +1,14 @@
 import { describe, expect, it } from 'vitest'
-import type { DeviceV2, NetworkStateV2 } from '../domain/v2'
-import { hostNic, makeDevice } from '../domain/v2/testDevicesV2'
+import type { Device, NetworkState } from '../domain'
+import { hostNic, makeDevice } from '../domain/testDevices'
 import { FailedCheckDescriber } from './FailedCheckDescriber'
 
-function device(id: string, name: string): DeviceV2 {
+function device(id: string, name: string): Device {
   return { ...makeDevice(id, 'pc', [hostNic('eth0')]), name }
 }
 
 // Device names arrive already localized (exercise texts) or as user content; they are passed through.
-const state: NetworkStateV2 = {
+const state: NetworkState = {
   devices: [device('kasa', 'Cash register (POS)'), device('muhasebe', 'Accounting PC'), device('yazici', 'Printer')],
   links: [],
 }

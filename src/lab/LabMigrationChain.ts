@@ -3,7 +3,7 @@
 //   checked with the v1 schemas and upgraded by src/lab/migrations;
 // - `schemaVersion` n < current: the steps n → n+1 → … of LAB_MIGRATION_STEPS;
 // - `schemaVersion` > current: refused with `lab:import.unsupportedVersion`.
-import { LAB_SCHEMA_VERSION } from '../domain/v2'
+import { LAB_SCHEMA_VERSION } from '../domain'
 import type { LocalizedMessage } from '../domain/Messages'
 import { localizedMessage } from '../i18n/messageKeys'
 import { createLabFromExercise, createLabFromState } from './createLab'

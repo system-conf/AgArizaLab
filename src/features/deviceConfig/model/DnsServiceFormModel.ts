@@ -1,5 +1,5 @@
 // DNS service of a device: on/off, forwarders and static A records (name → IPv4).
-import type { DnsServerSettings } from '../../../domain/v2'
+import type { DnsServerSettings } from '../../../domain'
 import type { LocalizedMessage } from '../../../domain/Messages'
 import { localizedMessage } from '../../../i18n/messageKeys'
 import { AddressListParser } from './AddressListParser'

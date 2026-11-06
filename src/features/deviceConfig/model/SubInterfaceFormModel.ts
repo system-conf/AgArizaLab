@@ -1,5 +1,5 @@
 // Router-on-a-stick sub-interfaces of a routed port (`interface Gi0/0.10`, `encapsulation dot1Q 10`).
-import type { SubInterface } from '../../../domain/v2'
+import type { SubInterface } from '../../../domain'
 import { localizedMessage } from '../../../i18n/messageKeys'
 import { newRowKey, optionalText, parseWholeNumber, type FieldErrors } from './formTypes'
 import { Ipv4Fields } from './Ipv4Fields'

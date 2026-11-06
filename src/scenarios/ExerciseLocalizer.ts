@@ -1,9 +1,9 @@
-import type { DeviceV2, Exercise, ExerciseDefinition } from '../domain/v2'
+import type { Device, Exercise, ExerciseDefinition } from '../domain'
 import type { AnyTFunction } from '../i18n/localizedMessage'
 import { ExerciseTextReader } from './ExerciseTextReader'
 
 /**
- * Merges a text-free v2 ExerciseDefinition with its texts from the `exercises` namespace into the
+ * Merges a text-free ExerciseDefinition with its texts from the `exercises` namespace into the
  * localized `Exercise` the UI consumes: device names and AppLink labels (placeholders = ids in the
  * data) are filled in, the texts are attached.
  */
@@ -24,7 +24,7 @@ export class ExerciseLocalizer {
     }
   }
 
-  private localizeDevice(exerciseId: string, device: DeviceV2): DeviceV2 {
+  private localizeDevice(exerciseId: string, device: Device): Device {
     const name = this.reader.deviceName(exerciseId, device.id)
     if (device.host === undefined) return { ...device, name }
     const appLinks = device.host.appLinks.map((appLink) => ({ ...appLink, label: this.reader.appLinkLabel(exerciseId, appLink.id) }))

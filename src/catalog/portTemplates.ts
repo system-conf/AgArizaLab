@@ -1,5 +1,5 @@
 // Builders for the port templates of the catalog models (docs/MODEL_V2.md §7).
-import type { PortMedium, PortRole, PortTemplate } from '../domain/v2'
+import type { PortMedium, PortRole, PortTemplate } from '../domain'
 
 /**
  * Strip layout group of a port template (`PortTemplate.group`): where the port sits on the front

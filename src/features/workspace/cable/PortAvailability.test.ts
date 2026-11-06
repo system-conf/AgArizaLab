@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import type { LinkV2 } from '../../../domain/v2'
-import { cableLab, withLinks } from '../../../domain/v2/testDevicesV2'
+import type { Link } from '../../../domain'
+import { cableLab, withLinks } from '../../../domain/testDevices'
 import { CableLinkBuilder } from './CableLinkBuilder'
 import { PortAvailability } from './PortAvailability'
 
 const availability = new PortAvailability()
-const pcLink: LinkV2 = {
+const pcLink: Link = {
   id: 'pcLink',
   a: { deviceId: 'pc', portId: 'eth0' },
   b: { deviceId: 'sw', portId: 'Fa0/1' },

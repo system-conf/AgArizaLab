@@ -1,7 +1,7 @@
 import { Route } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { RoutingSettings } from '../../../domain/v2'
+import type { RoutingSettings } from '../../../domain'
 import CheckboxField from '../fields/CheckboxField'
 import InputField from '../fields/InputField'
 import RowList from '../fields/RowList'

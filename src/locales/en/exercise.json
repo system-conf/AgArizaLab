@@ -18,12 +18,6 @@
     "reveal": "Show step {{number}}",
     "allRevealed": "All steps shown"
   },
-  "layout": {
-    "mapRegion": "Network map",
-    "panelRegion": "Device panel",
-    "closePanel": "Close",
-    "selectDevice": "Click a device on the map to see its details."
-  },
   "footer": {
     "notesLabel": "My notes",
     "notesPlaceholder": "Write down what you find…",

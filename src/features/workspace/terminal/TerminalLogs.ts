@@ -1,4 +1,4 @@
-import type { TerminalLine } from '../../../domain/EngineContract'
+import type { TerminalLine } from '../../../domain'
 
 const NO_LINES: readonly TerminalLine[] = []
 

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { StateInvariants, type DeviceV2, type LabDocument, type Port } from '../domain/v2'
-import { makeDevice, routedPort, switchPort, updatePortV2 } from '../domain/v2/testDevicesV2'
+import { StateInvariants, type Device, type LabDocument, type Port } from '../domain'
+import { makeDevice, routedPort, switchPort, updatePort } from '../domain/testDevices'
 import { createEmptyLab } from './createLab'
 import { LabEditError, LabEditor } from './LabEditor'
 import { sampleLab } from './testLabs'
@@ -8,13 +8,13 @@ import { sampleLab } from './testLabs'
 const editor = new LabEditor()
 const invariants = new StateInvariants()
 
-function device(doc: LabDocument, id: string): DeviceV2 {
+function device(doc: LabDocument, id: string): Device {
   const found = doc.state.devices.find((candidate) => candidate.id === id)
   if (!found) throw new Error(`no device ${id}`)
   return found
 }
 
-function withPorts(target: DeviceV2, change: (ports: Port[]) => Port[]): DeviceV2 {
+function withPorts(target: Device, change: (ports: Port[]) => Port[]): Device {
   return { ...target, ports: change(target.ports) }
 }
 
@@ -30,7 +30,7 @@ describe('LabEditor devices', () => {
     const twin = { ...makeDevice('router2', 'router', []), ports: router.ports }
     expect(() => editor.addDevice(next, twin, { x: 0, y: 0 })).toThrow(/duplicateMac/)
     expect(() => editor.addDevice(doc, router, { x: Number.NaN, y: 0 })).toThrow(LabEditError)
-    expect(() => editor.addDevice(doc, { ...router, kind: 'toaster' } as unknown as DeviceV2, { x: 0, y: 0 })).toThrow(/malformed/)
+    expect(() => editor.addDevice(doc, { ...router, kind: 'toaster' } as unknown as Device, { x: 0, y: 0 })).toThrow(/malformed/)
   })
 
   it('removes devices with their links and layout entries', () => {
@@ -87,7 +87,7 @@ describe('LabEditor devices', () => {
 
   it('updateDevice refuses auto-MDIX off on both ends with the wrong cable', () => {
     const base = sampleLab()
-    const state = updatePortV2(base.state, 'pc', 'eth0', (port) => ({ ...port, autoMdix: false }))
+    const state = updatePort(base.state, 'pc', 'eth0', (port) => ({ ...port, autoMdix: false }))
     const doc = { ...base, state }
     const sw = withPorts(device(doc, 'sw'), (ports) =>
       ports.map((port) => (port.id === 'Fa0/1' ? { ...port, autoMdix: false, pinout: 'mdi' } : port)),

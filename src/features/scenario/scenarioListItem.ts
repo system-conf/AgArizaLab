@@ -1,4 +1,4 @@
-import type { ExerciseSetting } from '../../domain/v2'
+import type { ExerciseSetting } from '../../domain'
 
 /** What the exercise list needs to know about one exercise. */
 export interface ScenarioListItem {

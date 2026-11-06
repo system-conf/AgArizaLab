@@ -1,6 +1,6 @@
 // Exercise ↔ lab document: opening an exercise as a lab, relabelling it in another language and
 // copying a solved exercise network into a free lab ("Open in lab").
-import type { DeviceV2, Exercise, LabDocument } from '../domain/v2'
+import type { Device, Exercise, LabDocument } from '../domain'
 import { createLabFromExercise, createLabFromState } from '../lab/createLab'
 
 type Labels = ReadonlyMap<string, string>
@@ -57,7 +57,7 @@ export class ExerciseLabs {
     return { ...lab, notes: doc.notes, annotations: doc.annotations }
   }
 
-  private relabelDevice(device: DeviceV2, from: ReturnType<typeof labelsOf>, to: ReturnType<typeof labelsOf>): DeviceV2 {
+  private relabelDevice(device: Device, from: ReturnType<typeof labelsOf>, to: ReturnType<typeof labelsOf>): Device {
     const name = swap(device.name, device.id, from.names, to.names)
     const host = device.host
     const appLinks = host?.appLinks.map((appLink) => {

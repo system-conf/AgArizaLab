@@ -1,6 +1,6 @@
 // What an exercise lab lets the learner change (MODEL_V2 §10 `ExerciseLock`). Anything not locked is
 // editable; the strictest lock wins (hidden > readOnly > editable). A free lab uses `none`.
-import type { DeviceSection, DeviceV2, ExerciseLock, LockAccess } from '../domain/v2'
+import type { Device, DeviceSection, ExerciseLock, LockAccess } from '../domain'
 
 export type EditAccess = 'editable' | LockAccess
 
@@ -28,7 +28,7 @@ function sameData(first: unknown, second: unknown): boolean {
 }
 
 /** Device data each lockable section covers ('terminal' covers no data: it is the command prompt). */
-const SECTION_DATA: Readonly<Record<Exclude<DeviceSection, 'terminal'>, (device: DeviceV2) => unknown>> = {
+const SECTION_DATA: Readonly<Record<Exclude<DeviceSection, 'terminal'>, (device: Device) => unknown>> = {
   power: (device) => device.powered,
   ports: (device) => device.ports,
   host: (device) => device.host,
@@ -94,7 +94,7 @@ export class ExerciseLockPolicy {
   }
 
   /** Safety net under the settings panel: false when `after` changes anything that is locked. */
-  allowsDeviceUpdate(before: DeviceV2, after: DeviceV2): boolean {
+  allowsDeviceUpdate(before: Device, after: Device): boolean {
     if (before.id !== after.id) return false
     if (this.deviceAccess(before.id) !== 'editable') return sameData(before, after)
     for (const [section, dataOf] of Object.entries(SECTION_DATA)) {

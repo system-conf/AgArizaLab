@@ -1,6 +1,6 @@
 // DHCP server of a device: service switch, pools (`ip dhcp pool`) and device-wide excluded
 // address ranges (`ip dhcp excluded-address`). Leases are shown, never edited.
-import type { AddressRange, DhcpPoolV2, DhcpServerSettings } from '../../../domain/v2'
+import type { AddressRange, DhcpPool, DhcpServerSettings } from '../../../domain'
 import { localizedMessage } from '../../../i18n/messageKeys'
 import { AddressListParser } from './AddressListParser'
 import { newRowKey, type FieldErrors } from './formTypes'
@@ -9,7 +9,7 @@ import { Ipv4Fields } from './Ipv4Fields'
 export interface DhcpPoolDraft {
   key: string
   /** Keeps the leases of an existing pool. */
-  original?: DhcpPoolV2
+  original?: DhcpPool
   name: string
   network: string
   mask: string
@@ -156,7 +156,7 @@ export class DhcpPoolFormModel {
     return errors
   }
 
-  private static poolOf(row: DhcpPoolDraft): DhcpPoolV2 {
+  private static poolOf(row: DhcpPoolDraft): DhcpPool {
     const start = row.rangeStart.trim()
     const dns = AddressListParser.parse(row.dnsServers)
     return {

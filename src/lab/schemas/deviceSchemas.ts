@@ -1,10 +1,10 @@
-// zod mirror of src/domain/v2/DeviceTypes.ts (see portSchemas.ts for the conventions).
+// zod mirror of src/domain/DeviceTypes.ts (see portSchemas.ts for the conventions).
 import { z } from 'zod'
-import type { DeviceKindV2 } from '../../domain/v2'
+import type { DeviceKind } from '../../domain'
 import { idSchema, l3SettingsSchema, portSchema, reservedKey, vlanIdSchema } from './portSchemas'
 import { deviceServicesSchema, internetSettingsSchema } from './serviceSchemas'
 
-/** Every DeviceKindV2 (the type-equality test fails when the domain union gains a member). */
+/** Every DeviceKind (the type-equality test fails when the domain union gains a member). */
 export const DEVICE_KINDS = [
   'internet',
   'router',
@@ -24,7 +24,7 @@ export const DEVICE_KINDS = [
   'kitchenDisplay',
   'smartphone',
   'tablet',
-] as const satisfies readonly DeviceKindV2[]
+] as const satisfies readonly DeviceKind[]
 
 export const deviceKindSchema = z.enum(DEVICE_KINDS)
 

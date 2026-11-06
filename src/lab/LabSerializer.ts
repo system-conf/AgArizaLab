@@ -1,7 +1,7 @@
 // Reads and writes lab files (.agl.json, autosave, share links). Loading = JSON → migration chain
 // (v1 / older formats → current) → zod schema → StateInvariants. Every failure is a list of `lab:`
 // messages; nothing throws for bad input.
-import { StateInvariants, type LabDocument } from '../domain/v2'
+import { StateInvariants, type LabDocument } from '../domain'
 import type { LocalizedMessage } from '../domain/Messages'
 import { localizedMessage } from '../i18n/messageKeys'
 import { LabMessages } from './LabMessages'

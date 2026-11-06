@@ -1,6 +1,6 @@
 import { useMemo, type DragEvent } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { DeviceModel } from '../../../domain/v2'
+import type { DeviceModel } from '../../../domain'
 import { useMessageTranslator } from '../../../i18n'
 import { focusRing } from '../../shared/focusRing'
 import { DEVICE_CATEGORIES, DeviceKindIcon } from '../labServices'

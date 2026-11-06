@@ -1,7 +1,7 @@
 import { Link } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { END_DEVICE_KINDS, type DeviceKindV2, type HostSettings } from '../../../domain/v2'
+import { END_DEVICE_KINDS, type DeviceKind, type HostSettings } from '../../../domain'
 import InputField from '../fields/InputField'
 import RowList from '../fields/RowList'
 import SectionCard from '../fields/SectionCard'
@@ -17,7 +17,7 @@ interface AppLinksSectionProps extends SectionProps {
 }
 
 /** App links target end devices; a stored target of another kind stays selectable. */
-function targetKinds(current: DeviceKindV2): DeviceKindV2[] {
+function targetKinds(current: DeviceKind): DeviceKind[] {
   return END_DEVICE_KINDS.includes(current) ? [...END_DEVICE_KINDS] : [...END_DEVICE_KINDS, current]
 }
 

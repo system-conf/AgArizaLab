@@ -1,4 +1,4 @@
-import type { TerminalLine } from '../domain/EngineContract'
+import type { TerminalLine } from '../domain'
 import { localizedMessage } from '../i18n/messageKeys'
 import { messageLine, textLines } from './terminalLines'
 

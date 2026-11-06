@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { TerminalLine } from '../domain/EngineContract'
+import type { TerminalLine } from '../domain'
 import { TracertFormatter } from './TracertFormatter'
 
 const formatter = new TracertFormatter()
@@ -62,7 +62,7 @@ describe('TracertFormatter', () => {
   })
 })
 
-describe('TracertFormatter — hop limit (v2 routing loops)', () => {
+describe('TracertFormatter — hop limit (routing loops)', () => {
   it('prints the hop lines and nothing after them', () => {
     const hops = [
       { ip: '10.1.1.1', baseTimeMs: 0 },

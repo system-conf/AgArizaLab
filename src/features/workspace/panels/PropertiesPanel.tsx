@@ -1,7 +1,7 @@
 import { MousePointerClick, Trash2, X } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { Annotation, DeviceV2, LabDocument } from '../../../domain/v2'
+import type { Annotation, Device, LabDocument } from '../../../domain'
 import { focusRing } from '../../shared/focusRing'
 import type { WorkspaceSelection } from '../canvas/canvasTypes'
 import { SelectionModel } from '../canvas/SelectionModel'
@@ -14,7 +14,7 @@ interface PropertiesPanelProps {
   selection: WorkspaceSelection
   policy: ExerciseLockPolicy
   /** Name, model and the Info / Settings / Terminal tabs of the one selected device. */
-  renderDevice: (device: DeviceV2) => ReactNode
+  renderDevice: (device: Device) => ReactNode
   onDisconnect: (linkId: string) => void
   onSetLinkConnected: (linkId: string, connected: boolean) => void
   onAnnotationChange: (annotation: Annotation) => void

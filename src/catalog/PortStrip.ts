@@ -2,7 +2,7 @@
 // and rows, ready to render. Sections follow the order in which their group first appears in the
 // model; a section with many ports is split into two rows like a real switch (odd ports on top,
 // even ports below).
-import type { DeviceModel, DeviceV2 } from '../domain/v2'
+import type { Device, DeviceModel } from '../domain'
 import { isPortGroup, type PortGroup } from './portTemplates'
 
 /** Group of device ports the model does not know (migrated labs, modules): shown last. */
@@ -33,7 +33,7 @@ export class PortStrip {
    * Layout of the device's own ports (authoritative): grouped as in its model when the model has the
    * port id, otherwise in the 'other' section. Model ports the device lacks are left out.
    */
-  static forDevice(device: DeviceV2, model: DeviceModel | undefined): PortStripLayout {
+  static forDevice(device: Device, model: DeviceModel | undefined): PortStripLayout {
     const groups = new Map((model?.ports ?? []).map((port) => [port.id, PortStrip.groupOf(port.group)]))
     return PortStrip.build(device.ports.map((port) => ({ id: port.id, group: groups.get(port.id) ?? 'other' })))
   }

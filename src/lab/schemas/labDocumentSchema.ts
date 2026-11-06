@@ -1,6 +1,6 @@
-// zod mirror of src/domain/v2/LinkTypes.ts, NetworkStateV2.ts and LabDocument.ts.
+// zod mirror of src/domain/LinkTypes.ts, NetworkState.ts and LabDocument.ts.
 import { z } from 'zod'
-import { LAB_SCHEMA_VERSION } from '../../domain/v2'
+import { LAB_SCHEMA_VERSION } from '../../domain'
 import { deviceSchema } from './deviceSchemas'
 import { idSchema } from './portSchemas'
 

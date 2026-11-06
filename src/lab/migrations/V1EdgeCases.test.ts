@@ -1,22 +1,22 @@
 // Migration of v1 shapes the exercises do not use but engine test fixtures may (MODEL_V2 §11).
 import { describe, expect, it } from 'vitest'
-import type { Device, DeviceKind, Link, NetworkState } from '../../domain/NetworkTypes'
-import { StateInvariants, type DeviceV2, type NetworkStateV2 } from '../../domain/v2'
+import type { V1Device, V1DeviceKind, V1Link, V1NetworkState } from './v1Types'
+import { StateInvariants, type Device, type NetworkState } from '../../domain'
 import { V1MigrationError } from './V1MigrationError'
 import { migrateV1ToV2 } from './V1ToV2Migration'
 
 let macCounter = 0
-function device(id: string, kind: DeviceKind, extra: Partial<Device> = {}): Device {
+function device(id: string, kind: V1DeviceKind, extra: Partial<V1Device> = {}): V1Device {
   macCounter += 1
   const mac = `00:AA:00:00:00:${macCounter.toString(16).toUpperCase().padStart(2, '0')}`
   return { id, kind, name: id, mac, position: { x: 0, y: 0 }, powered: true, ...extra }
 }
 
-function host(id: string, kind: DeviceKind = 'pc'): Device {
+function host(id: string, kind: V1DeviceKind = 'pc'): V1Device {
   return device(id, kind, { host: { mode: 'static', ip: '192.168.1.20', mask: '255.255.255.0', gateway: '192.168.1.1', dns: [] } })
 }
 
-function router(extra: Partial<Device> = {}): Device {
+function router(extra: Partial<V1Device> = {}): V1Device {
   return device('router', 'router', {
     routerInterfaces: [{ id: 'LAN', vlan: 1, ip: '192.168.1.1', mask: '255.255.255.0' }],
     wanUp: true,
@@ -25,18 +25,18 @@ function router(extra: Partial<Device> = {}): Device {
   })
 }
 
-function link(id: string, a: [string, string], b: [string, string], ssid?: string): Link {
-  const result: Link = { id, a: { deviceId: a[0], portId: a[1] }, b: { deviceId: b[0], portId: b[1] }, connected: true }
+function link(id: string, a: [string, string], b: [string, string], ssid?: string): V1Link {
+  const result: V1Link = { id, a: { deviceId: a[0], portId: a[1] }, b: { deviceId: b[0], portId: b[1] }, connected: true }
   return ssid === undefined ? result : { ...result, ssid }
 }
 
-function deviceOf(state: NetworkStateV2, id: string): DeviceV2 {
+function deviceOf(state: NetworkState, id: string): Device {
   const found = state.devices.find((candidate) => candidate.id === id)
   if (!found) throw new Error(`no device ${id}`)
   return found
 }
 
-function migrationError(state: NetworkState): V1MigrationError | undefined {
+function migrationError(state: V1NetworkState): V1MigrationError | undefined {
   try {
     migrateV1ToV2(state)
   } catch (error) {

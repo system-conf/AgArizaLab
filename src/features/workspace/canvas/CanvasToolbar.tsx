@@ -15,7 +15,7 @@ import {
 } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { CableTool } from '../../../domain/v2'
+import type { CableTool } from '../../../domain'
 import { focusRing } from '../../shared/focusRing'
 import CableGlyph from '../cable/CableGlyph'
 import type { AlignMode } from '../geometry/AlignCalculator'

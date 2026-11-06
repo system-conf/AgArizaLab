@@ -1,21 +1,8 @@
 {
-  "ariaLabel": "Ağ haritası",
-  "node": {
-    "poweredOn": "Açık",
-    "poweredOff": "Kapalı",
-    "ariaPoweredOff": "{{name}} (kapalı)"
-  },
   "edge": {
-    "ariaLabel": "{{a}} – {{b}} bağlantısı",
     "linkLightUp": "{{port}}: bağlantı ışığı yanıyor",
     "linkLightDown": "{{port}}: bağlantı ışığı sönük",
     "unplugged": "Kablo takılı değil"
-  },
-  "controls": {
-    "fullscreen": "Tam ekran",
-    "exitFullscreen": "Tam ekrandan çık (Esc)",
-    "resetLayout": "Düzeni sıfırla",
-    "resetLayoutTitle": "Cihazları başlangıçtaki yerlerine geri koy"
   },
   "reactFlow": {
     "nodeDescription": "Cihazı seçmek için Enter veya Boşluk tuşuna bas. Taşımak için ok tuşlarını kullan.",

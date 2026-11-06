@@ -1,129 +1,109 @@
+// The five exercises on the engine: every exercise migrated with migrateV1ToV2, its broken symptom,
+// and the hint-3 fixes applied as edits (NIC address, host settings, switchport, AppLink).
 import { describe, expect, it } from 'vitest'
-import type { Device, HostNetworkConfig, NetworkState } from '../domain/NetworkTypes'
-import type { ScenarioDefinition } from '../domain/ScenarioTypes'
-import { networkEngine, solveChecker } from '../engine'
+import { isEndDeviceKind, type NetworkState, type SolveCondition } from '../domain'
+import { migrateV1ToV2 } from '../lab/migrations'
 import { cameraSubnet } from './cameraSubnet'
 import { kitchenVlan } from './kitchenVlan'
 import { posGateway } from './posGateway'
 import { printerDhcp } from './printerDhcp'
 import { wrongDns } from './wrongDns'
-
-const endDeviceKinds = new Set(['pc', 'pos', 'printer', 'camera', 'nvr', 'kitchenDisplay', 'phone'])
-
-function mapDevice(state: NetworkState, deviceId: string, change: (device: Device) => Device): NetworkState {
-  expect(state.devices.some((device) => device.id === deviceId), deviceId).toBe(true)
-  return {
-    ...state,
-    devices: state.devices.map((device) => (device.id === deviceId ? change(device) : device)),
-  }
-}
-
-function withHost(state: NetworkState, deviceId: string, host: Partial<HostNetworkConfig>): NetworkState {
-  return mapDevice(state, deviceId, (device) => {
-    if (!device.host) throw new Error(`${deviceId} has no host config`)
-    return { ...device, host: { ...device.host, ...host } }
-  })
-}
-
-function withAppLinkTarget(state: NetworkState, deviceId: string, appLinkId: string, targetIp: string): NetworkState {
-  return mapDevice(state, deviceId, (device) => ({
-    ...device,
-    appLinks: (device.appLinks ?? []).map((appLink) => (appLink.id === appLinkId ? { ...appLink, targetIp } : appLink)),
-  }))
-}
-
-function withSwitchPortVlan(state: NetworkState, switchId: string, portId: string, vlan: number): NetworkState {
-  return mapDevice(state, switchId, (device) => ({
-    ...device,
-    switchPorts: (device.switchPorts ?? []).map((port) =>
-      port.id === portId ? { ...port, mode: 'access' as const, vlan } : port,
-    ),
-  }))
-}
-
-function isSolved(scenario: ScenarioDefinition, state: NetworkState): boolean {
-  return solveChecker.check(state, scenario.solvedWhen).every((result) => result.ok)
-}
-
-function failingConditions(scenario: ScenarioDefinition, state: NetworkState) {
-  return solveChecker.check(state, scenario.solvedWhen).filter((result) => !result.ok)
-}
-
-function endDeviceIds(state: NetworkState): string[] {
-  return state.devices.filter((device) => endDeviceKinds.has(device.kind)).map((device) => device.id)
-}
-
-/** After the fix every end device must reach the internet (none of the 5 scenarios has an offline-by-design device). */
-function expectAllEndDevicesOnline(state: NetworkState) {
-  for (const deviceId of endDeviceIds(state)) {
-    expect(networkEngine.reach(state, deviceId, '8.8.8.8'), deviceId).toMatchObject({ ok: true })
-  }
-}
+import { networkEngine as engine, solveChecker } from '../engine'
+import { editAddress, editDevice, editHost, editSwitchport } from '../engine/testLabs'
 
 interface BehaviourCase {
-  scenario: ScenarioDefinition
+  id: string
+  initial: NetworkState
+  solvedWhen: SolveCondition[]
   expectBrokenSymptom: (state: NetworkState) => void
   applyFix: (state: NetworkState) => NetworkState
 }
 
+function withAppLinkTarget(state: NetworkState, deviceId: string, appLinkId: string, targetIp: string): NetworkState {
+  return editDevice(state, deviceId, (device) => ({
+    ...device,
+    ...(device.host
+      ? { host: { ...device.host, appLinks: device.host.appLinks.map((link) => (link.id === appLinkId ? { ...link, targetIp } : link)) } }
+      : {}),
+  }))
+}
+
+function failing(state: NetworkState, conditions: SolveCondition[]) {
+  return solveChecker.check(state, conditions).filter((result) => !result.ok)
+}
+
+function expectAllEndDevicesOnline(state: NetworkState) {
+  for (const device of state.devices.filter((candidate) => isEndDeviceKind(candidate.kind))) {
+    expect(engine.reach(state, device.id, '8.8.8.8'), device.id).toMatchObject({ ok: true })
+  }
+}
+
 const cases: BehaviourCase[] = [
   {
-    scenario: posGateway,
+    id: posGateway.id,
+    initial: migrateV1ToV2(posGateway.initialState),
+    solvedWhen: posGateway.solvedWhen,
     expectBrokenSymptom: (state) => {
-      expect(networkEngine.reach(state, 'kasa', '8.8.8.8')).toMatchObject({ ok: false, reason: 'gatewayOutsideSubnet' })
+      expect(engine.reach(state, 'kasa', '8.8.8.8')).toMatchObject({ ok: false, reason: 'gatewayOutsideSubnet' })
     },
-    applyFix: (state) => withHost(state, 'kasa', { gateway: '192.168.10.1' }),
+    applyFix: (state) => editHost(state, 'kasa', { defaultGateway: '192.168.10.1' }),
   },
   {
-    scenario: printerDhcp,
+    id: printerDhcp.id,
+    initial: migrateV1ToV2(printerDhcp.initialState),
+    solvedWhen: printerDhcp.solvedWhen,
     expectBrokenSymptom: (state) => {
       for (const pcId of ['muhasebe', 'satis']) {
-        const statuses = networkEngine.appLinkStatus(state, pcId)
-        expect(statuses.every((status) => status.ok), pcId).toBe(false)
+        expect(engine.appLinkStatus(state, pcId).every((status) => status.ok), pcId).toBe(false)
       }
     },
     applyFix: (state) =>
-      withHost(state, 'yazici', {
-        mode: 'static',
-        ip: '192.168.1.150',
-        mask: '255.255.255.0',
-        gateway: '192.168.1.1',
-        dns: ['192.168.1.1'],
+      editHost(editAddress(state, 'yazici', 'eth0', { addressing: 'static', address: '192.168.1.150', mask: '255.255.255.0' }), 'yazici', {
+        defaultGateway: '192.168.1.1',
+        dnsServers: ['192.168.1.1'],
       }),
   },
   {
-    scenario: cameraSubnet,
+    id: cameraSubnet.id,
+    initial: migrateV1ToV2(cameraSubnet.initialState),
+    solvedWhen: cameraSubnet.solvedWhen,
     expectBrokenSymptom: (state) => {
-      const statuses = networkEngine.appLinkStatus(state, 'nvr')
+      const statuses = engine.appLinkStatus(state, 'nvr')
       expect(statuses.find((status) => status.appLinkId === 'kamera3')?.ok).toBe(false)
       expect(statuses.filter((status) => status.appLinkId !== 'kamera3').every((status) => status.ok)).toBe(true)
     },
-    applyFix: (state) => withHost(state, 'kamera3', { ip: '192.168.1.63', gateway: '192.168.1.1', dns: ['192.168.1.1'] }),
+    applyFix: (state) =>
+      editHost(editAddress(state, 'kamera3', 'eth0', { address: '192.168.1.63' }), 'kamera3', {
+        defaultGateway: '192.168.1.1',
+        dnsServers: ['192.168.1.1'],
+      }),
   },
   {
-    scenario: kitchenVlan,
+    id: kitchenVlan.id,
+    initial: migrateV1ToV2(kitchenVlan.initialState),
+    solvedWhen: kitchenVlan.solvedWhen,
     expectBrokenSymptom: (state) => {
-      expect(networkEngine.appLinkStatus(state, 'kasa').every((status) => status.ok)).toBe(false)
+      expect(engine.appLinkStatus(state, 'kasa').every((status) => status.ok)).toBe(false)
     },
-    applyFix: (state) => withSwitchPortVlan(state, 'switch', 'Fa0/3', 10),
+    applyFix: (state) => editSwitchport(state, 'switch', 'Fa0/3', { mode: 'access', accessVlan: 10 }),
   },
   {
-    scenario: wrongDns,
+    id: wrongDns.id,
+    initial: migrateV1ToV2(wrongDns.initialState),
+    solvedWhen: wrongDns.solvedWhen,
     expectBrokenSymptom: (state) => {
-      expect(networkEngine.reach(state, 'muhasebe', '8.8.8.8').ok).toBe(true)
-      expect(networkEngine.resolve(state, 'muhasebe', 'google.com').ok).toBe(false)
+      expect(engine.reach(state, 'muhasebe', '8.8.8.8').ok).toBe(true)
+      expect(engine.resolve(state, 'muhasebe', 'google.com').ok).toBe(false)
     },
-    applyFix: (state) => withHost(state, 'muhasebe', { dns: ['192.168.1.1'] }),
+    applyFix: (state) => editHost(state, 'muhasebe', { dnsServers: ['192.168.1.1'] }),
   },
 ]
 
-describe.each(cases.map((testCase): [string, BehaviourCase] => [testCase.scenario.id, testCase]))(
-  'scenario %s behaviour',
-  (_id, { scenario, expectBrokenSymptom, applyFix }) => {
-    const initial = scenario.initialState
-
+describe.each(cases.map((testCase): [string, BehaviourCase] => [testCase.id, testCase]))(
+  'exercise %s on the engine',
+  (_id, { initial, solvedWhen, expectBrokenSymptom, applyFix }) => {
     it('is not solved at the start', () => {
-      expect(isSolved(scenario, initial)).toBe(false)
+      expect(failing(initial, solvedWhen)).not.toEqual([])
     })
 
     it('shows the broken symptom at the start', () => {
@@ -131,8 +111,7 @@ describe.each(cases.map((testCase): [string, BehaviourCase] => [testCase.scenari
     })
 
     it('is solved by the fix described in hint 3', () => {
-      const fixed = applyFix(initial)
-      expect(failingConditions(scenario, fixed)).toEqual([])
+      expect(failing(applyFix(initial), solvedWhen)).toEqual([])
     })
 
     it('leaves every end device online after the fix', () => {
@@ -141,16 +120,17 @@ describe.each(cases.map((testCase): [string, BehaviourCase] => [testCase.scenari
   },
 )
 
-describe('scenario printerDhcp alternative fix', () => {
+describe('exercise printerDhcp alternative fix', () => {
+  const initial = migrateV1ToV2(printerDhcp.initialState)
+
   it('is solved by pointing both PCs at the printer address 192.168.1.153', () => {
-    const withMuhasebe = withAppLinkTarget(printerDhcp.initialState, 'muhasebe', 'yazici', '192.168.1.153')
-    const fixed = withAppLinkTarget(withMuhasebe, 'satis', 'yazici', '192.168.1.153')
-    expect(failingConditions(printerDhcp, fixed)).toEqual([])
+    const fixed = withAppLinkTarget(withAppLinkTarget(initial, 'muhasebe', 'yazici', '192.168.1.153'), 'satis', 'yazici', '192.168.1.153')
+    expect(failing(fixed, printerDhcp.solvedWhen)).toEqual([])
     expectAllEndDevicesOnline(fixed)
   })
 
   it('is not solved when only one PC is changed', () => {
-    const partly = withAppLinkTarget(printerDhcp.initialState, 'muhasebe', 'yazici', '192.168.1.153')
-    expect(isSolved(printerDhcp, partly)).toBe(false)
+    const partly = withAppLinkTarget(initial, 'muhasebe', 'yazici', '192.168.1.153')
+    expect(failing(partly, printerDhcp.solvedWhen)).not.toEqual([])
   })
 })

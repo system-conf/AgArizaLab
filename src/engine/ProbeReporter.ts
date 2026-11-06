@@ -1,17 +1,20 @@
-import type { Device, NetworkState } from '../domain/NetworkTypes'
-import { DeviceLookup } from './DeviceLookup'
-import type { DnsResolver } from './DnsResolver'
+import type { NetworkState } from '../domain'
 import { ProbeFailures } from './ProbeFailures'
 import { type ProbeReport, ProbeReports, type Prober, type ResolvedTarget } from './ProbeReports'
-import type { ReachabilityChecker } from './ReachabilityChecker'
 import { ReplyTimings } from './ReplyTimings'
-import type { TracertHop } from './TracertFormatter'
+import { TracertFormatter, type TracertHop } from './TracertFormatter'
+import { DeviceAddresses } from './DeviceAddresses'
+import type { DnsResolver } from './DnsResolver'
+import type { ReachabilityChecker } from './ReachabilityChecker'
+import { type ReachTrace, ReachTraces, type RouterHop } from './ReachTrace'
+import { Topology } from './Topology'
 
-/** A router answers the TTL-expired probe from the LAN side: "<1 ms". */
-const ROUTER_HOP_MS = 0
-
-/** ping / tracert probes on a v1 state: one router at most, answering from the sender's gateway. */
-export class ProbeReporter implements Prober<NetworkState> {
+/**
+ * ping / tracert probes on a network state: every router on the way is a hop, answering from the address
+ * the probe arrived on. The first router answers in under a millisecond, each further one a little
+ * later (fixed values: deterministic engine).
+ */
+export class ProbeReporter implements Prober {
   private readonly reachability: ReachabilityChecker
   private readonly dns: DnsResolver
 
@@ -25,29 +28,47 @@ export class ProbeReporter implements Prober<NetworkState> {
   }
 
   probe(state: NetworkState, deviceId: string, targetIp: string): ProbeReport {
-    const device = DeviceLookup.require(state, deviceId)
-    const { result, reached } = this.reachability.trace(state, deviceId, targetIp)
-    const trace = { path: reached, ok: result.ok }
-    const routerHops = this.routerHops(state, device, targetIp, reached)
-    if (result.ok) return { trace, ...ProbeReports.success(targetIp, ReplyTimings.forPath(state, targetIp, result.path), routerHops) }
+    const reach = this.reachability.trace(state, deviceId, targetIp)
+    const { result } = reach
+    const trace = { path: reach.reached, ok: result.ok }
+    const passed = this.forwardingHops(state, reach.routerHops, targetIp)
+    if (result.ok) {
+      return { trace, ...ProbeReports.success(targetIp, ReplyTimings.forRouters(targetIp, passed.length), this.tracertHops(passed)) }
+    }
 
-    const ownIp = device.host?.ip ?? ''
-    const failure = ProbeFailures.classify(result, device.id)
-    const reporterIp = device.host?.gateway ?? ownIp
-    return { trace, ...ProbeReports.failure(failure, { ownIp, reporterIp, hopsBeforeReporter: [], hopsPassed: routerHops }) }
+    const failure = ProbeFailures.classify(result, deviceId)
+    if (failure.kind === 'ttlExpired') {
+      const looping = Array.from({ length: TracertFormatter.maxHops }, (_, index) => ReachTraces.hopAt(reach, index))
+      const hops = looping.filter((hop): hop is RouterHop => hop !== undefined)
+      const view = { ownIp: reach.sourceIp, reporterIp: reach.expiredAtIp ?? '', hopsBeforeReporter: [], hopsPassed: this.tracertHops(hops) }
+      return { trace, ...ProbeReports.failure(failure, view) }
+    }
+    const reporterIndex = reach.routerHops.findLastIndex((hop) => hop.deviceId === result.atDeviceId)
+    const reporterIp = reach.routerHops[reporterIndex]?.ip ?? this.gatewayOf(state, deviceId, reach)
+    const view = {
+      ownIp: reach.sourceIp,
+      reporterIp,
+      hopsBeforeReporter: this.tracertHops(reach.routerHops.slice(0, Math.max(0, reporterIndex))),
+      hopsPassed: this.tracertHops(passed),
+    }
+    return { trace, ...ProbeReports.failure(failure, view) }
   }
 
-  /**
-   * Routers the probes passed, excluding a router that is itself the destination.
-   * The v1 engine routes through at most one router (the source's gateway), so its hop address is
-   * the gateway the source uses.
-   */
-  private routerHops(state: NetworkState, device: Device, targetIp: string, reached: string[]): TracertHop[] {
-    const gateway = device.host?.gateway ?? ''
-    return reached
-      .slice(1)
-      .map((deviceId) => DeviceLookup.find(state, deviceId))
-      .filter((hop): hop is Device => hop?.kind === 'router' && !DeviceLookup.hasAddress(hop, targetIp))
-      .map(() => ({ ip: gateway, baseTimeMs: ROUTER_HOP_MS }))
+  /** Routers that forwarded the probe, without a router that is itself the destination. */
+  private forwardingHops(state: NetworkState, hops: readonly RouterHop[], targetIp: string): RouterHop[] {
+    const topology = Topology.of(state)
+    return hops.filter((hop) => {
+      const device = topology.find(hop.deviceId)
+      return device !== undefined && !DeviceAddresses.has(device, targetIp)
+    })
+  }
+
+  /** Router n (0-based) answers after n ms ("<1 ms" for the first). */
+  private tracertHops(hops: readonly RouterHop[]): TracertHop[] {
+    return hops.map((hop, index) => ({ ip: hop.ip, baseTimeMs: index }))
+  }
+
+  private gatewayOf(state: NetworkState, deviceId: string, reach: ReachTrace): string {
+    return Topology.of(state).find(deviceId)?.host?.defaultGateway ?? reach.sourceIp
   }
 }

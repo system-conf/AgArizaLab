@@ -1,7 +1,7 @@
 import { EthernetPort } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { DeviceModel, NetworkStateV2 } from '../../../../domain/v2'
+import type { DeviceModel, NetworkState } from '../../../../domain'
 import SectionCard from '../../fields/SectionCard'
 import type { ConfigLocks } from '../../model/ConfigLocks'
 import type { SectionProps } from '../sectionTypes'
@@ -9,7 +9,7 @@ import PortEditor from './PortEditor'
 import PortStripView from './PortStripView'
 
 interface PortsSectionProps extends SectionProps {
-  state: NetworkStateV2
+  state: NetworkState
   model: DeviceModel | undefined
   locks: ConfigLocks
 }

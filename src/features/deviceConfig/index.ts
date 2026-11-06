@@ -1,4 +1,4 @@
-// Device configuration UI for the v2 model (owner I2b). Two components:
+// Device configuration UI (owner I2b). Two components:
 //
 //   <DeviceConfigPanel device state onChange problems? locks? readOnly? />
 //     One card per settings area the device has (general, ports, host, app links, VLAN database,
@@ -12,7 +12,7 @@
 //     address), gateway / DNS, VLANs, routing table, services, SSIDs, internet lines.
 //
 // Locks: both take the exercise's WHOLE `ExerciseDefinition.locks` array (`readonly ExerciseLock[]`
-// from src/domain/v2/ExerciseTypes.ts); only the entries whose `deviceId` is `device.id` apply
+// from src/domain/ExerciseTypes.ts); only the entries whose `deviceId` is `device.id` apply
 // (locks are not per-device objects). The strictest of device → section → port wins:
 // 'hidden' = the card (or the port's settings) is not rendered, 'readOnly' = shown but disabled.
 // The device name follows the device lock; power the 'power' section; NIC / interface addresses

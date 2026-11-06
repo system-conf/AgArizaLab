@@ -1,5 +1,5 @@
 // The device catalog: every model the workspace palette offers (docs/MODEL_V2.md §7).
-import type { DeviceCategory, DeviceModel } from '../domain/v2'
+import type { DeviceCategory, DeviceModel } from '../domain'
 import { cloudModels } from './models/cloud'
 import type { CatalogDeviceModel } from './models/defineModel'
 import { endDeviceModels } from './models/endDevices'
@@ -11,7 +11,7 @@ import { wirelessModels } from './models/wireless'
 /** Palette order of the categories. */
 export const DEVICE_CATEGORIES: readonly DeviceCategory[] = ['routers', 'switches', 'wireless', 'endDevices', 'servers', 'wan']
 
-/** Every model, in palette order. Model ids are never renamed (stored in DeviceV2.modelId). */
+/** Every model, in palette order. Model ids are never renamed (stored in Device.modelId). */
 export const deviceCatalog: readonly CatalogDeviceModel[] = [
   ...routerModels,
   ...switchModels,

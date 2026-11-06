@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import type { DeviceV2, NetworkStateV2, Port } from '../../../domain/v2'
-import { cableLab, updatePortV2, withLinks } from '../../../domain/v2/testDevicesV2'
+import type { Device, NetworkState, Port } from '../../../domain'
+import { cableLab, updatePort, withLinks } from '../../../domain/testDevices'
 import { ConfigLocks } from './ConfigLocks'
 import { DeviceInfoModel } from './DeviceInfoModel'
 
-function device(state: NetworkStateV2, id: string): DeviceV2 {
+function device(state: NetworkState, id: string): Device {
   const found = state.devices.find((candidate) => candidate.id === id)
   if (!found) throw new Error(id)
   return found
@@ -14,13 +14,13 @@ function addressed(address: string, mask: string) {
   return (port: Port): Port => (port.role === 'routed' || port.role === 'host' ? { ...port, l3: { ipv4: { addressing: 'static', address, mask } } } : port)
 }
 
-function lab(): NetworkStateV2 {
+function lab(): NetworkState {
   let state = withLinks(cableLab(), [
     { id: 'l1', cable: 'copperStraight', a: { deviceId: 'router', portId: 'Gi0/0' }, b: { deviceId: 'sw', portId: 'Fa0/1' }, connected: true },
     { id: 'l2', cable: 'copperStraight', a: { deviceId: 'pc', portId: 'eth0' }, b: { deviceId: 'sw', portId: 'Fa0/2' }, connected: false },
   ])
-  state = updatePortV2(state, 'router', 'Gi0/0', addressed('192.168.1.1', '255.255.255.0'))
-  state = updatePortV2(state, 'router', 'Se0/0/0', addressed('10.0.0.1', '255.255.255.252'))
+  state = updatePort(state, 'router', 'Gi0/0', addressed('192.168.1.1', '255.255.255.0'))
+  state = updatePort(state, 'router', 'Se0/0/0', addressed('10.0.0.1', '255.255.255.252'))
   return {
     ...state,
     devices: state.devices.map((candidate) =>
@@ -41,7 +41,7 @@ describe('DeviceInfoModel', () => {
     })
     expect(DeviceInfoModel.portStatus(state, sw, 'Fa0/2').light).toBe('unplugged')
     expect(DeviceInfoModel.portStatus(state, sw, 'Gi0/1')).toEqual({ light: 'noCable', neighbours: [] })
-    const shut = updatePortV2(state, 'router', 'Gi0/0', (port) => ({ ...port, adminUp: false }))
+    const shut = updatePort(state, 'router', 'Gi0/0', (port) => ({ ...port, adminUp: false }))
     expect(DeviceInfoModel.portStatus(shut, device(shut, 'sw'), 'Fa0/1').light).toBe('down')
   })
 

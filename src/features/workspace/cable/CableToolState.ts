@@ -1,6 +1,6 @@
 // State machine of the cable tool: pick a cable → device A → port → device B → port (→ SSID).
 // Immutable: every transition returns a new CableToolState. The UI connects the finished request.
-import type { CableRefusal, CableRequest, CableTool, LinkEndV2, NetworkStateV2 } from '../../../domain/v2'
+import type { CableRefusal, CableRequest, CableTool, LinkEnd, NetworkState } from '../../../domain'
 import { CableLinkBuilder } from './CableLinkBuilder'
 
 export type CableStep =
@@ -10,11 +10,11 @@ export type CableStep =
   /** Port picker open on the first device. */
   | { kind: 'firstPort'; tool: CableTool; deviceId: string }
   /** First end chosen; waiting for a click on the second device. */
-  | { kind: 'secondDevice'; tool: CableTool; first: LinkEndV2 }
+  | { kind: 'secondDevice'; tool: CableTool; first: LinkEnd }
   /** Port picker open on the second device. */
-  | { kind: 'secondPort'; tool: CableTool; first: LinkEndV2; deviceId: string }
+  | { kind: 'secondPort'; tool: CableTool; first: LinkEnd; deviceId: string }
   /** Wireless association: both ends chosen, waiting for the SSID. */
-  | { kind: 'ssid'; tool: CableTool; first: LinkEndV2; second: LinkEndV2; options: string[] }
+  | { kind: 'ssid'; tool: CableTool; first: LinkEnd; second: LinkEnd; options: string[] }
 
 export type CableToolOutcome =
   /** Nothing to connect yet. */
@@ -46,7 +46,7 @@ export class CableToolState {
   }
 
   /** The chosen first end, while the second one is being picked. */
-  get firstEnd(): LinkEndV2 | null {
+  get firstEnd(): LinkEnd | null {
     switch (this.step.kind) {
       case 'secondDevice':
       case 'secondPort':
@@ -86,7 +86,7 @@ export class CableToolState {
   }
 
   /** A port was picked in the open port picker. */
-  pickPort(network: NetworkStateV2, portId: string): CableToolOutcome {
+  pickPort(network: NetworkState, portId: string): CableToolOutcome {
     const step = this.step
     if (step.kind === 'firstPort') {
       const first = { deviceId: step.deviceId, portId }

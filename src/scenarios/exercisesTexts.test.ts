@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import enExercises from '../locales/en/exercises.json'
 import trExercises from '../locales/tr/exercises.json'
-import type { ScenarioDefinition } from '../domain/ScenarioTypes'
+import type { V1ScenarioDefinition } from '../lab/migrations/v1Types'
 import { scenarioDefinitions } from './scenarioDefinitions'
 
 const textsByLanguage: [string, unknown][] = [
@@ -39,11 +39,11 @@ function textKeys(value: unknown, path: string): string[] {
   return entries.map(([key]) => key).sort()
 }
 
-function deviceIds(definition: ScenarioDefinition): string[] {
+function deviceIds(definition: V1ScenarioDefinition): string[] {
   return definition.initialState.devices.map((device) => device.id).sort()
 }
 
-function appLinkIds(definition: ScenarioDefinition): string[] {
+function appLinkIds(definition: V1ScenarioDefinition): string[] {
   const ids = definition.initialState.devices.flatMap((device) => (device.appLinks ?? []).map((appLink) => appLink.id))
   return [...new Set(ids)].sort()
 }
@@ -54,7 +54,7 @@ describe.each(textsByLanguage)('exercises.json (%s)', (_language, texts) => {
     expect(keys).toEqual(scenarioDefinitions.map((definition) => definition.id).sort())
   })
 
-  it.each(scenarioDefinitions.map((definition): [string, ScenarioDefinition] => [definition.id, definition]))(
+  it.each(scenarioDefinitions.map((definition): [string, V1ScenarioDefinition] => [definition.id, definition]))(
     '%s has complete texts',
     (id, definition) => {
       const exercise = at(texts, id)

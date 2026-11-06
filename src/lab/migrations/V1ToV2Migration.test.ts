@@ -1,17 +1,17 @@
 import { describe, expect, it } from 'vitest'
-import type { Device } from '../../domain/NetworkTypes'
-import { StateInvariants, type DeviceV2, type NetworkStateV2, type Port } from '../../domain/v2'
+import type { V1Device } from './v1Types'
+import { StateInvariants, type Device, type NetworkState, type Port } from '../../domain'
 import { scenarioDefinitions } from '../../scenarios/scenarioDefinitions'
 import { V1_DEVICE_MAP } from './v1DeviceMap'
 import { migrateV1Exercise, migrateV1Layout, migrateV1ToV2 } from './V1ToV2Migration'
 
-function deviceOf(state: NetworkStateV2, id: string): DeviceV2 {
+function deviceOf(state: NetworkState, id: string): Device {
   const device = state.devices.find((candidate) => candidate.id === id)
   if (!device) throw new Error(`no device ${id}`)
   return device
 }
 
-function portOf(device: DeviceV2, id: string): Port {
+function portOf(device: Device, id: string): Port {
   const port = device.ports.find((candidate) => candidate.id === id)
   if (!port) throw new Error(`no port ${device.id}:${id}`)
   return port
@@ -26,7 +26,7 @@ function networkOf(ip: string, mask: string): string {
 }
 
 /** The port that keeps the v1 device MAC (MODEL_V2 §11). */
-function primaryPortId(device: Device, migrated: DeviceV2): string | undefined {
+function primaryPortId(device: V1Device, migrated: Device): string | undefined {
   switch (device.kind) {
     case 'router':
       return 'Gi0/0'

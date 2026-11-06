@@ -1,5 +1,5 @@
 // Switch virtual interfaces (`interface Vlan<n>`) and `ip default-gateway` of a switch.
-import type { Svi, SwitchingSettings } from '../../../domain/v2'
+import type { Svi, SwitchingSettings } from '../../../domain'
 import { localizedMessage } from '../../../i18n/messageKeys'
 import { newRowKey, optionalText, type FieldErrors } from './formTypes'
 import { Ipv4Fields } from './Ipv4Fields'

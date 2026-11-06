@@ -1,4 +1,4 @@
-import type { FailureReason, ResolveResult } from '../domain/EngineContract'
+import type { FailureReason, ResolveResult } from '../domain'
 
 /** What asking one configured DNS server gave. */
 export type DnsServerAnswer =
@@ -12,7 +12,7 @@ export type DnsServerAnswer =
   /** The sender's own address is unusable, so no server can be asked at all. */
   | { kind: 'addressProblem'; reason: Extract<FailureReason, 'ipConflict' | 'invalidHostAddress'> }
 
-/** The client side of name resolution (PLAN §4.3), shared by the v1 and v2 resolvers. */
+/** The client side of name resolution (PLAN §4.3), used by the DnsResolver. */
 export class DnsQuery {
   /** Asks the servers in order; the first one that answers decides. */
   static run(servers: readonly string[], ask: (server: string) => DnsServerAnswer): ResolveResult {

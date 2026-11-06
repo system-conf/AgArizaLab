@@ -1,9 +1,9 @@
-import type { ScenarioDefinition } from '../domain/ScenarioTypes'
+import type { V1ScenarioDefinition } from '../lab/migrations/v1Types'
 import { buildSwitchPorts } from './switchPorts'
 
 const mask = '255.255.255.0'
 
-export const printerDhcp: ScenarioDefinition = {
+export const printerDhcp: V1ScenarioDefinition = {
   id: 'printerDhcp',
   order: 2,
   setting: 'ofis',

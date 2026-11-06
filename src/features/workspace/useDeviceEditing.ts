@@ -1,11 +1,11 @@
 import { useCallback, useMemo, useState } from 'react'
 import type { LocalizedMessage } from '../../domain/Messages'
-import type { DeviceV2 } from '../../domain/v2'
+import type { Device } from '../../domain'
 import { LabMessages, type ExerciseLockPolicy, type LabDocumentState, type LabEditor } from './labServices'
 
 export interface DeviceEditing {
   /** Applies a settings change (one undo step) unless a lock or LabEditor refuses it. */
-  update: (next: DeviceV2) => void
+  update: (next: Device) => void
   /** Why the last change of this device was refused; [] when it was applied. */
   problemsOf: (deviceId: string) => readonly LocalizedMessage[]
 }
@@ -19,7 +19,7 @@ export function useDeviceEditing(lab: LabDocumentState, editor: LabEditor, polic
   const { doc, apply } = lab
 
   const update = useCallback(
-    (next: DeviceV2) => {
+    (next: Device) => {
       const before = doc.state.devices.find((device) => device.id === next.id)
       if (!before) return
       if (!policy.allowsDeviceUpdate(before, next)) {

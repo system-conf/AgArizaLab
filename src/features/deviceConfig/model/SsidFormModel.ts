@@ -1,5 +1,5 @@
 // SSIDs of an access point or wireless router (open networks only until the security pack 5.6).
-import type { SsidSettings, WirelessSecurity, WirelessSettings } from '../../../domain/v2'
+import type { SsidSettings, WirelessSecurity, WirelessSettings } from '../../../domain'
 import { localizedMessage } from '../../../i18n/messageKeys'
 import { newRowKey, type FieldErrors } from './formTypes'
 import { VlanListParser } from './VlanListParser'

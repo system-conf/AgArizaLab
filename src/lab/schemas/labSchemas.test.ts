@@ -1,29 +1,28 @@
-// Compile-time proof that the zod schemas mirror src/domain/v2 exactly: `tsc -b` (npm run build)
+// Compile-time proof that the zod schemas mirror src/domain exactly: `tsc -b` (npm run build)
 // fails when a domain type and its schema drift apart. The runtime tests check the reserved keys.
 import { describe, expect, it } from 'vitest'
 import type { z } from 'zod'
 import type {
   Annotation,
-  DeviceKindV2,
+  Device,
+  DeviceKind,
   DeviceServices,
-  DeviceV2,
   HostSettings,
   InternetSettings,
   L3Settings,
   LabDocument,
   LabLayout,
   LabMeta,
-  LinkV2,
-  NetworkStateV2,
+  Link,
+  NetworkState,
   Port,
   RoutingSettings,
   StaticRoute,
   SwitchingSettings,
   SwitchportSettings,
   WirelessSettings,
-} from '../../domain/v2'
-import type { NetworkState } from '../../domain/NetworkTypes'
-import type { ScenarioDefinition } from '../../domain/ScenarioTypes'
+} from '../../domain'
+import type { V1NetworkState, V1ScenarioDefinition } from '../migrations/v1Types'
 import {
   deviceKindSchema,
   deviceSchema,
@@ -63,10 +62,10 @@ const proofs = [
   assertTrue<Mirrors<typeof labMetaSchema, LabMeta>>(true),
   assertTrue<Mirrors<typeof labLayoutSchema, LabLayout>>(true),
   assertTrue<Mirrors<typeof annotationSchema, Annotation>>(true),
-  assertTrue<Mirrors<typeof networkStateSchema, NetworkStateV2>>(true),
-  assertTrue<Mirrors<typeof linkSchema, LinkV2>>(true),
-  assertTrue<Mirrors<typeof deviceSchema, DeviceV2>>(true),
-  assertTrue<Mirrors<typeof deviceKindSchema, DeviceKindV2>>(true),
+  assertTrue<Mirrors<typeof networkStateSchema, NetworkState>>(true),
+  assertTrue<Mirrors<typeof linkSchema, Link>>(true),
+  assertTrue<Mirrors<typeof deviceSchema, Device>>(true),
+  assertTrue<Mirrors<typeof deviceKindSchema, DeviceKind>>(true),
   assertTrue<Mirrors<typeof portSchema, Port>>(true),
   assertTrue<Mirrors<typeof l3SettingsSchema, L3Settings>>(true),
   assertTrue<Mirrors<typeof switchportSettingsSchema, SwitchportSettings>>(true),
@@ -77,8 +76,8 @@ const proofs = [
   assertTrue<Mirrors<typeof wirelessSettingsSchema, WirelessSettings>>(true),
   assertTrue<Mirrors<typeof deviceServicesSchema, DeviceServices>>(true),
   assertTrue<Mirrors<typeof internetSettingsSchema, InternetSettings>>(true),
-  assertTrue<Mirrors<typeof v1NetworkStateSchema, NetworkState>>(true),
-  assertTrue<Mirrors<typeof v1ScenarioDefinitionSchema, ScenarioDefinition>>(true),
+  assertTrue<Mirrors<typeof v1NetworkStateSchema, V1NetworkState>>(true),
+  assertTrue<Mirrors<typeof v1ScenarioDefinitionSchema, V1ScenarioDefinition>>(true),
 ]
 
 // Negative control: the check really distinguishes shapes.

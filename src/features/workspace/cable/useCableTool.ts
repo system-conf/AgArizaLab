@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { CableRequest, CableTool, LabDocument } from '../../../domain/v2'
+import type { CableRequest, CableTool, LabDocument } from '../../../domain'
 import type { CableHighlight } from '../canvas/canvasTypes'
 import type { LabDocumentState, LabEditor } from '../labServices'
 import type { ToastTone } from '../useToasts'

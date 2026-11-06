@@ -1,4 +1,4 @@
-import type { TerminalLine } from '../domain/EngineContract'
+import type { TerminalLine } from '../domain'
 import { textLines } from './terminalLines'
 
 /** One layer-3 device that answered (router hop or the destination itself). */

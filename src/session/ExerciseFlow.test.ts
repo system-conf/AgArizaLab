@@ -1,10 +1,10 @@
 // The five exercises through the path the UI takes: v1 data → migrateV1Exercise (+ locks) →
 // localized Exercise → lab document → device edits via LabEditor.updateDevice under the exercise's
-// lock policy → verify with SolveCheckerV2 (ExerciseAttempt).
+// lock policy → verify with SolveChecker (ExerciseAttempt).
 import { createInstance, type i18n as I18n } from 'i18next'
 import { beforeAll, describe, expect, it } from 'vitest'
-import type { Exercise, LabDocument, NetworkStateV2 } from '../domain/v2'
-import { deviceV2, editAddress, editHost, editSwitchport } from '../engine/v2/testLabsV2'
+import type { Exercise, LabDocument, NetworkState } from '../domain'
+import { editAddress, editHost, editSwitchport, labDevice } from '../engine/testLabs'
 import { labEditor } from '../lab/LabEditor'
 import enExercises from '../locales/en/exercises.json'
 import trExercises from '../locales/tr/exercises.json'
@@ -30,7 +30,7 @@ beforeAll(async () => {
 const labs = new ExerciseLabs(() => new Date('2026-11-06T10:00:00.000Z'))
 
 /** The hint-3 fix of each exercise as a state edit; the test applies it device by device. */
-const FIXES: Readonly<Record<string, { devices: string[]; fix: (state: NetworkStateV2) => NetworkStateV2 }>> = {
+const FIXES: Readonly<Record<string, { devices: string[]; fix: (state: NetworkState) => NetworkState }>> = {
   posGateway: { devices: ['kasa'], fix: (state) => editHost(state, 'kasa', { defaultGateway: '192.168.10.1' }) },
   printerDhcp: {
     devices: ['yazici'],
@@ -65,8 +65,8 @@ function applyFix(doc: LabDocument, policy: ExerciseLockPolicy, id: string): Lab
   if (!plan) throw new Error(`no fix for ${id}`)
   const fixed = plan.fix(doc.state)
   return plan.devices.reduce((current, deviceId) => {
-    const before = deviceV2(current.state, deviceId)
-    const after = deviceV2(fixed, deviceId)
+    const before = labDevice(current.state, deviceId)
+    const after = labDevice(fixed, deviceId)
     expect(policy.allowsDeviceUpdate(before, after), deviceId).toBe(true)
     expect(labEditor.deviceUpdateProblems(current, after), deviceId).toEqual([])
     return labEditor.updateDevice(current, after)

@@ -1,15 +1,15 @@
 import type { TFunction } from 'i18next'
 import { useTranslation } from 'react-i18next'
 import { PortStrip } from '../../../../catalog'
-import type { DeviceModel, DeviceV2, NetworkStateV2, Port } from '../../../../domain/v2'
+import type { Device, DeviceModel, NetworkState, Port } from '../../../../domain'
 import { useMessageTranslator } from '../../../../i18n'
 import { focusRing } from '../../../shared/focusRing'
 import type { ConfigLocks } from '../../model/ConfigLocks'
 import { DeviceInfoModel, type PortLight } from '../../model/DeviceInfoModel'
 
 interface PortStripViewProps {
-  device: DeviceV2
-  state: NetworkStateV2
+  device: Device
+  state: NetworkState
   model: DeviceModel | undefined
   locks: ConfigLocks
   selectedPortId: string | null

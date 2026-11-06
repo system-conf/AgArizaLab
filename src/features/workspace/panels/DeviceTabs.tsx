@@ -1,8 +1,7 @@
 import { useId, useRef, type KeyboardEvent } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { TerminalLine } from '../../../domain/EngineContract'
 import type { LocalizedMessage } from '../../../domain/Messages'
-import type { DeviceV2, NetworkStateV2 } from '../../../domain/v2'
+import type { Device, NetworkState, TerminalLine } from '../../../domain'
 import AppLinkStatusList from '../../device/AppLinkStatusList'
 import TerminalTab from '../../device/TerminalTab'
 import { DeviceConfigPanel, DeviceInfoPanel } from '../../deviceConfig'
@@ -18,14 +17,14 @@ export interface DeviceTerminalProps {
 }
 
 interface DeviceTabsProps {
-  device: DeviceV2
-  state: NetworkStateV2
+  device: Device
+  state: NetworkState
   policy: ExerciseLockPolicy
   tab: DeviceTab
   onTab: (tab: DeviceTab) => void
   /** Why the last settings change was refused (LabEditor.deviceUpdateProblems); [] = none. */
   problems: readonly LocalizedMessage[]
-  onUpdate: (next: DeviceV2) => void
+  onUpdate: (next: Device) => void
   /** null: the device has no command prompt (or the exercise locks it). */
   terminal: DeviceTerminalProps | null
 }

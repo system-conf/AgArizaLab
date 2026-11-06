@@ -139,6 +139,13 @@ session and solve checks switch to `NetworkEngineV2`; translations for `ttlExpir
 `landing:settings.*` to the English setting ids. Then delete v1 types and engine, drop the `V2`
 suffixes (MODEL_V2 §1). Then verifier V2.
 
+### Wave 2.3 — cleanup (agent I3) — done
+v1 deleted: the v1 engine, UI (old device panel, network map, scenario session) and domain types;
+the engine-equivalence suite became plain tests on `officeLab()` / `vlanLab()` (`src/engine/testNetworks.ts`)
+with the v1 expectations unchanged. `src/domain/v2` → `src/domain`, `src/engine/v2` → `src/engine`, every
+`V2` suffix dropped. Kept for old data: the five exercises in v1 shape (`src/scenarios`, loaded through
+`migrateV1Exercise`), `src/lab/migrations` with `v1Types.ts` and `src/lab/schemas/v1Schemas.ts`.
+
 ## 5. Phase 3 — v2.1: packet-level simulation
 
 ### Wave 3.0 — contracts (agent K3, alone)

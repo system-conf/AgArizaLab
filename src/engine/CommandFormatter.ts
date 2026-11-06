@@ -1,4 +1,4 @@
-import type { TerminalLine } from '../domain/EngineContract'
+import type { TerminalLine } from '../domain'
 import { type AppMessageKey, localizedMessage } from '../i18n/messageKeys'
 import type { OptionError } from './CommandOptions'
 import { messageLine, textLines } from './terminalLines'

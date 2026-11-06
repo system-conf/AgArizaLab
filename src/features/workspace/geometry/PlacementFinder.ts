@@ -1,6 +1,6 @@
 // Where to put a new item: the wanted point, or the nearest free spot so items (and the device
 // names hanging below the icons) never overlap.
-import type { CanvasPoint } from '../../../domain/v2'
+import type { CanvasPoint } from '../../../domain'
 
 /** Minimum distance between the top-left points of two items, per axis. */
 export interface Spacing {

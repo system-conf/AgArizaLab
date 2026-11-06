@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react'
-import type { PacketTrace, TerminalLine } from '../../../domain/EngineContract'
+import type { PacketTrace, TerminalLine } from '../../../domain'
 import { runDeviceCommand, type LabDocumentState } from '../labServices'
 import { TerminalLogs } from './TerminalLogs'
 

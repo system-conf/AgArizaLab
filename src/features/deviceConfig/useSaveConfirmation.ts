@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import type { DeviceV2 } from '../../domain/v2'
+import type { Device } from '../../domain'
 
 const visibleMs = 2500
 
@@ -8,7 +8,7 @@ const visibleMs = 2500
  * the document unchanged), so a card counts as saved only once the device the panel receives
  * equals the device it handed out, and no problems are reported.
  */
-export function useSaveConfirmation<Key extends string>(device: DeviceV2, problemCount: number) {
+export function useSaveConfirmation<Key extends string>(device: Device, problemCount: number) {
   const [pending, setPending] = useState<{ key: Key; expected: string } | null>(null)
 
   useEffect(() => {
@@ -21,6 +21,6 @@ export function useSaveConfirmation<Key extends string>(device: DeviceV2, proble
 
   return {
     savedKey,
-    expectSaved: (key: Key, next: DeviceV2) => setPending({ key, expected: JSON.stringify(next) }),
+    expectSaved: (key: Key, next: Device) => setPending({ key, expected: JSON.stringify(next) }),
   }
 }

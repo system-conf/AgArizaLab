@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { CableRules, MacAddress, StateInvariants, type DeviceV2, type NetworkStateV2, type Port } from '../domain/v2'
+import { CableRules, MacAddress, StateInvariants, type Device, type NetworkState, type Port } from '../domain'
 import { SeededBaseMacSource } from './BaseMacSource'
 import { HOME_ROUTER_LAN } from './DeviceDefaults'
 import { deviceCatalog, findDeviceModel } from './DeviceCatalog'
@@ -13,7 +13,7 @@ function modelOf(id: string) {
   return model
 }
 
-function portOf(device: DeviceV2, id: string): Port {
+function portOf(device: Device, id: string): Port {
   const port = device.ports.find((candidate) => candidate.id === id)
   if (port === undefined) throw new Error(`no port ${id}`)
   return port
@@ -67,7 +67,7 @@ describe('PortFactory', () => {
 
   it('keeps MACs unique across a lab with one device of every model', () => {
     const factory = seededFactory(42)
-    const state: NetworkStateV2 = {
+    const state: NetworkState = {
       devices: deviceCatalog.map((model, index) => factory.createDevice(model, `device${index}`, model.id)),
       links: [],
     }
@@ -143,7 +143,7 @@ describe('PortFactory', () => {
     const factory = seededFactory(3)
     const pc = factory.createDevice(modelOf('pc'), 'pc', 'pc')
     const sw = factory.createDevice(modelOf('switch8'), 'sw', 'sw')
-    const state: NetworkStateV2 = { devices: [pc, sw], links: [] }
+    const state: NetworkState = { devices: [pc, sw], links: [] }
     const cable = new CableRules().autoCable(state, { deviceId: 'pc', portId: 'eth0' }, { deviceId: 'sw', portId: 'Fa0/1' })
     expect(cable).toBe('copperStraight')
   })

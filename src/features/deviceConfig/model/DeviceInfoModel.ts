@@ -1,8 +1,8 @@
 // Read-only facts of a device for the info panel and the port strip: per-port link light,
 // neighbours and settings summary, and the routing table summary. Settings hidden by an exercise
 // lock come back as null so the UI cannot reveal them.
-import type { AddressingMode, DeviceV2, NetworkStateV2, Port, PortMedium } from '../../../domain/v2'
-import { Ipv4, L3Interfaces, networkEngineV2, RoutingTableV2, TopologyV2 } from '../../../engine'
+import type { AddressingMode, Device, NetworkState, Port, PortMedium } from '../../../domain'
+import { Ipv4, L3Interfaces, networkEngine, RoutingTable, Topology } from '../../../engine'
 import type { ConfigAccess, ConfigLocks } from './ConfigLocks'
 import { VlanListParser } from './VlanListParser'
 
@@ -50,8 +50,8 @@ export interface RouteInfo {
 }
 
 export class DeviceInfoModel {
-  static portStatus(state: NetworkStateV2, device: DeviceV2, portId: string): { light: PortLight; neighbours: NeighbourInfo[] } {
-    const topology = TopologyV2.of(state)
+  static portStatus(state: NetworkState, device: Device, portId: string): { light: PortLight; neighbours: NeighbourInfo[] } {
+    const topology = Topology.of(state)
     const links = topology.linksAt(device.id, portId)
     const neighbours = links.flatMap((link) => {
       const far = topology.farEnd(link, device.id, portId)
@@ -61,12 +61,12 @@ export class DeviceInfoModel {
     if (links.length > 0) {
       const plugged = links.filter((link) => link.connected)
       if (plugged.length === 0) light = 'unplugged'
-      else light = plugged.some((link) => networkEngineV2.linkLight(state, link.id) === 'up') ? 'up' : 'down'
+      else light = plugged.some((link) => networkEngine.linkLight(state, link.id) === 'up') ? 'up' : 'down'
     }
     return { light, neighbours }
   }
 
-  static ports(state: NetworkStateV2, device: DeviceV2, locks: ConfigLocks): PortInfo[] {
+  static ports(state: NetworkState, device: Device, locks: ConfigLocks): PortInfo[] {
     return device.ports.map((port) => {
       const access = locks.port(port.id)
       const visible = access !== 'hidden'
@@ -103,10 +103,10 @@ export class DeviceInfoModel {
   }
 
   /** Connected networks of interfaces that are up, then every configured static route. */
-  static routes(state: NetworkStateV2, device: DeviceV2): RouteInfo[] {
-    const topology = TopologyV2.of(state)
+  static routes(state: NetworkState, device: Device): RouteInfo[] {
+    const topology = Topology.of(state)
     const connected = L3Interfaces.of(device).flatMap((iface): RouteInfo[] => {
-      if (!L3Interfaces.isNetworkSide(iface) || !L3Interfaces.isAddressed(iface) || !RoutingTableV2.isUp(topology, iface)) return []
+      if (!L3Interfaces.isNetworkSide(iface) || !L3Interfaces.isAddressed(iface) || !RoutingTable.isUp(topology, iface)) return []
       const network = Ipv4.network(iface.address, iface.mask)
       const prefixLength = Ipv4.prefixLength(iface.mask)
       if (network === null || prefixLength === null) return []

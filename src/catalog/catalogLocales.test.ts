@@ -1,6 +1,6 @@
 // Every catalog i18n key the code builds must exist in both bundled languages.
 import { describe, expect, it } from 'vitest'
-import type { DeviceKindV2, PortMedium, PortRole } from '../domain/v2'
+import type { DeviceKind, PortMedium, PortRole } from '../domain'
 import en from '../locales/en/catalog.json'
 import tr from '../locales/tr/catalog.json'
 import { DEVICE_CATEGORIES, deviceCatalog, modelDescriptionKey } from './DeviceCatalog'
@@ -10,7 +10,7 @@ import { PortStrip } from './PortStrip'
 
 const MEDIA: readonly PortMedium[] = ['copper', 'fiber', 'wireless', 'serial', 'console', 'coaxial']
 const ROLES: readonly PortRole[] = ['switched', 'routed', 'host', 'radio', 'console', 'passive']
-const KINDS = Object.keys(deviceIconRegistry) as DeviceKindV2[]
+const KINDS = Object.keys(deviceIconRegistry) as DeviceKind[]
 
 function lookup(resource: unknown, key: string): unknown {
   const [namespace, path] = key.split(':')

@@ -1,7 +1,7 @@
 import { Eraser, SquareTerminal } from 'lucide-react'
 import { useEffect, useId, useRef, useState, type FormEvent, type KeyboardEvent } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { TerminalLine } from '../../domain/EngineContract'
+import type { TerminalLine } from '../../domain'
 import { useMessageTranslator } from '../../i18n'
 import { focusRing } from '../shared/focusRing'
 

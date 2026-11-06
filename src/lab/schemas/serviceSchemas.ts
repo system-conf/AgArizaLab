@@ -1,4 +1,4 @@
-// zod mirror of src/domain/v2/ServiceTypes.ts (see portSchemas.ts for the conventions).
+// zod mirror of src/domain/ServiceTypes.ts (see portSchemas.ts for the conventions).
 import { z } from 'zod'
 import { idSchema, reservedKey } from './portSchemas'
 

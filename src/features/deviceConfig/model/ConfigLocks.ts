@@ -1,7 +1,7 @@
 // Exercise locks of one device (MODEL_V2 §10) resolved for the configuration UI. The strictest
 // applicable lock wins: device → section → port. The panel's own `readOnly` flag turns every
 // editable area read-only but never reveals a hidden one.
-import type { DeviceSection, ExerciseLock, LockAccess } from '../../../domain/v2'
+import type { DeviceSection, ExerciseLock, LockAccess } from '../../../domain'
 
 export type ConfigAccess = 'editable' | LockAccess
 

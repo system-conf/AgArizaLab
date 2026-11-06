@@ -1,16 +1,16 @@
 // Which ports of a device the cable tool may use right now (free / in use / not compatible).
-import { CableRules } from '../../../domain/v2'
+import { CableRules } from '../../../domain'
 import type {
   CableCheck,
   CableRefusal,
   CableTool,
   CableType,
-  DeviceV2,
-  LinkEndV2,
-  NetworkStateV2,
+  Device,
+  LinkEnd,
+  NetworkState,
   Port,
   PortMedium,
-} from '../../../domain/v2'
+} from '../../../domain'
 
 export type PortStatus = 'free' | 'inUse' | 'incompatible'
 
@@ -20,7 +20,7 @@ export interface PortOption {
   /** Why the port cannot be used (absent when free). */
   reason?: CableRefusal
   /** The other end of the cable already plugged into this port (non-radio ports). */
-  linkedTo?: LinkEndV2
+  linkedTo?: LinkEnd
 }
 
 /** A cable whose connector fits each medium; used to probe ports for the 'auto' tool. */
@@ -41,7 +41,7 @@ export class PortAvailability {
   }
 
   /** Ports of `deviceId` as the first end of a cable laid with `tool`. */
-  forFirstEnd(network: NetworkStateV2, deviceId: string, tool: CableTool): PortOption[] {
+  forFirstEnd(network: NetworkState, deviceId: string, tool: CableTool): PortOption[] {
     const device = this.device(network, deviceId)
     if (!device) return []
     return device.ports.map((port) => {
@@ -52,7 +52,7 @@ export class PortAvailability {
   }
 
   /** Ports of `deviceId` as the second end, the first end being `first`. */
-  forSecondEnd(network: NetworkStateV2, first: LinkEndV2, deviceId: string, tool: CableTool): PortOption[] {
+  forSecondEnd(network: NetworkState, first: LinkEnd, deviceId: string, tool: CableTool): PortOption[] {
     const device = this.device(network, deviceId)
     if (!device) return []
     return device.ports.map((port) => {
@@ -69,18 +69,18 @@ export class PortAvailability {
     return options.some((option) => option.status === 'free')
   }
 
-  private device(network: NetworkStateV2, deviceId: string): DeviceV2 | undefined {
+  private device(network: NetworkState, deviceId: string): Device | undefined {
     return network.devices.find((candidate) => candidate.id === deviceId)
   }
 
   /** Why 'auto' found no cable: two wireless ports of the wrong roles, or different media. */
-  private autoRefusal(network: NetworkStateV2, first: LinkEndV2, port: Port): CableRefusal {
+  private autoRefusal(network: NetworkState, first: LinkEnd, port: Port): CableRefusal {
     const firstPort = this.device(network, first.deviceId)?.ports.find((candidate) => candidate.id === first.portId)
     const bothWireless = firstPort?.medium === 'wireless' && port.medium === 'wireless'
     return bothWireless ? 'wirelessNeedsClientAndRadio' : 'cableDoesNotFitPort'
   }
 
-  private option(network: NetworkStateV2, end: LinkEndV2, port: Port, check: CableCheck): PortOption {
+  private option(network: NetworkState, end: LinkEnd, port: Port, check: CableCheck): PortOption {
     if (check.ok) return { port, status: 'free' }
     if (check.reason === 'portInUse') {
       return { port, status: 'inUse', reason: check.reason, linkedTo: this.linkedTo(network, end) }
@@ -88,8 +88,8 @@ export class PortAvailability {
     return { port, status: 'incompatible', reason: check.reason }
   }
 
-  private linkedTo(network: NetworkStateV2, end: LinkEndV2): LinkEndV2 | undefined {
-    const isEnd = (candidate: LinkEndV2) => candidate.deviceId === end.deviceId && candidate.portId === end.portId
+  private linkedTo(network: NetworkState, end: LinkEnd): LinkEnd | undefined {
+    const isEnd = (candidate: LinkEnd) => candidate.deviceId === end.deviceId && candidate.portId === end.portId
     const link = network.links.find((candidate) => isEnd(candidate.a) || isEnd(candidate.b))
     if (!link) return undefined
     return isEnd(link.a) ? link.b : link.a

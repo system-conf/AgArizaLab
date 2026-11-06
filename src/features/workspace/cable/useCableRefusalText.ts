@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { CableRefusal } from '../../../domain/v2'
+import type { CableRefusal } from '../../../domain'
 
 /** Every CableRefusal has a `workspace:cableRefusal.<reason>` text; a new reason fails to compile here. */
 const REFUSAL_KEYS = {

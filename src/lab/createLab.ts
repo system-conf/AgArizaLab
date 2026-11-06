@@ -1,6 +1,6 @@
 // Factories for new lab documents. Titles are user content: '' means "untitled" and the UI shows
 // `lab:untitled` for it (pure code never picks a display text).
-import { LAB_SCHEMA_VERSION, type ExerciseDefinition, type LabDocument, type LabLayout, type NetworkStateV2 } from '../domain/v2'
+import { LAB_SCHEMA_VERSION, type ExerciseDefinition, type LabDocument, type LabLayout, type NetworkState } from '../domain'
 
 export interface CreateLabOptions {
   title?: string
@@ -8,7 +8,7 @@ export interface CreateLabOptions {
   now?: Date
 }
 
-function labOf(state: NetworkStateV2, layout: LabLayout, options: CreateLabOptions): LabDocument {
+function labOf(state: NetworkState, layout: LabLayout, options: CreateLabOptions): LabDocument {
   const timestamp = (options.now ?? new Date()).toISOString()
   return {
     schemaVersion: LAB_SCHEMA_VERSION,
@@ -35,6 +35,6 @@ export function createLabFromExercise(exercise: ExerciseDefinition, options: Cre
 }
 
 /** A lab from a network and an optional canvas (missing positions are left to the workspace). */
-export function createLabFromState(state: NetworkStateV2, layout: LabLayout, options: CreateLabOptions = {}): LabDocument {
+export function createLabFromState(state: NetworkState, layout: LabLayout, options: CreateLabOptions = {}): LabDocument {
   return labOf(state, layout, options)
 }

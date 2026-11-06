@@ -1,10 +1,10 @@
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
-import type { DeviceKindV2 } from '../../domain/v2'
+import type { DeviceKind } from '../../domain'
 import { deviceIconFor, deviceIconRegistry } from './deviceIconRegistry'
 import { DeviceKindIcon } from './DeviceKindIcon'
 
-const KINDS = Object.keys(deviceIconRegistry) as DeviceKindV2[]
+const KINDS = Object.keys(deviceIconRegistry) as DeviceKind[]
 
 describe('deviceIconFor', () => {
   it.each(KINDS)('%s renders a 24×24 outline svg', (kind) => {
@@ -23,7 +23,7 @@ describe('deviceIconFor', () => {
   })
 
   it('gives each network-gear kind its own icon', () => {
-    const gear: DeviceKindV2[] = ['internet', 'router', 'wirelessRouter', 'switch', 'l3Switch', 'hub', 'accessPoint']
+    const gear: DeviceKind[] = ['internet', 'router', 'wirelessRouter', 'switch', 'l3Switch', 'hub', 'accessPoint']
     expect(new Set(gear.map(deviceIconFor)).size).toBe(gear.length)
   })
 })

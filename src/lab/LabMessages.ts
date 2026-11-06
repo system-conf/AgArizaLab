@@ -1,7 +1,7 @@
 // Turns zod issues and StateInvariants violations into `lab:` messages for the UI. Paths name array
 // items by their `id` when they have one (`state.devices[router1].ports[Gi0/0].l2.accessVlan`).
 import type { z } from 'zod'
-import type { InvariantViolation } from '../domain/v2'
+import type { InvariantViolation } from '../domain'
 import type { LocalizedMessage } from '../domain/Messages'
 import { localizedMessage } from '../i18n/messageKeys'
 

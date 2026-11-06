@@ -1,4 +1,4 @@
-// zod mirror of src/domain/v2/PortTypes.ts. Reserved `never` keys accept only absence; objects are
+// zod mirror of src/domain/PortTypes.ts. Reserved `never` keys accept only absence; objects are
 // strict, so unknown keys are reported instead of silently dropped. labSchemas.test.ts proves at
 // compile time that every inferred type equals its domain type.
 import { z } from 'zod'

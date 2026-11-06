@@ -1,6 +1,6 @@
 // Debounced autosave: many quick edits (a drag, typing) become one write after a quiet period.
 // Save failures are logged with console.warn; the lab stays in memory and editing continues.
-import type { LabDocument } from '../../domain/v2'
+import type { LabDocument } from '../../domain'
 import type { LabLibrary } from './LabLibrary'
 
 export const AUTOSAVE_DELAY_MS = 800

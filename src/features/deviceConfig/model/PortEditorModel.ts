@@ -3,8 +3,8 @@
 // an L3 switch).
 import type {
   AddressingMode,
+  Device,
   DeviceModel,
-  DeviceV2,
   L3Settings,
   Port,
   PortDuplex,
@@ -12,7 +12,7 @@ import type {
   RadioPort,
   SwitchportMode,
   SwitchportSettings,
-} from '../../../domain/v2'
+} from '../../../domain'
 import { localizedMessage } from '../../../i18n/messageKeys'
 import { anyRowErrors, hasErrors, optionalText, parseWholeNumber, type FieldErrors } from './formTypes'
 import { Ipv4Fields } from './Ipv4Fields'
@@ -74,7 +74,7 @@ function isPortSpeed(value: number): value is Exclude<PortSpeed, 'auto'> {
 }
 
 export class PortEditorModel {
-  static options(device: DeviceV2, model: DeviceModel | undefined, port: Port): PortOptions {
+  static options(device: Device, model: DeviceModel | undefined, port: Port): PortOptions {
     const template = model?.ports.find((candidate) => candidate.id === port.id)
     const ethernet = port.medium === 'copper' || port.medium === 'fiber'
     const switchOrRouted = port.role === 'switched' || port.role === 'routed'

@@ -1,14 +1,13 @@
 import { describe, expect, it } from 'vitest'
-import type { Device, DeviceKind } from '../domain/NetworkTypes'
-import type { ScenarioDefinition, SolveCondition } from '../domain/ScenarioTypes'
+import type { V1Device, V1DeviceKind, V1ScenarioDefinition, V1SolveCondition } from '../lab/migrations/v1Types'
 import { scenarioDefinitions } from './scenarioDefinitions'
 
 const camelCase = /^[a-z][a-zA-Z0-9]*$/
 const macFormat = /^[0-9A-F]{2}(:[0-9A-F]{2}){5}$/
-const hostKinds: DeviceKind[] = ['pc', 'pos', 'printer', 'camera', 'nvr', 'kitchenDisplay', 'phone']
+const hostKinds: V1DeviceKind[] = ['pc', 'pos', 'printer', 'camera', 'nvr', 'kitchenDisplay', 'phone']
 
 /** Port ids a device may use, following the LinkEnd doc in NetworkTypes.ts. */
-function validPortIds(device: Device): string[] {
+function validPortIds(device: V1Device): string[] {
   if (hostKinds.includes(device.kind)) return ['eth0', 'wlan0']
   switch (device.kind) {
     case 'switch':
@@ -24,7 +23,7 @@ function validPortIds(device: Device): string[] {
   }
 }
 
-function deviceIdsOf(condition: SolveCondition): string[] {
+function deviceIdsOf(condition: V1SolveCondition): string[] {
   switch (condition.type) {
     case 'internet':
     case 'resolves':
@@ -51,7 +50,7 @@ describe('scenarios list', () => {
   })
 })
 
-describe.each(scenarioDefinitions.map((scenario): [string, ScenarioDefinition] => [scenario.id, scenario]))(
+describe.each(scenarioDefinitions.map((scenario): [string, V1ScenarioDefinition] => [scenario.id, scenario]))(
   'scenario %s',
   (_id, scenario) => {
     const { devices, links } = scenario.initialState

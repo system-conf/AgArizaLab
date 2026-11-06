@@ -1,5 +1,5 @@
 // Builders for terminal lines shared by the command formatters.
-import type { TerminalLine, TerminalLineKind } from '../domain/EngineContract'
+import type { TerminalLine, TerminalLineKind } from '../domain'
 import type { LocalizedMessage } from '../domain/Messages'
 
 /** Device output (English, never translated), one line per string. */

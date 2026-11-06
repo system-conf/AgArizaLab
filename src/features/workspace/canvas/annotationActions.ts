@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react'
-import type { AnnotationColor } from '../../../domain/v2'
+import type { AnnotationColor } from '../../../domain'
 
 /** Lets annotation nodes (rendered by React Flow) edit their text in the lab document. */
 export interface AnnotationActions {

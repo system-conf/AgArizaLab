@@ -1,7 +1,7 @@
 import { X } from 'lucide-react'
 import { useId, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { DeviceModel, DeviceV2, Port } from '../../../../domain/v2'
+import type { Device, DeviceModel, Port } from '../../../../domain'
 import { focusRing } from '../../../shared/focusRing'
 import CheckboxField from '../../fields/CheckboxField'
 import InputField from '../../fields/InputField'
@@ -24,11 +24,11 @@ import SubInterfaceList from './SubInterfaceList'
 import SwitchportFields from './SwitchportFields'
 
 interface PortEditorProps {
-  device: DeviceV2
+  device: Device
   port: Port
   model: DeviceModel | undefined
   access: ConfigAccess
-  onSave: (next: DeviceV2) => void
+  onSave: (next: Device) => void
   onClose: () => void
 }
 

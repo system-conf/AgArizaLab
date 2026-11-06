@@ -1,5 +1,5 @@
 // Canvas geometry for the selection: align, nudge and snap (pure, canvas units).
-import type { CanvasPoint } from '../../../domain/v2'
+import type { CanvasPoint } from '../../../domain'
 
 export type AlignMode = 'left' | 'center' | 'top'
 

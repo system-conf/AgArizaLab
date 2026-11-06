@@ -2,7 +2,7 @@ import { useReactFlow } from '@xyflow/react'
 import { LayoutGrid, X } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { DeviceV2 } from '../../domain/v2'
+import type { Device } from '../../domain'
 import { focusRing } from '../shared/focusRing'
 import { useMediaQuery } from '../shared/useMediaQuery'
 import CableHint from './cable/CableHint'
@@ -151,7 +151,7 @@ function WorkspaceView(props: WorkspaceViewProps) {
   const menuDevice = menu ? doc.state.devices.find((device) => device.id === menu.deviceId) : undefined
   const step = cable.state.step
 
-  const renderDevice = (device: DeviceV2) => {
+  const renderDevice = (device: Device) => {
     const terminalOpen = hasTerminal(device) && policy.canUseTerminal(device.id)
     return (
       <div key={device.id} className="space-y-3">

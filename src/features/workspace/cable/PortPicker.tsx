@@ -1,14 +1,14 @@
 import { X } from 'lucide-react'
 import { useEffect, useRef, type KeyboardEvent } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { CableRefusal, DeviceV2, LinkEndV2 } from '../../../domain/v2'
+import type { CableRefusal, Device, LinkEnd } from '../../../domain'
 import { focusRing } from '../../shared/focusRing'
 import NodePopover from './NodePopover'
 import type { PortOption } from './PortAvailability'
 import { useCableRefusalText } from './useCableRefusalText'
 
 interface PortPickerProps {
-  device: DeviceV2
+  device: Device
   end: 'first' | 'second'
   options: readonly PortOption[]
   /** Name of a device (for "in use → device port"). */
@@ -39,7 +39,7 @@ function PortPicker({ device, end, options, nameOf, onPick, onClose }: PortPicke
     onClose()
   }
 
-  function statusText(option: PortOption, reason: CableRefusal | undefined, linkedTo: LinkEndV2 | undefined): string {
+  function statusText(option: PortOption, reason: CableRefusal | undefined, linkedTo: LinkEnd | undefined): string {
     if (option.status === 'free') return t('portPicker.free')
     if (option.status === 'inUse') {
       return linkedTo ? t('portPicker.inUseTo', { device: nameOf(linkedTo.deviceId), port: linkedTo.portId }) : t('portPicker.inUse')

@@ -2,7 +2,7 @@
 // IndexedDB (LabAutosaver → LabLibrary). The document is saved once the user changed it (apply,
 // undo, redo); merely opening a lab does not create a recent-labs entry.
 import { useCallback, useEffect, useState } from 'react'
-import type { LabDocument } from '../domain/v2'
+import type { LabDocument } from '../domain'
 import { createEmptyLab } from './createLab'
 import { LabHistory } from './LabHistory'
 import { LabAutosaver } from './storage/LabAutosaver'

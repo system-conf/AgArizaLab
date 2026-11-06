@@ -1,7 +1,7 @@
 // The catalog models the v1 migration refers to must describe exactly the ports it creates
 // (MODEL_V2 §11, §14): every migrated device of every exercise is checked against its model.
 import { describe, expect, it } from 'vitest'
-import type { DeviceV2 } from '../domain/v2'
+import type { Device } from '../domain'
 import { migrateV1ToV2 } from '../lab/migrations'
 import { scenarioDefinitions } from '../scenarios/scenarioDefinitions'
 import { findDeviceModel } from './DeviceCatalog'
@@ -10,7 +10,7 @@ function portShape(port: { id: string; medium: string; role: string; poe?: unkno
   return { id: port.id, medium: port.medium, role: port.role, poe: port.poe !== undefined && port.poe !== false }
 }
 
-function modelShape(device: DeviceV2) {
+function modelShape(device: Device) {
   const model = findDeviceModel(device.modelId)
   if (model === undefined) throw new Error(`no catalog model ${device.modelId} for ${device.id}`)
   return { kind: model.kind, ports: model.ports.map(portShape) }

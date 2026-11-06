@@ -1,5 +1,5 @@
 // Pure updates of the canvas selection (devices, links, annotations), immutable.
-import type { LabDocument } from '../../../domain/v2'
+import type { LabDocument } from '../../../domain'
 import { EMPTY_SELECTION, type WorkspaceSelection } from './canvasTypes'
 import { annotationIdOf } from './flowElements'
 

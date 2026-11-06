@@ -1,15 +1,15 @@
 // Test-only lab documents and message checks for the src/lab tests.
 import { expect } from 'vitest'
-import type { LabDocument, LinkV2 } from '../domain/v2'
+import type { LabDocument, Link } from '../domain'
 import type { LocalizedMessage } from '../domain/Messages'
-import { cableLab } from '../domain/v2/testDevicesV2'
+import { cableLab } from '../domain/testDevices'
 import en from '../locales/en/lab.json'
 import tr from '../locales/tr/lab.json'
 import { createLabFromState } from './createLab'
 
 export const FIXED_NOW = new Date('2026-11-06T10:00:00.000Z')
 
-export const sampleLinks: LinkV2[] = [
+export const sampleLinks: Link[] = [
   { id: 'link1', a: { deviceId: 'pc', portId: 'eth0' }, b: { deviceId: 'sw', portId: 'Fa0/1' }, connected: true, cable: 'copperStraight' },
   { id: 'link2', a: { deviceId: 'router', portId: 'Gi0/0' }, b: { deviceId: 'sw', portId: 'Fa0/2' }, connected: true, cable: 'copperStraight' },
   { id: 'link3', a: { deviceId: 'laptop', portId: 'wlan0' }, b: { deviceId: 'ap', portId: 'Radio0' }, connected: true, cable: 'wireless', ssid: 'Office' },

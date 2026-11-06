@@ -11,16 +11,16 @@ import {
   type Annotation,
   type CableRefusal,
   type CanvasPoint,
-  type DeviceKindV2,
-  type DeviceV2,
+  type DeviceKind,
+  type Device,
   type InvariantViolation,
   type LabDocument,
   type LabMeta,
   type LabViewport,
   type LinkSide,
-  type LinkV2,
-  type NetworkStateV2,
-} from '../domain/v2'
+  type Link,
+  type NetworkState,
+} from '../domain'
 import { deviceSchema } from './schemas/deviceSchemas'
 import { annotationSchema, linkSchema } from './schemas/labDocumentSchema'
 
@@ -49,7 +49,7 @@ function violationKey(violation: InvariantViolation): string {
   return JSON.stringify([violation.code, violation.deviceId, violation.portId, violation.linkId, violation.reason])
 }
 
-function touches(link: LinkV2, deviceId: string): boolean {
+function touches(link: Link, deviceId: string): boolean {
   return link.a.deviceId === deviceId || link.b.deviceId === deviceId
 }
 
@@ -75,7 +75,7 @@ export class LabEditor {
   private readonly invariants = new StateInvariants()
 
   /** Adds a device (from PortFactory.createDevice) at `position`. */
-  addDevice(doc: LabDocument, device: DeviceV2, position: CanvasPoint): LabDocument {
+  addDevice(doc: LabDocument, device: Device, position: CanvasPoint): LabDocument {
     if (doc.state.devices.some((existing) => existing.id === device.id)) {
       throw new LabEditError(`addDevice: device id ${device.id} is already used`)
     }
@@ -117,7 +117,7 @@ export class LabEditor {
   }
 
   /** Adds a cable if CableRules accepts it; otherwise returns its refusal. Ids: nextLinkId. */
-  connect(doc: LabDocument, link: LinkV2): LabConnectResult {
+  connect(doc: LabDocument, link: Link): LabConnectResult {
     if (doc.state.links.some((existing) => existing.id === link.id)) {
       throw new LabEditError(`connect: link id ${link.id} is already used`)
     }
@@ -153,13 +153,13 @@ export class LabEditor {
    * wireless role, pinout with auto-MDIX off on both ends), duplicate port ids or MACs, VLANs out of
    * range — refuses the update: the same document is returned. A malformed device throws.
    */
-  updateDevice(doc: LabDocument, device: DeviceV2): LabDocument {
+  updateDevice(doc: LabDocument, device: Device): LabDocument {
     const next = this.planDeviceUpdate(doc, device)
     return next === null || next.problems.length > 0 ? doc : next.doc
   }
 
   /** Why updateDevice would refuse this device ([] = it would be applied). */
-  deviceUpdateProblems(doc: LabDocument, device: DeviceV2): InvariantViolation[] {
+  deviceUpdateProblems(doc: LabDocument, device: Device): InvariantViolation[] {
     return this.planDeviceUpdate(doc, device)?.problems ?? []
   }
 
@@ -200,7 +200,7 @@ export class LabEditor {
   }
 
   /** Readable unused id: `router1`, `switch2`, `pc3` (highest number of that kind + 1). */
-  nextDeviceId(doc: LabDocument, kind: DeviceKindV2): string {
+  nextDeviceId(doc: LabDocument, kind: DeviceKind): string {
     return nextNumberedId(kind, doc.state.devices.map((device) => device.id))
   }
 
@@ -214,23 +214,23 @@ export class LabEditor {
     return nextNumberedId('annotation', doc.annotations.map((annotation) => annotation.id))
   }
 
-  private planDeviceUpdate(doc: LabDocument, device: DeviceV2): { doc: LabDocument; problems: InvariantViolation[] } | null {
+  private planDeviceUpdate(doc: LabDocument, device: Device): { doc: LabDocument; problems: InvariantViolation[] } | null {
     if (!doc.state.devices.some((existing) => existing.id === device.id)) return null
     this.checkShape(deviceSchema, device, `updateDevice ${device.id}`)
     const portIds = new Set(device.ports.map((port) => port.id))
-    const keepsPort = (link: LinkV2): boolean =>
+    const keepsPort = (link: Link): boolean =>
       [link.a, link.b].every((end) => end.deviceId !== device.id || portIds.has(end.portId))
     const links = doc.state.links.filter((link) => !touches(link, device.id) || keepsPort(link))
     const next = this.withDevice(doc, device, links)
     return { doc: next, problems: this.newViolations(doc.state, next.state) }
   }
 
-  private withDevice(doc: LabDocument, device: DeviceV2, links: LinkV2[]): LabDocument {
+  private withDevice(doc: LabDocument, device: Device, links: Link[]): LabDocument {
     const devices = doc.state.devices.map((existing) => (existing.id === device.id ? device : existing))
     return { ...doc, state: { devices, links } }
   }
 
-  private newViolations(before: NetworkStateV2, after: NetworkStateV2): InvariantViolation[] {
+  private newViolations(before: NetworkState, after: NetworkState): InvariantViolation[] {
     const known = new Set(this.invariants.violations(before).map(violationKey))
     return this.invariants.violations(after).filter((violation) => !known.has(violationKey(violation)))
   }

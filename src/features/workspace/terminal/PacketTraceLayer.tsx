@@ -1,9 +1,8 @@
 import { useCallback } from 'react'
-import type { PacketTrace } from '../../../domain/EngineContract'
-import type { CanvasPoint, LabLayout } from '../../../domain/v2'
-import PacketOverlay from '../../map/PacketOverlay'
-import { usePacketAnimation } from '../../map/usePacketAnimation'
-import { usePrefersReducedMotion } from '../../map/usePrefersReducedMotion'
+import type { CanvasPoint, LabLayout, PacketTrace } from '../../../domain'
+import { usePrefersReducedMotion } from '../../shared/usePrefersReducedMotion'
+import PacketOverlay from './PacketOverlay'
+import { usePacketAnimation } from './usePacketAnimation'
 import { DEVICE_NODE_SIZE } from '../workspaceConstants'
 
 interface PacketTraceLayerProps {

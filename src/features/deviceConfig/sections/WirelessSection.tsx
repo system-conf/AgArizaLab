@@ -1,7 +1,7 @@
 import { Wifi } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { WirelessSettings } from '../../../domain/v2'
+import type { WirelessSettings } from '../../../domain'
 import InputField from '../fields/InputField'
 import RowList from '../fields/RowList'
 import SectionCard from '../fields/SectionCard'

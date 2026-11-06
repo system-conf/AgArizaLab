@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { findDeviceModel } from '../../catalog'
-import type { DeviceV2, ExerciseLock, NetworkStateV2 } from '../../domain/v2'
+import type { Device, ExerciseLock, NetworkState } from '../../domain'
 import type { LocalizedMessage } from '../../domain/Messages'
 import ProblemList from './fields/ProblemList'
 import { ConfigLocks, type ConfigAccess } from './model/ConfigLocks'
@@ -19,10 +19,10 @@ import WirelessSection from './sections/WirelessSection'
 import { useSaveConfirmation } from './useSaveConfirmation'
 
 export interface DeviceConfigPanelProps {
-  device: DeviceV2
-  state: NetworkStateV2
+  device: Device
+  state: NetworkState
   /** Called with the whole edited device when the user saves a section. Parent applies LabEditor.updateDevice. */
-  onChange: (next: DeviceV2) => void
+  onChange: (next: Device) => void
   /** Problems from LabEditor.deviceUpdateProblems for the last refused change (shown at top), optional. */
   problems?: readonly LocalizedMessage[]
   /** The exercise's whole `ExerciseDefinition.locks`; only locks for `device.id` apply. */
@@ -31,12 +31,12 @@ export interface DeviceConfigPanelProps {
 }
 
 /** Remount key of a card: a new draft whenever its saved settings (or the device) change. */
-function draftKey(section: ConfigSectionId, device: DeviceV2, slice: unknown): string {
+function draftKey(section: ConfigSectionId, device: Device, slice: unknown): string {
   return `${section}:${device.id}:${JSON.stringify(slice) ?? ''}`
 }
 
 /**
- * Settings of one v2 device, one card per settings area the device has. Each card edits a local
+ * Settings of one device, one card per settings area the device has. Each card edits a local
  * draft and hands the whole edited device to `onChange` on Save; props are never mutated.
  */
 function DeviceConfigPanel({ device, state, onChange, problems = [], locks = [], readOnly = false }: DeviceConfigPanelProps) {
@@ -56,7 +56,7 @@ function DeviceConfigPanel({ device, state, onChange, problems = [], locks = [],
       device,
       access: accessOf(section),
       saved: savedKey === section,
-      onSave: (next: DeviceV2) => {
+      onSave: (next: Device) => {
         expectSaved(section, next)
         onChange(next)
       },

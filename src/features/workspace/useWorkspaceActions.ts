@@ -1,7 +1,7 @@
 import { useReactFlow } from '@xyflow/react'
 import { useCallback, useMemo, type RefObject } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { CanvasPoint, DeviceKindV2, LabDocument } from '../../domain/v2'
+import type { CanvasPoint, DeviceKind, LabDocument } from '../../domain'
 import type { WorkspaceNode, WorkspaceSelection } from './canvas/canvasTypes'
 import { AlignCalculator, type AlignMode, type PlacedItem } from './geometry/AlignCalculator'
 import { PlacementFinder } from './geometry/PlacementFinder'
@@ -61,7 +61,7 @@ export function useWorkspaceActions({ lab, editor, selection, policy, snapToGrid
   }, [canvasRef, flow])
 
   const defaultName = useCallback(
-    (kind: DeviceKindV2, id: string, doc: LabDocument) => {
+    (kind: DeviceKind, id: string, doc: LabDocument) => {
       const sameKind = doc.state.devices.filter((device) => device.kind === kind).length
       return t('deviceName', { kind: t(`deviceKinds.${kind}`), number: numberOf(id, sameKind + 1) })
     },
