@@ -45,6 +45,19 @@ describe('ExerciseLockPolicy', () => {
     expect(policy.allowedDeletion({ deviceIds: ['pc'], linkIds: ['uplink', 'other'], annotationIds: [] }).linkIds).toEqual(['other'])
   })
 
+  it('keeps placement-locked devices on delete; moving, cabling and settings stay free', () => {
+    const policy = new ExerciseLockPolicy([{ scope: 'placement', deviceId: 'pc' }])
+    expect(policy.topologyLocked).toBe(false)
+    expect(policy.canDeleteDevice('pc')).toBe(false)
+    expect(policy.canDeleteDevice('sw')).toBe(true)
+    expect(policy.allowedDeletion({ deviceIds: ['pc', 'sw'], linkIds: ['pcLink'], annotationIds: ['zone'] })).toEqual({
+      deviceIds: ['sw'],
+      linkIds: ['pcLink'],
+      annotationIds: ['zone'],
+    })
+    expect(policy.allowsDeviceUpdate(pc, { ...pc, powered: false })).toBe(true)
+  })
+
   it('takes the strictest of device, section and port locks', () => {
     const locks: ExerciseLock[] = [
       { scope: 'section', deviceId: 'sw', section: 'ports', access: 'readOnly' },

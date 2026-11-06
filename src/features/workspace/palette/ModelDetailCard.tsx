@@ -11,13 +11,15 @@ interface ModelDetailCardProps {
   text: PaletteModelText | undefined
   favourite: boolean
   onToggleFavourite: (modelId: string) => void
+  /** Design (D2): price text (design brief with a budget). */
+  price?: string
 }
 
 /**
  * Details of the model under the pointer or keyboard focus: port summary, short description,
  * "when to use it" and the favourite star. Sticks to the bottom of the palette while it scrolls.
  */
-function ModelDetailCard({ model, text, favourite, onToggleFavourite }: ModelDetailCardProps) {
+function ModelDetailCard({ model, text, favourite, onToggleFavourite, price }: ModelDetailCardProps) {
   const { t } = useTranslation('workspace')
   return (
     <section
@@ -44,6 +46,8 @@ function ModelDetailCard({ model, text, favourite, onToggleFavourite }: ModelDet
             </button>
           </div>
           <p className="font-medium text-slate-700">{text.ports}</p>
+          {/* Design (D2) */}
+          {price !== undefined && <p className="font-semibold text-indigo-800">{price}</p>}
           <p>{text.description}</p>
           <p className="font-semibold text-slate-700">{t('palette.useCase')}</p>
           <p>{text.useCase}</p>

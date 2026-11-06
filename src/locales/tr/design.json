@@ -56,5 +56,311 @@
     "link": "… {{a}} ile {{b}} arasındaki kablo çıktığında bile.",
     "anyDevice": "… herhangi bir ağ cihazı arızalandığında bile (cihazların doğrudan takılı olduğu cihaz hariç).",
     "anyLink": "… ağ cihazları arasındaki herhangi bir kablo koptuğunda bile."
+  },
+  "review": {
+    "verdict": {
+      "solved": "{{total}} gereksinimin tamamı karşılanıyor.",
+      "partial": "{{total}} gereksinimden {{passed}} tanesi karşılanıyor."
+    },
+    "score": "Puan: {{earned}} / {{possible}} (%{{percent}})",
+    "status": {
+      "met": "Karşılandı",
+      "metNotScored": "Karşılandı, henüz puanlanmadı",
+      "failed": "Karşılanmadı"
+    },
+    "progress": {
+      "members": "{{value}} / {{limit}} cihaz",
+      "pairs": "{{value}} / {{limit}} bağlantı",
+      "cost": "{{value, number}} / {{limit, number}} birim",
+      "devices": "{{value}} / {{limit}} eklenen cihaz"
+    },
+    "notes": {
+      "hidden": "Kabul testi: canlı kontrol listesinde gösterilmez.",
+      "brokenByDevice": "{{device}} devre dışıyken çalışmadı.",
+      "brokenByLink": "{{a}} ile {{b}} arasındaki kablo çıkarıldığında çalışmadı.",
+      "limitNotScored": "Sınırlar, ağ gereksinimlerinin tamamı karşılandığında puan kazandırır."
+    },
+    "budget": {
+      "noBudget": "Eklenen ekipman: {{total, number}} birim.",
+      "within": "{{budget, number}} birimin {{total, number}} birimi kullanıldı, {{remaining, number}} birim kaldı.",
+      "over": "{{total, number}} birim: {{budget, number}} birimlik bütçe {{over, number}} birim aşıldı."
+    },
+    "spof": {
+      "access": "{{device}}, “{{groups}}” cihazlarını doğrudan bağlıyor. Tek kabloyla bağlı bir cihaz her zaman switch’ine veya erişim noktasına bağımlıdır: yedek bulundurun ya da kritik cihazlara ikinci bir bağlantı verin.",
+      "core": "{{device}} arızalanırsa “{{groups}}” listelenen hizmetleri kaybeder. Bu tek hata noktasıdır: ikinci bir cihaz veya yol ekleyin ya da riski müşteriye açıklayın."
+    }
+  },
+  "handover": {
+    "title": "Ağ teslim dosyası",
+    "untitled": "Adsız lab",
+    "meta": {
+      "author": "Hazırlayan",
+      "updated": "Son değişiklik",
+      "brief": "Tasarım görevi",
+      "description": "Açıklama"
+    },
+    "sections": {
+      "summary": "Topoloji özeti",
+      "ipPlan": "IP adres planı",
+      "vlans": "VLAN’lar",
+      "devices": "Cihazlar",
+      "cabling": "Kablolama (port – cihaz)",
+      "configs": "Cihaz yapılandırması",
+      "issues": "Açık konular"
+    },
+    "empty": {
+      "summary": "Labda cihaz yok.",
+      "ipPlan": "Yapılandırılmış adres yok.",
+      "vlans": "VLAN yok: labda switch bulunmuyor.",
+      "devices": "Labda cihaz yok.",
+      "cabling": "Kablo yok.",
+      "configs": "Henüz bir şey yapılandırılmadı.",
+      "issues": "Açık konu yok."
+    },
+    "summary": {
+      "devices": "Cihazlar",
+      "devicesOff": "Kapalı",
+      "links": "Kablolar",
+      "unpluggedLinks": "Takılı olmayan kablolar",
+      "subnets": "Alt ağlar",
+      "vlans": "VLAN’lar",
+      "requirements": "Karşılanan gereksinimler",
+      "cost": "Eklenen ekipman"
+    },
+    "columns": {
+      "type": "Tür",
+      "count": "Adet",
+      "cable": "Kablo",
+      "zone": "Bölge",
+      "devices": "Cihazlar",
+      "network": "Ağ",
+      "vlan": "VLAN",
+      "gateway": "Ağ geçidi",
+      "dhcp": "DHCP aralığı (sunucu)",
+      "hosts": "Kullanılan adres",
+      "name": "Ad",
+      "subnets": "Alt ağlar",
+      "accessPorts": "Erişim portları",
+      "trunkPorts": "Trunk’lar",
+      "interfaces": "VLAN arayüzleri",
+      "ssids": "Wi-Fi ağları",
+      "device": "Cihaz",
+      "model": "Model",
+      "managementIp": "Yönetim IP’si",
+      "ports": "Kullanılan port",
+      "state": "Durum",
+      "origin": "Kaynak",
+      "port": "Port",
+      "portMode": "Port modu",
+      "connectedTo": "Bağlı cihaz",
+      "farPort": "Onun portu"
+    },
+    "values": {
+      "cost": "{{total, number}} birim",
+      "costOfBudget": "{{total, number}} / {{budget, number}} birim",
+      "on": "Açık",
+      "off": "Kapalı",
+      "provided": "Müşteri",
+      "added": "Eklenen",
+      "plugged": "Takılı",
+      "unplugged": "Takılı değil",
+      "dhcpAddress": "{{address}} (DHCP)",
+      "dhcpNoAddress": "DHCP, adres yok",
+      "dhcpProvider": "DHCP, servis sağlayıcıdan",
+      "adminDown": "{{address}}, kapatılmış (shutdown)",
+      "dhcpPool": "{{network}}: {{start}} – {{end}}, ağ geçidi {{gateway}}, DNS {{dns}}",
+      "ssidOpen": "VLAN {{vlan}}, açık (şifresiz)",
+      "outage": "Servis sağlayıcı kesintisi"
+    },
+    "portMode": {
+      "access": "access, VLAN {{vlan}}",
+      "trunkAll": "trunk, tüm VLAN’lar (native {{native}})",
+      "trunk": "trunk, VLAN {{vlans}} (native {{native}})"
+    },
+    "config": {
+      "interface": "Arayüz {{interface}}",
+      "vlanInterface": "Arayüz {{interface}} (VLAN {{vlan}})",
+      "gateway": "Varsayılan ağ geçidi",
+      "dnsServers": "DNS sunucuları",
+      "appLink": "{{label}} kullanıyor",
+      "vlans": "VLAN veritabanı",
+      "switchGateway": "Yönetim ağ geçidi",
+      "ipRouting": "IP yönlendirme",
+      "route": "Statik rota {{destination}}",
+      "dhcp": "DHCP sunucusu",
+      "dhcpPool": "DHCP havuzu {{pool}}",
+      "dhcpExcluded": "DHCP dışı bırakılan adresler",
+      "dnsForwarders": "DNS sunucusu, iletilen sunucular",
+      "dnsRecord": "DNS kaydı {{name}}",
+      "ssid": "Wi-Fi “{{ssid}}”",
+      "handoff": "İnternet hattı {{port}}"
+    },
+    "issues": {
+      "requirements": "Karşılanmayan görev gereksinimleri",
+      "lab": "Labda tamamlanmamış konular",
+      "deviceOff": "{{device}} kapalı.",
+      "linkUnplugged": "{{a}} ile {{b}} arasındaki kablo takılı değil.",
+      "notCabled": "{{device}} ağa bağlı değil.",
+      "noAddress": "{{device}} cihazının {{interface}} arayüzünde IP adresi yok.",
+      "dhcpNoAnswer": "{{device}}, {{interface}} arayüzünde adres alamıyor: hiçbir DHCP sunucusu yanıt vermiyor.",
+      "duplicateAddress": "{{address}} birden fazla cihazda kullanılıyor: {{devices}}.",
+      "noGateway": "{{device}} cihazında varsayılan ağ geçidi yok."
+    }
+  },
+  "settings": {
+    "restaurant": "Restoran",
+    "office": "Ofis",
+    "shop": "Mağaza",
+    "school": "Okul",
+    "factory": "Fabrika",
+    "hotel": "Otel"
+  },
+  "ui": {
+    "landing": {
+      "title": "Müşteri için ağ tasarla",
+      "text": "Müşteri ne istediğini anlatır; ekipmanı sen seçer, kablolar, yapılandırır ve her gereksinimi kanıtlarsın. Gerçek bir teklif gibi, bütçeyle.",
+      "cta": "Tasarım görevleri"
+    },
+    "list": {
+      "title": "Tasarım görevleri",
+      "lead": "Müşteri, ağının ne yapması gerektiğini anlatıyor. Cihazları yerinde; sen switch, router, erişim noktası ve kabloları ekliyor, adreslemeyi ve servisleri kuruyor, bütçede kalıyorsun. Tasarımın bir gereksinimi karşıladıkça kontrol listesinde o madde yeşile döner.",
+      "progressLabel": "İlerlemen",
+      "progress": "{{total}} görevden {{solved}} tanesi çözüldü",
+      "hint": "Her görev bir tasarım değerlendirmesiyle biter: puan, teklif, zayıf noktalar ve örnek bir tasarım.",
+      "cardMeta": "Görev {{order}} · {{setting}}",
+      "budget": "Bütçe: {{amount}}",
+      "noBudget": "Bütçe sınırı yok",
+      "topics": "Konular",
+      "state": {
+        "new": "Başlanmadı",
+        "submitted": "Teslim edildi, henüz tüm gereksinimler tamam değil",
+        "solved": "Çözüldü"
+      },
+      "start": "Başla",
+      "startAria": "{{title}} tasarım görevini başlat",
+      "again": "Yeniden aç",
+      "againAria": "{{title}} tasarım görevini yeniden aç",
+      "toExercises": "Bozuk ağ onarmayı mı seversin? Arıza alıştırmalarına geç",
+      "fromExercises": "Yeni: müşteri için sıfırdan ağ tasarla"
+    },
+    "workspace": {
+      "back": "Görevler",
+      "backAria": "Tasarım görevlerine dön",
+      "position": "Tasarım görevi {{order}} / {{total}}",
+      "pinned": "Müşterinin cihazları yerinde kalır: taşıyabilir, kablolayabilir ve ayarlayabilirsin ama silemezsin."
+    },
+    "brief": {
+      "title": "Talep",
+      "customer": "Müşterinin mesajı",
+      "howTo": "Paletten ağ cihazları ekle, kablola ve yapılandır. Her değişiklikten kısa bir süre sonra liste yeniden kontrol edilir.",
+      "close": "Talebi kapat"
+    },
+    "checklist": {
+      "title": "Gereksinimler",
+      "summary": "{{met}}/{{total}}",
+      "checking": "Kontrol ediliyor…",
+      "hidden": "Kabul testi: değerlendirmede açılır",
+      "allMet": "Görünen tüm gereksinimler tamam. Kabul testlerini ve değerlendirmeni görmek için tasarımı teslim et.",
+      "status": {
+        "met": "Tamam",
+        "unmet": "Henüz değil",
+        "unknown": "Henüz kontrol edilmedi"
+      }
+    },
+    "measure": {
+      "members": "{{value}} / {{limit}} cihaz",
+      "pairs": "{{value}} / {{limit}} bağlantı",
+      "cost": "{{value}} / {{limit}} birim",
+      "devices": "{{value}} / {{limit}} cihaz"
+    },
+    "budget": {
+      "label": "Bütçe",
+      "valueText": "{{cost}} / {{budget}}",
+      "left": "{{amount}} kaldı",
+      "over": "Bütçe {{amount}} aşıldı",
+      "ariaValue": "{{value}}. {{status}}"
+    },
+    "submit": {
+      "label": "Tasarımı teslim et",
+      "short": "Teslim et"
+    },
+    "review": {
+      "pageTitle": "Değerlendirme: {{title}}",
+      "kicker": "Tasarım değerlendirmesi",
+      "percent": "%{{percent}}",
+      "summaryAria": "Özet",
+      "chips": {
+        "costOfBudget": "{{cost}} / {{budget}}",
+        "added_one": "{{formatted}} cihaz eklendi",
+        "added_other": "{{formatted}} cihaz eklendi",
+        "spof_one": "{{formatted}} tekil arıza noktası",
+        "spof_other": "{{formatted}} tekil arıza noktası"
+      },
+      "requirements": {
+        "title": "Gereksinimler",
+        "weight": "Ağırlık ×{{weight}}"
+      },
+      "cost": {
+        "title": "Teklif",
+        "empty": "Henüz bir şey eklenmedi.",
+        "item": "Kalem",
+        "count": "Adet",
+        "unitPrice": "Birim fiyat",
+        "subtotal": "Ara toplam",
+        "total": "Toplam"
+      },
+      "devices": {
+        "title": "Cihazlar",
+        "provided": "Müşterinin",
+        "added": "Senin eklediğin",
+        "kind": "Tür"
+      },
+      "spof": {
+        "title": "Tekil arıza noktaları",
+        "lead": "Tek başına arızalandığında şu an çalışan bir gereksinimi bozan ağ cihazları.",
+        "none": "Tekil arıza noktası yok: hiçbir ağ cihazı tek başına çalışan bir gereksinimi bozamıyor.",
+        "access": "Erişim cihazı",
+        "core": "Omurga cihazı",
+        "breaks": "O kapalıyken çalışmayanlar:"
+      },
+      "hints": {
+        "title": "Değerlendirme ipuçları",
+        "hiddenLead_one": "Eksik kalan için bir ipucu var. Önce kendin çözmeyi dene.",
+        "hiddenLead_other": "Eksik kalanlar için {{count}} ipucu var. Önce kendin çözmeyi dene.",
+        "show": "İpuçlarını göster"
+      },
+      "reference": {
+        "explanation": "Örnek tasarım",
+        "presentation": "Müşteriye nasıl sunarsın",
+        "interviewAnswer": "İş görüşmesinde"
+      },
+      "actions": {
+        "title": "Üzerinde çalışmaya devam et",
+        "hint": "Denemeye devam etmek için serbest laboratuvarda bir kopyasını aç; teslim dosyası tasarımını müşteri için belgeler.",
+        "openReference": "Örnek tasarımı laboratuvarda aç",
+        "openMine": "Tasarımımı laboratuvarda aç",
+        "handover": "Teslim dosyası",
+        "openFailed": "Laboratuvar açılamadı. Lütfen tekrar dene."
+      },
+      "referenceLabTitle": "{{title}} (örnek tasarım)",
+      "myLabTitle": "{{title}} (tasarımım)",
+      "nav": {
+        "aria": "Değerlendirme gezinmesi",
+        "backToDesign": "Tasarımıma dön",
+        "backToList": "Tüm tasarım görevleri"
+      },
+      "footnote": "Kabul testi olarak işaretli gereksinimler kontrol listesinde yoktu; burada puanlanır."
+    },
+    "handover": {
+      "title": "Teslim dosyası",
+      "print": "Yazdır / PDF",
+      "markdown": "Markdown indir",
+      "close": "Teslim dosyasını kapat",
+      "fileName": "teslim_dosyasi",
+      "menuItem": "Teslim dosyası",
+      "topology": "Topoloji",
+      "topologyAria_one": "{{count}} cihazlı ağ şeması",
+      "topologyAria_other": "{{count}} cihazlı ağ şeması"
+    }
   }
 }

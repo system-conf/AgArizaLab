@@ -8,9 +8,11 @@ import { usePrefersReducedMotion } from '../shared/usePrefersReducedMotion'
 import { DEVICE_NODE_SIZE } from '../workspace/workspaceConstants'
 import { EventHighlights } from './model/EventHighlights'
 import { PacketMarkers, type MapPacket } from './model/PacketMarkers'
+import { REPLAY_HOP_MS } from './model/RealtimeReplay'
 import { PROTOCOL_STYLES } from './protocolStyles'
 import { SimMessages } from './simulationServices'
 import type { WorkspaceSimulation } from './useSimulation'
+import { useRealtimeReplay } from './useRealtimeReplay'
 import { useStepProgress } from './useStepProgress'
 
 interface SimulationMapLayerProps {
@@ -43,21 +45,31 @@ function along(from: CanvasPoint, to: CanvasPoint, fraction: number): CanvasPoin
  * Simulation overlay inside the canvas viewport: the selected event's device and links in amber, and
  * every packet of the current step as an envelope in its protocol's colour (red ✕ where it was
  * dropped). Packets are buttons: a click opens the inspector. No movement with reduced motion.
+ * Realtime mode replays the latest terminal command's frames hop by hop (decorative, not buttons);
+ * with reduced motion the replay is skipped.
  */
 function SimulationMapLayer({ simulation, layout, links, nameOf }: SimulationMapLayerProps) {
   const { t } = useTranslation('simulation')
   const translate = useMessageTranslator()
   const reducedMotion = usePrefersReducedMotion()
   const { view, selectedEvent, playback } = simulation
-  const stepWindow = view?.window ?? null
-  const progress = useStepProgress(stepWindow, playback.stepMs, reducedMotion)
-  const markers = useMemo(() => new PacketMarkers(view?.transmissions ?? [], view?.events ?? [], stepWindow), [view, stepWindow])
-  const highlight = useMemo(
-    () => (selectedEvent ? EventHighlights.of(selectedEvent, view?.transmissions ?? [], links) : null),
-    [links, selectedEvent, view],
+  const stepping = simulation.mode === 'simulation'
+  const replayFrame = useRealtimeReplay(stepping ? null : simulation.replay, reducedMotion)
+  const stepWindow = stepping ? view.window : (replayFrame?.window ?? null)
+  const progress = useStepProgress(stepWindow, stepping ? playback.stepMs : REPLAY_HOP_MS, reducedMotion)
+  const markers = useMemo(
+    () =>
+      stepping
+        ? new PacketMarkers(view.transmissions, view.events, stepWindow)
+        : new PacketMarkers(replayFrame?.replay.transmissions ?? [], replayFrame?.replay.events ?? [], stepWindow),
+    [replayFrame, stepWindow, stepping, view],
   )
-  if (simulation.mode !== 'simulation') return null
+  const highlight = useMemo(
+    () => (stepping && selectedEvent ? EventHighlights.of(selectedEvent, view.transmissions, links) : null),
+    [links, selectedEvent, stepping, view],
+  )
   const packets = markers.at(progress)
+  if (packets.length === 0 && !highlight) return null
 
   function linkLine(linkId: string) {
     const link = links.find((candidate) => candidate.id === linkId)
@@ -70,6 +82,7 @@ function SimulationMapLayer({ simulation, layout, links, nameOf }: SimulationMap
   function packetButton(packet: MapPacket) {
     const position = along(centreOf(layout, packet.fromDeviceId), centreOf(layout, packet.toDeviceId), packet.fraction)
     const droppedHere = packet.dropped && packet.fraction >= 1
+    if (!stepping) return replayPacket(packet, position, droppedHere)
     const params = { protocol: translate(SimMessages.protocol(packet.protocol)), from: nameOf(packet.fromDeviceId), to: nameOf(packet.toDeviceId) }
     const label = droppedHere ? t('ui.inspector.packetDropped', params) : t('ui.inspector.packet', params)
     const selected = selectedEvent !== null && (selectedEvent.id === packet.arrivalEventId || selectedEvent.id === packet.sentByEventId)
@@ -90,6 +103,23 @@ function SimulationMapLayer({ simulation, layout, links, nameOf }: SimulationMap
       >
         {droppedHere ? <X className="h-4 w-4" strokeWidth={3} aria-hidden="true" /> : <Mail className="h-4 w-4" aria-hidden="true" />}
       </button>
+    )
+  }
+
+  /** Realtime replay: the same envelope, without a button (there is no inspector in realtime). */
+  function replayPacket(packet: MapPacket, position: CanvasPoint, droppedHere: boolean) {
+    return (
+      <span
+        key={packet.transmissionId}
+        aria-hidden="true"
+        className="absolute left-0 top-0 flex h-6 w-6 items-center justify-center rounded-full border-2 border-white text-white shadow-md"
+        style={{
+          transform: `translate(${position.x}px, ${position.y}px) translate(-50%, -50%)`,
+          backgroundColor: droppedHere ? '#dc2626' : PROTOCOL_STYLES[packet.protocol].fill,
+        }}
+      >
+        {droppedHere ? <X className="h-4 w-4" strokeWidth={3} /> : <Mail className="h-3.5 w-3.5" />}
+      </span>
     )
   }
 

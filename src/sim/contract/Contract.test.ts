@@ -53,7 +53,7 @@ describe('PduLayers', () => {
   it('derives the header numbers from the payload', () => {
     expect(PduLayers.etherType(echo)).toBe(0x0800)
     expect(PduLayers.ipProtocol(echo.payload)).toBe(1)
-    expect(PduLayers.icmpNumbers({ kind: 'icmp', type: 'destinationUnreachable', code: 'port', original: PduLayers.quote(echo) })).toEqual({ type: 3, code: 3 })
+    expect(PduLayers.icmpNumbers({ kind: 'icmp', type: 'destinationUnreachable', code: 'port', original: PduLayers.quote(echo, 60) })).toEqual({ type: 3, code: 3 })
     expect(PduLayers.dhcpOp('offer')).toBe(2)
     expect(PduLayers.dhcpOp('release')).toBe(1)
   })
@@ -68,11 +68,12 @@ describe('PduLayers', () => {
   })
 
   it('quotes the packet an ICMP error is about', () => {
-    expect(PduLayers.quote(echo)).toEqual({
+    expect(PduLayers.quote(echo, 60)).toEqual({
       src: '192.168.1.20',
       dst: '8.8.8.8',
       ttl: 128,
       identification: 7,
+      totalLength: 60,
       transport: { kind: 'icmp', type: 'echoRequest', identifier: 1, sequence: 3 },
     })
   })

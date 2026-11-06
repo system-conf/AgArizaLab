@@ -8,6 +8,12 @@ import { L3Interfaces } from '../engine'
  * makes a broken design look working. Never mutates its input.
  */
 export class DhcpSettler {
+  /**
+   * Settled states per engine and input state. States are immutable, so a state settles the same
+   * way every time: the review (check + single points of failure), the handover pack and repeated
+   * live checks of one state share one settle.
+   */
+  private static readonly cache = new WeakMap<NetworkEngine, WeakMap<NetworkState, NetworkState>>()
   private readonly engine: NetworkEngine
 
   constructor(engine: NetworkEngine) {
@@ -15,6 +21,20 @@ export class DhcpSettler {
   }
 
   settle(state: NetworkState): NetworkState {
+    let perEngine = DhcpSettler.cache.get(this.engine)
+    if (!perEngine) {
+      perEngine = new WeakMap()
+      DhcpSettler.cache.set(this.engine, perEngine)
+    }
+    let settled = perEngine.get(state)
+    if (!settled) {
+      settled = this.renewAll(state)
+      perEngine.set(state, settled)
+    }
+    return settled
+  }
+
+  private renewAll(state: NetworkState): NetworkState {
     let current = state
     for (const device of state.devices) {
       if (!device.powered || device.host === undefined || !this.hasDhcpNic(device)) continue

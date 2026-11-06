@@ -1,4 +1,4 @@
-import { internetHosts } from '../../engine/internetHosts'
+import { internetHosts } from '../../net/internetHosts'
 import { type DeviceContext, SIM_PORTS, type TcpSegment, type TransportDelivery } from '../contract'
 import { ServiceNotes } from './ServiceNotes'
 import { ServiceRuntimes } from './ServiceRuntimes'

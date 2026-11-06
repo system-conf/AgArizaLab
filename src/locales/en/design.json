@@ -56,5 +56,311 @@
     "link": "… even when the cable between {{a}} and {{b}} is unplugged.",
     "anyDevice": "… even when any single network device fails (except the one a device is plugged into).",
     "anyLink": "… even when any single cable between network devices fails."
+  },
+  "review": {
+    "verdict": {
+      "solved": "All {{total}} requirements are met.",
+      "partial": "{{passed}} of {{total}} requirements are met."
+    },
+    "score": "Score: {{earned}} / {{possible}} ({{percent}}%)",
+    "status": {
+      "met": "Met",
+      "metNotScored": "Met, not scored yet",
+      "failed": "Not met"
+    },
+    "progress": {
+      "members": "{{value}} / {{limit}} devices",
+      "pairs": "{{value}} / {{limit}} connections",
+      "cost": "{{value, number}} / {{limit, number}} units",
+      "devices": "{{value}} / {{limit}} added devices"
+    },
+    "notes": {
+      "hidden": "Acceptance test: not shown in the live checklist.",
+      "brokenByDevice": "It stopped working while {{device}} was down.",
+      "brokenByLink": "It stopped working while the cable between {{a}} and {{b}} was unplugged.",
+      "limitNotScored": "Limits count only once every network requirement is met."
+    },
+    "budget": {
+      "noBudget": "Added equipment: {{total, number}} units.",
+      "within": "{{total, number}} of {{budget, number}} units used, {{remaining, number}} left.",
+      "over": "{{total, number}} units: {{over, number}} over the budget of {{budget, number}}."
+    },
+    "spof": {
+      "access": "{{device}} connects devices of “{{groups}}” directly. A device with a single cable always depends on its switch or access point: keep a spare, or give critical devices a second link.",
+      "core": "If {{device}} fails, “{{groups}}” lose the services listed. It is a single point of failure: add a second device or path, or explain the risk to the customer."
+    }
+  },
+  "handover": {
+    "title": "Network handover pack",
+    "untitled": "Untitled lab",
+    "meta": {
+      "author": "Author",
+      "updated": "Last changed",
+      "brief": "Design brief",
+      "description": "Description"
+    },
+    "sections": {
+      "summary": "Topology summary",
+      "ipPlan": "IP address plan",
+      "vlans": "VLANs",
+      "devices": "Devices",
+      "cabling": "Cabling (port to device)",
+      "configs": "Device configuration",
+      "issues": "Open issues"
+    },
+    "empty": {
+      "summary": "The lab has no devices.",
+      "ipPlan": "No addresses are configured.",
+      "vlans": "No VLANs: the lab has no switches.",
+      "devices": "The lab has no devices.",
+      "cabling": "No cables.",
+      "configs": "Nothing is configured yet.",
+      "issues": "No open issues."
+    },
+    "summary": {
+      "devices": "Devices",
+      "devicesOff": "Switched off",
+      "links": "Cables",
+      "unpluggedLinks": "Unplugged cables",
+      "subnets": "Subnets",
+      "vlans": "VLANs",
+      "requirements": "Requirements met",
+      "cost": "Added equipment"
+    },
+    "columns": {
+      "type": "Type",
+      "count": "Count",
+      "cable": "Cable",
+      "zone": "Zone",
+      "devices": "Devices",
+      "network": "Network",
+      "vlan": "VLAN",
+      "gateway": "Gateway",
+      "dhcp": "DHCP range (server)",
+      "hosts": "Addresses in use",
+      "name": "Name",
+      "subnets": "Subnets",
+      "accessPorts": "Access ports",
+      "trunkPorts": "Trunks",
+      "interfaces": "VLAN interfaces",
+      "ssids": "Wi-Fi networks",
+      "device": "Device",
+      "model": "Model",
+      "managementIp": "Management IP",
+      "ports": "Ports in use",
+      "state": "State",
+      "origin": "Origin",
+      "port": "Port",
+      "portMode": "Port mode",
+      "connectedTo": "Connected to",
+      "farPort": "Its port"
+    },
+    "values": {
+      "cost": "{{total, number}} units",
+      "costOfBudget": "{{total, number}} / {{budget, number}} units",
+      "on": "On",
+      "off": "Off",
+      "provided": "Customer",
+      "added": "Added",
+      "plugged": "Plugged in",
+      "unplugged": "Unplugged",
+      "dhcpAddress": "{{address}} (DHCP)",
+      "dhcpNoAddress": "DHCP, no address",
+      "dhcpProvider": "DHCP, assigned by the provider",
+      "adminDown": "{{address}}, shut down",
+      "dhcpPool": "{{network}}: {{start}} – {{end}}, gateway {{gateway}}, DNS {{dns}}",
+      "ssidOpen": "VLAN {{vlan}}, open (no password)",
+      "outage": "Provider outage"
+    },
+    "portMode": {
+      "access": "access, VLAN {{vlan}}",
+      "trunkAll": "trunk, all VLANs (native {{native}})",
+      "trunk": "trunk, VLANs {{vlans}} (native {{native}})"
+    },
+    "config": {
+      "interface": "Interface {{interface}}",
+      "vlanInterface": "Interface {{interface}} (VLAN {{vlan}})",
+      "gateway": "Default gateway",
+      "dnsServers": "DNS servers",
+      "appLink": "Uses {{label}}",
+      "vlans": "VLAN database",
+      "switchGateway": "Management gateway",
+      "ipRouting": "IP routing",
+      "route": "Static route {{destination}}",
+      "dhcp": "DHCP server",
+      "dhcpPool": "DHCP pool {{pool}}",
+      "dhcpExcluded": "DHCP excluded addresses",
+      "dnsForwarders": "DNS server, forwarders",
+      "dnsRecord": "DNS record {{name}}",
+      "ssid": "Wi-Fi “{{ssid}}”",
+      "handoff": "Internet line {{port}}"
+    },
+    "issues": {
+      "requirements": "Requirements of the brief not met",
+      "lab": "Unfinished in the lab",
+      "deviceOff": "{{device}} is switched off.",
+      "linkUnplugged": "The cable between {{a}} and {{b}} is unplugged.",
+      "notCabled": "{{device}} is not connected to the network.",
+      "noAddress": "{{device}} has no IP address on {{interface}}.",
+      "dhcpNoAnswer": "{{device}} gets no address on {{interface}}: no DHCP server answers.",
+      "duplicateAddress": "{{address}} is used by more than one device: {{devices}}.",
+      "noGateway": "{{device}} has no default gateway."
+    }
+  },
+  "settings": {
+    "restaurant": "Restaurant",
+    "office": "Office",
+    "shop": "Shop",
+    "school": "School",
+    "factory": "Factory",
+    "hotel": "Hotel"
+  },
+  "ui": {
+    "landing": {
+      "title": "Design a network for a customer",
+      "text": "A customer describes what they need; you pick the equipment, cable it, configure it and prove every requirement, with a budget like a real quotation.",
+      "cta": "Design tasks"
+    },
+    "list": {
+      "title": "Design tasks",
+      "lead": "A customer tells you what their network has to do. Their devices are already in place; you add switches, routers, access points and cables, set up addressing and services and stay within the budget. The checklist turns green as your design meets each requirement.",
+      "progressLabel": "Your progress",
+      "progress": "{{solved}} of {{total}} solved",
+      "hint": "Every task ends with a design review: score, quotation, weak points and a reference design.",
+      "cardMeta": "Task {{order}} · {{setting}}",
+      "budget": "Budget: {{amount}}",
+      "noBudget": "No budget limit",
+      "topics": "Topics",
+      "state": {
+        "new": "Not started",
+        "submitted": "Submitted, not every requirement met yet",
+        "solved": "Solved"
+      },
+      "start": "Start",
+      "startAria": "Start the design task {{title}}",
+      "again": "Open again",
+      "againAria": "Open the design task {{title}} again",
+      "toExercises": "Rather fix broken networks? Go to the troubleshooting exercises",
+      "fromExercises": "New: design a network from scratch for a customer"
+    },
+    "workspace": {
+      "back": "Tasks",
+      "backAria": "Back to the design tasks",
+      "position": "Design task {{order}} of {{total}}",
+      "pinned": "The customer's devices stay: you can move, cable and configure them, but not delete them."
+    },
+    "brief": {
+      "title": "Brief",
+      "customer": "Customer's message",
+      "howTo": "Add network devices from the palette, cable them and configure them. The checklist is checked again a moment after each change.",
+      "close": "Close the brief"
+    },
+    "checklist": {
+      "title": "Requirements",
+      "summary": "{{met}}/{{total}}",
+      "checking": "Checking…",
+      "hidden": "Acceptance test: revealed in the review",
+      "allMet": "Every visible requirement is met. Submit the design to see the acceptance tests and your review.",
+      "status": {
+        "met": "Met",
+        "unmet": "Not met yet",
+        "unknown": "Not checked yet"
+      }
+    },
+    "measure": {
+      "members": "{{value}} / {{limit}} devices",
+      "pairs": "{{value}} / {{limit}} connections",
+      "cost": "{{value}} / {{limit}} units",
+      "devices": "{{value}} / {{limit}} devices"
+    },
+    "budget": {
+      "label": "Budget",
+      "valueText": "{{cost}} / {{budget}}",
+      "left": "{{amount}} left",
+      "over": "{{amount}} over budget",
+      "ariaValue": "{{value}}. {{status}}"
+    },
+    "submit": {
+      "label": "Submit design",
+      "short": "Submit"
+    },
+    "review": {
+      "pageTitle": "Review: {{title}}",
+      "kicker": "Design review",
+      "percent": "{{percent}}%",
+      "summaryAria": "Summary",
+      "chips": {
+        "costOfBudget": "{{cost}} of {{budget}}",
+        "added_one": "{{formatted}} device added",
+        "added_other": "{{formatted}} devices added",
+        "spof_one": "{{formatted}} single point of failure",
+        "spof_other": "{{formatted}} single points of failure"
+      },
+      "requirements": {
+        "title": "Requirements",
+        "weight": "Weight ×{{weight}}"
+      },
+      "cost": {
+        "title": "Quotation",
+        "empty": "Nothing added yet.",
+        "item": "Item",
+        "count": "Qty",
+        "unitPrice": "Unit price",
+        "subtotal": "Subtotal",
+        "total": "Total"
+      },
+      "devices": {
+        "title": "Devices",
+        "provided": "Customer's",
+        "added": "Added by you",
+        "kind": "Type"
+      },
+      "spof": {
+        "title": "Single points of failure",
+        "lead": "Network devices whose failure alone breaks a requirement that works now.",
+        "none": "No single point of failure: no single network device can take a working requirement down.",
+        "access": "Access device",
+        "core": "Core device",
+        "breaks": "While it is down, these stop working:"
+      },
+      "hints": {
+        "title": "Review hints",
+        "hiddenLead_one": "There is a hint for what is still missing. Try to fix it yourself first.",
+        "hiddenLead_other": "There are {{count}} hints for what is still missing. Try to fix it yourself first.",
+        "show": "Show hints"
+      },
+      "reference": {
+        "explanation": "Reference design",
+        "presentation": "How to present it to the customer",
+        "interviewAnswer": "In a job interview"
+      },
+      "actions": {
+        "title": "Keep working with it",
+        "hint": "Open a copy in the free lab to experiment further; the handover pack documents your design for the customer.",
+        "openReference": "Open reference design in the lab",
+        "openMine": "Open my design in the lab",
+        "handover": "Handover pack",
+        "openFailed": "The lab could not be opened. Please try again."
+      },
+      "referenceLabTitle": "{{title}} (reference design)",
+      "myLabTitle": "{{title}} (my design)",
+      "nav": {
+        "aria": "Review navigation",
+        "backToDesign": "Back to my design",
+        "backToList": "All design tasks"
+      },
+      "footnote": "Requirements marked as acceptance tests were not in the checklist; they are graded here."
+    },
+    "handover": {
+      "title": "Handover pack",
+      "print": "Print / PDF",
+      "markdown": "Download Markdown",
+      "close": "Close the handover pack",
+      "fileName": "handover_pack",
+      "menuItem": "Handover pack",
+      "topology": "Topology",
+      "topologyAria_one": "Network diagram with {{count}} device",
+      "topologyAria_other": "Network diagram with {{count}} devices"
+    }
   }
 }

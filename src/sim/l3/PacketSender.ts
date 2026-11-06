@@ -1,8 +1,8 @@
 import type { LocalizedMessage } from '../../domain/Messages'
-import { HostAttachment } from '../../engine/HostAttachment'
-import { Ipv4 } from '../../engine/Ipv4'
-import { type L3Interface, L3Interfaces } from '../../engine/L3Interfaces'
-import { RoutingTable } from '../../engine/RoutingTable'
+import { HostAttachment } from '../../net/HostAttachment'
+import { Ipv4 } from '../../net/Ipv4'
+import { type L3Interface, L3Interfaces } from '../../net/L3Interfaces'
+import { InterfaceStatus } from '../../net/InterfaceStatus'
 import {
   type DeviceContext,
   DeviceProfiles,
@@ -60,6 +60,7 @@ export class PacketSender {
       ids: request.ids,
       ...(request.causeEventId === undefined ? {} : { causeEventId: request.causeEventId }),
     })
+    for (const note of request.notes ?? []) event.note(note.layer, 'out', note.message)
     for (const note of notes) event.note(3, 'out', note)
     const plan = this.plan(ctx, request)
     const packet = this.packet(ctx, request, plan.src)
@@ -122,7 +123,7 @@ export class PacketSender {
       const attachment = HostAttachment.attach(ctx.topology, iface)
       return attachment.ok ? null : attachment.reason
     }
-    return RoutingTable.isUp(ctx.topology, iface) ? null : 'cableDisconnected'
+    return InterfaceStatus.isUp(ctx.topology, iface) ? null : 'cableDisconnected'
   }
 
   /** The rule engine's order (ReachabilityChecker.run / prepare / reachThroughGateway). */

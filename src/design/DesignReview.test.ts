@@ -26,9 +26,25 @@ describe('DesignReview', () => {
   it('finds the single points of failure of the reference design', () => {
     expect(review.analyze(brief.reference.state).singlePointsOfFailure).toEqual([
       // The router carries internet and DNS, but the office still prints without it.
-      { deviceId: 'router', breaks: ['officeOnline', 'officeDns', 'printerOnline'], access: false },
+      {
+        deviceId: 'router',
+        breaks: ['officeOnline', 'officeDns', 'printerOnline'],
+        access: false,
+        deviceName: 'router',
+        kind: 'router',
+        groups: ['Office PCs', 'Printer'],
+        explanation: { key: 'design:review.spof.core', params: { device: 'router', groups: 'Office PCs, Printer' } },
+      },
       // Every customer device is plugged into the one switch.
-      { deviceId: 'switch', breaks: ['officeOnline', 'officeDns', 'printing', 'printerOnline'], access: true },
+      {
+        deviceId: 'switch',
+        breaks: ['officeOnline', 'officeDns', 'printing', 'printerOnline'],
+        access: true,
+        deviceName: 'switch',
+        kind: 'switch',
+        groups: ['Office PCs', 'Printer'],
+        explanation: { key: 'design:review.spof.access', params: { device: 'switch', groups: 'Office PCs, Printer' } },
+      },
     ])
   })
 

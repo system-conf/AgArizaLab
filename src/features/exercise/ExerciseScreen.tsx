@@ -9,6 +9,7 @@ import { useLocalizedExercises } from '../../scenarios/useLocalizedExercises'
 import { ExerciseAttempt } from '../../session/ExerciseAttempt'
 import { exerciseLabs } from '../../session/ExerciseLabs'
 import { ExerciseLockPolicy } from '../../session/ExerciseLockPolicy'
+import { simWorkerClient } from '../../workers/SimWorkerClient'
 import { useDocumentMeta } from '../layout/useDocumentMeta'
 import { useNumberFormat } from '../layout/useNumberFormat'
 import ComplaintCard from '../scenario/ComplaintCard'
@@ -54,6 +55,7 @@ function ExerciseWorkspace({ exercise, total, onSolved }: ExerciseWorkspaceProps
   const toasts = useToasts()
   const policy = useMemo(() => new ExerciseLockPolicy(exercise.locks), [exercise.locks])
   const [attempt, setAttempt] = useState(() => ExerciseAttempt.start(exercise))
+  const [checking, setChecking] = useState(false)
   const [labelledWith, setLabelledWith] = useState(exercise)
   useDocumentMeta(exercise.texts.title)
 
@@ -63,10 +65,19 @@ function ExerciseWorkspace({ exercise, total, onSolved }: ExerciseWorkspaceProps
     lab.rewrite((doc) => exerciseLabs.relabel(doc, labelledWith, exercise))
   }
 
+  /** Verification on the simulator; a large lab is checked in the Web Worker (small ones answer at once). */
   function verify() {
-    const next = attempt.verify(lab.doc.state)
-    setAttempt(next)
-    if (next.isSolved) onSolved({ exerciseId: exercise.id, guideStepsUsed: next.guideStepsRevealed, lab: lab.doc })
+    const checked = lab.doc
+    const guideStepsUsed = attempt.guideStepsRevealed
+    setChecking(true)
+    simWorkerClient
+      .solve(checked.state, attempt.conditions)
+      .then((results) => {
+        setAttempt((current) => current.withCheck(results))
+        if (results.every((result) => result.ok)) onSolved({ exerciseId: exercise.id, guideStepsUsed, lab: checked })
+      })
+      .catch((error: unknown) => console.error('Exercise verification failed', error))
+      .finally(() => setChecking(false))
   }
 
   const headerStart = (
@@ -111,6 +122,7 @@ function ExerciseWorkspace({ exercise, total, onSolved }: ExerciseWorkspaceProps
           notes={lab.doc.notes}
           onNotesChange={(notes) => lab.apply((doc) => labEditor.setNotes(doc, notes), NOTES_EDIT)}
           onVerify={verify}
+          checking={checking}
           failedChecks={attempt.failedChecks(lab.doc.state)}
         />
       }

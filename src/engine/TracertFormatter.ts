@@ -6,6 +6,8 @@ export interface TracertHop {
   ip: string
   /** 0 prints as "<1 ms", like Windows on a LAN. */
   baseTimeMs: number
+  /** Per probe: false prints "*" (that probe got no answer). Absent = every probe answered. */
+  answered?: readonly boolean[]
 }
 
 /** What happened after the last answering hop. */
@@ -35,10 +37,17 @@ const TIMEOUT_PROBE = `${'*'.padStart(6)}   `
 export class TracertFormatter {
   /** Windows' default maximum number of hops. */
   static readonly maxHops = MAX_HOPS
+  /** "Request timed out." lines printed after the last answering hop. */
+  static readonly maxTimeoutLines = MAX_TIMEOUT_LINES
 
   tracert(targetIp: string, resolvedName: string | null, hops: readonly TracertHop[], ending: TracertEnding): TerminalLine[] {
+    return this.tracertLines(targetIp, resolvedName, hops, ending)
+  }
+
+  /** Like `tracert`; a `null` hop is a hop nobody answered ("*  *  *  Request timed out."). */
+  tracertLines(targetIp: string, resolvedName: string | null, hops: readonly (TracertHop | null)[], ending: TracertEnding): TerminalLine[] {
     const lines: string[] = ['', ...this.header(targetIp, resolvedName), '']
-    hops.forEach((hop, index) => lines.push(this.hopLine(index + 1, hop)))
+    hops.forEach((hop, index) => lines.push(hop === null ? this.timeoutLine(index + 1) : this.hopLine(index + 1, hop)))
     lines.push(...this.endingLines(hops.length + 1, ending), '', 'Trace complete.')
     return textLines(lines)
   }
@@ -64,9 +73,7 @@ export class TracertFormatter {
       case 'timedOut': {
         const lastHop = Math.min(MAX_HOPS, nextHop + MAX_TIMEOUT_LINES - 1)
         const lines: string[] = []
-        for (let hop = nextHop; hop <= lastHop; hop += 1) {
-          lines.push(`${this.hopNumber(hop)}${TIMEOUT_PROBE.repeat(3)}  Request timed out.`)
-        }
+        for (let hop = nextHop; hop <= lastHop; hop += 1) lines.push(this.timeoutLine(hop))
         return lines
       }
     }
@@ -74,11 +81,16 @@ export class TracertFormatter {
 
   /** "  1    <1 ms    <1 ms    <1 ms  192.168.1.1" */
   private hopLine(hopNumber: number, hop: TracertHop): string {
-    const probes = PROBE_JITTER_MS.map((jitter) => {
+    const probes = PROBE_JITTER_MS.map((jitter, index) => {
+      if (hop.answered?.[index] === false) return TIMEOUT_PROBE
       const time = hop.baseTimeMs === 0 ? '<1' : String(hop.baseTimeMs + jitter)
       return `${time.padStart(6)} ms`
     })
     return `${this.hopNumber(hopNumber)}${probes.join('')}  ${hop.ip}`
+  }
+
+  private timeoutLine(hopNumber: number): string {
+    return `${this.hopNumber(hopNumber)}${TIMEOUT_PROBE.repeat(3)}  Request timed out.`
   }
 
   private hopNumber(hop: number): string {

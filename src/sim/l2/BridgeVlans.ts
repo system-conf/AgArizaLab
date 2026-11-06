@@ -1,6 +1,6 @@
 import type { RadioPort, SwitchedPort } from '../../domain'
 import { localizedMessage } from '../../i18n/messageKeys'
-import { VlanRules } from '../../engine/VlanRules'
+import { VlanRules } from '../../net/VlanRules'
 import type { DeviceContext, EthernetFrame, EventBuilder, FrameArrival, SimReason } from '../contract'
 import { LinkInterfaces } from './LinkInterfaces'
 

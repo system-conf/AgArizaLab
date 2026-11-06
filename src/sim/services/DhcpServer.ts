@@ -1,8 +1,8 @@
 import type { DhcpPool } from '../../domain'
 import type { LocalizedMessage } from '../../domain/Messages'
-import { DeviceAddresses } from '../../engine/DeviceAddresses'
-import { DhcpPoolAllocator } from '../../engine/DhcpPoolAllocator'
-import { L3Interfaces } from '../../engine/L3Interfaces'
+import { DeviceAddresses } from '../../net/DeviceAddresses'
+import { DhcpPoolAllocator } from '../../net/DhcpPoolAllocator'
+import { L3Interfaces } from '../../net/L3Interfaces'
 import { RuntimeTables } from '../core/RuntimeTables'
 import {
   type DeviceContext,

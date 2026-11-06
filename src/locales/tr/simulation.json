@@ -119,6 +119,11 @@
       "noDetails": "Bu olayda PDU yok.",
       "packet": "{{protocol}}: {{from}} → {{to}} yolunda",
       "packetDropped": "{{protocol}}, {{to}} cihazında düşürüldü"
+    },
+    "terminal": {
+      "stepToAnswer": "Simülasyon bekleniyor: cevabı görmek için İleri'ye ya da Oynat'a bas.",
+      "running": "Çalışıyor…",
+      "cancelled": "Komut iptal edildi: simülasyon bitmeden sıfırlandı ya da geri alındı."
     }
   },
   "actions": {
@@ -219,6 +224,8 @@
     "unknownSsid": "Erişim noktası bu SSID'yi yayınlamıyor.",
     "ispServiceDown": "İnternet servis sağlayıcı hattı kesik.",
     "ispNoService": "İnternet servis sağlayıcı yalnızca yönlendiricilere hizmet verir.",
+    "noEgressPort": "Çerçeveyi taşıyabilecek başka port yok: hiçbir yere gitmiyor.",
+    "noDestinationMac": "Servis sağlayıcı yalnızca soran cihaza yanıt verir: hedef MAC yok.",
     "cableDisconnected": "Kablo takılı değil.",
     "portDisabled": "Port kapatılmış.",
     "noIpAddress": "IP adresi yok.",

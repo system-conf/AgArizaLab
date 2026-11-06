@@ -9,10 +9,16 @@ export type AppRoute =
   | { name: 'exercise'; exerciseId: string }
   /** Solution report shown after a successful verification. */
   | { name: 'exerciseReport'; exerciseId: string }
+  /** Design (D2): list of the design briefs (`/design`). */
+  | { name: 'designs' }
+  /** Design (D2): the workspace in design mode for one brief (`/design/<id>`). */
+  | { name: 'design'; briefId: string }
+  /** Design (D2): design review after "Submit design" (`/design/<id>/review`). */
+  | { name: 'designReview'; briefId: string }
   /** Any other path; the app sends the user to the landing page. */
   | { name: 'notFound'; path: string }
 
-/** Exercise ids are camelCase identifiers (docs/PLAN.md §1). */
+/** Exercise and brief ids are camelCase identifiers (docs/PLAN.md §1). */
 const EXERCISE_ID = /^[A-Za-z][A-Za-z0-9]*$/
 
 /** Pure path ↔ route mapping. */
@@ -23,12 +29,16 @@ export class AppRouteCodec {
     const [first, second, third, ...rest] = segments
     if (first === undefined) return { name: 'landing' }
     if (first === 'lab' && second === undefined) return { name: 'lab' }
-    if (first !== 'exercises' || rest.length > 0) return { name: 'notFound', path: pathname }
-    if (second === undefined) return { name: 'exercises' }
-    const exerciseId = AppRouteCodec.decode(second)
-    if (exerciseId === null || !EXERCISE_ID.test(exerciseId)) return { name: 'notFound', path: pathname }
-    if (third === undefined) return { name: 'exercise', exerciseId }
-    return third === 'report' ? { name: 'exerciseReport', exerciseId } : { name: 'notFound', path: pathname }
+    if ((first !== 'exercises' && first !== 'design') || rest.length > 0) return { name: 'notFound', path: pathname }
+    if (second === undefined) return first === 'exercises' ? { name: 'exercises' } : { name: 'designs' }
+    const id = AppRouteCodec.decode(second)
+    if (id === null || !EXERCISE_ID.test(id)) return { name: 'notFound', path: pathname }
+    if (first === 'design') {
+      if (third === undefined) return { name: 'design', briefId: id }
+      return third === 'review' ? { name: 'designReview', briefId: id } : { name: 'notFound', path: pathname }
+    }
+    if (third === undefined) return { name: 'exercise', exerciseId: id }
+    return third === 'report' ? { name: 'exerciseReport', exerciseId: id } : { name: 'notFound', path: pathname }
   }
 
   /** URL path of a route (`notFound` keeps its path). */
@@ -44,6 +54,12 @@ export class AppRouteCodec {
         return `/exercises/${encodeURIComponent(route.exerciseId)}`
       case 'exerciseReport':
         return `/exercises/${encodeURIComponent(route.exerciseId)}/report`
+      case 'designs':
+        return '/design'
+      case 'design':
+        return `/design/${encodeURIComponent(route.briefId)}`
+      case 'designReview':
+        return `/design/${encodeURIComponent(route.briefId)}/review`
       case 'notFound':
         return route.path
     }
@@ -70,4 +86,7 @@ export const routes = {
   exercises: { name: 'exercises' },
   exercise: (exerciseId: string): AppRoute => ({ name: 'exercise', exerciseId }),
   exerciseReport: (exerciseId: string): AppRoute => ({ name: 'exerciseReport', exerciseId }),
-} as const satisfies Record<string, AppRoute | ((exerciseId: string) => AppRoute)>
+  designs: { name: 'designs' },
+  design: (briefId: string): AppRoute => ({ name: 'design', briefId }),
+  designReview: (briefId: string): AppRoute => ({ name: 'designReview', briefId }),
+} as const satisfies Record<string, AppRoute | ((id: string) => AppRoute)>

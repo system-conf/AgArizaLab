@@ -1,4 +1,4 @@
-import { Ipv4 } from '../../engine/Ipv4'
+import { Ipv4 } from '../../net/Ipv4'
 import type { DeviceContext, Ipv4Delivery } from '../contract'
 import type { IcmpResponder } from './IcmpResponder'
 import { L3Notes } from './L3Notes'

@@ -1,6 +1,6 @@
-import { DnsQuery } from '../../engine/DnsQuery'
-import { internetHosts } from '../../engine/internetHosts'
-import { Ipv4 } from '../../engine/Ipv4'
+import { DnsNames } from '../../net/DnsNames'
+import { internetHosts } from '../../net/internetHosts'
+import { Ipv4 } from '../../net/Ipv4'
 import {
   type DeviceContext,
   type DnsForwardSession,
@@ -20,7 +20,7 @@ import { ServiceWire } from './ServiceWire'
 
 /**
  * DNS servers (docs/SIMULATION.md §7.3). A device with `services.dns.enabled` answers from its records
- * (names via DnsQuery.normalize), else asks its forwarders in order (500 ms each) as a client and passes
+ * (names via DnsNames.normalize), else asks its forwarders in order (500 ms each) as a client and passes
  * the answer back; no forwarders → NXDOMAIN; all forwarders silent → no answer (the client times out);
  * a query for a name it is already forwarding is a loop → dropped. The internet cloud runs the public
  * resolvers (internetHosts.publicDnsServers) that answer from internetHosts.names (TTL 300 s) or NXDOMAIN.
@@ -41,11 +41,11 @@ export class DnsServer {
     const { event } = delivery
     const question = query.questions[0]
     if (!question) return event.conclude('dropped', 7, 'unsupported')
-    const name = DnsQuery.normalize(question.name)
+    const name = DnsNames.normalize(question.name)
     if (DeviceProfiles.of(ctx.device).isp) return DnsServer.publicResolver(ctx, delivery, query, name)
     const dns = ctx.device.services?.dns
     if (dns?.enabled !== true) return event.conclude('dropped', 7, 'dnsServiceDisabled')
-    const record = dns.records.find((candidate) => DnsQuery.normalize(candidate.name) === name)
+    const record = dns.records.find((candidate) => DnsNames.normalize(candidate.name) === name)
     if (record) {
       ServiceNotes.add(event, 'in', 'dnsRecordFound', { name, ip: record.address })
       return DnsServer.answer(ctx, delivery, query, record.address, true)
@@ -164,7 +164,7 @@ export class DnsServer {
   /** Answers the query: one A record (TTL 300 s), or NXDOMAIN when `address` is null. */
   private static answer(ctx: DeviceContext, delivery: TransportDelivery, query: DnsMessage, address: string | null, authoritative: boolean): void {
     const question = query.questions[0]
-    const name = question ? DnsQuery.normalize(question.name) : ''
+    const name = question ? DnsNames.normalize(question.name) : ''
     const record = address === null ? null : { name, type: 'A' as const, ttlSeconds: SIM_TIMING.dnsAnswerTtlSeconds, address }
     delivery.event.conclude('replied', 7)
     const udp = delivery.packet.payload

@@ -1,5 +1,5 @@
-import { Ipv4 } from '../../engine/Ipv4'
-import { L3Interfaces } from '../../engine/L3Interfaces'
+import { Ipv4 } from '../../net/Ipv4'
+import { L3Interfaces } from '../../net/L3Interfaces'
 import type { DeviceContext, Ipv4Delivery } from '../contract'
 import type { ErrorCause, IcmpResponder } from './IcmpResponder'
 import { InterfaceAddresses } from './InterfaceAddresses'

@@ -22,6 +22,8 @@
     "pingContinuous": "    -t                   Sürekli ping; bu laboratuvarda 4 istek gönderilir",
     "tracert": "  tracert <ip veya ad>   Bir adrese giden yoldaki yönlendiricileri (atlamaları) listeler",
     "nslookup": "  nslookup <ad>          Bir adın hangi IP adresine karşılık geldiğini DNS sunucusuna sorar",
+    "arp": "  arp -a                 ARP önbelleğini gösterir: hangi IP adresi hangi MAC adresine ait",
+    "arpDelete": "  arp -d *               ARP önbelleğini boşaltır",
     "help": "  help                   Bu listeyi gösterir"
   }
 }

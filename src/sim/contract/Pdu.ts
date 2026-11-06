@@ -133,6 +133,11 @@ export interface IpQuote {
   readonly dst: string
   readonly ttl: number
   readonly identification: number
+  /**
+   * IPv4 total length of the quoted packet in bytes (header + payload), as its header said. Always set
+   * by the simulator (`PduLayers.quote`); absent only in hand-made fixtures (the .pcap then writes header + 8).
+   */
+  readonly totalLength?: number
   readonly transport: TransportQuote
 }
 

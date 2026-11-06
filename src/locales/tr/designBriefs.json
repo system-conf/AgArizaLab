@@ -1,0 +1,233 @@
+{
+  "smallOffice": {
+    "title": "Küçük ofis: muhasebe bürosu",
+    "customer": {
+      "from": "Ayşe Yıldız — Yıldız Mali Müşavirlik",
+      "message": "Merhaba! Yeni ofisimize taşındık: 6 bilgisayarımız ve bir ağ yazıcımız var, operatör de interneti bağladı (bulut). Bilgisayarlar adreslerini otomatik alsın, kimse elle IP girmekle uğraşmasın. Yazıcı her bilgisayarda 192.168.1.10 olarak tanımlı; bu adres değişmesin, bütün ağ da 192.168.1.x'te kalsın. Herkes internete girebilmeli, siteler adıyla açılmalı. Eski ofiste internet gidince yazıcı da çalışmıyordu, bu çok can sıkıcıydı. Bütçemiz en fazla 1000 birim."
+    },
+    "groups": {
+      "pcs": "Ofis bilgisayarları",
+      "printer": "Yazıcı",
+      "office": "Ofis cihazları"
+    },
+    "devices": {
+      "isp": "İnternet (operatör)",
+      "pc1": "PC 1",
+      "pc2": "PC 2",
+      "pc3": "PC 3",
+      "pc4": "PC 4",
+      "pc5": "PC 5",
+      "pc6": "PC 6",
+      "printer": "Yazıcı",
+      "router": "Router",
+      "switch": "Switch"
+    },
+    "reviewHints": {
+      "presentation": "Müşteriye teknolojiyi değil faydayı anlat: \"Bilgisayarlar adresini kendisi alır, yazıcı hep aynı adreste kalır, internet kesilse de yazdırırsınız.\"",
+      "dhcpPool": "PC'ler adres alamıyorsa router'da LAN ağına ait bir DHCP havuzu olduğuna, varsayılan ağ geçidi ve DNS sunucusunun doğru olduğuna bak. Havuzu yazıcının statik adresiyle çakışmayacak şekilde ayarla (ör. .100–.199).",
+      "printerStatic": "Yazıcıya 192.168.1.10 adresini statik ver (maske 255.255.255.0, ağ geçidi router'ın LAN adresi). Adresini DHCP'den alan bir yazıcının adresi bir gün değişebilir.",
+      "localTraffic": "İnternet kesilince yazdırma da duruyorsa yazdırma trafiği ofis dışındaki bir şeye bağlı demektir: PC'ler ve yazıcı aynı switch'te ve aynı alt ağda olmalı."
+    },
+    "reference": {
+      "explanation": "İki portlu bir router ve 8 portlu bir switch yeter. Router'ın Gi0/1 portu operatöre bakar: adresini DHCP ile alır ve varsayılan rota bu porttan çıkar. Gi0/0 ofisin ağ geçididir, 192.168.1.1/24; router aynı zamanda DHCP sunucusu (havuz 192.168.1.100–199, ağ geçidi ve DNS 192.168.1.1) ve 8.8.8.8'e DNS yönlendiricisidir. Switch'in sekiz portu tam yeter: router, altı PC, yazıcı. Yazıcı havuzun dışında, statik 192.168.1.10 adresinde. PC'ler ve yazıcı aynı switch'te olduğu için internet olmadan da yazdırma çalışır. Maliyet: router 650 + switch 180 + dokuz kablo 45 = 875 birim.",
+      "presentation": "Ayşe Hanım'a: \"Bir router ve bir switch kuruyoruz. Bilgisayarlar adreslerini kendiliğinden alıyor, yazıcınız her zamanki 192.168.1.10 adresinde. İnternet kesilse bile ofis içinde yazdırma ve dosya paylaşımı sürer. Toplam 875 birim, bütçenin altında. Yalnız switch'in bütün portları dolu: yedinci bir çalışan gelirse 16 portlu switch'e geçmemiz gerekir.\"",
+      "interviewAnswer": "Küçük bir ofiste tek bir yayın alanı yeterlidir. Router hem varsayılan ağ geçidi hem DHCP sunucusudur; istemciler adresi DHCP ile alır, yazıcı ve sunucu gibi herkesin bulması gereken cihazlar havuzun dışında statik adres (ya da DHCP rezervasyonu) alır. Router WAN arayüzünden çıkan varsayılan rota ile internete ulaşır ve DNS'i yönlendirir. Switch'i ve bütçeyi büyümeyi düşünerek boyutlandırırım."
+    },
+    "topics": ["DHCP havuzu", "Statik adres", "Varsayılan ağ geçidi", "DNS", "Teklif / bütçe"]
+  },
+  "restaurant": {
+    "title": "Restoran: POS ve misafir Wi-Fi",
+    "customer": {
+      "from": "Murat Kaya — Lezzet Durağı Restoran",
+      "message": "Selam! İki POS cihazımız var (biri kasada, biri salonda), mutfakta da sipariş ekranı. POS'tan girilen sipariş mutfak ekranına düşmeli; POS'lar kartlı ödeme için internete çıkmalı ve bankanın sunucusunu (odeme.ornekbanka.com.tr) bulabilmeli. Misafirlere de Wi-Fi istiyoruz ama misafirler POS'lara ve mutfak ekranına kesinlikle ulaşamamalı: üzerlerinde kart verisi var, risk alamayız. Operatör bulutta iki ayrı hat verdi (eth0 ve eth1). Cihazlar adreslerini otomatik alsın. Bütçe 1200 birim. Bir de: internet kesilince mutfağa sipariş gitmezse servis durur!"
+    },
+    "groups": {
+      "pos": "POS cihazları",
+      "kitchen": "Mutfak ekranı",
+      "staff": "İşletme cihazları",
+      "guests": "Misafir cihazları"
+    },
+    "devices": {
+      "isp": "İnternet (operatör)",
+      "pos1": "Kasa POS'u",
+      "pos2": "Salon POS'u",
+      "kitchenScreen": "Mutfak ekranı",
+      "guestPhone": "Misafir telefonu",
+      "guestTablet": "Misafir tableti",
+      "router": "İşletme router'ı",
+      "switch": "Switch",
+      "guestRouter": "Misafir kablosuz router'ı"
+    },
+    "zones": {
+      "counter": "Kasa",
+      "kitchen": "Mutfak",
+      "dining": "Salon"
+    },
+    "reviewHints": {
+      "presentation": "Güvenliği müşteriye somut anlat: \"Misafir ağı ile kasa ağı arasında hiçbir bağlantı yok; misafirler internete başka bir hattan çıkıyor.\"",
+      "noAcls": "Bu laboratuvarda henüz erişim listesi (ACL) yok. İki ağı aynı router'a bağlarsan router aralarında yönlendirme yapar; yalıtım ancak ağları hiçbir router'da birleştirmemekle sağlanır. ACL paketi gelince aynı tasarım VLAN ve ACL ile tek router'da da kurulabilecek.",
+      "isolation": "Misafirler işletme cihazlarına ulaşabiliyorsa iki ağ bir yerde birleşiyor demektir (aynı switch / VLAN ya da aynı router). Misafir ağını kendi hattındaki ayrı bir kablosuz router'a taşı. Unutma: bu gereksinim iki ağın da kendi içinde çalışmasını ister.",
+      "kitchenOffline": "İnternet kesilince sipariş mutfağa gitmiyorsa POS'lar ile mutfak ekranı aynı yerel ağda değil ya da trafik operatör üzerinden dolaşıyor. Onları aynı switch'e ve aynı alt ağa al."
+    },
+    "reference": {
+      "explanation": "Birbirinden tamamen ayrı iki ağ var. İşletme ağı: iki portlu router (Gi0/1 operatörün eth0 hattında, Gi0/0 192.168.10.1/24), 192.168.10.100–199 DHCP havuzu ve DNS yönlendirme; iki POS ile mutfak ekranı 8 portlu switch'te. Misafir ağı: WAN portu operatörün eth1 hattına bağlı bir kablosuz router; fabrika ayarındaki 192.168.0.0/24 ağı ve DHCP'siyle 'Guest-WiFi' yayınlıyor. İki ağı birleştiren bir router olmadığı için misafirler POS'a ulaşamaz; POS ile mutfak aynı switch'te olduğundan internet olmadan da siparişler akar. Gerçek hayatta sık yapılan bir hata misafir router'ını işletme ağına takmaktır: NAT yapan bir router'ın arkasındaki misafirler o ağdaki cihazlara yine bağlantı açabilir, bu yalıtım değildir. Maliyet: 650 + 180 + 150 + altı kablo 30 = 1010 birim.",
+      "presentation": "Murat Bey'e: \"Kasalarınız ve mutfak ekranınız kendi kapalı ağında; misafirler ayrı bir cihazdan ve ayrı bir hattan internete çıkıyor, kasa ağınızı göremiyorlar. Bu ayrım, kartlı ödeme standartlarının (PCI DSS) beklediği yapının temelidir. İnternet kesilse bile siparişler mutfağa gitmeye devam eder. Toplam 1010 birim.\"",
+      "interviewAnswer": "Misafir ağını ödeme (POS) ağından ayırırım; kartlı ödemede PCI DSS de bu ayrımı bekler. Olağan çözüm ayrı VLAN'lar ve aralarında ACL ya da firewall kurallarıdır; bunlar yoksa en güvenli yol fiziksel ayrımdır: misafir Wi-Fi'ı internete kendi router'ı ve hattı üzerinden çıkar. Yalıtımı test ederken iki ağın da kendi içinde çalıştığını ve misafirden POS'a ping'in gitmediğini doğrularım."
+    },
+    "topics": ["Ağ ayrımı (segmentasyon)", "Misafir Wi-Fi", "DHCP", "DNS", "İnternet kesintisinde yerel trafik"]
+  },
+  "schoolLab": {
+    "title": "Okul: üç bilişim sınıfı",
+    "customer": {
+      "from": "Hakan Demir — Cumhuriyet Ortaokulu bilişim öğretmeni",
+      "message": "Merhaba! Okulumuzda üç bilişim sınıfı var (A, B ve C). Her sınıf kendi ağında olsun ki bir sınıftaki yayın trafiği ya da bir sorun diğerlerini etkilemesin. İlçe BT birimi adres planını verdi: A sınıfı 10.10.10.0/24, B 10.10.20.0/24, C 10.10.30.0/24. Öğrenci bilgisayarları adreslerini otomatik almalı. Benim öğretmen bilgisayarım BT odasında; her sınıftaki bilgisayarlara ulaşabilmeliyim (uzaktan yönetim için), ama öğrencilerle aynı ağda olmak istemiyorum. Herkes internete çıkmalı, siteler adıyla açılmalı. Bütçemiz 2500 birim ve yalnızca bir router alabiliyoruz. Laboratuvarda her sınıftan iki bilgisayar var; gerisi aynı şekilde bağlanacak."
+    },
+    "groups": {
+      "classA": "A sınıfı",
+      "classB": "B sınıfı",
+      "classC": "C sınıfı",
+      "students": "Öğrenci bilgisayarları",
+      "teacher": "Öğretmen bilgisayarı",
+      "everyone": "Tüm bilgisayarlar"
+    },
+    "devices": {
+      "isp": "İnternet (operatör)",
+      "teacher": "Öğretmen PC'si",
+      "a1": "A-PC 1",
+      "a2": "A-PC 2",
+      "b1": "B-PC 1",
+      "b2": "B-PC 2",
+      "c1": "C-PC 1",
+      "c2": "C-PC 2",
+      "router": "Router",
+      "coreSwitch": "BT odası switch'i",
+      "classASwitch": "A sınıfı switch'i",
+      "classBSwitch": "B sınıfı switch'i",
+      "classCSwitch": "C sınıfı switch'i"
+    },
+    "zones": {
+      "itRoom": "BT odası",
+      "classA": "A sınıfı",
+      "classB": "B sınıfı",
+      "classC": "C sınıfı"
+    },
+    "reviewHints": {
+      "presentation": "Sınıfları ayırmayı okul yönetimine faydasıyla anlat: \"Bir sınıftaki sorun diğerlerine yayılmaz, her sınıfın kendi adres aralığı var, ağı yönetmek kolay.\"",
+      "routerOnAStick": "Tek bir router ile birden çok VLAN'ı yönlendirmenin adı router-on-a-stick: router'ın tek portu switch'e trunk olarak bağlanır, her VLAN için bir dot1Q alt arayüzü açılır (Gi0/0.10 gibi). Alternatifi SVI'lı bir L3 switch'tir.",
+      "trunks": "Öğretmen sınıflara ulaşamıyorsa VLAN'lar router'a kadar gitmiyor: switch'ler arası ve router'a giden bağlantılar trunk olmalı, VLAN'lar her switch'in VLAN veritabanında tanımlı olmalı, router'da da her VLAN için açık bir alt arayüz bulunmalı.",
+      "poolPerVlan": "DHCP havuzu, isteğin geldiği arayüzün alt ağına göre seçilir: her VLAN alt arayüzü için ayrı bir havuz tanımla, ağ geçidi o alt arayüzün adresi olsun.",
+      "teacherVlan": "Öğretmen bilgisayarını bir öğrenci alt ağına koymak \"tüm sınıflara ulaşma\"yı kolaylaştırır ama istenen bu değil: öğretmene kendi VLAN'ını ver, aradaki yönlendirmeyi router yapsın."
+    },
+    "reference": {
+      "explanation": "Dört VLAN: 10 (A), 20 (B), 30 (C), 40 (öğretmenler). Router'ın Gi0/0 portu BT odasındaki 16 portlu switch'e trunk ile bağlı ve her VLAN için bir alt arayüzü var (10.10.10.1, 10.10.20.1, 10.10.30.1, 10.10.40.1); router her alt ağa ayrı bir DHCP havuzu sunuyor ve DNS'i yönlendiriyor, Gi0/1 operatöre bakıyor. BT odası switch'i her sınıftaki 8 portlu switch'e trunk ile bağlı; sınıf switch'lerinde öğrenci portları o sınıfın VLAN'ında erişim portu. Öğretmen PC'si VLAN 40'ta; router VLAN'lar arasında yönlendirme yaptığı için her sınıfa ulaşıyor. Maliyet: 650 + 300 + 3 × 180 + on iki kablo 60 = 1550 birim. Alternatif: SVI'larla yönlendiren ve yönlendirilmiş bir portla internete çıkan tek bir L3 switch (2400); daha hızlıdır ama bütçeye ancak sığar. Not: VLAN'lar yayın alanlarını ayırır ama router sınıflar arasında yine yönlendirme yapar; sınıftan sınıfa trafiği kesmek ACL ister (sonraki bir paket).",
+      "presentation": "Hakan Bey'e: \"Her sınıf kendi VLAN'ında ve ilçenin verdiği adres aralığında; bilgisayarlar adreslerini otomatik alıyor. Siz BT odasından bütün sınıflara ulaşıyorsunuz. Tek bir router yetti, toplam 1550 birim; yeni bir sınıf eklemek bir VLAN, bir alt arayüz ve bir DHCP havuzu demek.\"",
+      "interviewAnswer": "Her sınıfı kendi VLAN'ına ve alt ağına koyarım: yayın alanları küçülür, sorunlar yerel kalır. VLAN'lar arası yönlendirme için iki seçenek var: router-on-a-stick (tek fiziksel port, VLAN başına bir dot1Q alt arayüz; ucuz ama yönlendirilen tüm trafik o bağlantıyı paylaşır) ya da L3 switch (SVI'lar; daha hızlı, daha pahalı). Switch'ler arası bağlantılar trunk olur ve her VLAN'a ayrı bir DHCP havuzu verilir."
+    },
+    "topics": ["VLAN", "Trunk (802.1Q)", "Router-on-a-stick", "VLAN başına DHCP", "Adres planı"]
+  },
+  "factory": {
+    "title": "Fabrika: iki bina, dört ağ",
+    "customer": {
+      "from": "Selin Arslan — Demirtaş Metal, fabrika müdürü",
+      "message": "Merhaba! Organize sanayideki fabrikamızda iki bina var: idari bina ve 200 metre ötede üretim holü. İdari binada 3 ofis bilgisayarı, ERP sunucumuz, giriş kapısı kamerası ve toplantı odasında misafirler var; holde 2 makine operatör paneli (HMI) ve 2 kamera. İsteklerimiz: ofis, üretim, kameralar ve misafirler ayrı ağlarda olsun. Ofis internete çıksın, adresler otomatik dağıtılsın. Hem ofis hem üretim ERP sunucusuna ulaşmalı. Kameraları ofisten izleyebilmeliyiz. Misafirler internete girsin ama bizim hiçbir cihazımıza ulaşmasın; operatör misafirler için ayrı bir hat verdi (eth1). İnternet kesilince üretim durmamalı. Bütçe 3500 birim."
+    },
+    "groups": {
+      "office": "Ofis bilgisayarları",
+      "erp": "ERP sunucusu",
+      "officeNetwork": "Ofis ağı (PC'ler + ERP)",
+      "ot": "Üretim panelleri (OT)",
+      "cameras": "Kameralar",
+      "business": "Ofis ve üretim cihazları",
+      "internal": "Tüm şirket cihazları",
+      "guests": "Misafir cihazları"
+    },
+    "devices": {
+      "isp": "İnternet (operatör)",
+      "office1": "Ofis PC 1",
+      "office2": "Ofis PC 2",
+      "office3": "Ofis PC 3",
+      "erp": "ERP sunucusu",
+      "camGate": "Kapı kamerası",
+      "guestPhone": "Misafir telefonu",
+      "guestTablet": "Misafir tableti",
+      "hmi1": "Operatör paneli 1",
+      "hmi2": "Operatör paneli 2",
+      "camHall1": "Hol kamerası 1",
+      "camHall2": "Hol kamerası 2",
+      "router": "Router",
+      "officeSwitch": "İdari bina switch'i",
+      "hallSwitch": "Üretim holü switch'i (PoE)",
+      "guestRouter": "Misafir kablosuz router'ı"
+    },
+    "zones": {
+      "officeBuilding": "İdari bina",
+      "productionHall": "Üretim holü (200 m ötede)"
+    },
+    "reviewHints": {
+      "presentation": "Ağları neyi koruduklarıyla anlat: üretim internetsiz de çalışır, misafirler şirket cihazlarını hiç görmez, kameralar ofisten izlenir.",
+      "fiber": "Binalar arası 200 metre: bakır Ethernet en fazla 100 metre gider, binalar arası bakır kablo ayrıca yıldırıma ve toprak potansiyel farkına açıktır. Fiber kullan (fiber uplink portlu switch'ler). Laboratuvar mesafeyi ölçmez; bu tasarım kararı sana ait.",
+      "futureRedundancy": "İleride (STP ve ACL paketleriyle) bu brief'e iki gereksinim eklenecek: binalar arası ikinci bir bağlantı sayesinde bir switch arızasında üretimin sürmesi ve üretim ağının ofisten ACL ile ayrılması. Tasarımında bunlara yer bırak (boş fiber portları).",
+      "vlanPlan": "Her ağa kendi VLAN'ını ve alt ağını ver (ör. 10 ofis, 20 üretim, 30 kamera). Kamera VLAN'ı iki binaya yayıldığı için binalar arası bağlantı trunk olmalı.",
+      "cameraRouting": "Ofis kameralara ulaşamıyorsa VLAN'lar arası yönlendirme eksik: router'da kamera VLAN'ında bir alt arayüz (ağ geçidi) olmalı, kameraların da varsayılan ağ geçidi doğru olmalı. Statik adresli kameralarda ağ geçidini unutma.",
+      "guestLine": "Şirket ağına bir router üzerinden bağlı bir misafir ağı yalıtılmış sayılmaz. ACL olmadan en temiz çözüm: misafir kablosuz router'ını doğrudan operatörün misafir hattına (eth1) bağlamak."
+    },
+    "reference": {
+      "explanation": "İdari binadaki iki portlu router router-on-a-stick olarak çalışıyor: Gi0/0 trunk'ında VLAN 10 (ofis, 10.20.10.1), 20 (üretim, 10.20.20.1) ve 30 (kamera, 10.20.30.1) alt arayüzleri ve her biri için bir DHCP havuzu var; Gi0/1 operatörün eth0 hattında. Her binada fiber uplink'li 24 portlu bir Gigabit switch var (holdeki PoE'li, kameraları besliyor); binaları tek bir fiber trunk bağlıyor ve üç VLAN'ı da taşıyor. ERP sunucusu statik 10.20.10.10 adresinde. Kameralar kendi VLAN'ında; router onlara yönlendirme yaptığı için ofisten izleniyorlar. Misafirler operatörün eth1 hattındaki ayrı bir kablosuz router'da; şirket ağıyla hiçbir bağlantıları yok. Üretim–ERP ve ofis–kamera trafiği içeride kaldığından internet kesintisinden etkilenmiyor. Maliyet: router 650 + switch 900 + PoE switch 1400 + kablosuz router 150 + kablolar 100 (40'ı fiber) = 3200 birim.",
+      "presentation": "Selin Hanım'a: \"Dört ayrı ağ kurduk: ofis, üretim, kameralar ve misafirler. Binaları fiberle bağladık, çünkü 200 metrede bakır kablo çalışmaz. Üretim ve kameralar internetten bağımsız çalışıyor, misafirler hiçbir şirket cihazını göremiyor. Bütçe 3500, maliyet 3200; kalan pay ikinci bir fiber bağlantıya ayrılabilir. Sonraki adım olarak binalar arası yedek bağlantı ve üretim ağı için erişim kuralları öneriyoruz.\"",
+      "interviewAnswer": "Endüstriyel tesislerde OT (üretim) ağını IT ağından ayırırım (IEC 62443'teki bölge ve kanal yaklaşımı); kameralar ve misafirler de kendi ağlarını alır. 100 metreyi aşan ve binalar arası bağlantılar fiber olur. VLAN'ları binalar arasında trunk ile taşır, bir router ya da L3 switch'te yönlendiririm; OT'yi ofisten ayırmak için ACL ya da firewall, binalar arası bir arızaya karşı yedek bağlantı (STP ya da EtherChannel) eklerim. Üretim ve kamera kaydı internete bağımlı olmamalı."
+    },
+    "topics": ["IT/OT ayrımı", "Fiber bağlantı", "VLAN ve trunk", "Router-on-a-stick", "Misafir ağı", "Teklif / bütçe"]
+  },
+  "hotel": {
+    "title": "Otel: katlar, misafir Wi-Fi ve yedek hat",
+    "customer": {
+      "from": "Emre Şahin — Mavi Koy Otel, genel müdür",
+      "message": "Merhaba! Otelimiz bir zemin kat (lobi ve resepsiyon) ve iki konaklama katından oluşuyor. Her katta bir switch ve misafirler için Wi-Fi istiyoruz; misafir katlar arasında dolaşırken aynı ağda kalmalı. Resepsiyonda 2 bilgisayar var, adreslerini otomatik alsınlar. Güvenlik için lobide ve her katta bir kamera var, kayıt cihazımız (NVR) resepsiyonun arkasında: NVR bütün kameralara ulaşmalı, resepsiyon da NVR'den görüntüleri izleyebilmeli. Kamera ağı resepsiyondan ayrı olsun. Misafirler resepsiyona, kameralara ve NVR'ye kesinlikle ulaşmamalı; misafir interneti için ayrı bir hat aldık (bulutun eth2 portu). Geçen sezon ana hat kesildi ve resepsiyon bir gün boyunca rezervasyon alamadı; bu yüzden ikinci bir operatörden yedek hat aldık. Ana hattın modemi 192.168.0.1, yedek hattın modemi 192.168.1.1, ikisi de kurulu. Ana hat giderse resepsiyon yedek hattan devam etmeli. Bütçe 5000 birim."
+    },
+    "groups": {
+      "reception": "Resepsiyon bilgisayarları",
+      "recorder": "Kayıt cihazı (NVR)",
+      "cameras": "Kameralar",
+      "securityNetwork": "Güvenlik ağı (NVR + kameralar)",
+      "staff": "Otel cihazları",
+      "guests": "Misafir cihazları"
+    },
+    "devices": {
+      "isp": "İnternet (operatörler)",
+      "modemMain": "Ana hat modemi",
+      "modemBackup": "Yedek hat modemi",
+      "reception1": "Resepsiyon PC 1",
+      "reception2": "Resepsiyon PC 2",
+      "nvr": "NVR (kayıt cihazı)",
+      "camLobby": "Lobi kamerası",
+      "camFloor1": "1. kat kamerası",
+      "guestPhone": "Misafir telefonu (1. kat)",
+      "camFloor2": "2. kat kamerası",
+      "guestTablet": "Misafir tableti (2. kat)",
+      "core": "Çekirdek L3 switch",
+      "guestRouter": "Misafir router'ı",
+      "floor1Switch": "1. kat switch'i",
+      "floor1Ap": "1. kat erişim noktası",
+      "floor2Switch": "2. kat switch'i",
+      "floor2Ap": "2. kat erişim noktası"
+    },
+    "zones": {
+      "groundFloor": "Zemin kat (lobi, resepsiyon)",
+      "floor1": "1. kat",
+      "floor2": "2. kat"
+    },
+    "reviewHints": {
+      "presentation": "Kesinti senaryosuyla anlat: \"Ana hat kesilirse resepsiyon birkaç saniye içinde yedek hattan devam eder, kimsenin bir şey yapmasına gerek kalmaz.\"",
+      "floatingRoute": "Yedek hat, yalnızca ana rota ortadan kalkınca kullanılan ikinci bir varsayılan rota ile devreye girer: ana rotanın idari uzaklığı 1, yedeğinki daha büyük (ör. 10) olur; buna floating static route denir. Bunun çalışması için ağ geçidi cihazının her modeme ayrı bir yönlendirilmiş portla bağlı olması gerekir: ana modem kapanınca o porttaki bağlı ağ ve onun üzerinden giden rota düşer.",
+      "guestVlan": "Misafir VLAN'ının ağ geçidi otel ağlarını yönlendiren cihazdaysa misafirler resepsiyona ulaşır (ACL yok). Misafir VLAN'ını çekirdekten yalnızca 2. katmanda geçir (SVI açma) ve ağ geçidini, kendi hattındaki ayrı bir misafir router'ına ver.",
+      "roaming": "Misafirlerin her katta tek bir ağda kalması için bütün AP'ler aynı SSID'yi aynı VLAN'a bağlamalı, o VLAN da kat switch'lerinden çekirdeğe trunk'larla taşınmalı.",
+      "poe": "Kat switch'lerinde AP'ler ve kameralar Ethernet üzerinden beslenir (PoE); ayrı adaptör ya da priz gerekmez. Laboratuvar enerjiyi modellemez ama teklifte PoE'li model seçmek doğru karardır."
+    },
+    "reference": {
+      "explanation": "Zemin kattaki çekirdek bir L3 switch: VLAN 10 resepsiyon (SVI 10.40.10.1), VLAN 20 güvenlik (SVI 10.40.20.1), VLAN 30 misafirler (SVI yok). Resepsiyona ve kameralara DHCP veriyor; NVR statik 10.40.20.10 adresinde. İki portu modemlere giden yönlendirilmiş port (192.168.0.2 ve 192.168.1.2); varsayılan rota ana modemi gösteriyor (uzaklık 1), yedek rota yedek modemi (uzaklık 10). Ana modem kapanınca o bağlantı düşer ve yedek rota devreye girer. Her katta PoE'li 8 portlu bir switch çekirdeğe trunk ile bağlı; aynı 'Hotel-Guest' SSID'sini VLAN 30'a bağlayan bir AP ve kat kamerası ona takılı. Misafir VLAN'ının tek ağ geçidi, operatörün eth2 hattındaki ayrı misafir router'ı (192.168.50.1, DHCP ve DNS); çekirdeğin bu VLAN'da IP arayüzü olmadığı için misafirler otel cihazlarına ulaşamıyor. Maliyet: L3 switch 2400 + iki PoE switch 640 + iki AP 440 + router 650 + on dört kablo 70 = 4200 birim.",
+      "presentation": "Emre Bey'e: \"Resepsiyonunuz artık iki hatla çalışıyor: ana hat kesilirse ağ kendiliğinden yedek hatta geçiyor. Misafirler her katta aynı Wi-Fi ağında, kendi hatlarından internete çıkıyor ve otel sistemlerini göremiyor. Kameralar ayrı bir ağda ve internet olmadan da kayıt sürüyor. Toplam 4200 birim; yeni bir kat bir switch, bir AP ve iki kablo demek.\"",
+      "interviewAnswer": "Çok katlı bir binada hiyerarşik tasarım kullanırım: her katta bir erişim switch'i, merkezde VLAN'lar arası yönlendirmeyi yapan bir çekirdek (L3 switch). Misafir, personel ve güvenlik ağlarını VLAN'larla ayırır, misafirleri ACL / firewall ya da kendilerine ait bir ağ geçidiyle yalıtırım. Kritik servisler için WAN yedekliliği eklerim: iki farklı operatör ve floating static route (ya da IP SLA ile izlenen bir rota); ilk atlama ağ geçidi yedekliliği için HSRP / VRRP vardır."
+    },
+    "topics": ["Hiyerarşik tasarım (erişim / çekirdek)", "L3 switch ve SVI", "Floating static route", "WAN yedekliliği", "Misafir VLAN'ı", "PoE"]
+  }
+}

@@ -1,8 +1,8 @@
 import type { Device, Port } from '../../domain'
-import { HostAttachment } from '../../engine/HostAttachment'
-import { Ipv4 } from '../../engine/Ipv4'
-import { type L3Interface, L3Interfaces } from '../../engine/L3Interfaces'
-import { RoutingTable } from '../../engine/RoutingTable'
+import { HostAttachment } from '../../net/HostAttachment'
+import { Ipv4 } from '../../net/Ipv4'
+import { type L3Interface, L3Interfaces } from '../../net/L3Interfaces'
+import { InterfaceStatus } from '../../net/InterfaceStatus'
 import {
   BROADCAST_MAC,
   type DeviceContext,
@@ -33,8 +33,8 @@ const PROTOCOL_LAYER: Record<SimProtocol, OsiLayer> = {
 }
 
 /**
- * Flow of the start-up traffic at engine creation. What devices learn from it is used at once but not
- * kept (coordinator decision 3: the user starts with empty MAC tables and ARP caches after `settle`).
+ * Flow of the start-up traffic at engine creation. What devices learn from it is flushed by
+ * `LinkLayer.onSettled` (coordinator decision 3: empty MAC tables and ARP caches after `settle`).
  */
 export const BOOT_FLOW = 'boot'
 
@@ -78,9 +78,9 @@ export class LinkInterfaces {
     return true
   }
 
-  /** Link up and the interface administratively up (RoutingTable.isUp: SVIs need their VLAN). */
+  /** Link up and the interface administratively up (InterfaceStatus.isUp: SVIs need their VLAN). */
   static isUsable(ctx: DeviceContext, iface: L3Interface): boolean {
-    return RoutingTable.isUp(ctx.topology, iface)
+    return InterfaceStatus.isUp(ctx.topology, iface)
   }
 
   /** LinkLayer.interfaceReady for an interface of a device that is not the cloud. */

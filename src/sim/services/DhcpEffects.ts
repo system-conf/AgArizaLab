@@ -1,5 +1,5 @@
 import type { Device, HostSettings, NetworkState, Port } from '../../domain'
-import { L3Interfaces } from '../../engine/L3Interfaces'
+import { L3Interfaces } from '../../net/L3Interfaces'
 import type { StateEffect } from '../contract'
 
 type LeaseBound = Extract<StateEffect, { kind: 'dhcpLeaseBound' }>

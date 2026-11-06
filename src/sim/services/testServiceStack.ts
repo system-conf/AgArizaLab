@@ -2,9 +2,10 @@
 // alone (docs/SIMULATION.md §11 interim agreement). Ethernet without real ARP (next-hop MACs are looked up
 // in the configuration), hubs, connected + static routes, a host gateway, UDP / TCP demux with ICMP port
 // unreachable / RST, the cloud answering on every public address. Not a reference for S1 / S2.
-import { DeviceAddresses } from '../../engine/DeviceAddresses'
-import { Ipv4 } from '../../engine/Ipv4'
-import { type L3Interface, L3Interfaces } from '../../engine/L3Interfaces'
+import { DeviceAddresses } from '../../net/DeviceAddresses'
+import { Ipv4 } from '../../net/Ipv4'
+import { type L3Interface, L3Interfaces } from '../../net/L3Interfaces'
+import { FrameEncoder } from '../pcap/FrameEncoder'
 import {
   BROADCAST_MAC,
   type DeviceContext,
@@ -152,7 +153,7 @@ class StubNetworkLayer implements NetworkLayer {
     const route = this.route(ctx, packet.dst)
     if (!route.ok) {
       event.conclude('dropped', 3, 'noRoute')
-      this.icmpError(ctx, packet, delivery, { kind: 'icmp', type: 'destinationUnreachable', code: 'host', original: PduLayers.quote(packet) })
+      this.icmpError(ctx, packet, delivery, { kind: 'icmp', type: 'destinationUnreachable', code: 'host', original: PduLayers.quote(packet, FrameEncoder.ipv4Length(packet)) })
       return
     }
     forwarding.add(event)
@@ -163,7 +164,7 @@ class StubNetworkLayer implements NetworkLayer {
     const { packet } = failure
     if (!DeviceAddresses.has(ctx.device, packet.src) || packet.payload.kind === 'icmp') return
     const event = ctx.openEvent({ flowId: failure.ids.flowId, causeEventId: failure.droppedEventId })
-    const error: IcmpError = { kind: 'icmp', type: 'destinationUnreachable', code: 'host', original: PduLayers.quote(packet) }
+    const error: IcmpError = { kind: 'icmp', type: 'destinationUnreachable', code: 'host', original: PduLayers.quote(packet, FrameEncoder.ipv4Length(packet)) }
     ctx.layers.services.onIcmpError(ctx, { reporterIp: packet.src, error, local: true, event })
   }
 
@@ -183,7 +184,7 @@ class StubNetworkLayer implements NetworkLayer {
     event.conclude('dropped', 4, 'portUnreachable')
     if (packet.dst === LIMITED_BROADCAST_IP || DeviceProfiles.of(ctx.device).isp) return
     if (payload.kind === 'udp') {
-      this.icmpError(ctx, packet, delivery, { kind: 'icmp', type: 'destinationUnreachable', code: 'port', original: PduLayers.quote(packet) })
+      this.icmpError(ctx, packet, delivery, { kind: 'icmp', type: 'destinationUnreachable', code: 'port', original: PduLayers.quote(packet, FrameEncoder.ipv4Length(packet)) })
       return
     }
     const rst = { kind: 'tcp', srcPort: payload.dstPort, dstPort: payload.srcPort, flags: ['ack', 'rst'], seq: 0, ack: (payload.seq ?? 0) + 1, payload: null } as const

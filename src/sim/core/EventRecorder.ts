@@ -27,6 +27,8 @@ export interface RecorderInit {
   readonly inbound?: Pdu
   readonly lastDeviceId?: string
   readonly causeEventId?: number
+  /** Arrival events: the transmission that brought the frame. */
+  readonly transmissionId?: number
 }
 
 /** Puts frames on links for a recorder (implemented by TaskScope). */
@@ -108,6 +110,7 @@ export class EventRecorder implements EventBuilder {
       deviceId: init.deviceId,
       ...(init.lastDeviceId === undefined ? {} : { lastDeviceId: init.lastDeviceId }),
       ...(init.inPortId === undefined ? {} : { inPortId: init.inPortId }),
+      ...(init.transmissionId === undefined ? {} : { transmissionId: init.transmissionId }),
       outPortIds: [...this.outPortIds],
       flowId: init.flowId,
       pduId: init.pduId,

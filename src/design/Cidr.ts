@@ -30,6 +30,19 @@ export class Cidr {
     return Ipv4.inNetwork(ip, block.network, block.mask)
   }
 
+  /**
+   * First and last host address of a network (network and broadcast left out; /31 and /32 have no
+   * such pair, RFC 3021), or null when address or mask is invalid.
+   */
+  static hostBounds(network: string, mask: string): { first: string; last: string } | null {
+    const base = Ipv4.network(network, mask)
+    const prefix = Ipv4.prefixLength(mask)
+    if (base === null || prefix === null) return null
+    const size = 2 ** (32 - prefix)
+    const [first, last] = size <= 2 ? [base, base + size - 1] : [base + 1, base + size - 2]
+    return { first: Ipv4.format(first), last: Ipv4.format(last) }
+  }
+
   /** True when the two networks share an address (one contains the other). */
   static overlaps(a: CidrBlock, b: CidrBlock): boolean {
     return Cidr.contains(a, b.network) || Cidr.contains(b, a.network)

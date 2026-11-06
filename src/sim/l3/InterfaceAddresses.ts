@@ -1,8 +1,8 @@
 import type { Device } from '../../domain'
-import { Ipv4 } from '../../engine/Ipv4'
-import { type L3Interface, L3Interfaces } from '../../engine/L3Interfaces'
-import { RoutingTable } from '../../engine/RoutingTable'
-import type { Topology } from '../../engine/Topology'
+import { Ipv4 } from '../../net/Ipv4'
+import { type L3Interface, L3Interfaces } from '../../net/L3Interfaces'
+import { InterfaceStatus } from '../../net/InterfaceStatus'
+import type { Topology } from '../../net/Topology'
 import { LIMITED_BROADCAST_IP, UNSPECIFIED_IP } from '../contract'
 
 /**
@@ -10,9 +10,9 @@ import { LIMITED_BROADCAST_IP, UNSPECIFIED_IP } from '../contract'
  * address, broadcasts, the source address a router uses, and the lab's cloud-facing WAN ports.
  */
 export class InterfaceAddresses {
-  /** Addressed interfaces that carry traffic (RoutingTable.isUp), in configuration order. */
+  /** Addressed interfaces that carry traffic (InterfaceStatus.isUp), in configuration order. */
   static upAddressed(topology: Topology, device: Device): L3Interface[] {
-    return L3Interfaces.of(device).filter((iface) => L3Interfaces.isAddressed(iface) && RoutingTable.isUp(topology, iface))
+    return L3Interfaces.of(device).filter((iface) => L3Interfaces.isAddressed(iface) && InterfaceStatus.isUp(topology, iface))
   }
 
   /**
@@ -21,7 +21,7 @@ export class InterfaceAddresses {
    */
   static owner(topology: Topology, device: Device, ip: string, router: boolean): L3Interface | undefined {
     if (!Ipv4.isValid(ip)) return undefined
-    return L3Interfaces.of(device).find((iface) => iface.address === ip && (!router || RoutingTable.isUp(topology, iface)))
+    return L3Interfaces.of(device).find((iface) => iface.address === ip && (!router || InterfaceStatus.isUp(topology, iface)))
   }
 
   /** Directed broadcast address of the interface's subnet; null for /31, /32 or no address. */

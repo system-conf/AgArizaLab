@@ -1,5 +1,5 @@
-import { HostAttachment } from '../../engine/HostAttachment'
-import { type L3Interface, L3Interfaces } from '../../engine/L3Interfaces'
+import { HostAttachment } from '../../net/HostAttachment'
+import { type L3Interface, L3Interfaces } from '../../net/L3Interfaces'
 import {
   type DeviceContext,
   type DhcpAdapterFailure,

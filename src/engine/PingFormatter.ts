@@ -1,5 +1,6 @@
 import type { TerminalLine } from '../domain'
 import { localizedMessage } from '../i18n/messageKeys'
+import { PingOptions, type PingSettings } from './PingOptions'
 import { messageLine, textLines } from './terminalLines'
 
 /** How every echo request of a ping ended (all requests behave the same: deterministic engine). */
@@ -25,21 +26,30 @@ const TIME_JITTER_MS: readonly number[] = [0, 1, 0, 2]
 /** Windows-style (English) ping output. Pure string building, no network logic. */
 export class PingFormatter {
   ping(targetIp: string, resolvedName: string | null, outcome: PingOutcome, request: PingRequest): TerminalLine[] {
-    const { count, size } = request
+    return this.pingEchoes(targetIp, resolvedName, Array.from({ length: request.count }, () => outcome), request.size)
+  }
+
+  /**
+   * Per-echo output (Windows prints every echo as it happened): one line per outcome, in order. Equal
+   * outcomes print exactly like `ping`. Error replies count as received; the round trip times cover the
+   * echo replies.
+   */
+  pingEchoes(targetIp: string, resolvedName: string | null, outcomes: readonly PingOutcome[], size: number): TerminalLine[] {
+    const count = outcomes.length
     const header = resolvedName === null ? targetIp : `${resolvedName} [${targetIp}]`
     const lines: string[] = ['', `Pinging ${header} with ${size} bytes of data:`]
-    for (let index = 0; index < count; index += 1) lines.push(this.echoLine(outcome, index, size))
+    outcomes.forEach((outcome, index) => lines.push(this.echoLine(outcome, index, size)))
 
     // Windows counts ICMP error replies (unreachable, TTL expired) as received.
-    const received = outcome.kind === 'timeout' || outcome.kind === 'generalFailure' ? 0 : count
+    const received = outcomes.filter((outcome) => outcome.kind !== 'timeout' && outcome.kind !== 'generalFailure').length
     const lost = count - received
     lines.push(
       '',
       `Ping statistics for ${targetIp}:`,
-      `    Packets: Sent = ${count}, Received = ${received}, Lost = ${lost} (${Math.floor((lost / count) * 100)}% loss),`,
+      `    Packets: Sent = ${count}, Received = ${received}, Lost = ${lost} (${count === 0 ? 0 : Math.floor((lost / count) * 100)}% loss),`,
     )
-    if (outcome.kind === 'reply') {
-      const times = this.times(outcome.baseTimeMs, count)
+    const times = outcomes.flatMap((outcome, index) => (outcome.kind === 'reply' ? [this.time(outcome.baseTimeMs, index)] : []))
+    if (times.length > 0) {
       const average = Math.round(times.reduce((sum, time) => sum + time, 0) / times.length)
       lines.push(
         'Approximate round trip times in milli-seconds:',
@@ -49,6 +59,12 @@ export class PingFormatter {
     return textLines(lines)
   }
 
+  /** App notes shown before the Windows output when the lab does not do exactly what was asked (-t, -n above the limit). */
+  settingsNotes(settings: PingSettings): TerminalLine[] {
+    if (settings.continuous) return [this.continuousNotSupported()]
+    if (settings.countLimited) return [this.countLimited(PingOptions.maxCount)]
+    return []
+  }
   hostNotFound(name: string): TerminalLine[] {
     return textLines([`Ping request could not find host ${name}. Please check the name and try again.`])
   }
@@ -77,10 +93,6 @@ export class PingFormatter {
       case 'generalFailure':
         return 'PING: transmit failed. General failure.'
     }
-  }
-
-  private times(baseTimeMs: number, count: number): number[] {
-    return Array.from({ length: count }, (_, index) => this.time(baseTimeMs, index))
   }
 
   private time(baseTimeMs: number, index: number): number {

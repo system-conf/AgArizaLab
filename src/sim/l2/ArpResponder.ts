@@ -1,11 +1,11 @@
 import { localizedMessage } from '../../i18n/messageKeys'
-import { Ipv4 } from '../../engine/Ipv4'
-import type { L3Interface } from '../../engine/L3Interfaces'
+import { Ipv4 } from '../../net/Ipv4'
+import type { L3Interface } from '../../net/L3Interfaces'
 import { type ArpPacket, type DeviceContext, type EthernetFrame, type EventBuilder, UNSPECIFIED_IP } from '../contract'
 import { AddressClaims } from './AddressClaims'
 import { ArpResolver } from './ArpResolver'
 import { FrameSender } from './FrameSender'
-import { BOOT_FLOW, LinkInterfaces } from './LinkInterfaces'
+import { LinkInterfaces } from './LinkInterfaces'
 import { LinkTables } from './LinkTables'
 
 /**
@@ -25,12 +25,12 @@ export class ArpResponder {
       event.note(2, 'in', localizedMessage('simulation:notes.l2.arpRequestForUs', { ip: arp.targetIp }))
       if (!conflicting && Ipv4.isValid(arp.senderIp)) {
         event.note(2, 'in', localizedMessage('simulation:notes.l2.arpSenderLearned', { ip: arp.senderIp, mac: arp.senderMac }))
-        ArpResolver.learn(ctx, iface, arp.senderIp, arp.senderMac, event.flowId)
+        ArpResolver.learn(ctx, iface, arp.senderIp, arp.senderMac)
       }
       event.conclude('replied', 2)
       return ArpResponder.reply(ctx, iface, arp, event)
     }
-    ArpResponder.mergeSender(ctx, iface, arp, frame, event.flowId)
+    ArpResponder.mergeSender(ctx, iface, arp, frame)
     const key = iface.address === arp.targetIp ? 'simulation:notes.l2.arpCannotAnswer' : 'simulation:notes.l2.arpRequestNotForUs'
     event.note(2, 'in', localizedMessage(key, { ip: arp.targetIp }))
     event.conclude('dropped', 2, 'arpNotForUs')
@@ -53,7 +53,7 @@ export class ArpResponder {
     const asked = LinkTables.arpLookup(ctx, iface.id, arp.senderIp) !== undefined
     if (asked || (iface.address !== '' && arp.targetIp === iface.address)) {
       event.note(2, 'in', localizedMessage('simulation:notes.l2.arpReplyLearned', { ip: arp.senderIp, mac: arp.senderMac }))
-      ArpResolver.learn(ctx, iface, arp.senderIp, arp.senderMac, event.flowId)
+      ArpResolver.learn(ctx, iface, arp.senderIp, arp.senderMac)
       return event.conclude('delivered', 2)
     }
     event.note(2, 'in', localizedMessage('simulation:notes.l2.arpReplyUnsolicited', { ip: arp.senderIp }))
@@ -61,9 +61,9 @@ export class ArpResponder {
   }
 
   /** RFC 826: a request not for us still refreshes the sender's entry when we already have one. */
-  private static mergeSender(ctx: DeviceContext, iface: L3Interface, arp: ArpPacket, frame: EthernetFrame, flowId: string): void {
+  private static mergeSender(ctx: DeviceContext, iface: L3Interface, arp: ArpPacket, frame: EthernetFrame): void {
     const known = LinkTables.arpLookup(ctx, iface.id, arp.senderIp)
-    if (flowId === BOOT_FLOW || known?.state !== 'reachable' || known.type !== 'dynamic' || frame.src !== arp.senderMac) return
+    if (known?.state !== 'reachable' || known.type !== 'dynamic' || frame.src !== arp.senderMac) return
     LinkTables.putArp(ctx, { ...known, mac: arp.senderMac, updatedAt: ctx.now, expiresAt: ctx.now + LinkInterfaces.arpAgeMs(ctx.device) })
   }
 

@@ -58,6 +58,10 @@ describe('AppRouteCodec', () => {
     ['/exercises', { name: 'exercises' }],
     ['/exercises/posGateway', { name: 'exercise', exerciseId: 'posGateway' }],
     ['/exercises/posGateway/report', { name: 'exerciseReport', exerciseId: 'posGateway' }],
+    ['/design', { name: 'designs' }],
+    ['/design/', { name: 'designs' }],
+    ['/design/smallOffice', { name: 'design', briefId: 'smallOffice' }],
+    ['/design/smallOffice/review', { name: 'designReview', briefId: 'smallOffice' }],
   ]
 
   it.each(cases)('parses %s', (path, route) => {
@@ -68,12 +72,21 @@ describe('AppRouteCodec', () => {
     expect(AppRouteCodec.format(route)).toBe(path)
   })
 
-  it.each(['/lab/extra', '/settings', '/exercises/pos-gateway', '/exercises/x/report/more', '/exercises/x/other', '/exercises/%E0%A4%A'])(
-    'treats %s as not found',
-    (path) => {
-      expect(AppRouteCodec.parse(path)).toEqual({ name: 'notFound', path })
-    },
-  )
+  const notFound = [
+    '/lab/extra',
+    '/settings',
+    '/exercises/pos-gateway',
+    '/exercises/x/report/more',
+    '/exercises/x/other',
+    '/exercises/%E0%A4%A',
+    '/design/small-office',
+    '/design/x/report',
+    '/design/x/review/more',
+  ]
+
+  it.each(notFound)('treats %s as not found', (path) => {
+    expect(AppRouteCodec.parse(path)).toEqual({ name: 'notFound', path })
+  })
 
   it('compares routes by path', () => {
     expect(AppRouteCodec.equals({ name: 'exercise', exerciseId: 'a' }, { name: 'exercise', exerciseId: 'a' })).toBe(true)

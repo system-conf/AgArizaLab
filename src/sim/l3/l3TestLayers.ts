@@ -4,9 +4,9 @@
 // resolved at once with the rule engine's SegmentFinder (test code only; the layers never import it).
 // Unresolved next hops wait 3000 ms like S1's three ARP attempts, then go to `onUndeliverable`.
 import type { Device, NetworkState, Port, SwitchedPort } from '../../domain'
-import { type L3Interface, L3Interfaces } from '../../engine/L3Interfaces'
+import { type L3Interface, L3Interfaces } from '../../net/L3Interfaces'
 import { SegmentFinder } from '../../engine/SegmentFinder'
-import { VlanRules } from '../../engine/VlanRules'
+import { VlanRules } from '../../net/VlanRules'
 import {
   BROADCAST_MAC,
   type DeviceContext,

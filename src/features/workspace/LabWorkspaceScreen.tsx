@@ -1,6 +1,6 @@
 import { ReactFlowProvider } from '@xyflow/react'
 import { Network } from 'lucide-react'
-import { useState } from 'react'
+import { lazy, Suspense, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { routes } from '../../routing'
 import { useDocumentMeta } from '../layout/useDocumentMeta'
@@ -15,13 +15,16 @@ import CommitField from './panels/CommitField'
 import { useToasts } from './useToasts'
 import WorkspaceView from './WorkspaceView'
 
+// Design (D2): the handover pack (File menu) loads on demand.
+const HandoverOverlay = lazy(() => import('../design/handover/HandoverOverlay'))
+
 export interface LabWorkspaceScreenProps {
   /** `#lab=…` the page was opened with, or null. */
   shareHash: string | null
   onShareHashUsed: () => void
 }
 
-/** The free lab (`/lab`): autosaved, with the File menu (new, recent, import, export, share). */
+/** The free lab (`/lab`): autosaved, with the File menu (new, recent, import, export, share, handover pack). */
 function LabWorkspace({ shareHash, onShareHashUsed }: LabWorkspaceScreenProps) {
   const { t } = useTranslation(['workspace', 'lab', 'common'])
   const lab = useLabDocument()
@@ -29,6 +32,7 @@ function LabWorkspace({ shareHash, onShareHashUsed }: LabWorkspaceScreenProps) {
   useLabOpening({ lab, notify: toasts.show, shareHash, onShareHashUsed })
   const files = useLabFileActions(lab, toasts.show)
   const [recentOpen, setRecentOpen] = useState(false)
+  const [handoverOpen, setHandoverOpen] = useState(false)
   const title = lab.doc.meta.title
   useDocumentMeta(title === '' ? t('workspace:title') : title)
 
@@ -51,7 +55,7 @@ function LabWorkspace({ shareHash, onShareHashUsed }: LabWorkspaceScreenProps) {
         maxLength={LAB_LIMITS.nameLength}
         className="min-w-0 max-w-md flex-1"
       />
-      <FileMenu actions={files} onOpenRecent={() => setRecentOpen(true)} />
+      <FileMenu actions={files} onOpenRecent={() => setRecentOpen(true)} onHandover={() => setHandoverOpen(true)} />
     </>
   )
 
@@ -59,6 +63,12 @@ function LabWorkspace({ shareHash, onShareHashUsed }: LabWorkspaceScreenProps) {
     <>
       <WorkspaceView lab={lab} policy={ExerciseLockPolicy.none} toasts={toasts} headerStart={headerStart} />
       {recentOpen && <RecentLabsDialog onOpen={files.openRecent} onClose={() => setRecentOpen(false)} />}
+      {/* Design (D2): handover pack of the open lab */}
+      {handoverOpen && (
+        <Suspense fallback={null}>
+          <HandoverOverlay source={lab.doc} onClose={() => setHandoverOpen(false)} />
+        </Suspense>
+      )}
     </>
   )
 }

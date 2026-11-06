@@ -1,9 +1,10 @@
-import type { Device, NetworkState, ResolveResult } from '../domain'
+import type { NetworkState, ResolveResult } from '../domain'
 import type { AdapterView } from './CommandFormatter'
 import type { ShellBackend, ShellDhcpResult, TerminalAccess } from './HostCommandShell'
 import type { ProbeReport, ResolvedTarget } from './ProbeReports'
 import type { DhcpFailure, DhcpService } from './DhcpService'
 import type { DnsResolver } from './DnsResolver'
+import { HostAdapters } from './HostAdapters'
 import { HostAttachment } from './HostAttachment'
 import type { L3Interface } from './L3Interfaces'
 import type { ProbeReporter } from './ProbeReporter'
@@ -33,9 +34,7 @@ export class HostShellBackend implements ShellBackend {
   }
 
   adapters(state: NetworkState, deviceId: string): AdapterView[] {
-    const topology = Topology.of(state)
-    const device = topology.require(deviceId)
-    return HostAttachment.activeNics(topology, device).map((nic) => this.adapterView(state, device, nic))
+    return HostAdapters.views(state, deviceId, (nic) => this.hasConflict(state, nic))
   }
 
   renew(state: NetworkState, deviceId: string): ShellDhcpResult {
@@ -63,35 +62,11 @@ export class HostShellBackend implements ShellBackend {
   private failure(state: NetworkState, deviceId: string, failure: DhcpFailure): ShellDhcpResult {
     const device = Topology.of(state).require(deviceId)
     const portId = failure.portId ?? HostAttachment.activeNics(Topology.of(state), device)[0]?.portId
-    return { ok: false, reason: failure.reason, wireless: this.isWireless(device, portId) }
-  }
-
-  private adapterView(state: NetworkState, device: Device, nic: L3Interface): AdapterView {
-    const topology = Topology.of(state)
-    const connected = HostAttachment.attach(topology, nic).ok
-    const port = device.ports.find((candidate) => candidate.id === nic.portId)
-    return {
-      hostName: device.id.toUpperCase(),
-      wireless: this.isWireless(device, nic.portId),
-      connected,
-      mac: port?.mac ?? device.baseMac,
-      host: {
-        mode: nic.addressing,
-        ip: nic.address,
-        mask: nic.mask,
-        gateway: device.host?.defaultGateway ?? '',
-        dns: device.host?.dnsServers ?? [],
-      },
-      duplicateAddress: connected && device.powered && nic.address !== '' && this.hasConflict(state, nic),
-    }
+    return { ok: false, reason: failure.reason, wireless: HostAdapters.isWireless(device, portId) }
   }
 
   private hasConflict(state: NetworkState, nic: L3Interface): boolean {
     const { segments } = this.deps
     return segments.conflictingInterface(state, segments.segment(state, nic), nic.deviceId, nic.address) !== undefined
-  }
-
-  private isWireless(device: Device, portId: string | undefined): boolean {
-    return device.ports.find((port) => port.id === portId)?.medium === 'wireless'
   }
 }

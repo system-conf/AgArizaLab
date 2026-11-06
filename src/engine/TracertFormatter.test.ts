@@ -79,4 +79,17 @@ describe('TracertFormatter — hop limit (routing loops)', () => {
     ])
     expect(TracertFormatter.maxHops).toBe(30)
   })
+
+  it('prints silent hops and unanswered probes in the middle of a trace (simulator)', () => {
+    const lines = texts(
+      formatter.tracertLines('10.0.0.9', null, [{ ip: '192.168.1.1', baseTimeMs: 0 }, null, { ip: '10.0.0.9', baseTimeMs: 3, answered: [false, true, true] }], {
+        kind: 'complete',
+      }),
+    )
+    expect(lines.slice(3, 6)).toEqual([
+      '  1    <1 ms    <1 ms    <1 ms  192.168.1.1',
+      '  2     *        *        *     Request timed out.',
+      '  3     *        4 ms     3 ms  10.0.0.9',
+    ])
+  })
 })

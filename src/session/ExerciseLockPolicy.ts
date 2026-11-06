@@ -59,6 +59,11 @@ export class ExerciseLockPolicy {
     return this.locks.some((lock) => lock.scope === 'topology')
   }
 
+  /** Design (D2): a `placement` lock pins a customer device (moving, cabling and settings stay free). */
+  canDeleteDevice(deviceId: string): boolean {
+    return !this.topologyLocked && !this.locks.some((lock) => lock.scope === 'placement' && lock.deviceId === deviceId)
+  }
+
   canDeleteLink(linkId: string): boolean {
     return !this.topologyLocked && !this.linkLocked(linkId)
   }
@@ -111,7 +116,7 @@ export class ExerciseLockPolicy {
   /** The part of a delete request the locks allow (annotations are never locked). */
   allowedDeletion(request: DeletionRequest): DeletionRequest {
     return {
-      deviceIds: this.topologyLocked ? [] : request.deviceIds,
+      deviceIds: request.deviceIds.filter((deviceId) => this.canDeleteDevice(deviceId)),
       linkIds: request.linkIds.filter((linkId) => this.canDeleteLink(linkId)),
       annotationIds: request.annotationIds,
     }

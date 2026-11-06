@@ -1,6 +1,6 @@
 // The workspace's only door to the neighbouring modules (lab core, catalog, engine, exercise locks).
 // Components and hooks import from here, so an API change of a neighbour touches one file.
-import type { AppLinkStatus, CommandResult, Device, LinkLight, NetworkState } from '../../domain'
+import type { AppLinkStatus, Device, LinkLight, NetworkState } from '../../domain'
 import { networkEngine, TerminalAvailability } from '../../engine'
 
 export {
@@ -42,11 +42,6 @@ export { ExerciseLockPolicy, type EditAccess } from '../../session/ExerciseLockP
 /** Physical link light of a cable (engine: plugged, powered, admin up, SSID offered, pinouts…). */
 export function linkLightOf(network: NetworkState, linkId: string): LinkLight {
   return networkEngine.linkLight(network, linkId)
-}
-
-/** Runs a command prompt line on a device: output lines, changed network, ping / tracert trace. */
-export function runDeviceCommand(network: NetworkState, deviceId: string, commandLine: string): CommandResult {
-  return networkEngine.runCommand(network, deviceId, commandLine)
 }
 
 /** Whether the device has a command prompt (computers, POS terminals, servers, NVRs). */

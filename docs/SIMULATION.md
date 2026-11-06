@@ -555,3 +555,17 @@ Interim agreement: S2 needs S1 for real frames; S2's tests may use a test `LinkL
 12. U3's player exists only after Simulation mode opened once — I3 creates it up front; terminal requests
     go to the same player (simulation mode: queued; realtime: `runUntilDone`); DHCP effects are applied to
     the lab document so `reconfigure` after edits keeps them; the player is the Web Worker seam.
+
+### Wave 3.2 — implemented by I3a (2026-11-06)
+- `createSimulation(network, options?)` = kernel + S1/S2/S3 (`defaultLayers`); `SimTerminal` (instance + static
+  API: start / collect|advance / run), `SimSolveChecker`, `SimAppLinks`, `SimProbes`, `SimHostViews`.
+- Contract: `LinkLayer.onSettled?` (flushes dynamic MAC/ARP after settle; boot-flow rule removed),
+  `Ipv4Send.notes?`, reasons `noEgressPort` (action stays `filtered`) and `noDestinationMac` (`dropped`),
+  `SimEvent.transmissionId?` on arrivals, `IpQuote.totalLength?` (optional until fixtures add it), router
+  counting = distinct routers with layer-3 forwarded/buffered/sent events.
+- Cloud on provider outage: still answers ARP, drops IPv4 silently (engine parity: timeouts, not unreachable).
+- Configuration readers moved to `src/net/**` (re-export stubs in `src/engine`); `src/sim` (except oracle and
+  terminal parsing/formatting) must not import `src/engine` — enforced by `DeterminismGuard.test.ts`.
+- `arp -a | -g | /a [ip]` (Windows table), `arp -d` / `arp -d *` (clear cache); single-entry delete is future work.
+- Golden tests: accepted terminal differences = router reply TTL (§10.3.2), extra hop line before "reports:"
+  (S2 addition), gateway-is-a-host timeouts (§10.3.1).

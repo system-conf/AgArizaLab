@@ -12,6 +12,8 @@ import LoadingScreen from './LoadingScreen'
 // The workspace and exercise screens (React Flow, engine, catalog, lab storage) load on demand.
 const LabWorkspaceScreen = lazy(() => import('../workspace/LabWorkspaceScreen'))
 const ExerciseScreen = lazy(() => import('../exercise/ExerciseScreen'))
+// Design (D2): brief list, design mode and review load on demand (briefs, checker, catalog).
+const DesignRoutes = lazy(() => import('../design/DesignRoutes'))
 
 /** Picks the screen for the current route; redirects through RouteResolver. */
 function AppRoutes() {
@@ -100,6 +102,15 @@ function AppRoutes() {
       if (!exercise || !solved) return null
       return <ExerciseReport solved={solved} exercise={exercise} next={exercises[index + 1]} />
     }
+    // Design (D2): one lazy module for the three design routes (it keeps drafts across them).
+    case 'designs':
+    case 'design':
+    case 'designReview':
+      return (
+        <Suspense fallback={<LoadingScreen />}>
+          <DesignRoutes route={route} />
+        </Suspense>
+      )
   }
 }
 

@@ -198,3 +198,12 @@ subtree of `design.json`, in tr and en together; re-read the file right before e
 2. Brief texts move to a separate namespace `designBriefs` owned by D3; `design` keeps `units`, `requirements`, `failures` (D0/D1), `review.*` (D1), `ui.*` + `settings.*` (D2).
 3. Engine batch DHCP renew: later optimisation, only if live checking feels slow in the UI.
 4. `uses(capability)` = equipment present; configuration checks are expressed with network requirements.
+
+### Requirement types to add later (gaps found while writing the first briefs)
+- `staticAddress(group)` — address configured statically (today approximated with `addressPlan` /32).
+- `deviceInZone(kind, zoneId, min)` — e.g. "an access switch / AP on every floor".
+- `linkMedium(zoneA, zoneB, medium)` / cable length — "fiber between the buildings" (with the physical view).
+- `noInternet(group)` — e.g. OT must not reach the internet.
+- `poweredByPoe(group)` — with a PoE budget model.
+- ACL-based isolation (pack 5.2), STP-based switch redundancy (5.1), gateway redundancy HSRP/VRRP (5.3),
+  NAT-aware guest routers (5.2). Texts currently live in `designBriefs:<id>.*` (not `design:briefs.*`).

@@ -1,4 +1,4 @@
-import { Ipv4 } from '../../engine/Ipv4'
+import { Ipv4 } from '../../net/Ipv4'
 import type { RouteEntry } from '../contract'
 
 /** Where a packet for one destination leaves: the chosen entry, its exit interface and the address to ARP for. */

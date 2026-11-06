@@ -1,11 +1,11 @@
 import type { Device, RadioPort, SwitchedPort } from '../../domain'
 import { localizedMessage } from '../../i18n/messageKeys'
-import { type L3Interface, L3Interfaces } from '../../engine/L3Interfaces'
+import { type L3Interface, L3Interfaces } from '../../net/L3Interfaces'
 import type { DeviceContext, EthernetFrame, EventBuilder, FrameArrival, PduIds } from '../contract'
 import { BridgedDelivery } from './BridgedDelivery'
 import { type EgressTarget, BridgeVlans } from './BridgeVlans'
 import { Endpoints } from './Endpoints'
-import { BOOT_FLOW, LinkInterfaces } from './LinkInterfaces'
+import { LinkInterfaces } from './LinkInterfaces'
 import { LinkTables } from './LinkTables'
 
 /** Where a frame entered the bridge. */
@@ -30,7 +30,7 @@ export class Bridge {
       event.note(2, 'in', localizedMessage('simulation:notes.l2.loopSuppressed'))
       return event.conclude('dropped', 2, 'l2Loop')
     }
-    Bridge.learn(ctx, event, vlan, frame.src, port.id, arrival.ids.flowId)
+    Bridge.learn(ctx, event, vlan, frame.src, port.id)
     const ingress: Ingress = { portId: port.id, linkId: arrival.linkId, radio: port.role === 'radio' }
     Bridge.forward(ctx, event, vlan, BridgeVlans.tagged(frame, null), ingress, arrival.ids)
   }
@@ -55,8 +55,8 @@ export class Bridge {
     return L3Interfaces.of(device).find((iface) => iface.kind === 'svi' && iface.vlan === vlan)
   }
 
-  private static learn(ctx: DeviceContext, event: EventBuilder, vlan: number, src: string, portId: string, flowId: string): void {
-    if (LinkInterfaces.isGroupMac(src) || flowId === BOOT_FLOW) return
+  private static learn(ctx: DeviceContext, event: EventBuilder, vlan: number, src: string, portId: string): void {
+    if (LinkInterfaces.isGroupMac(src)) return
     const outcome = LinkTables.learnMac(ctx, vlan, src, portId)
     if (outcome === 'learned') event.note(2, 'in', localizedMessage('simulation:notes.l2.macLearned', { mac: src, port: portId, vlan }))
     else if (outcome === 'refreshed') event.note(2, 'in', localizedMessage('simulation:notes.l2.macRefreshed', { mac: src, port: portId, vlan }))
@@ -95,7 +95,7 @@ export class Bridge {
     const scope = ingress.radio ? { exceptLinkId: ingress.linkId } : { exceptPortId: ingress.portId }
     if (Bridge.sendTo(event, vlan, frame, BridgeVlans.targets(ctx, vlan, frame.dst, scope)) > 0) return event.conclude('flooded', 2)
     event.note(2, 'out', localizedMessage('simulation:notes.l2.floodNoPorts', { vlan }))
-    event.conclude('filtered', 2)
+    event.conclude('filtered', 2, 'noEgressPort')
   }
 
   private static sendTo(event: EventBuilder, vlan: number, frame: EthernetFrame, targets: readonly EgressTarget[], frameId?: string): number {

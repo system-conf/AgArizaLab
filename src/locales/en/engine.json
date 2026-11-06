@@ -22,6 +22,8 @@
     "pingContinuous": "    -t                   Continuous ping; in this lab 4 requests are sent",
     "tracert": "  tracert <ip or name>   Lists the routers (hops) on the way to an address",
     "nslookup": "  nslookup <name>        Asks the DNS server which IP address a name belongs to",
+    "arp": "  arp -a                 Shows the ARP cache: which MAC address belongs to which IP",
+    "arpDelete": "  arp -d *               Empties the ARP cache",
     "help": "  help                   Shows this list"
   }
 }

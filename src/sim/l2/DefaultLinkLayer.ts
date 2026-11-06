@@ -1,5 +1,5 @@
 import { localizedMessage } from '../../i18n/messageKeys'
-import { L3Interfaces } from '../../engine/L3Interfaces'
+import { L3Interfaces } from '../../net/L3Interfaces'
 import {
   type DeviceChange,
   type DeviceContext,
@@ -36,6 +36,15 @@ export class DefaultLinkLayer implements LinkLayer {
 
   onChange(ctx: DeviceContext, change: DeviceChange): void {
     LinkChanges.apply(ctx, change)
+  }
+
+  /**
+   * After the start-up traffic (coordinator decision 3): MAC tables and ARP caches start empty so the
+   * first ARP broadcast and the first flooded frame are visible; duplicate-address results stay.
+   */
+  onSettled(ctx: DeviceContext): void {
+    LinkTables.forgetMac(ctx, () => true)
+    LinkTables.forgetArp(ctx, () => true)
   }
 
   onFrame(ctx: DeviceContext, arrival: FrameArrival): void {

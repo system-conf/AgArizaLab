@@ -26,6 +26,6 @@ export class HubRepeater {
     }
     if (sent > 0) return event.conclude('flooded', 1)
     event.note(1, 'out', localizedMessage('simulation:notes.l1.noOtherPort'))
-    event.conclude('filtered', 1)
+    event.conclude('filtered', 1, 'noEgressPort')
   }
 }

@@ -94,6 +94,8 @@ export interface SimEvent {
   /** Previous device on the wire (PT "Last Device"); absent for created PDUs. */
   readonly lastDeviceId?: string
   readonly inPortId?: string
+  /** Arrival events: the `SimTransmission` whose frame arrived (the map ends that transmission here). */
+  readonly transmissionId?: number
   /** Ports the PDU left from: one when forwarded, several when flooded, none when consumed or dropped. */
   readonly outPortIds: readonly string[]
   readonly flowId: string

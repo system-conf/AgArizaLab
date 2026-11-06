@@ -1,5 +1,5 @@
 import type { Device, NetworkState } from '../../domain'
-import { Topology } from '../../engine/Topology'
+import { Topology } from '../../net/Topology'
 import type { DeviceChange } from '../contract'
 
 /** What a new configuration means for the running devices (docs/SIMULATION.md §5.3). */

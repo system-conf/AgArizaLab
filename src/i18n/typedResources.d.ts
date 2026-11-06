@@ -34,6 +34,7 @@ export interface AppResources {
   deviceConfig: typeof deviceConfig
   simulation: typeof simulation
   design: typeof import('../locales/en/design.json')
+  designBriefs: typeof import('../locales/en/designBriefs.json')
 }
 
 declare module 'i18next' {

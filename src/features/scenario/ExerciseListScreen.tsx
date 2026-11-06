@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next'
+import DesignTasksCallout from '../design/list/DesignTasksCallout'
 import LandingFooter from '../landing/LandingFooter'
 import SiteHeader from '../layout/SiteHeader'
 import { useDocumentMeta } from '../layout/useDocumentMeta'
@@ -40,6 +41,8 @@ function ExerciseListScreen({ items, onStart }: ExerciseListScreenProps) {
               </li>
             ))}
           </ul>
+          {/* Design (D2): link to the design tasks */}
+          <DesignTasksCallout />
         </section>
         <LandingFooter />
       </main>

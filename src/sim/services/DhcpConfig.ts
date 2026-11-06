@@ -1,7 +1,7 @@
 import type { Device, DhcpPool, NetworkState } from '../../domain'
-import { DeviceAddresses } from '../../engine/DeviceAddresses'
-import { Ipv4 } from '../../engine/Ipv4'
-import { L3Interfaces } from '../../engine/L3Interfaces'
+import { DeviceAddresses } from '../../net/DeviceAddresses'
+import { Ipv4 } from '../../net/Ipv4'
+import { L3Interfaces } from '../../net/L3Interfaces'
 
 /** A pool and the device serving it. */
 export interface PoolRef {

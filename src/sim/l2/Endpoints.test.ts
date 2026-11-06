@@ -193,12 +193,16 @@ describe('link layer: the internet cloud', () => {
     expect(run.events.filter((event) => event.deviceId === 'internet').map((event) => event.reason)).toEqual(['arpNotForUs', 'arpNotForUs', 'arpNotForUs'])
   })
 
-  it('drops everything while the provider line is down, and serves only routed ports', () => {
+  it('drops IPv4 silently while the provider line is down (ARP still answered), and serves only routed ports', () => {
     let engine = startLab(wanLab(false))
-    let run = engine.runUntilDone(engine.inject(pingRequest('r1', '8.8.8.8')))
-    const down = run.events.find((event) => event.deviceId === 'internet')
+    const id = engine.inject(pingRequest('r1', '8.8.8.8'))
+    let run = engine.runUntilDone(id)
+    const atCloud = run.events.filter((event) => event.deviceId === 'internet')
+    expect(atCloud[0]).toMatchObject({ action: 'replied', protocol: 'arp' })
+    const down = atCloud.find((event) => event.protocol === 'icmp')
     expect(down).toMatchObject({ action: 'dropped', reason: 'ispServiceDown' })
     expect(noteKeys(down)).toContain('ispServiceDown')
+    expect(run.events.filter((event) => event.deviceId === 'r1' && event.action === 'dropped')).toEqual([])
 
     const direct: NetworkState = { devices: [labHost('pc', '1.2.3.4'), labCloud()], links: [labLink('wan', ['pc', 'eth0'], ['internet', 'eth0'])] }
     engine = startLab(direct)

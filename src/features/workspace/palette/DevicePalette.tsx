@@ -21,6 +21,8 @@ interface DevicePaletteProps {
   onChooseCable: (tool: CableTool) => void
   /** The active cable tool, null with the select tool. */
   activeCable: CableTool | null
+  /** Design (D2): price text of a model (design brief with a budget); absent = no prices. */
+  priceLabelOf?: (modelId: string) => string | undefined
 }
 
 interface TileGroup {
@@ -35,7 +37,7 @@ interface TileGroup {
  * recent) → sub-category filter → model tiles, with search and a details card. Drag a tile onto
  * the canvas or click it.
  */
-function DevicePalette({ models, onAdd, onChooseCable, activeCable }: DevicePaletteProps) {
+function DevicePalette({ models, onAdd, onChooseCable, activeCable, priceLabelOf }: DevicePaletteProps) {
   const { t } = useTranslation('workspace')
   const translate = useMessageTranslator()
   const viewName = usePaletteViewName()
@@ -149,6 +151,7 @@ function DevicePalette({ models, onAdd, onChooseCable, activeCable }: DevicePale
                   onAdd={add}
                   onDropped={memory.recordUse}
                   onHighlight={setHighlightId}
+                  priceLabelOf={priceLabelOf}
                 />
               </section>
             ))
@@ -159,6 +162,7 @@ function DevicePalette({ models, onAdd, onChooseCable, activeCable }: DevicePale
             text={highlightId === null ? undefined : texts.textOf(highlightId)}
             favourite={highlightId !== null && memory.favourites.includes(highlightId)}
             onToggleFavourite={memory.toggleFavourite}
+            price={highlightId === null ? undefined : priceLabelOf?.(highlightId)}
           />
         </>
       )}

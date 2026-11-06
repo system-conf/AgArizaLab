@@ -1,6 +1,6 @@
 import type { Device } from '../../domain'
-import { Ipv4 } from '../../engine/Ipv4'
-import { L3Interfaces } from '../../engine/L3Interfaces'
+import { Ipv4 } from '../../net/Ipv4'
+import { L3Interfaces } from '../../net/L3Interfaces'
 import { type DeviceContext, type DhcpMessage, LIMITED_BROADCAST_IP, SIM_PORTS, type TransportDelivery, UNSPECIFIED_IP } from '../contract'
 import { ServiceNotes } from './ServiceNotes'
 import { ServiceSender } from './ServiceSender'

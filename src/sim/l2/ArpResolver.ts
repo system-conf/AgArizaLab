@@ -1,7 +1,7 @@
 import type { LocalizedMessage } from '../../domain/Messages'
 import { localizedMessage } from '../../i18n/messageKeys'
-import { Ipv4 } from '../../engine/Ipv4'
-import { type L3Interface, L3Interfaces } from '../../engine/L3Interfaces'
+import { Ipv4 } from '../../net/Ipv4'
+import { type L3Interface, L3Interfaces } from '../../net/L3Interfaces'
 import {
   BROADCAST_MAC,
   type DeviceContext,
@@ -14,7 +14,7 @@ import {
   ZERO_MAC,
 } from '../contract'
 import { FrameSender } from './FrameSender'
-import { BOOT_FLOW, LinkInterfaces } from './LinkInterfaces'
+import { LinkInterfaces } from './LinkInterfaces'
 import { LinkTables } from './LinkTables'
 
 /**
@@ -60,23 +60,20 @@ export class ArpResolver {
     ctx.schedule(SIM_TIMING.arpRetryMs, timer)
   }
 
-  /** The neighbour answered: cache it (start-up traffic is used, not kept) and release its packets. */
-  static learn(ctx: DeviceContext, iface: L3Interface, ip: string, mac: string, flowId: string): void {
+  /** The neighbour answered: cache it and release its packets. */
+  static learn(ctx: DeviceContext, iface: L3Interface, ip: string, mac: string): void {
     const known = LinkTables.arpLookup(ctx, iface.id, ip)
     if (known?.type === 'static') return ArpResolver.release(ctx, iface, ip, known.mac ?? mac)
-    if (flowId === BOOT_FLOW) LinkTables.removeArp(ctx, iface.id, ip)
-    else {
-      LinkTables.putArp(ctx, {
-        interfaceId: iface.id,
-        ip,
-        mac,
-        state: 'reachable',
-        type: 'dynamic',
-        updatedAt: ctx.now,
-        expiresAt: ctx.now + LinkInterfaces.arpAgeMs(ctx.device),
-        attempts: known?.attempts ?? 0,
-      })
-    }
+    LinkTables.putArp(ctx, {
+      interfaceId: iface.id,
+      ip,
+      mac,
+      state: 'reachable',
+      type: 'dynamic',
+      updatedAt: ctx.now,
+      expiresAt: ctx.now + LinkInterfaces.arpAgeMs(ctx.device),
+      attempts: known?.attempts ?? 0,
+    })
     ArpResolver.release(ctx, iface, ip, mac)
   }
 

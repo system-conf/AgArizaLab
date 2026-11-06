@@ -1,4 +1,5 @@
 import type { FailureReason, ResolveResult } from '../domain'
+import { DnsNames } from '../net/DnsNames'
 
 /** What asking one configured DNS server gave. */
 export type DnsServerAnswer =
@@ -43,6 +44,6 @@ export class DnsQuery {
 
   /** Names are case-insensitive and may end with the root dot. */
   static normalize(name: string): string {
-    return name.trim().toLowerCase().replace(/\.$/, '')
+    return DnsNames.normalize(name)
   }
 }

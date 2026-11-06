@@ -71,6 +71,7 @@ export class SimulationKernel implements SimulationEngine {
     kernel.reconfigure(network)
     if (options.settle ?? true) {
       kernel.runUntilIdle()
+      kernel.settled()
       kernel.eventLog = []
       kernel.transmissionLog = []
     }
@@ -180,6 +181,22 @@ export class SimulationKernel implements SimulationEngine {
 
   // ------------------------------------------------------------ internals
 
+  /** `LinkLayer.onSettled` per running device, in state order, in one scope at the current time. */
+  private settled(): void {
+    const { link } = this.deps.layers
+    if (!link.onSettled) return
+    const { counters } = this.state
+    const scope = new TaskScope({ ...this.state, counters: { ...counters, seq: counters.seq + 1 } }, counters.seq, this.deps)
+    for (const device of this.state.network.devices) {
+      if (scope.hasRuntime(device.id)) link.onSettled(scope.context(device.id, null))
+    }
+    const committed = scope.commit()
+    this.state = committed.snapshot
+    const produced = new Produced()
+    this.record(produced, committed.events, committed.transmissions)
+    if (committed.effects.length > 0) this.applyEffects(committed.effects, produced)
+  }
+
   private result(produced: Produced): StepResult {
     return {
       time: this.state.time,
@@ -239,6 +256,7 @@ export class SimulationKernel implements SimulationEngine {
       inPortId: arrival.portId,
       inbound: arrival.frame,
       lastDeviceId: arrival.fromDeviceId,
+      transmissionId: task.transmissionId,
     })
     const link = scope.network.links.find((candidate) => candidate.id === arrival.linkId)
     const joins = link !== undefined && [link.a, link.b].some((end) => end.deviceId === deviceId && end.portId === arrival.portId)

@@ -2,8 +2,8 @@
 // Hosts answer echoes to their own addresses; devices with ip routing forward to a connected subnet
 // (no route table, no ICMP errors). Results: the echo reply, or 'unreachable' when ARP failed.
 import type { NetworkState } from '../../domain'
-import { Ipv4 } from '../../engine/Ipv4'
-import { type L3Interface, L3Interfaces } from '../../engine/L3Interfaces'
+import { Ipv4 } from '../../net/Ipv4'
+import { type L3Interface, L3Interfaces } from '../../net/L3Interfaces'
 import { SimulationKernel } from '../core/SimulationKernel'
 import { nullLayers } from '../core/NullLayers'
 import {

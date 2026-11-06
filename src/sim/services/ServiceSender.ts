@@ -25,10 +25,7 @@ export interface ServiceSend {
   readonly notes?: readonly LocalizedMessage[]
 }
 
-/**
- * `Ipv4Send` with the notes the network layer should add to the 'created' event it logs.
- * Proposed contract field (docs/SIMULATION.md §6.3): until S2 reads it, the notes are ignored.
- */
+/** `Ipv4Send` with the notes the network layer adds to the 'created' event it logs (`Ipv4Send.notes`). */
 export type NotedIpv4Send = Ipv4Send & { readonly notes: readonly SimNote[] }
 
 /** Originates service packets through the network layer (S2). */

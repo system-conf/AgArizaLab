@@ -1,5 +1,6 @@
 import type { LocalizedMessage } from '../../domain/Messages'
-import { L3Interfaces } from '../../engine/L3Interfaces'
+import { L3Interfaces } from '../../net/L3Interfaces'
+import { FrameEncoder } from '../pcap/FrameEncoder'
 import {
   type DeviceContext,
   type EventBuilder,
@@ -82,7 +83,7 @@ export class IcmpResponder {
     const ingress = cause.ingressInterfaceId === undefined ? undefined : L3Interfaces.find(ctx.device, cause.ingressInterfaceId)
     const src = cause.sourceIp ?? InterfaceAddresses.sourceAddress(ctx.topology, ctx.device, ingress)
     if (src === '') return
-    const original = PduLayers.quote(packet)
+    const original = PduLayers.quote(packet, FrameEncoder.ipv4Length(packet))
     const payload: IcmpError =
       kind.type === 'timeExceeded'
         ? { kind: 'icmp', type: 'timeExceeded', code: 'ttlInTransit', original }
@@ -93,7 +94,7 @@ export class IcmpResponder {
 
   /** The error a sender reports to itself when its own ARP failed (Windows: from its own address). */
   static hostUnreachable(packet: Ipv4Packet): IcmpError {
-    return { kind: 'icmp', type: 'destinationUnreachable', code: 'host', original: PduLayers.quote(packet) }
+    return { kind: 'icmp', type: 'destinationUnreachable', code: 'host', original: PduLayers.quote(packet, FrameEncoder.ipv4Length(packet)) }
   }
 
   /** RST for a segment to a closed port (RFC 793 reset generation); never in answer to a reset. */

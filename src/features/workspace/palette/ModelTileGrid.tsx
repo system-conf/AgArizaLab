@@ -18,6 +18,8 @@ interface ModelTileGridProps {
   onDropped: (modelId: string) => void
   /** Pointer or keyboard focus is on this model (shown in the details card). */
   onHighlight: (modelId: string) => void
+  /** Design (D2): price text under the name (design brief with a budget). */
+  priceLabelOf?: (modelId: string) => string | undefined
 }
 
 /** Number of columns the grid is laid out in right now (from the computed CSS grid). */
@@ -30,7 +32,7 @@ function columnsOf(list: HTMLElement | null): number {
  * Model tiles: drag one onto the canvas or click it. One tab stop per grid (roving focus); arrow
  * keys move between tiles, Home / End jump, Enter / Space add the focused model.
  */
-function ModelTileGrid({ models, textOf, favourites, onAdd, onDropped, onHighlight }: ModelTileGridProps) {
+function ModelTileGrid({ models, textOf, favourites, onAdd, onDropped, onHighlight, priceLabelOf }: ModelTileGridProps) {
   const { t } = useTranslation('workspace')
   const listRef = useRef<HTMLUListElement>(null)
   const [focusIndex, setFocusIndex] = useState(0)
@@ -62,6 +64,7 @@ function ModelTileGrid({ models, textOf, favourites, onAdd, onDropped, onHighlig
         const name = text?.name ?? model.id
         const favourite = favourites.includes(model.id)
         const describedBy = `${describedByPrefix}-${model.id}`
+        const price = priceLabelOf?.(model.id)
         return (
           <li key={model.id} className="relative">
             <button
@@ -85,9 +88,16 @@ function ModelTileGrid({ models, textOf, favourites, onAdd, onDropped, onHighlig
                 <DeviceKindIcon kind={model.kind} modelId={model.id} className="h-6 w-6" aria-hidden="true" />
               </span>
               <span className="line-clamp-2">{name}</span>
+              {/* Design (D2): price of the model in a brief with a budget */}
+              {price !== undefined && (
+                <span aria-hidden="true" className="rounded bg-indigo-50 px-1 text-[10px] font-medium text-indigo-800">
+                  {price}
+                </span>
+              )}
               <span id={describedBy} className="sr-only">
                 {favourite && <span>{t('palette.isFavourite')}. </span>}
                 {text?.ports}
+                {price !== undefined && <span>, {price}</span>}
               </span>
             </button>
             {favourite && (

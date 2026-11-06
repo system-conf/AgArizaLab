@@ -119,6 +119,11 @@
       "noDetails": "No PDU at this event.",
       "packet": "{{protocol}} on its way from {{from}} to {{to}}",
       "packetDropped": "{{protocol}} dropped at {{to}}"
+    },
+    "terminal": {
+      "stepToAnswer": "Waiting for the simulation: press Step forward or Play to get the answer.",
+      "running": "Running…",
+      "cancelled": "The command was cancelled: the simulation was reset or stepped back before it ended."
     }
   },
   "actions": {
@@ -219,6 +224,8 @@
     "unknownSsid": "The access point does not offer this SSID.",
     "ispServiceDown": "The internet provider line is down.",
     "ispNoService": "The internet provider serves only routers.",
+    "noEgressPort": "No other port can carry the frame: it goes nowhere.",
+    "noDestinationMac": "The internet provider answers only the device that asked: no destination MAC.",
     "cableDisconnected": "The cable is unplugged.",
     "portDisabled": "The port is shut down.",
     "noIpAddress": "No IP address.",

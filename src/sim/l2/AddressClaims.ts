@@ -1,5 +1,5 @@
 import { localizedMessage } from '../../i18n/messageKeys'
-import { type L3Interface, L3Interfaces } from '../../engine/L3Interfaces'
+import { type L3Interface, L3Interfaces } from '../../net/L3Interfaces'
 import { BROADCAST_MAC, type DeviceContext, type EventBuilder, UNSPECIFIED_IP, ZERO_MAC } from '../contract'
 import { FrameSender } from './FrameSender'
 import { LinkInterfaces } from './LinkInterfaces'

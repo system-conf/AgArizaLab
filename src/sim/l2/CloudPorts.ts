@@ -1,5 +1,5 @@
 import { localizedMessage } from '../../i18n/messageKeys'
-import { Ipv4 } from '../../engine/Ipv4'
+import { Ipv4 } from '../../net/Ipv4'
 import {
   type ArpPacket,
   BROADCAST_MAC,
@@ -24,7 +24,7 @@ export class CloudPorts {
     const { frame } = arrival
     const port = LinkInterfaces.port(ctx.device, arrival.portId)
     if (frame.kind !== 'ethernet' || !port) return event.conclude('dropped', 2, 'unsupported')
-    const refusal = CloudPorts.refusal(ctx, arrival.portId, arrival.linkId, event)
+    const refusal = CloudPorts.refusal(ctx, arrival.portId, arrival.linkId, event, frame.payload.kind === 'arp')
     if (refusal) return event.conclude('dropped', 2, refusal)
     if (frame.tag !== undefined) {
       event.note(2, 'in', localizedMessage('simulation:notes.l2.taggedAtNic', { vlan: frame.tag.vid }))
@@ -69,7 +69,7 @@ export class CloudPorts {
     }
     if (!linkDestination) {
       event.note(2, 'out', localizedMessage('simulation:notes.l2.cloudNeedsDestination'))
-      return event.conclude('dropped', 2, 'unsupported')
+      return event.conclude('dropped', 2, 'noDestinationMac')
     }
     const dst = linkDestination.kind === 'mac' ? linkDestination.mac : BROADCAST_MAC
     const frame: EthernetFrame = { kind: 'ethernet', src: port.mac ?? ctx.device.baseMac, dst, payload: packet }
@@ -94,15 +94,19 @@ export class CloudPorts {
     return ctx.device.internet?.handoffs.find((handoff) => handoff.portId === portId)?.serviceUp !== false
   }
 
-  /** Why the port serves nobody on this link, or null. */
-  private static refusal(ctx: DeviceContext, portId: string, linkId: string, event: EventBuilder): 'ispNoService' | 'ispServiceDown' | null {
+  /**
+   * Why the port serves nobody on this link, or null. A provider outage keeps the handoff's own side
+   * alive (link light on, ARP answered): IPv4 is dropped silently, so a router never reports the outage
+   * (engine rule: WAN down = silence).
+   */
+  private static refusal(ctx: DeviceContext, portId: string, linkId: string, event: EventBuilder, arp: boolean): 'ispNoService' | 'ispServiceDown' | null {
     const link = ctx.network.links.find((candidate) => candidate.id === linkId)
     const far = link ? ctx.topology.farEnd(link, ctx.device.id, portId) : undefined
     if (far?.port?.role !== 'routed') {
       event.note(2, 'in', localizedMessage('simulation:notes.l2.ispNoService', { port: portId }))
       return 'ispNoService'
     }
-    if (!CloudPorts.serviceUp(ctx, portId)) {
+    if (!arp && !CloudPorts.serviceUp(ctx, portId)) {
       event.note(2, 'in', localizedMessage('simulation:notes.l2.ispServiceDown', { port: portId }))
       return 'ispServiceDown'
     }

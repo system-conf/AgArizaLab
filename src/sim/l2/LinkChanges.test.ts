@@ -31,18 +31,19 @@ describe('link layer: start-up and flush rules', () => {
     expect(engine.runtime('pc1')?.link.claims[0]?.duplicate).toBe(true)
   })
 
-  it('does not keep what start-up traffic taught, but learns from it later', () => {
+  it('learns from start-up traffic like from any other (only settle flushes it), and from later probes', () => {
     const engine = startLab(lab(), { settle: false })
     engine.runUntilIdle()
     expect(engine.events().every((event) => event.flowId === 'boot')).toBe(true)
-    expect(macPorts(engine)).toEqual([])
+    expect(macPorts(engine)).toEqual(['1 Fa0/1', '1 Fa0/2', '10 Fa0/3'])
     const plugged = editLink(engine.network(), 'l3', (link) => ({ ...link, connected: false }))
     engine.reconfigure(plugged)
+    expect(macPorts(engine)).toEqual(['1 Fa0/1', '1 Fa0/2'])
     const report = engine.reconfigure(editLink(plugged, 'l3', (link) => ({ ...link, connected: true })))
     expect(report.events.map((event) => [event.deviceId, event.flowId])).toEqual([['pc3', 'bg:pc3']])
     expect(noteKeys(report.events[0])).toContain('arpProbe')
     engine.runUntilIdle()
-    expect(macPorts(engine)).toEqual(['10 Fa0/3'])
+    expect(macPorts(engine)).toEqual(['1 Fa0/1', '1 Fa0/2', '10 Fa0/3'])
   })
 
   it('forgets MAC and ARP entries of a port that goes down and drops the packets waiting there', () => {

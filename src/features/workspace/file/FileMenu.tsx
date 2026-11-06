@@ -1,4 +1,4 @@
-import { ChevronDown, Download, FilePlus2, FolderOpen, Link2, Upload, type LucideIcon } from 'lucide-react'
+import { ChevronDown, Download, FilePlus2, FileText, FolderOpen, Link2, Upload, type LucideIcon } from 'lucide-react'
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { focusRing } from '../../shared/focusRing'
@@ -8,9 +8,11 @@ import type { LabFileActions } from './useLabFileActions'
 interface FileMenuProps {
   actions: LabFileActions
   onOpenRecent: () => void
+  /** Design (D2): opens the handover pack of the lab. */
+  onHandover: () => void
 }
 
-type ItemKey = 'newLab' | 'openRecent' | 'import' | 'export' | 'share'
+type ItemKey = 'newLab' | 'openRecent' | 'import' | 'export' | 'share' | 'handover'
 
 const ITEMS: readonly { key: ItemKey; icon: LucideIcon }[] = [
   { key: 'newLab', icon: FilePlus2 },
@@ -18,11 +20,13 @@ const ITEMS: readonly { key: ItemKey; icon: LucideIcon }[] = [
   { key: 'import', icon: Upload },
   { key: 'export', icon: Download },
   { key: 'share', icon: Link2 },
+  // Design (D2)
+  { key: 'handover', icon: FileText },
 ]
 
 /** "File" menu button of the free lab (menu button pattern: arrows, Home / End, Esc, Tab closes). */
-function FileMenu({ actions, onOpenRecent }: FileMenuProps) {
-  const { t } = useTranslation(['workspace', 'lab'])
+function FileMenu({ actions, onOpenRecent, onHandover }: FileMenuProps) {
+  const { t } = useTranslation(['workspace', 'lab', 'design'])
   const [open, setOpen] = useState(false)
   const menuId = useId()
   const rootRef = useRef<HTMLDivElement>(null)
@@ -55,6 +59,8 @@ function FileMenu({ actions, onOpenRecent }: FileMenuProps) {
         return actions.exportLab()
       case 'share':
         return actions.copyShareLink()
+      case 'handover':
+        return onHandover()
     }
   }
 
@@ -89,6 +95,8 @@ function FileMenu({ actions, onOpenRecent }: FileMenuProps) {
         return t('lab:actions.export')
       case 'share':
         return t('lab:actions.share')
+      case 'handover':
+        return t('design:ui.handover.menuItem')
     }
   }
 

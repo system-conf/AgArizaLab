@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { editAddress } from '../../engine/testLabs'
-import { Topology } from '../../engine/Topology'
+import { Topology } from '../../net/Topology'
 import type { NetworkState } from '../../domain'
 import type { DeviceContext } from '../contract'
 import { SimulationKernel } from '../core/SimulationKernel'

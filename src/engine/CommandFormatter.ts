@@ -1,5 +1,6 @@
-import type { TerminalLine } from '../domain'
+import type { ResolveResult, TerminalLine } from '../domain'
 import { type AppMessageKey, localizedMessage } from '../i18n/messageKeys'
+import { internetHosts } from '../net/internetHosts'
 import type { OptionError } from './CommandOptions'
 import { messageLine, textLines } from './terminalLines'
 
@@ -52,6 +53,8 @@ const HELP_KEYS: readonly AppMessageKey[] = [
   'engine:help.pingContinuous',
   'engine:help.tracert',
   'engine:help.nslookup',
+  'engine:help.arp',
+  'engine:help.arpDelete',
   'engine:help.help',
 ]
 
@@ -117,6 +120,22 @@ export class CommandFormatter {
   /** ipconfig with an option it does not know. */
   ipconfigBadOption(): TerminalLine[] {
     return [...textLines(['Error: unrecognized or incomplete command line.'], 'error'), this.usageLine('ipconfig')]
+  }
+
+  /** nslookup output for a resolution result (the rule engine's and the simulator's `ResolveResult`). */
+  nslookupResult(result: ResolveResult, name: string): TerminalLine[] {
+    if (result.ok) return this.nslookupAnswer(this.dnsServerName(result.dnsServer), result.dnsServer, name, result.ip)
+    const server = result.dnsServer ?? ''
+    switch (result.reason) {
+      case 'dnsNotSet':
+        return this.nslookupNoServers()
+      case 'nameNotFound':
+        return this.nslookupNotFound(this.dnsServerName(server), server, name)
+      case 'dnsNoAnswer':
+        return this.nslookupNoAnswer(server, name)
+      default:
+        return this.nslookupTimedOut(server)
+    }
   }
 
   nslookupAnswer(serverName: string, serverIp: string, name: string, ip: string): TerminalLine[] {
@@ -269,6 +288,11 @@ export class CommandFormatter {
     const fourth = bytes[5]
     if (third === undefined || fourth === undefined || Number.isNaN(third) || Number.isNaN(fourth)) return '169.254.1.1'
     return `169.254.${Math.max(1, Math.min(254, third))}.${Math.max(1, Math.min(254, fourth))}`
+  }
+
+  /** The reverse name nslookup prints on its "Server:" line. */
+  private dnsServerName(serverIp: string): string {
+    return internetHosts.dnsServerNames[serverIp] ?? 'UnKnown'
   }
 
   private serverLines(serverName: string, serverIp: string): string[] {

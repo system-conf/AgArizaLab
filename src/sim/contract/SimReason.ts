@@ -33,6 +33,10 @@ export const SIM_REASONS = [
   'ispServiceDown',
   /** Only routed ports get internet service; an end device cabled to the cloud gets none. */
   'ispNoService',
+  /** No other port carries the frame's VLAN (or has a working link): the frame goes nowhere. */
+  'noEgressPort',
+  /** The cloud answers only the MAC that asked: a packet without a link-layer destination is not sent. */
+  'noDestinationMac',
 
   // ---- layer 3 (S2); names shared with FailureReason where the meaning is the same
   'cableDisconnected',

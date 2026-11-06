@@ -69,3 +69,22 @@ describe('PingFormatter — TTL expired (routing loops)', () => {
     ])
   })
 })
+
+describe('PingFormatter — per echo (simulator)', () => {
+  it('prints equal echoes exactly like ping', () => {
+    const reply = { kind: 'reply', fromIp: '10.0.0.2', ttl: 128, baseTimeMs: 1 } as const
+    expect(formatter.pingEchoes('10.0.0.2', null, [reply, reply, reply, reply], 32)).toEqual(formatter.ping('10.0.0.2', null, reply, standard))
+  })
+
+  it('counts errors as received and times only the replies', () => {
+    const lines = formatter
+      .pingEchoes('10.0.0.2', null, [{ kind: 'timeout' }, { kind: 'reply', fromIp: '10.0.0.2', ttl: 128, baseTimeMs: 1 }, { kind: 'unreachable', fromIp: '10.0.0.1' }], 32)
+      .map((line) => line.text ?? '')
+    expect(lines.slice(2, 5)).toEqual(['Request timed out.', 'Reply from 10.0.0.2: bytes=32 time=2ms TTL=128', 'Reply from 10.0.0.1: Destination host unreachable.'])
+    expect(lines.slice(-3)).toEqual([
+      '    Packets: Sent = 3, Received = 2, Lost = 1 (33% loss),',
+      'Approximate round trip times in milli-seconds:',
+      '    Minimum = 2ms, Maximum = 2ms, Average = 2ms',
+    ])
+  })
+})

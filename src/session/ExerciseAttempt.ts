@@ -1,9 +1,10 @@
 import type { LocalizedMessage } from '../domain/Messages'
 import type { ExerciseDefinition, NetworkState, SolveCondition } from '../domain'
-import { solveChecker, type ConditionResult } from '../engine'
+import type { ConditionResult } from '../engine'
+import { SimSolveChecker } from '../sim'
 import { FailedCheckDescriber } from './FailedCheckDescriber'
 
-/** Evaluates solve conditions (SolveChecker); injectable for tests. */
+/** Evaluates solve conditions (the simulator's SimSolveChecker); injectable for tests. */
 export interface ConditionChecker {
   check(state: NetworkState, conditions: readonly SolveCondition[]): ConditionResult[]
 }
@@ -34,7 +35,7 @@ export class ExerciseAttempt {
     this.data = data
   }
 
-  static start(exercise: Pick<ExerciseDefinition, 'solvedWhen'>, checker: ConditionChecker = solveChecker): ExerciseAttempt {
+  static start(exercise: Pick<ExerciseDefinition, 'solvedWhen'>, checker: ConditionChecker = SimSolveChecker): ExerciseAttempt {
     return new ExerciseAttempt(exercise.solvedWhen, checker, { guideStepsRevealed: 0, lastCheck: null, solved: false })
   }
 
@@ -56,9 +57,18 @@ export class ExerciseAttempt {
     return this.with({ guideStepsRevealed: this.data.guideStepsRevealed + 1 })
   }
 
+  /** The conditions `verify` checks (for a check made elsewhere, e.g. in the Web Worker). */
+  get conditions(): readonly SolveCondition[] {
+    return this.solvedWhen
+  }
+
   /** Checks the solve conditions on `state`; a success marks the attempt solved. */
   verify(state: NetworkState): ExerciseAttempt {
-    const results = this.checker.check(state, this.solvedWhen)
+    return this.withCheck(this.checker.check(state, this.solvedWhen))
+  }
+
+  /** Records a check of `conditions` made elsewhere; a success marks the attempt solved. */
+  withCheck(results: readonly ConditionResult[]): ExerciseAttempt {
     return this.with({ lastCheck: results, solved: this.data.solved || results.every((result) => result.ok) })
   }
 

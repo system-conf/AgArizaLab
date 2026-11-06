@@ -1,4 +1,4 @@
-import { Ipv4 } from '../../engine/Ipv4'
+import { Ipv4 } from '../../net/Ipv4'
 import {
   type DeviceContext,
   type HttpClientSession,

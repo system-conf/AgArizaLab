@@ -142,4 +142,33 @@ describe('SimulationKernel', () => {
     const forgetful: LinkLayer = { ...toyLayers.link, onFrame: () => undefined, onStart: toyLayers.link.onStart.bind(toyLayers.link) }
     expect(() => SimulationKernel.create(hubLab(), { ...toyLayers, link: forgetful })).toThrow('never concluded')
   })
+
+  it('stamps arrival events with the transmission that brought the frame', () => {
+    const kernel = created()
+    kernel.runUntilDone(kernel.inject(ping))
+    const transmissions = kernel.transmissions()
+    const arrivals = kernel.events().filter((event) => event.inPortId !== undefined)
+    expect(arrivals.length).toBeGreaterThan(0)
+    for (const arrival of arrivals) {
+      const transmission = transmissions.find((candidate) => candidate.id === arrival.transmissionId)
+      expect(transmission?.to).toEqual({ deviceId: arrival.deviceId, portId: arrival.inPortId })
+      expect(transmission?.frameId).toBe(arrival.frameId)
+    }
+    expect(kernel.events().filter((event) => event.inPortId === undefined).every((event) => event.transmissionId === undefined)).toBe(true)
+  })
+
+  it('lets the link layer forget start-up learning after settle (onSettled), once per running device', () => {
+    const settled: string[] = []
+    const link: LinkLayer = Object.assign(Object.create(toyLayers.link) as LinkLayer, {
+      onSettled: (ctx: Parameters<NonNullable<LinkLayer['onSettled']>>[0]) => {
+        settled.push(`${ctx.device.id}@${ctx.now}`)
+      },
+    })
+    const off = editDevice(hubLab(), 'pc3', (device) => ({ ...device, powered: false }))
+    SimulationKernel.create(off, { ...toyLayers, link })
+    expect(settled).toEqual(['pc1@2', 'pc2@2', 'hub@2'])
+    settled.length = 0
+    SimulationKernel.create(off, { ...toyLayers, link }, { settle: false })
+    expect(settled).toEqual([])
+  })
 })

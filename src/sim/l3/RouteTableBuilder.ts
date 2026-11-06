@@ -1,9 +1,9 @@
 import type { Device, StaticRoute } from '../../domain'
-import { HostAttachment } from '../../engine/HostAttachment'
-import { Ipv4 } from '../../engine/Ipv4'
-import { type L3Interface, L3Interfaces } from '../../engine/L3Interfaces'
-import { RoutingTable } from '../../engine/RoutingTable'
-import type { Topology } from '../../engine/Topology'
+import { HostAttachment } from '../../net/HostAttachment'
+import { Ipv4 } from '../../net/Ipv4'
+import { type L3Interface, L3Interfaces } from '../../net/L3Interfaces'
+import { InterfaceStatus } from '../../net/InterfaceStatus'
+import type { Topology } from '../../net/Topology'
 import { DeviceProfiles, type RouteEntry } from '../contract'
 import { InterfaceAddresses } from './InterfaceAddresses'
 
@@ -79,7 +79,7 @@ export class RouteTableBuilder {
   private static resolveExit(topology: Topology, device: Device, route: StaticRoute, depth: number): L3Interface | null {
     if (route.exitInterfaceId !== undefined) {
       const exit = L3Interfaces.find(device, route.exitInterfaceId)
-      return exit && RoutingTable.isUp(topology, exit) ? exit : null
+      return exit && InterfaceStatus.isUp(topology, exit) ? exit : null
     }
     if (route.nextHop === undefined || !Ipv4.isValid(route.nextHop) || depth >= MAX_RECURSION) return null
     return RouteTableBuilder.bestExit(topology, device, route.nextHop, depth + 1)

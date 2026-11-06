@@ -163,10 +163,13 @@ export class PduLayers {
     }
   }
 
-  /** The quote an ICMP error carries about `packet` (RFC 792: IP header + 8 bytes). */
-  static quote(packet: Ipv4Packet): IpQuote {
+  /**
+   * The quote an ICMP error carries about `packet` (RFC 792: IP header + 8 bytes). `totalLength` = the
+   * packet's IPv4 total length in bytes (the contract has no byte model: `FrameEncoder.ipv4Length`).
+   */
+  static quote(packet: Ipv4Packet, totalLength: number): IpQuote {
     const { src, dst, ttl, identification, payload } = packet
-    const base = { src, dst, ttl, identification }
+    const base = { src, dst, ttl, identification, totalLength }
     switch (payload.kind) {
       case 'icmp':
         return payload.type === 'echoRequest' || payload.type === 'echoReply'

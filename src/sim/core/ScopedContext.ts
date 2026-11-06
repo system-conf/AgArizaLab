@@ -1,5 +1,5 @@
 import type { Device, NetworkState } from '../../domain'
-import type { Topology } from '../../engine/Topology'
+import type { Topology } from '../../net/Topology'
 import type {
   DeviceContext,
   DeviceRuntime,

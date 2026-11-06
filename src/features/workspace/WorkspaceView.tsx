@@ -2,7 +2,7 @@ import { useReactFlow } from '@xyflow/react'
 import { LayoutGrid, X } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { CableTool, Device } from '../../domain'
+import type { CableTool, Device, DeviceModel } from '../../domain'
 import { focusRing } from '../shared/focusRing'
 import { useMediaQuery } from '../shared/useMediaQuery'
 import { SimplePduHint, SimulationMapLayer, SimulationPanel, SimulationToolbar, useSimulation } from '../simulation'
@@ -24,7 +24,6 @@ import DeviceTabs from './panels/DeviceTabs'
 import type { DeviceTab } from './panels/deviceTabModel'
 import PropertiesPanel from './panels/PropertiesPanel'
 import ShortcutsHelp from './panels/ShortcutsHelp'
-import PacketTraceLayer from './terminal/PacketTraceLayer'
 import { useDeviceTerminals } from './terminal/useDeviceTerminals'
 import ToastRegion from './ToastRegion'
 import { useDeviceEditing } from './useDeviceEditing'
@@ -48,12 +47,21 @@ export interface WorkspaceViewProps {
   exerciseMode?: boolean
   /** Explanation next to a lock icon in the toolbar (exercise with a locked topology). */
   lockedNote?: string
+  /** Design (D2): models the palette offers (a brief's allowed models); default: the whole catalog. */
+  paletteModels?: readonly DeviceModel[]
+  /** Design (D2): price text on palette tiles (a brief with a budget); undefined = no prices. */
+  priceLabelOf?: (modelId: string) => string | undefined
+  /** Design (D2): a panel between the canvas and the properties panel (the brief on wide screens). */
+  sidePanel?: ReactNode
 }
 
 /** The lab builder: header, device palette, canvas with tools, properties panel with device tabs. */
 function WorkspaceView(props: WorkspaceViewProps) {
   const { lab, policy, toasts, headerStart, headerEnd, banner, footer, lockedNote } = props
   const exerciseMode = props.exerciseMode ?? false
+  // Design (D2): brief palette filter and prices.
+  const paletteModels = props.paletteModels ?? deviceCatalog
+  const priceLabelOf = props.priceLabelOf
   const { t } = useTranslation('workspace')
   const flow = useReactFlow<WorkspaceNode>()
   const { doc } = lab
@@ -69,7 +77,6 @@ function WorkspaceView(props: WorkspaceViewProps) {
   const wide = useMediaQuery('(min-width: 1024px)')
   const cable = useCableTool({ lab, editor: labEditor, notify: toasts.show })
   const actions = useWorkspaceActions({ lab, editor: labEditor, selection, policy, snapToGrid, canvasRef })
-  const terminals = useDeviceTerminals(lab)
   const editing = useDeviceEditing(lab, labEditor, policy)
   const selectedCount = SelectionModel.count(selection)
   const deletableCount = SelectionModel.count(policy.allowedDeletion(selection))
@@ -77,8 +84,10 @@ function WorkspaceView(props: WorkspaceViewProps) {
     (deviceId: string) => doc.state.devices.find((device) => device.id === deviceId)?.name ?? deviceId,
     [doc],
   )
-  // Simulation (U3): mode switch, Simple PDU tool, map packets, panel.
-  const simulation = useSimulation({ network: doc.state, nameOf, notify: toasts.show, title: doc.meta.title })
+  // Simulation (U3, I3): one simulator per open lab; mode switch, Simple PDU tool, map packets, panel.
+  const simulation = useSimulation({ network: doc.state, labId: lab.labId, nameOf, notify: toasts.show, title: doc.meta.title })
+  // Simulation (I3): the terminals run on the same simulator.
+  const terminals = useDeviceTerminals(lab, simulation.terminal)
 
   // A different lab was opened (autosave restore, File menu, exercise): show all of it.
   useEffect(() => {
@@ -230,7 +239,7 @@ function WorkspaceView(props: WorkspaceViewProps) {
             <h2 id="palette-heading" className="mb-2 text-sm font-semibold text-slate-900">
               {t('palette.title')}
             </h2>
-            <DevicePalette models={deviceCatalog} onAdd={addModel} onChooseCable={chooseCableFromPalette} activeCable={cable.state.tool} />
+            <DevicePalette models={paletteModels} priceLabelOf={priceLabelOf} onAdd={addModel} onChooseCable={chooseCableFromPalette} activeCable={cable.state.tool} />
           </aside>
         )}
         <main className="flex min-w-0 flex-1 flex-col">
@@ -277,7 +286,6 @@ function WorkspaceView(props: WorkspaceViewProps) {
                 screenToFlow={flow.screenToFlowPosition}
                 canvasRef={canvasRef}
               >
-                <PacketTraceLayer trace={terminals.trace} layout={doc.layout} />
                 <CableHint state={cable.state} nameOf={nameOf} />
                 {/* Simulation (U3) */}
                 <SimulationMapLayer simulation={simulation} layout={doc.layout} links={doc.state.links} nameOf={nameOf} />
@@ -312,6 +320,8 @@ function WorkspaceView(props: WorkspaceViewProps) {
           {/* Simulation (U3) */}
           {simulation.mode === 'simulation' && <SimulationPanel simulation={simulation} nameOf={nameOf} />}
         </main>
+        {/* Design (D2): the brief panel */}
+        {props.sidePanel}
         {wide && <aside className="w-80 shrink-0 border-s border-slate-200 bg-white xl:w-96">{properties()}</aside>}
         {!wide && selectedCount > 0 && !paletteOpen && (
           <div className="absolute inset-x-0 bottom-0 z-30 h-[60%] overflow-hidden rounded-t-2xl border-t border-slate-200 bg-white shadow-2xl">
@@ -344,7 +354,7 @@ function WorkspaceView(props: WorkspaceViewProps) {
                 <X className="h-5 w-5" aria-hidden="true" />
               </button>
             </div>
-            <DevicePalette models={deviceCatalog} onAdd={addModel} onChooseCable={chooseCableFromPalette} activeCable={cable.state.tool} />
+            <DevicePalette models={paletteModels} priceLabelOf={priceLabelOf} onAdd={addModel} onChooseCable={chooseCableFromPalette} activeCable={cable.state.tool} />
           </div>
         )}
         {shortcutsOpen && <ShortcutsHelp onClose={() => setShortcutsOpen(false)} />}

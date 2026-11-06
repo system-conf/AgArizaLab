@@ -72,6 +72,11 @@ export class FrameEncoder {
     return new ByteWriter().raw(header).raw(payload).toBytes()
   }
 
+  /** IPv4 total length of a packet in bytes (what an ICMP error quotes as `IpQuote.totalLength`). */
+  static ipv4Length(packet: Ipv4Packet): number {
+    return IPV4_HEADER_BYTES + FrameEncoder.transport(packet).length
+  }
+
   /** 20-byte IPv4 header (no options, no fragmentation) with its checksum. */
   static ipv4Header(fields: { src: string; dst: string; ttl: number; identification: number; protocol: number; totalLength: number }): Uint8Array {
     const out = new ByteWriter()
@@ -117,14 +122,16 @@ export class FrameEncoder {
 
   /** The offending packet's IPv4 header plus the first 8 bytes of its transport header (RFC 792). */
   private static quote(original: IpQuote): Uint8Array {
-    const transport = FrameEncoder.quotedTransport(original.transport)
+    const quotedBytes = FrameEncoder.quotedTransport(original.transport, 0).length
+    const totalLength = original.totalLength ?? IPV4_HEADER_BYTES + quotedBytes
+    const transport = FrameEncoder.quotedTransport(original.transport, totalLength - IPV4_HEADER_BYTES)
     const header = FrameEncoder.ipv4Header({
       src: original.src,
       dst: original.dst,
       ttl: original.ttl,
       identification: original.identification,
       protocol: FrameEncoder.quotedProtocol(original.transport),
-      totalLength: IPV4_HEADER_BYTES + transport.length,
+      totalLength,
     })
     return new ByteWriter().raw(header).raw(transport).toBytes()
   }
@@ -142,7 +149,8 @@ export class FrameEncoder {
     }
   }
 
-  private static quotedTransport(transport: TransportQuote): Uint8Array {
+  /** `payloadBytes` = the quoted packet's IP payload length (the quoted UDP length field). */
+  private static quotedTransport(transport: TransportQuote, payloadBytes: number): Uint8Array {
     const out = new ByteWriter()
     switch (transport.kind) {
       case 'icmp':
@@ -150,7 +158,7 @@ export class FrameEncoder {
         out.u8(transport.type === 'echoRequest' ? 8 : 0).u8(0).u16(0).u16(transport.identifier).u16(transport.sequence)
         break
       case 'udp':
-        out.u16(transport.srcPort).u16(transport.dstPort).u16(8).u16(0)
+        out.u16(transport.srcPort).u16(transport.dstPort).u16(Math.max(8, payloadBytes)).u16(0)
         break
       case 'tcp':
         out.u16(transport.srcPort).u16(transport.dstPort).u32(0)

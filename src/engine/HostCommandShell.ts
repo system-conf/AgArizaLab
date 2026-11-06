@@ -1,6 +1,5 @@
 import type { FailureReason, NetworkState, PacketTrace, ResolveResult, TerminalLine } from '../domain'
 import type { AdapterView, CommandFormatter } from './CommandFormatter'
-import { internetHosts } from './internetHosts'
 import { PingCommand } from './PingCommand'
 import type { Prober } from './ProbeReports'
 import { TracertCommand } from './TracertCommand'
@@ -108,26 +107,6 @@ export class HostCommandShell {
   private nslookup(state: NetworkState, deviceId: string, args: string[]): TerminalLine[] {
     const name = args[0]
     if (name === undefined) return this.formatter.usage('nslookup')
-    return this.formatResolve(this.backend.resolve(state, deviceId, name), name)
-  }
-
-  private formatResolve(result: ResolveResult, name: string): TerminalLine[] {
-    const { formatter } = this
-    if (result.ok) return formatter.nslookupAnswer(this.serverName(result.dnsServer), result.dnsServer, name, result.ip)
-    const server = result.dnsServer ?? ''
-    switch (result.reason) {
-      case 'dnsNotSet':
-        return formatter.nslookupNoServers()
-      case 'nameNotFound':
-        return formatter.nslookupNotFound(this.serverName(server), server, name)
-      case 'dnsNoAnswer':
-        return formatter.nslookupNoAnswer(server, name)
-      default:
-        return formatter.nslookupTimedOut(server)
-    }
-  }
-
-  private serverName(serverIp: string): string {
-    return internetHosts.dnsServerNames[serverIp] ?? 'UnKnown'
+    return this.formatter.nslookupResult(this.backend.resolve(state, deviceId, name), name)
   }
 }

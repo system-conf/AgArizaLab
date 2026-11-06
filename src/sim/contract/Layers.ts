@@ -4,14 +4,14 @@
 // they learn in their DeviceRuntime slice. They call each other only through `ctx.layers`.
 import type { Device, NetworkState } from '../../domain'
 import type { LocalizedMessage } from '../../domain/Messages'
-import type { Topology } from '../../engine/Topology'
+import type { Topology } from '../../net/Topology'
 import type { IcmpError, Ipv4Packet, Ipv4Payload, Pdu, WireFrame } from './Pdu'
 import type { LinkTimer } from './LinkLayerState'
 import type { NetworkTimer } from './NetworkLayerState'
 import type { ServiceTimer } from './ServiceLayerState'
 import type { RequestResult, SimRequest, StateEffect } from './Requests'
 import type { DeviceRuntime, SimTimer } from './Runtime'
-import type { NoteDirection, OsiLayer, PduIds, ReasonedAction, SimAction, SimProtocol } from './SimEvent'
+import type { NoteDirection, OsiLayer, PduIds, ReasonedAction, SimAction, SimNote, SimProtocol } from './SimEvent'
 import type { SimReason } from './SimReason'
 
 // ---------------------------------------------------------------- events under construction
@@ -157,6 +157,8 @@ export interface Ipv4Send {
   readonly linkDestination?: LinkDestination
   /** Event of the cause (a query being answered); the new PDU's 'created' event points back to it. */
   readonly causeEventId?: number
+  /** Explanation lines of the sender (e.g. a service's layer-7 notes), added to the 'created' event as out-notes. */
+  readonly notes?: readonly SimNote[]
 }
 
 /** Synchronous answer of NetworkLayer.send: refused locally (logged as a 'dropped' event) or on its way. */
@@ -217,6 +219,12 @@ export interface LinkLayer extends LayerLifecycle {
   onRequest(ctx: DeviceContext, requestId: string, request: SimRequest): void
   /** Can the interface send now (link up, not a duplicate address)? Used by the network layer before routing. */
   interfaceReady(ctx: DeviceContext, interfaceId: string): Ipv4SendResult
+  /**
+   * Called per running device after `SimulationKernel.create` ran the start-up traffic to idle (`settle`):
+   * the link layer forgets what devices learned from it (coordinator decision 3) and keeps the
+   * duplicate-address results.
+   */
+  onSettled?(ctx: DeviceContext): void
 }
 
 /** S2 (src/sim/l3): IPv4 for hosts, routers, L3 switches and the cloud; ICMP; transport demux; ping / tracert. */

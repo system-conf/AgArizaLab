@@ -1,6 +1,6 @@
 import type { ResolveResult } from '../../domain'
-import { DnsQuery } from '../../engine/DnsQuery'
-import { Ipv4 } from '../../engine/Ipv4'
+import { DnsNames } from '../../net/DnsNames'
+import { Ipv4 } from '../../net/Ipv4'
 import { RuntimeTables } from '../core/RuntimeTables'
 import {
   type DeviceContext,
@@ -112,7 +112,7 @@ export class DnsClient {
       if (!Ipv4.isValid(server)) continue
       const asking: DnsClientSession = { ...session, serverIndex: current, queryId: ServiceRuntimes.randomId(ctx, 16) }
       DnsClient.store(ctx, asking)
-      const query = ServiceWire.dnsQuery(asking.queryId, DnsQuery.normalize(session.name))
+      const query = ServiceWire.dnsQuery(asking.queryId, DnsNames.normalize(session.name))
       const sent = ServiceSender.send(ctx, {
         ids: ctx.newPdu(session.requestId),
         dst: server,
@@ -136,7 +136,7 @@ export class DnsClient {
     DnsClient.store(ctx, null, session.requestId)
     const cacheable = answer.ok || answer.reason === 'nameNotFound'
     if (session.useCache === true && cacheable && ttlSeconds > 0) {
-      const name = DnsQuery.normalize(session.name)
+      const name = DnsNames.normalize(session.name)
       const entry = { name, address: answer.ok ? answer.ip : null, expiresAt: ctx.now + ttlSeconds * 1000 }
       ServiceRuntimes.update(ctx, (services) => ({
         ...services,
@@ -148,7 +148,7 @@ export class DnsClient {
 
   /** Answers from the resolver cache; false when the name is not cached. */
   private static fromCache(ctx: DeviceContext, requestId: string, name: string, servers: readonly string[]): boolean {
-    const wanted = DnsQuery.normalize(name)
+    const wanted = DnsNames.normalize(name)
     const cached = RuntimeTables.dnsCache(ctx.runtime, ctx.now).find((entry) => entry.name === wanted)
     const server = servers[0]
     if (!cached || server === undefined) return false

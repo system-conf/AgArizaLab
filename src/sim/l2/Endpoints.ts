@@ -1,6 +1,6 @@
 import type { HostPort, RoutedPort } from '../../domain'
 import { localizedMessage } from '../../i18n/messageKeys'
-import { type L3Interface, L3Interfaces } from '../../engine/L3Interfaces'
+import { type L3Interface, L3Interfaces } from '../../net/L3Interfaces'
 import { BROADCAST_MAC, type DeviceContext, type EthernetFrame, type EventBuilder, type FrameArrival, type PduIds } from '../contract'
 import { ArpResponder } from './ArpResponder'
 import { BridgeVlans } from './BridgeVlans'

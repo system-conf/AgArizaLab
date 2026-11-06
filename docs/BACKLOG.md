@@ -49,6 +49,10 @@
   `react-refresh/only-export-components` in `palette/CablePalette.tsx` and `palette/PaletteNavigation.tsx`.
 - Exercise screen on phones: refit the map when the canvas is resized (failed-check list grows the footer).
 - e2e selectors use en locale texts — renaming en labels requires the same change in `e2e/`.
+- Design tasks: persist drafts across reloads (IndexedDB like labs); cable prices in the palette's cable view;
+  "customer devices are pinned" note visible below 1024 px; brief difficulty as data instead of derived.
+- Move simulation player creation (≈200 ms on a 100-device lab) into the worker.
+- e2e: add a design-task flow (open brief, add router+switch, checklist turns green, submit, review, handover).
 
 ## Proposed (awaiting decision)
 —

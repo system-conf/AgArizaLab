@@ -13,6 +13,9 @@ const SPEC: OptionSpec = { flags: ['d', '4'], valued: [] }
  * Switches and access points are invisible to tracert; the internet adds no fictional ISP hops.
  */
 export class TracertCommand {
+  /** The options tracert accepts (shared with the simulator's terminal). */
+  static readonly options: OptionSpec = SPEC
+
   private readonly prober: Prober
   private readonly formatter: CommandFormatter
   private readonly tracertFormatter = new TracertFormatter()

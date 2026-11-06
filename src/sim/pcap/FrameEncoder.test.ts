@@ -79,7 +79,7 @@ describe('FrameEncoder', () => {
         kind: 'icmp',
         type: 'destinationUnreachable',
         code: 'port',
-        original: { src: '192.168.1.20', dst: '192.168.1.10', ttl: 127, identification: 9, transport: { kind: 'udp', srcPort: 50000, dstPort: 53 } },
+        original: { src: '192.168.1.20', dst: '192.168.1.10', ttl: 127, identification: 9, totalLength: 28, transport: { kind: 'udp', srcPort: 50000, dstPort: 53 } },
       },
       '192.168.1.10',
       '192.168.1.20',
@@ -93,7 +93,7 @@ describe('FrameEncoder', () => {
   })
 
   it('writes time exceeded as type 11 code 0', () => {
-    const exceeded = ip({ kind: 'icmp', type: 'timeExceeded', code: 'ttlInTransit', original: { src: '1.1.1.1', dst: '8.8.8.8', ttl: 1, identification: 1, transport: { kind: 'icmp', type: 'echoRequest', identifier: 1, sequence: 1 } } })
+    const exceeded = ip({ kind: 'icmp', type: 'timeExceeded', code: 'ttlInTransit', original: { src: '1.1.1.1', dst: '8.8.8.8', ttl: 1, identification: 1, totalLength: 60, transport: { kind: 'icmp', type: 'echoRequest', identifier: 1, sequence: 1 } } })
     const icmp = readIpv4(encode(ether(exceeded)).payload).payload
     expect([icmp.u8(0), icmp.u8(1)]).toEqual([11, 0])
     expect(readIpv4(icmp.slice(8)).protocol).toBe(1)

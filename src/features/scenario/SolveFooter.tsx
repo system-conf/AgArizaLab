@@ -10,12 +10,14 @@ interface SolveFooterProps {
   notes: string
   onNotesChange: (notes: string) => void
   onVerify: () => void
+  /** A verification is running (large labs: in the Web Worker); the button waits. */
+  checking?: boolean
   /** One message per unmet condition; empty when nothing failed (yet). */
   failedChecks: LocalizedMessage[]
 }
 
 /** Bottom area: the learner's notes, the verify button and the result of a failed verification. */
-function SolveFooter({ notes, onNotesChange, onVerify, failedChecks }: SolveFooterProps) {
+function SolveFooter({ notes, onNotesChange, onVerify, checking = false, failedChecks }: SolveFooterProps) {
   const { t } = useTranslation('exercise')
   const translateMessage = useMessageTranslator()
   const notesId = useId()
@@ -41,7 +43,9 @@ function SolveFooter({ notes, onNotesChange, onVerify, failedChecks }: SolveFoot
         <button
           type="button"
           onClick={onVerify}
-          className={`rounded-md bg-emerald-700 px-4 py-2.5 font-medium text-white hover:bg-emerald-800 ${focusRing}`}
+          disabled={checking}
+          aria-busy={checking}
+          className={`rounded-md bg-emerald-700 px-4 py-2.5 font-medium text-white hover:bg-emerald-800 disabled:cursor-wait disabled:opacity-70 ${focusRing}`}
         >
           {t('footer.verify')}
         </button>

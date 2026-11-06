@@ -1,7 +1,7 @@
 import type { Device, StaticRoute } from '../domain'
 import { Ipv4 } from './Ipv4'
+import { InterfaceStatus } from '../net/InterfaceStatus'
 import { type L3Interface, L3Interfaces } from './L3Interfaces'
-import { VlanRules } from './VlanRules'
 import type { Topology } from './Topology'
 
 /** A usable route: where a packet for a matching destination leaves the router. */
@@ -29,12 +29,7 @@ export class RoutingTable {
 
   /** Is the interface operational: powered device, admin up, port link up (SVI: VLAN active)? */
   static isUp(topology: Topology, iface: L3Interface): boolean {
-    const device = topology.find(iface.deviceId)
-    if (!device?.powered || !iface.adminUp) return false
-    if (iface.kind === 'svi') return VlanRules.inDatabase(device, iface.vlan ?? 0)
-    const port = device.ports.find((candidate) => candidate.id === iface.portId)
-    if (!port?.adminUp || iface.portId === undefined) return false
-    return topology.linksAt(device.id, iface.portId).some((link) => topology.isUp(link))
+    return InterfaceStatus.isUp(topology, iface)
   }
 
   /** Addresses of the device's up interfaces. */

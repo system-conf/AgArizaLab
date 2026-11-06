@@ -1,4 +1,4 @@
-import { L3Interfaces } from '../../engine/L3Interfaces'
+import { L3Interfaces } from '../../net/L3Interfaces'
 import type { DeviceChange, DeviceContext } from '../contract'
 import { ServiceRuntimes } from './ServiceRuntimes'
 

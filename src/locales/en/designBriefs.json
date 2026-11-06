@@ -1,0 +1,233 @@
+{
+  "smallOffice": {
+    "title": "Small office: an accounting firm",
+    "customer": {
+      "from": "Ayşe Yıldız — Yıldız Accounting",
+      "message": "Hi! We have just moved into our new office: six PCs and a network printer, and the provider has connected the internet (the cloud). The PCs should get their addresses automatically; nobody here wants to type in IP addresses. The printer is set up on every PC as 192.168.1.10, so that address must not change, and the whole network should stay on 192.168.1.x. Everyone needs internet, and websites must open by name. In our old office the printer stopped working whenever the internet was down, which was really annoying. Our budget is at most 1000 units."
+    },
+    "groups": {
+      "pcs": "Office PCs",
+      "printer": "Printer",
+      "office": "Office devices"
+    },
+    "devices": {
+      "isp": "Internet (provider)",
+      "pc1": "PC 1",
+      "pc2": "PC 2",
+      "pc3": "PC 3",
+      "pc4": "PC 4",
+      "pc5": "PC 5",
+      "pc6": "PC 6",
+      "printer": "Printer",
+      "router": "Router",
+      "switch": "Switch"
+    },
+    "reviewHints": {
+      "presentation": "Present the benefit, not the technology: \"The PCs get their addresses automatically, the printer always stays at the same address, and you can print even when the internet is down.\"",
+      "dhcpPool": "If the PCs get no address, check that the router has a DHCP pool for its LAN network with the right default gateway and DNS server. Keep the pool clear of the printer's static address (e.g. .100–.199).",
+      "printerStatic": "Give the printer the static address 192.168.1.10 (mask 255.255.255.0, gateway = the router's LAN address). A printer that takes its address from DHCP may get a different one some day.",
+      "localTraffic": "If printing stops when the internet is down, the print traffic depends on something outside the office: the PCs and the printer belong on the same switch and in the same subnet."
+    },
+    "reference": {
+      "explanation": "A two-port router and an 8-port switch are enough. The router's Gi0/1 faces the provider: it takes its address by DHCP and the default route leaves through it. Gi0/0 is the office gateway, 192.168.1.1/24; the router is also the DHCP server (pool 192.168.1.100–199, gateway and DNS 192.168.1.1) and a DNS forwarder to 8.8.8.8. The eight switch ports fit exactly: router, six PCs, printer. The printer is static on 192.168.1.10, outside the pool. Because the PCs and the printer share the switch, printing works even without internet. Cost: router 650 + switch 180 + nine cables 45 = 875 units.",
+      "presentation": "To Ms Yıldız: \"We install one router and one switch. The PCs get their addresses by themselves and your printer stays at its usual 192.168.1.10. Printing and file sharing inside the office keep working when the internet is down. The total is 875 units, under budget. Note that every switch port is in use: for a seventh employee we would move to a 16-port switch.\"",
+      "interviewAnswer": "A small office needs one broadcast domain. The router is the default gateway and the DHCP server; clients get addresses by DHCP, while devices everyone must find, such as printers and servers, get static addresses (or DHCP reservations) outside the pool. The router reaches the internet with a default route out of its WAN interface and forwards DNS. I size the switch and the budget with growth in mind."
+    },
+    "topics": ["DHCP pool", "Static address", "Default gateway", "DNS", "Quotation / budget"]
+  },
+  "restaurant": {
+    "title": "Restaurant: POS and guest Wi-Fi",
+    "customer": {
+      "from": "Murat Kaya — Lezzet Durağı Restaurant",
+      "message": "Hi! We have two POS terminals (one at the counter, one in the dining room) and an order screen in the kitchen. Orders entered on a POS must show up on the kitchen screen, and the POS terminals need internet for card payments and must find the bank's server (odeme.ornekbanka.com.tr). We also want Wi-Fi for our guests, but guests must never reach the POS terminals or the kitchen screen: there is card data on them, we cannot take that risk. The provider gave us two separate lines in the cloud (eth0 and eth1). Devices should get their addresses automatically. Budget: 1200 units. And one more thing: if orders stop reaching the kitchen when the internet is down, service stops!"
+    },
+    "groups": {
+      "pos": "POS terminals",
+      "kitchen": "Kitchen screen",
+      "staff": "Restaurant devices",
+      "guests": "Guest devices"
+    },
+    "devices": {
+      "isp": "Internet (provider)",
+      "pos1": "Counter POS",
+      "pos2": "Dining room POS",
+      "kitchenScreen": "Kitchen screen",
+      "guestPhone": "Guest phone",
+      "guestTablet": "Guest tablet",
+      "router": "Restaurant router",
+      "switch": "Switch",
+      "guestRouter": "Guest wireless router"
+    },
+    "zones": {
+      "counter": "Counter",
+      "kitchen": "Kitchen",
+      "dining": "Dining room"
+    },
+    "reviewHints": {
+      "presentation": "Make security concrete for the customer: \"There is no connection at all between the guest network and the till network; guests use a different line to the internet.\"",
+      "noAcls": "This lab has no access lists (ACLs) yet. If both networks are connected to the same router, it routes between them; isolation only comes from never joining the networks on any router. Once the ACL pack arrives, the same design can be built on one router with VLANs and ACLs.",
+      "isolation": "If guests can reach the restaurant devices, the two networks meet somewhere (the same switch / VLAN, or the same router). Move the guest network to its own wireless router on its own line. Remember that this requirement also wants both networks to work on their own.",
+      "kitchenOffline": "If orders stop reaching the kitchen when the internet is down, the POS terminals and the kitchen screen are not on the same local network, or the traffic goes through the provider. Put them on the same switch and in the same subnet."
+    },
+    "reference": {
+      "explanation": "Two completely separate networks. Restaurant network: a two-port router (Gi0/1 on the provider's eth0 line, Gi0/0 192.168.10.1/24) with a DHCP pool 192.168.10.100–199 and DNS forwarding; the two POS terminals and the kitchen screen are on an 8-port switch. Guest network: a wireless router whose WAN port is on the provider's eth1 line, broadcasting 'Guest-WiFi' with its factory 192.168.0.0/24 network and DHCP. No router joins the two networks, so guests cannot reach the POS; the POS and the kitchen share a switch, so orders flow even without internet. A common real-life mistake is plugging the guest router into the restaurant LAN: guests behind a NAT router can still open connections into that LAN, which is not isolation. Cost: 650 + 180 + 150 + six cables 30 = 1010 units.",
+      "presentation": "To Mr Kaya: \"Your tills and the kitchen screen are on their own closed network; guests go online through a separate device and a separate line and cannot see your till network. This separation is the basis of what card-payment standards (PCI DSS) expect. Orders keep reaching the kitchen even when the internet is down. Total: 1010 units.\"",
+      "interviewAnswer": "I separate the guest network from the payment (POS) network; PCI DSS expects that segmentation for card payments too. The usual solution is separate VLANs with ACLs or firewall rules between them; without those, the safest way is physical separation: guest Wi-Fi reaches the internet through its own router and line. When testing isolation I check that both networks work on their own and that a ping from a guest to a POS fails."
+    },
+    "topics": ["Network segmentation", "Guest Wi-Fi", "DHCP", "DNS", "Local traffic during an internet outage"]
+  },
+  "schoolLab": {
+    "title": "School: three computer classrooms",
+    "customer": {
+      "from": "Hakan Demir — IT teacher, Cumhuriyet Secondary School",
+      "message": "Hello! Our school has three computer classrooms (A, B and C). Each classroom should be on its own network, so that broadcast traffic or a problem in one classroom does not affect the others. The district IT office gave us the address plan: classroom A 10.10.10.0/24, B 10.10.20.0/24, C 10.10.30.0/24. Student PCs must get their addresses automatically. My teacher PC is in the IT room; I must reach every PC in every classroom (for remote management), but I don't want to be on the students' network. Everyone needs internet, with websites opening by name. Our budget is 2500 units and we can only buy one router. The lab shows two PCs per classroom; the rest will be wired the same way."
+    },
+    "groups": {
+      "classA": "Classroom A",
+      "classB": "Classroom B",
+      "classC": "Classroom C",
+      "students": "Student PCs",
+      "teacher": "Teacher PC",
+      "everyone": "All PCs"
+    },
+    "devices": {
+      "isp": "Internet (provider)",
+      "teacher": "Teacher PC",
+      "a1": "A-PC 1",
+      "a2": "A-PC 2",
+      "b1": "B-PC 1",
+      "b2": "B-PC 2",
+      "c1": "C-PC 1",
+      "c2": "C-PC 2",
+      "router": "Router",
+      "coreSwitch": "IT room switch",
+      "classASwitch": "Classroom A switch",
+      "classBSwitch": "Classroom B switch",
+      "classCSwitch": "Classroom C switch"
+    },
+    "zones": {
+      "itRoom": "IT room",
+      "classA": "Classroom A",
+      "classB": "Classroom B",
+      "classC": "Classroom C"
+    },
+    "reviewHints": {
+      "presentation": "Explain the separation by its benefit to the school management: \"A problem in one classroom does not spread to the others, every classroom has its own address range, and the network is easy to manage.\"",
+      "routerOnAStick": "Routing several VLANs with a single router is called router-on-a-stick: one router port is a trunk to the switch, with one dot1Q sub-interface per VLAN (like Gi0/0.10). The alternative is an L3 switch with SVIs.",
+      "trunks": "If the teacher cannot reach the classrooms, the VLANs do not get as far as the router: the links between switches and to the router must be trunks, every switch needs the VLANs in its VLAN database, and the router needs an enabled sub-interface per VLAN.",
+      "poolPerVlan": "A DHCP pool is chosen by the subnet of the interface the request arrives on: define one pool per VLAN sub-interface, with that sub-interface's address as the gateway.",
+      "teacherVlan": "Putting the teacher PC into a student subnet makes \"reach every classroom\" easier, but it is not what was asked: give the teacher a VLAN of its own and let the router route between them."
+    },
+    "reference": {
+      "explanation": "Four VLANs: 10 (A), 20 (B), 30 (C), 40 (teachers). The router's Gi0/0 is a trunk to the 16-port switch in the IT room, with one sub-interface per VLAN (10.10.10.1, 10.10.20.1, 10.10.30.1, 10.10.40.1); the router runs a DHCP pool per subnet and forwards DNS, and Gi0/1 faces the provider. The IT room switch trunks to an 8-port switch in each classroom, where the student ports are access ports in that classroom's VLAN. The teacher PC is in VLAN 40 and reaches every classroom because the router routes between the VLANs. Cost: 650 + 300 + 3 × 180 + twelve cables 60 = 1550 units. Alternative: one L3 switch (2400) routing with SVIs and reaching the internet through a routed port: faster, but it only just fits the budget. Note: VLANs separate broadcast domains, but the router still routes between classrooms; blocking classroom-to-classroom traffic needs ACLs (a later pack).",
+      "presentation": "To Mr Demir: \"Every classroom is in its own VLAN and in the address range from the district plan, and the PCs get their addresses automatically. You reach every classroom from the IT room. One router was enough, 1550 units in total; a new classroom means one more VLAN, sub-interface and DHCP pool.\"",
+      "interviewAnswer": "I put each classroom into its own VLAN and subnet: smaller broadcast domains, and problems stay local. For inter-VLAN routing there are two options: router-on-a-stick (one physical port, one dot1Q sub-interface per VLAN; cheap, but all routed traffic shares that link) or an L3 switch (SVIs; faster, more expensive). Links between switches are trunks, and every VLAN gets its own DHCP pool."
+    },
+    "topics": ["VLAN", "Trunk (802.1Q)", "Router-on-a-stick", "DHCP per VLAN", "Address plan"]
+  },
+  "factory": {
+    "title": "Factory: two buildings, four networks",
+    "customer": {
+      "from": "Selin Arslan — plant manager, Demirtaş Metal",
+      "message": "Hello! Our plant in the industrial zone has two buildings: the office building and, 200 metres away, the production hall. The office building has three office PCs, our ERP server, the gate camera and guests in the meeting room; the hall has two machine operator panels (HMIs) and two cameras. What we need: office, production, cameras and guests on separate networks. The office needs internet, with addresses handed out automatically. Both the office and production must reach the ERP server. We must be able to watch the cameras from the office. Guests should get internet but reach none of our devices; the provider gave us a separate line for guests (eth1). Production must not stop when the internet goes down. Budget: 3500 units."
+    },
+    "groups": {
+      "office": "Office PCs",
+      "erp": "ERP server",
+      "officeNetwork": "Office network (PCs + ERP)",
+      "ot": "Production panels (OT)",
+      "cameras": "Cameras",
+      "business": "Office and production devices",
+      "internal": "All company devices",
+      "guests": "Guest devices"
+    },
+    "devices": {
+      "isp": "Internet (provider)",
+      "office1": "Office PC 1",
+      "office2": "Office PC 2",
+      "office3": "Office PC 3",
+      "erp": "ERP server",
+      "camGate": "Gate camera",
+      "guestPhone": "Guest phone",
+      "guestTablet": "Guest tablet",
+      "hmi1": "Operator panel 1",
+      "hmi2": "Operator panel 2",
+      "camHall1": "Hall camera 1",
+      "camHall2": "Hall camera 2",
+      "router": "Router",
+      "officeSwitch": "Office building switch",
+      "hallSwitch": "Production hall switch (PoE)",
+      "guestRouter": "Guest wireless router"
+    },
+    "zones": {
+      "officeBuilding": "Office building",
+      "productionHall": "Production hall (200 m away)"
+    },
+    "reviewHints": {
+      "presentation": "Present the networks by what they protect: production keeps running without internet, guests never see company devices, cameras are watched from the office.",
+      "fiber": "200 metres between the buildings: copper Ethernet reaches at most 100 metres, and copper between buildings is exposed to lightning and ground potential differences. Use fiber (switches with fiber uplink ports). The lab does not measure distance: this design decision is yours.",
+      "futureRedundancy": "Later (with the STP and ACL packs) this brief gets two more requirements: production keeps working when a switch fails, thanks to a second link between the buildings, and the production network is separated from the office by ACLs. Leave room for them (free fiber ports).",
+      "vlanPlan": "Give every network its own VLAN and subnet (e.g. 10 office, 20 production, 30 cameras). The camera VLAN spans both buildings, so the link between them must be a trunk.",
+      "cameraRouting": "If the office cannot reach the cameras, inter-VLAN routing is missing: the router needs a sub-interface (gateway) in the camera VLAN and the cameras need the right default gateway. Do not forget the gateway on statically addressed cameras.",
+      "guestLine": "A guest network joined to the company network through a router is not isolated. Without ACLs the cleanest solution is a guest wireless router directly on the provider's guest line (eth1)."
+    },
+    "reference": {
+      "explanation": "A two-port router in the office building works as router-on-a-stick: on the Gi0/0 trunk it has sub-interfaces for VLAN 10 (office, 10.20.10.1), 20 (production, 10.20.20.1) and 30 (cameras, 10.20.30.1), with a DHCP pool for each; Gi0/1 is on the provider's eth0 line. Each building has a 24-port Gigabit switch with fiber uplinks (the one in the hall with PoE to power the cameras); one fiber trunk joins the buildings and carries all three VLANs. The ERP server is static on 10.20.10.10. The cameras have their own VLAN and are watched from the office because the router routes to them. Guests are on a separate wireless router on the provider's eth1 line, with no connection at all to the company network. Production-to-ERP and office-to-camera traffic stays inside, so an internet outage does not affect it. Cost: router 650 + switch 900 + PoE switch 1400 + wireless router 150 + cables 100 (fiber 40 of it) = 3200 units.",
+      "presentation": "To Ms Arslan: \"We built four separate networks: office, production, cameras and guests. The buildings are joined by fiber, because copper does not work over 200 metres. Production and the cameras work independently of the internet, and guests cannot see any company device. Budget 3500, cost 3200; the rest can go towards a second fiber link. As a next step we recommend a backup link between the buildings and access rules for the production network.\"",
+      "interviewAnswer": "In industrial sites I separate the OT (production) network from IT (the zones and conduits idea of IEC 62443); cameras and guests get their own networks too. Links over 100 metres and between buildings are fiber. I carry the VLANs between buildings on trunks and route them on a router or an L3 switch; I add ACLs or a firewall to separate OT from the office, and a redundant link (STP or EtherChannel) against a failure between buildings. Production and video recording must not depend on the internet."
+    },
+    "topics": ["IT/OT separation", "Fiber link", "VLANs and trunks", "Router-on-a-stick", "Guest network", "Quotation / budget"]
+  },
+  "hotel": {
+    "title": "Hotel: floors, guest Wi-Fi and a backup line",
+    "customer": {
+      "from": "Emre Şahin — general manager, Mavi Koy Hotel",
+      "message": "Hello! Our hotel has a ground floor (lobby and reception) and two guest floors. We want a switch and guest Wi-Fi on every floor, and guests must stay on the same network when they move between floors. Reception has two PCs that should get their addresses automatically. For security there is a camera in the lobby and on each floor, and our recorder (NVR) is behind reception: the NVR must reach every camera and reception must watch the video on the NVR. The camera network should be separate from reception. Guests must never reach reception, the cameras or the NVR; we bought a separate line for guest internet (port eth2 of the cloud). Last season the main line went down and reception could not take bookings for a whole day, so we bought a backup line from a second provider. The main line's modem is 192.168.0.1, the backup line's modem 192.168.1.1, both already installed. If the main line fails, reception must carry on over the backup line. Budget: 5000 units."
+    },
+    "groups": {
+      "reception": "Reception PCs",
+      "recorder": "Recorder (NVR)",
+      "cameras": "Cameras",
+      "securityNetwork": "Security network (NVR + cameras)",
+      "staff": "Hotel devices",
+      "guests": "Guest devices"
+    },
+    "devices": {
+      "isp": "Internet (providers)",
+      "modemMain": "Main line modem",
+      "modemBackup": "Backup line modem",
+      "reception1": "Reception PC 1",
+      "reception2": "Reception PC 2",
+      "nvr": "NVR (recorder)",
+      "camLobby": "Lobby camera",
+      "camFloor1": "Floor 1 camera",
+      "guestPhone": "Guest phone (floor 1)",
+      "camFloor2": "Floor 2 camera",
+      "guestTablet": "Guest tablet (floor 2)",
+      "core": "Core L3 switch",
+      "guestRouter": "Guest router",
+      "floor1Switch": "Floor 1 switch",
+      "floor1Ap": "Floor 1 access point",
+      "floor2Switch": "Floor 2 switch",
+      "floor2Ap": "Floor 2 access point"
+    },
+    "zones": {
+      "groundFloor": "Ground floor (lobby, reception)",
+      "floor1": "Floor 1",
+      "floor2": "Floor 2"
+    },
+    "reviewHints": {
+      "presentation": "Present it with the outage scenario: \"If the main line fails, reception carries on over the backup line within seconds, without anyone doing anything.\"",
+      "floatingRoute": "The backup line takes over through a second default route that is used only when the main one is gone: the main route has administrative distance 1, the backup a higher one (e.g. 10), a floating static route. For this to work the gateway device needs a separate routed port to each modem: when the main modem goes down, the connected network on that port and the route through it disappear.",
+      "guestVlan": "If the guest VLAN's gateway is on the device that routes the hotel networks, guests reach reception (there are no ACLs). Carry the guest VLAN through the core at layer 2 only (no SVI) and give it its gateway on a separate guest router with its own line.",
+      "roaming": "For guests to stay on one network on every floor, every AP must bridge the same SSID into the same VLAN, and that VLAN must be carried on trunks from the floor switches to the core.",
+      "poe": "On the floor switches the APs and cameras are powered over Ethernet (PoE), with no extra adapters or sockets. The lab does not model power, but choosing PoE models in the quotation is the right call."
+    },
+    "reference": {
+      "explanation": "The core on the ground floor is an L3 switch: VLAN 10 reception (SVI 10.40.10.1), VLAN 20 security (SVI 10.40.20.1), VLAN 30 guests (no SVI). It serves DHCP to reception and the cameras; the NVR is static on 10.40.20.10. Two of its ports are routed ports to the modems (192.168.0.2 and 192.168.1.2); the default route points to the main modem (distance 1), a backup route to the backup modem (distance 10). When the main modem goes down, that link drops and the backup route takes over. On every floor a PoE 8-port switch trunks to the core; an AP bridging the same 'Hotel-Guest' SSID into VLAN 30 and the floor camera are plugged into it. The guest VLAN's only gateway is a separate guest router on the provider's eth2 line (192.168.50.1, DHCP and DNS); the core has no IP interface in that VLAN, so guests cannot reach hotel devices. Cost: L3 switch 2400 + two PoE switches 640 + two APs 440 + router 650 + fourteen cables 70 = 4200 units.",
+      "presentation": "To Mr Şahin: \"Reception now works with two lines: if the main line fails, the network switches to the backup line by itself. Guests are on the same Wi-Fi on every floor, go online over their own line and cannot see hotel systems. The cameras are on a separate network and keep recording even without internet. Total: 4200 units; a new floor means one switch, one AP and two cables.\"",
+      "interviewAnswer": "In a multi-storey building I use a hierarchical design: an access switch per floor and a core (an L3 switch) that routes between the VLANs. I separate guests, staff and security with VLANs and isolate guests with ACLs / a firewall or a gateway of their own. For critical services I add WAN redundancy: two different providers and a floating static route (or a route tracked with IP SLA); for first-hop gateway redundancy there is HSRP / VRRP."
+    },
+    "topics": ["Hierarchical design (access / core)", "L3 switch and SVIs", "Floating static route", "WAN redundancy", "Guest VLAN", "PoE"]
+  }
+}

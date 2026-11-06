@@ -1,5 +1,5 @@
 import { localizedMessage } from '../../i18n/messageKeys'
-import type { L3Interface } from '../../engine/L3Interfaces'
+import type { L3Interface } from '../../net/L3Interfaces'
 import type { ArpPacket, DeviceContext, EthernetFrame, EventBuilder, Ipv4Packet } from '../contract'
 import { Bridge } from './Bridge'
 import { LinkInterfaces } from './LinkInterfaces'

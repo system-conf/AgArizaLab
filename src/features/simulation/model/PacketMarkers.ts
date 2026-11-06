@@ -9,6 +9,7 @@ export interface MapPacket extends PacketMarker {
   readonly arrivalEventId: number | null
 }
 
+/** Fallback for events without `transmissionId` (hand-made fixtures). */
 function arrivalKey(time: number, deviceId: string, portId: string, frameId: string): string {
   return `${time}|${deviceId}|${portId}|${frameId}`
 }
@@ -24,6 +25,7 @@ export class PacketMarkers {
   private readonly window: StepWindow | null
   private readonly visible: readonly SimTransmission[]
   private readonly arrivals: ReadonlyMap<string, SimEvent>
+  private readonly arrivalsByTransmission: ReadonlyMap<number, SimEvent>
 
   constructor(transmissions: readonly SimTransmission[], events: readonly SimEvent[], window: StepWindow | null) {
     this.window = window
@@ -31,13 +33,17 @@ export class PacketMarkers {
       ? transmissions.filter((transmission) => transmission.departAt <= window.to && transmission.arriveAt > window.from)
       : []
     const arrivals = new Map<string, SimEvent>()
+    const byTransmission = new Map<number, SimEvent>()
     if (this.visible.length > 0) {
       for (const event of events) {
-        if (event.inPortId === undefined || event.frameId === null) continue
-        arrivals.set(arrivalKey(event.time, event.deviceId, event.inPortId, event.frameId), event)
+        if (event.transmissionId !== undefined) byTransmission.set(event.transmissionId, event)
+        else if (event.inPortId !== undefined && event.frameId !== null) {
+          arrivals.set(arrivalKey(event.time, event.deviceId, event.inPortId, event.frameId), event)
+        }
       }
     }
     this.arrivals = arrivals
+    this.arrivalsByTransmission = byTransmission
   }
 
   get count(): number {
@@ -75,6 +81,8 @@ export class PacketMarkers {
   }
 
   private arrivalOf(transmission: SimTransmission): SimEvent | undefined {
+    const matched = this.arrivalsByTransmission.get(transmission.id)
+    if (matched) return matched
     const { to } = transmission
     return this.arrivals.get(arrivalKey(transmission.arriveAt, to.deviceId, to.portId, transmission.frameId))
   }

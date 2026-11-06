@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { editDevice, editLink, labDevice } from '../../engine/testLabs'
-import { Topology } from '../../engine/Topology'
+import { Topology } from '../../net/Topology'
 import type { NetworkState } from '../../domain'
 import type { RouteEntry } from '../contract'
 import { l3Engine } from './l3TestLayers'

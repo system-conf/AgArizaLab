@@ -11,7 +11,7 @@ import {
   type TransportDelivery,
   UNSPECIFIED_IP,
 } from '../contract'
-import { L3Interfaces } from '../../engine/L3Interfaces'
+import { L3Interfaces } from '../../net/L3Interfaces'
 import type { LocalizedMessage } from '../../domain/Messages'
 import { DhcpConfig } from './DhcpConfig'
 import { ServiceNotes } from './ServiceNotes'

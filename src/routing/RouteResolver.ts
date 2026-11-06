@@ -7,16 +7,28 @@ export interface RouteContext {
   reportExerciseId: string | null
   /** The URL carries a `#lab=…` share hash (it belongs to the workspace). */
   hasShareHash: boolean
+  /**
+   * Design (D2): ids of the design briefs that exist. Absent = not known here: the design routes
+   * render and the lazily loaded design module resolves them again with the ids.
+   */
+  briefIds?: readonly string[]
+  /** Design (D2): brief whose submitted design is in memory (review ready), or null. */
+  reviewBriefId?: string | null
 }
 
 export type RouteDecision = { kind: 'render' } | { kind: 'redirect'; to: AppRoute; keepHash: boolean }
 
 const RENDER: RouteDecision = { kind: 'render' }
 
+function redirect(to: AppRoute): RouteDecision {
+  return { kind: 'redirect', to, keepHash: false }
+}
+
 /**
  * Redirects of the app (always as history replacements): unknown paths → landing; a share hash
  * outside the workspace → `/lab` with the hash; unknown exercise → list; a report without a
- * verified attempt (reload, typed URL) → the exercise.
+ * verified attempt (reload, typed URL) → the exercise. Design briefs work the same way: unknown
+ * brief → brief list, a review without a submitted design → the brief.
  */
 export class RouteResolver {
   static resolve(route: AppRoute, context: RouteContext): RouteDecision {
@@ -25,15 +37,22 @@ export class RouteResolver {
       case 'landing':
       case 'lab':
       case 'exercises':
+      case 'designs':
         return RENDER
       case 'notFound':
-        return { kind: 'redirect', to: { name: 'landing' }, keepHash: false }
+        return redirect({ name: 'landing' })
       case 'exercise':
       case 'exerciseReport':
-        if (!context.exerciseIds.includes(route.exerciseId)) return { kind: 'redirect', to: { name: 'exercises' }, keepHash: false }
+        if (!context.exerciseIds.includes(route.exerciseId)) return redirect({ name: 'exercises' })
         if (route.name === 'exerciseReport' && context.reportExerciseId !== route.exerciseId) {
-          return { kind: 'redirect', to: { name: 'exercise', exerciseId: route.exerciseId }, keepHash: false }
+          return redirect({ name: 'exercise', exerciseId: route.exerciseId })
         }
+        return RENDER
+      case 'design':
+      case 'designReview':
+        if (context.briefIds === undefined) return RENDER
+        if (!context.briefIds.includes(route.briefId)) return redirect({ name: 'designs' })
+        if (route.name === 'designReview' && (context.reviewBriefId ?? null) !== route.briefId) return redirect({ name: 'design', briefId: route.briefId })
         return RENDER
     }
   }
