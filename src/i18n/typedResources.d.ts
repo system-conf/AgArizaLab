@@ -13,6 +13,7 @@ import type landing from '../locales/en/landing.json'
 import type map from '../locales/en/map.json'
 import type results from '../locales/en/results.json'
 import type session from '../locales/en/session.json'
+import type simulation from '../locales/en/simulation.json'
 import type terminal from '../locales/en/terminal.json'
 import type workspace from '../locales/en/workspace.json'
 
@@ -31,6 +32,7 @@ export interface AppResources {
   workspace: typeof workspace
   lab: typeof lab
   deviceConfig: typeof deviceConfig
+  simulation: typeof simulation
 }
 
 declare module 'i18next' {

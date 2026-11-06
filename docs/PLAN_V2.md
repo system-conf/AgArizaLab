@@ -148,29 +148,52 @@ with the v1 expectations unchanged. `src/domain/v2` → `src/domain`, `src/engin
 
 ## 5. Phase 3 — v2.1: packet-level simulation
 
-### Wave 3.0 — contracts (agent K3, alone)
-`Frame`, `Packet`, `Pdu` (layered headers: Ethernet / 802.1Q / ARP / IPv4 / ICMP / UDP / TCP / app),
-`SimEvent { time, atDeviceId, inPort, outPort, pdu, action, layerNotes }`, per-device runtime
-(`ArpTable`, `MacTable`, `RoutingTable`, timers), `SimulationEngine` interface. Determinism: virtual
-clock, seeded randomness only, no `Date.now()` inside the simulator.
+### Wave 3.0 — contracts (agent K3, alone) — done
+Design: **`docs/SIMULATION.md`** (binding for every Phase 3 agent). Code: `src/sim/contract/**` (layered
+immutable PDUs, `SimEvent` / `SimTransmission` timeline with typed `SimReason` codes and OSI notes,
+per-layer `DeviceRuntime` slices, requests / results / `StateEffect`, the `LinkLayer` / `NetworkLayer` /
+`ServiceLayer` plug-in contract, `SimulationEngine`, UI view types, `PduLayers`, `DeviceProfiles`,
+`SimMessages`) and the shared core `src/sim/core/**`, implemented and tested: `SimulationKernel` (virtual
+clock, `(time, seq)` queue, seeded RNG, request records, snapshots / restore, reconfigure with change
+plan, configuration effects), `nullLayers`, `RuntimeTables`, determinism guard test. Namespace
+`simulation` (actions, protocols, layers, fields, reasons, starter notes).
 
 ### Wave 3.1 — parallel (4 agents)
-- **S1 layer 2** (`src/sim/l2/**`): Ethernet forwarding, MAC learning / aging / flooding, 802.1Q
-  tagging, access/trunk/native VLAN, ARP request/reply/cache, hub behaviour.
-- **S2 layer 3** (`src/sim/l3/**`): IPv4 forwarding, routing table (connected, static, default,
-  longest-prefix match), TTL, ICMP echo / unreachable / time exceeded, router-on-a-stick, L3 switch SVI.
-- **S3 services** (`src/sim/services/**`): DHCP DORA as packets (pools, exclusions, relay
-  `ip helper-address`), DNS server device and forwarder, basic HTTP request for "web browser" checks.
-- **U3 simulation UI** (`src/features/simulation/**`): Realtime / Simulation toggle, event list with
-  protocol filters, play / pause / step forward / step back / speed, multiple packets on the map,
-  PDU inspector with OSI layer view (in/out per device, human-readable explanation via i18n),
-  "simple PDU" tool (click source, click destination).
+`src/sim/contract/**` (except the owner-extensible `*LayerState.ts` files) and `src/sim/core/**` are
+frozen; contract changes go through the coordinator. Behaviour rules: SIMULATION.md §7.
+- **S1 layer 2** (`src/sim/l2/**`, `LinkLayerState.ts` additive, `simulation:notes.l1/l2`): exports
+  `linkLayer: LinkLayer`. Hub repeater; bridge with MAC learning / lazy aging / flooding / filtering,
+  `VlanRules` access / trunk / native / allowed, SSID ↔ VLAN on radios, SVI endpoints, L2 loop guard;
+  endpoint NIC filtering and 802.1Q demux to sub-interfaces; ARP request / reply / cache / buffering /
+  3 retries / `onUndeliverable`; duplicate-address probes (both NICs lose the address); cloud ports
+  (served only toward routed ports, `serviceUp`, proxy ARP for public addresses); HDLC on serial;
+  `clearTable` arp / mac; `interfaceReady`; flush rules of SIMULATION.md §5.3.
+- **S2 layer 3** (`src/sim/l3/**`, `NetworkLayerState.ts` additive, `simulation:notes.l3`): exports
+  `networkLayer: NetworkLayer`. Routing table built from configuration (connected, local, static with
+  recursive next hop, AD, longest prefix; host default route); host send checks in the engine's order;
+  router forwarding, TTL, ICMP echo / unreachable / time exceeded sourced from the ingress interface,
+  the lab rules (silent drop for public destinations without a route, private destinations never to the
+  cloud); transport demux, port unreachable / RST; ISP cloud behaviour; ping and tracert clients with
+  Windows timing; router-on-a-stick and L3-switch SVI routing.
+- **S3 services** (`src/sim/services/**`, `ServiceLayerState.ts` additive, `simulation:notes.services`):
+  exports `serviceLayer: ServiceLayer`. DHCP server (pool by interface / `giaddr`, `DhcpPoolAllocator`,
+  exclusions), relay (`ip helper-address`), client DORA / release with effects and `applyEffect`
+  (DhcpService rules); DNS client (DnsQuery order and outcomes), server with records and forwarders,
+  loop drop, the internet's public resolvers; HTTP client and the cloud's web server; `clearTable` dnsCache.
+- **U3 simulation UI** (`src/features/simulation/**`, `simulation:ui.*`): Realtime / Simulation toggle,
+  event list with protocol filters, play / pause / step forward / step back (snapshot stack) / speed,
+  multiple packets on the map from transmissions, PDU inspector (in / out layers, notes, header details
+  via `PduLayers.describe`), "simple PDU" tool. Built against fixtures / `nullLayers`, not S1–S3.
 
 ### Wave 3.2 — parallel (2 agents)
-- **I3 integration** (`src/engine/**`, `src/session/**`): terminal commands and the verify checker run
-  on the simulator; `arp -a`; old rule engine kept only as test oracle.
-- **O3 oracle tests** (`src/sim/oracle/**`): property-based tests (`fast-check`) on random topologies:
-  simulator and rule engine must agree on reachability; plus golden tests for all exercises.
+- **I3 integration** (`src/engine/**`, `src/session/**`, default wiring `createSimulation` in
+  `src/sim/index.ts`): terminal commands (ping, tracert, nslookup, ipconfig /renew /release, `arp -a`)
+  and the verify checker run on the simulator with the result mapping of SIMULATION.md §10.1; lab
+  document ⇄ engine sync (`reconfigure`, DHCP effects); old rule engine kept only as test oracle;
+  tests touched by the accepted divergences (§10.3) updated.
+- **O3 oracle tests** (`src/sim/oracle/**`): property-based tests (`fast-check`) on random topologies
+  with the oracle table of SIMULATION.md §10.2 (reach, resolve, DHCP, app links, terminal text), golden
+  tests for all exercises.
 Then verifier V3.
 
 ## 6. Phase 4 — v2.2: device CLIs
