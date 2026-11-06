@@ -1,8 +1,8 @@
-import { ReactFlowProvider, useReactFlow } from '@xyflow/react'
+import { useReactFlow } from '@xyflow/react'
 import { LayoutGrid, X } from 'lucide-react'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useDocumentMeta } from '../layout/useDocumentMeta'
+import type { DeviceV2 } from '../../domain/v2'
 import { focusRing } from '../shared/focusRing'
 import { useMediaQuery } from '../shared/useMediaQuery'
 import CableHint from './cable/CableHint'
@@ -12,29 +12,51 @@ import { useCableTool } from './cable/useCableTool'
 import { AnnotationActionsContext, type AnnotationActions } from './canvas/annotationActions'
 import CanvasToolbar from './canvas/CanvasToolbar'
 import { EMPTY_SELECTION, type WorkspaceNode, type WorkspaceSelection } from './canvas/canvasTypes'
+import { annotationIdOf } from './canvas/flowElements'
 import { SelectionModel } from './canvas/SelectionModel'
 import WorkspaceCanvas from './canvas/WorkspaceCanvas'
 import type { WorkspaceCommand } from './keyboard/ShortcutResolver'
 import { useWorkspaceKeyboard } from './keyboard/useWorkspaceKeyboard'
-import { deviceCatalog, labEditor, useLabDocument } from './labServices'
+import { deviceCatalog, hasTerminal, labEditor, type ExerciseLockPolicy, type LabDocumentState } from './labServices'
 import DevicePalette from './palette/DevicePalette'
+import DeviceTabs from './panels/DeviceTabs'
+import type { DeviceTab } from './panels/deviceTabModel'
 import PropertiesPanel from './panels/PropertiesPanel'
 import ShortcutsHelp from './panels/ShortcutsHelp'
+import PacketTraceLayer from './terminal/PacketTraceLayer'
+import { useDeviceTerminals } from './terminal/useDeviceTerminals'
 import ToastRegion from './ToastRegion'
-import { annotationIdOf } from './canvas/flowElements'
-import { useRestoreAutosave } from './useRestoreAutosave'
-import { useToasts } from './useToasts'
+import { useDeviceEditing } from './useDeviceEditing'
+import type { ToastControls } from './useToasts'
 import { useWorkspaceActions } from './useWorkspaceActions'
 import WorkspaceHeader from './WorkspaceHeader'
 
-/** The lab builder: header, device palette, canvas with tools, properties panel. */
-function WorkspaceView() {
+export interface WorkspaceViewProps {
+  lab: LabDocumentState
+  /** Exercise locks; `ExerciseLockPolicy.none` in a free lab. */
+  policy: ExerciseLockPolicy
+  toasts: ToastControls
+  /** Start of the header (home + title + File menu, or back link + exercise title). */
+  headerStart: ReactNode
+  headerEnd?: ReactNode
+  /** Above the canvas, e.g. the exercise's complaint. */
+  banner?: ReactNode
+  /** Below everything, e.g. the exercise's notes and Verify button. */
+  footer?: ReactNode
+  /** Exercise mode: the notes live in the footer, an empty selection shows a hint. */
+  exerciseMode?: boolean
+  /** Explanation next to a lock icon in the toolbar (exercise with a locked topology). */
+  lockedNote?: string
+}
+
+/** The lab builder: header, device palette, canvas with tools, properties panel with device tabs. */
+function WorkspaceView(props: WorkspaceViewProps) {
+  const { lab, policy, toasts, headerStart, headerEnd, banner, footer, lockedNote } = props
+  const exerciseMode = props.exerciseMode ?? false
   const { t } = useTranslation('workspace')
-  useDocumentMeta(t('title'))
   const flow = useReactFlow<WorkspaceNode>()
-  const lab = useLabDocument()
-  useRestoreAutosave(lab)
   const { doc } = lab
+  const editable = !policy.topologyLocked
   const canvasRef = useRef<HTMLDivElement>(null)
   const [rawSelection, setSelection] = useState<WorkspaceSelection>(EMPTY_SELECTION)
   const selection = useMemo(() => SelectionModel.prune(rawSelection, doc), [doc, rawSelection])
@@ -42,19 +64,25 @@ function WorkspaceView() {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [shortcutsOpen, setShortcutsOpen] = useState(false)
   const [paletteOpen, setPaletteOpen] = useState(false)
+  const [deviceTab, setDeviceTab] = useState<DeviceTab>('info')
   const wide = useMediaQuery('(min-width: 1024px)')
-  const toasts = useToasts()
   const cable = useCableTool({ lab, editor: labEditor, notify: toasts.show })
-  const actions = useWorkspaceActions({ lab, editor: labEditor, selection, snapToGrid, canvasRef })
+  const actions = useWorkspaceActions({ lab, editor: labEditor, selection, policy, snapToGrid, canvasRef })
+  const terminals = useDeviceTerminals(lab)
+  const editing = useDeviceEditing(lab, labEditor, policy)
   const selectedCount = SelectionModel.count(selection)
+  const deletableCount = SelectionModel.count(policy.allowedDeletion(selection))
   const nameOf = useCallback(
     (deviceId: string) => doc.state.devices.find((device) => device.id === deviceId)?.name ?? deviceId,
     [doc],
   )
 
-  // A different lab was opened (autosave restore): show all of it.
+  // A different lab was opened (autosave restore, File menu, exercise): show all of it.
   useEffect(() => {
-    const frame = requestAnimationFrame(() => void flow.fitView({ padding: 0.3, maxZoom: 1.25 }))
+    // Two frames: React Flow measures the new nodes first, then the view fits all of them.
+    let frame = requestAnimationFrame(() => {
+      frame = requestAnimationFrame(() => void flow.fitView({ padding: 0.3, maxZoom: 1.25 }))
+    })
     return () => cancelAnimationFrame(frame)
   }, [flow, lab.labId])
 
@@ -90,12 +118,13 @@ function WorkspaceView() {
       case 'redo':
         return lab.redo()
       case 'delete':
-        return selectedCount > 0 ? actions.deleteSelection() : undefined
+        return deletableCount > 0 ? actions.deleteSelection() : undefined
       case 'escape':
         if (shortcutsOpen) return setShortcutsOpen(false)
         if (cable.state.active) return cable.back()
         return setSelection(EMPTY_SELECTION)
       case 'cableTool':
+        if (!editable) return undefined
         return cable.state.active ? cable.stop() : cable.choose('auto')
       case 'selectAll':
         return setSelection(SelectionModel.all(doc))
@@ -122,16 +151,46 @@ function WorkspaceView() {
   const menuDevice = menu ? doc.state.devices.find((device) => device.id === menu.deviceId) : undefined
   const step = cable.state.step
 
+  const renderDevice = (device: DeviceV2) => {
+    const terminalOpen = hasTerminal(device) && policy.canUseTerminal(device.id)
+    return (
+      <div key={device.id} className="space-y-3">
+        <h3 className="break-words text-base font-semibold text-slate-900">{device.name}</h3>
+        <DeviceTabs
+          device={device}
+          state={doc.state}
+          policy={policy}
+          tab={deviceTab}
+          onTab={setDeviceTab}
+          problems={editing.problemsOf(device.id)}
+          onUpdate={editing.update}
+          terminal={
+            terminalOpen
+              ? {
+                  lines: terminals.linesOf(device.id),
+                  hiddenCount: terminals.hiddenCountOf(device.id),
+                  onRun: (line) => terminals.run(device.id, line),
+                  onClear: () => terminals.clear(device.id),
+                }
+              : null
+          }
+        />
+      </div>
+    )
+  }
+
   const properties = (onClose?: () => void) => (
     <PropertiesPanel
       doc={doc}
       selection={selection}
-      onRename={actions.rename}
+      policy={policy}
+      renderDevice={renderDevice}
       onDisconnect={(linkId) => lab.apply((current) => labEditor.disconnect(current, linkId))}
+      onSetLinkConnected={(linkId, connected) => lab.apply((current) => labEditor.setLinkConnected(current, linkId, connected))}
       onAnnotationChange={(annotation) => lab.apply((current) => labEditor.updateAnnotation(current, annotation))}
       onNoteText={actions.setNoteText}
       onDeleteSelection={actions.deleteSelection}
-      onNotes={actions.setNotes}
+      onNotes={exerciseMode ? undefined : actions.setNotes}
       onClose={onClose}
     />
   )
@@ -139,8 +198,8 @@ function WorkspaceView() {
   return (
     <div className="flex h-dvh flex-col bg-slate-100 text-slate-900">
       <WorkspaceHeader
-        title={doc.meta.title}
-        onTitle={actions.setTitle}
+        start={headerStart}
+        end={headerEnd}
         canUndo={lab.canUndo}
         canRedo={lab.canRedo}
         onUndo={lab.undo}
@@ -148,24 +207,29 @@ function WorkspaceView() {
         shortcutsOpen={shortcutsOpen}
         onToggleShortcuts={() => setShortcutsOpen((open) => !open)}
       />
+      {banner}
       <div className="relative flex min-h-0 flex-1">
-        <aside aria-labelledby="palette-heading" className="hidden w-56 shrink-0 overflow-y-auto border-e border-slate-200 bg-white p-3 md:block">
-          <h2 id="palette-heading" className="mb-2 text-sm font-semibold text-slate-900">
-            {t('palette.title')}
-          </h2>
-          <DevicePalette models={deviceCatalog} onAdd={addModel} />
-        </aside>
+        {editable && (
+          <aside aria-labelledby="palette-heading" className="hidden w-56 shrink-0 overflow-y-auto border-e border-slate-200 bg-white p-3 md:block">
+            <h2 id="palette-heading" className="mb-2 text-sm font-semibold text-slate-900">
+              {t('palette.title')}
+            </h2>
+            <DevicePalette models={deviceCatalog} onAdd={addModel} />
+          </aside>
+        )}
         <main className="flex min-w-0 flex-1 flex-col">
           <CanvasToolbar
             activeTool={cable.state.tool}
             onSelectTool={cable.stop}
             onChooseCable={cable.choose}
+            cablesEnabled={editable}
+            lockedNote={lockedNote}
             onAddNote={addNote}
-            canDelete={selectedCount > 0}
+            canDelete={deletableCount > 0}
             onDelete={actions.deleteSelection}
             snapToGrid={snapToGrid}
             onToggleSnap={() => setSnapToGrid((snap) => !snap)}
-            canAlign={selection.deviceIds.length + selection.annotationIds.length > 1}
+            canAlign={(editable ? selection.deviceIds.length : 0) + selection.annotationIds.length > 1}
             onAlign={actions.align}
           />
           <div className="relative min-h-0 flex-1">
@@ -182,9 +246,11 @@ function WorkspaceView() {
                 cableActive={cable.state.active}
                 cableHighlight={cable.highlightOf}
                 snapToGrid={snapToGrid}
+                devicesDraggable={editable}
                 screenToFlow={flow.screenToFlowPosition}
                 canvasRef={canvasRef}
               >
+                <PacketTraceLayer trace={terminals.trace} layout={doc.layout} />
                 <CableHint state={cable.state} nameOf={nameOf} />
                 {menu && menuDevice && (
                   <PortPicker
@@ -201,24 +267,26 @@ function WorkspaceView() {
                 )}
               </WorkspaceCanvas>
             </AnnotationActionsContext.Provider>
-            <button
-              type="button"
-              onClick={() => setPaletteOpen(true)}
-              className={`absolute bottom-3 start-3 z-20 flex items-center gap-1.5 rounded-full bg-sky-600 px-4 py-2 text-sm font-medium text-white shadow-lg hover:bg-sky-700 md:hidden ${focusRing}`}
-            >
-              <LayoutGrid className="h-4 w-4" aria-hidden="true" />
-              {t('palette.open')}
-            </button>
+            {editable && (
+              <button
+                type="button"
+                onClick={() => setPaletteOpen(true)}
+                className={`absolute bottom-3 start-3 z-20 flex items-center gap-1.5 rounded-full bg-sky-600 px-4 py-2 text-sm font-medium text-white shadow-lg hover:bg-sky-700 md:hidden ${focusRing}`}
+              >
+                <LayoutGrid className="h-4 w-4" aria-hidden="true" />
+                {t('palette.open')}
+              </button>
+            )}
             <ToastRegion toasts={toasts.toasts} onDismiss={toasts.dismiss} />
           </div>
         </main>
-        {wide && <aside className="w-72 shrink-0 border-s border-slate-200 bg-white">{properties()}</aside>}
+        {wide && <aside className="w-80 shrink-0 border-s border-slate-200 bg-white xl:w-96">{properties()}</aside>}
         {!wide && selectedCount > 0 && !paletteOpen && (
-          <div className="absolute inset-x-0 bottom-0 z-30 h-[45vh] overflow-hidden rounded-t-2xl border-t border-slate-200 bg-white shadow-2xl">
+          <div className="absolute inset-x-0 bottom-0 z-30 h-[60%] overflow-hidden rounded-t-2xl border-t border-slate-200 bg-white shadow-2xl">
             {properties(() => setSelection(EMPTY_SELECTION))}
           </div>
         )}
-        {paletteOpen && (
+        {paletteOpen && editable && (
           <div
             role="dialog"
             aria-labelledby="palette-drawer-heading"
@@ -249,17 +317,9 @@ function WorkspaceView() {
         )}
         {shortcutsOpen && <ShortcutsHelp onClose={() => setShortcutsOpen(false)} />}
       </div>
+      {footer}
     </div>
   )
 }
 
-/** Workspace screen (`?view=workspace` until I2 wires the real navigation). */
-function WorkspaceScreen() {
-  return (
-    <ReactFlowProvider>
-      <WorkspaceView />
-    </ReactFlowProvider>
-  )
-}
-
-export default WorkspaceScreen
+export default WorkspaceView

@@ -4,7 +4,9 @@
     "titleLabel": "Lab title",
     "undo": "Undo (Ctrl+Z)",
     "redo": "Redo (Ctrl+Shift+Z)",
-    "shortcuts": "Keyboard shortcuts (?)"
+    "shortcuts": "Keyboard shortcuts (?)",
+    "home": "Home",
+    "file": "File"
   },
   "palette": {
     "title": "Devices",
@@ -123,13 +125,6 @@
   "properties": {
     "title": "Properties",
     "close": "Close properties",
-    "name": "Name",
-    "model": "Model",
-    "type": "Type",
-    "ports": "Ports",
-    "portFree": "Free",
-    "portLinked": "→ {{device}} {{port}}",
-    "portShut": "Shut down",
     "selected_one": "{{count}} item selected",
     "selected_other": "{{count}} items selected",
     "link": "Cable",
@@ -145,7 +140,17 @@
     "noteText": "Note text",
     "noteColor": "Colour",
     "noteSize": "Text size",
-    "shape": "Shape"
+    "shape": "Shape",
+    "tabsLabel": "Device views",
+    "tabs": {
+      "info": "Info",
+      "settings": "Settings",
+      "terminal": "Terminal"
+    },
+    "settingsHidden": "The settings of this device are hidden in this exercise.",
+    "selectHint": "Select a device to see its information, settings and terminal.",
+    "plug": "Plug the cable in",
+    "unplug": "Unplug the cable"
   },
   "annotation": {
     "defaultText": "Note",
@@ -191,5 +196,9 @@
       "del": "Del",
       "esc": "Esc"
     }
+  },
+  "recentDialog": {
+    "close": "Close",
+    "loading": "Loading…"
   }
 }

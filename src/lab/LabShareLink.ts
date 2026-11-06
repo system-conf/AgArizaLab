@@ -5,8 +5,9 @@ import type { LabDocument } from '../domain/v2'
 import type { LocalizedMessage } from '../domain/Messages'
 import { localizedMessage } from '../i18n/messageKeys'
 import { labSerializer, type LabParseResult, type LabSerializer } from './LabSerializer'
+import { SHARE_HASH_PREFIX } from './shareHashPrefix'
 
-export const SHARE_HASH_PREFIX = '#lab='
+export { SHARE_HASH_PREFIX } from './shareHashPrefix'
 
 /** Longest share hash (characters, prefix included) we hand out. */
 export const MAX_SHARE_HASH_LENGTH = 32_000

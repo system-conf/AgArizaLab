@@ -62,4 +62,15 @@ describe('LabHistory', () => {
     expect(history.canUndo || history.canRedo).toBe(false)
     expect(history.limit).toBe(5)
   })
+
+  it('maps every step without adding one and keeps coalescing', () => {
+    const history = LabHistory.start(box(1)).push(box(2)).push(box(3)).undo().push(box(4), 'drag')
+    const mapped = history.map((item) => box(item.value * 10))
+    expect(values(mapped.past)).toEqual([10, 20])
+    expect(mapped.present.value).toBe(40)
+    expect(mapped.push(box(5), 'drag').past).toHaveLength(2)
+    const withFuture = LabHistory.start(box(1)).push(box(2)).undo().map((item) => box(item.value + 1))
+    expect(withFuture.present.value).toBe(2)
+    expect(values(withFuture.future)).toEqual([3])
+  })
 })

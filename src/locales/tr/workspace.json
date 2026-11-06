@@ -4,11 +4,13 @@
     "titleLabel": "Laboratuvar adı",
     "undo": "Geri al (Ctrl+Z)",
     "redo": "Yinele (Ctrl+Shift+Z)",
-    "shortcuts": "Klavye kısayolları (?)"
+    "shortcuts": "Klavye kısayolları (?)",
+    "home": "Ana sayfa",
+    "file": "Dosya"
   },
   "palette": {
     "title": "Cihazlar",
-    "hint": "Bir cihazı tuvale sürükleyin ya da ortaya eklemek için tıklayın.",
+    "hint": "Bir cihazı tuvale sürükle ya da ortaya eklemek için tıkla.",
     "open": "Cihazlar",
     "close": "Cihaz listesini kapat",
     "add": "{{name}} ekle",
@@ -67,9 +69,9 @@
     "wireless": "Kablosuz"
   },
   "cableHints": {
-    "firstDevice": "{{cable}}: ilk cihaza tıklayın.",
-    "firstDeviceSerial": "{{cable}}: ilk cihaza tıklayın. Bu uç DCE olur (saati sağlar).",
-    "secondDevice": "{{cable}}, {{device}} {{port}} ucundan: şimdi ikinci cihaza tıklayın.",
+    "firstDevice": "{{cable}}: ilk cihaza tıkla.",
+    "firstDeviceSerial": "{{cable}}: ilk cihaza tıkla. Bu uç DCE olur (saati sağlar).",
+    "secondDevice": "{{cable}}, {{device}} {{port}} ucundan: şimdi ikinci cihaza tıkla.",
     "escape": "Esc iptal eder"
   },
   "portPicker": {
@@ -93,8 +95,8 @@
   "ssidPicker": {
     "title": "Kablosuz ağa bağlan",
     "label": "SSID (ağ adı)",
-    "hint": "Erişim noktasının ağlarından birini seçin ya da bir ad yazın.",
-    "noOptions": "Bu erişim noktası henüz SSID yayınlamıyor; istemcinin kullanacağı adı yazın.",
+    "hint": "Erişim noktasının ağlarından birini seç ya da bir ad yaz.",
+    "noOptions": "Bu erişim noktası henüz SSID yayınlamıyor; istemcinin kullanacağı adı yaz.",
     "connect": "Bağla",
     "cancel": "Vazgeç"
   },
@@ -106,9 +108,9 @@
     "wirelessNeedsClientAndRadio": "Kablosuz bağlantı, bir istemcinin Wi-Fi kartını bir erişim noktası radyosuna bağlar.",
     "portInUse": "Bu port zaten kullanımda.",
     "consoleNeedsTerminal": "Konsol kablosu bir bilgisayarı bir cihazın konsol portuna bağlar.",
-    "ssidRequired": "Kablosuz ağın adını (SSID) girin.",
-    "crossoverRequired": "İki portta da Auto-MDIX kapalı ve kablolamaları aynı: çapraz kablo kullanın.",
-    "straightThroughRequired": "İki portta da Auto-MDIX kapalı ve kablolamaları farklı: düz kablo kullanın."
+    "ssidRequired": "Kablosuz ağın adını (SSID) gir.",
+    "crossoverRequired": "İki portta da Auto-MDIX kapalı ve kablolamaları aynı: çapraz kablo kullan.",
+    "straightThroughRequired": "İki portta da Auto-MDIX kapalı ve kablolamaları farklı: düz kablo kullan."
   },
   "toast": {
     "connected": "Bağlandı: {{a}} ↔ {{b}}.",
@@ -116,20 +118,13 @@
   },
   "canvas": {
     "label": "Laboratuvar tuvali",
-    "empty": "Laboratuvarınızı kurmaya başlamak için cihaz listesinden buraya cihaz sürükleyin.",
+    "empty": "Laboratuvarını kurmaya başlamak için cihaz listesinden buraya cihaz sürükle.",
     "deviceOff": "{{name}} (kapalı)",
     "link": "{{a}} ile {{b}} arasında {{cable}}"
   },
   "properties": {
     "title": "Özellikler",
     "close": "Özellikleri kapat",
-    "name": "Ad",
-    "model": "Model",
-    "type": "Tür",
-    "ports": "Portlar",
-    "portFree": "Boş",
-    "portLinked": "→ {{device}} {{port}}",
-    "portShut": "Kapalı (shutdown)",
     "selected_one": "{{count}} öğe seçili",
     "selected_other": "{{count}} öğe seçili",
     "link": "Kablo",
@@ -141,16 +136,26 @@
     "disconnect": "Kabloyu kaldır",
     "delete": "Sil",
     "notes": "Laboratuvar notları",
-    "notesHint": "Bu laboratuvarla ilgili kendi notlarınız. Laboratuvarla birlikte kaydedilir.",
+    "notesHint": "Bu laboratuvarla ilgili kendi notların. Laboratuvarla birlikte kaydedilir.",
     "noteText": "Not metni",
     "noteColor": "Renk",
     "noteSize": "Yazı boyutu",
-    "shape": "Şekil"
+    "shape": "Şekil",
+    "tabsLabel": "Cihaz görünümleri",
+    "tabs": {
+      "info": "Bilgi",
+      "settings": "Ayarlar",
+      "terminal": "Terminal"
+    },
+    "settingsHidden": "Bu alıştırmada bu cihazın ayarları gizli.",
+    "selectHint": "Bilgilerini, ayarlarını ve terminalini görmek için bir cihaz seç.",
+    "plug": "Kabloyu tak",
+    "unplug": "Kabloyu çıkar"
   },
   "annotation": {
     "defaultText": "Not",
     "label": "Not: {{text}}",
-    "editHint": "Düzenlemek için çift tıklayın ya da Enter'a basın",
+    "editHint": "Düzenlemek için çift tıkla ya da Enter’a bas",
     "editLabel": "Notu düzenle",
     "colors": {
       "neutral": "Gri",
@@ -191,5 +196,9 @@
       "del": "Del",
       "esc": "Esc"
     }
+  },
+  "recentDialog": {
+    "close": "Kapat",
+    "loading": "Yükleniyor…"
   }
 }

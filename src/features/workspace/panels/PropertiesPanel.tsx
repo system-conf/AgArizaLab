@@ -1,60 +1,85 @@
-import { Trash2, X } from 'lucide-react'
+import { MousePointerClick, Trash2, X } from 'lucide-react'
+import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { Annotation, LabDocument } from '../../../domain/v2'
+import type { Annotation, DeviceV2, LabDocument } from '../../../domain/v2'
 import { focusRing } from '../../shared/focusRing'
 import type { WorkspaceSelection } from '../canvas/canvasTypes'
 import { SelectionModel } from '../canvas/SelectionModel'
+import type { ExerciseLockPolicy } from '../labServices'
 import CommitField from './CommitField'
-import DeviceProperties from './DeviceProperties'
 import { AnnotationProperties, LinkProperties } from './ItemProperties'
 
 interface PropertiesPanelProps {
   doc: LabDocument
   selection: WorkspaceSelection
-  onRename: (deviceId: string, name: string) => void
+  policy: ExerciseLockPolicy
+  /** Name, model and the Info / Settings / Terminal tabs of the one selected device. */
+  renderDevice: (device: DeviceV2) => ReactNode
   onDisconnect: (linkId: string) => void
+  onSetLinkConnected: (linkId: string, connected: boolean) => void
   onAnnotationChange: (annotation: Annotation) => void
   onNoteText: (annotationId: string, text: string) => void
   onDeleteSelection: () => void
-  onNotes: (notes: string) => void
+  /** The lab's notes field when nothing is selected; absent in exercise mode (notes sit in the footer). */
+  onNotes?: (notes: string) => void
   /** Shown as a close button (phone bottom sheet); absent on the desktop side panel. */
   onClose?: () => void
 }
 
 /**
- * Right-hand panel: the selected device (name, model, ports), cable or note; several selected →
- * count and delete; nothing selected → the lab's notes. Full device settings come with I2.
+ * Right-hand panel: the selected device (with tabs), cable or note; several selected → count and
+ * delete; nothing selected → the lab's notes (free lab) or a hint (exercise).
  */
 function PropertiesPanel(props: PropertiesPanelProps) {
   const { t } = useTranslation('workspace')
-  const { doc, selection } = props
+  const { doc, selection, policy } = props
   const count = SelectionModel.count(selection)
 
   function body() {
     if (count === 0) {
+      if (props.onNotes) {
+        return (
+          <CommitField label={t('properties.notes')} value={doc.notes} onCommit={props.onNotes} multiline hint={t('properties.notesHint')} />
+        )
+      }
       return (
-        <CommitField label={t('properties.notes')} value={doc.notes} onCommit={props.onNotes} multiline hint={t('properties.notesHint')} />
+        <p className="m-auto flex max-w-60 flex-col items-center gap-3 py-8 text-center text-sm text-slate-500">
+          <MousePointerClick className="h-7 w-7 text-sky-700" aria-hidden="true" />
+          {t('properties.selectHint')}
+        </p>
       )
     }
     if (count > 1) {
+      const deletable = SelectionModel.count(policy.allowedDeletion(selection)) > 0
       return (
         <div className="space-y-3">
           <p className="text-sm text-slate-700">{t('properties.selected', { count })}</p>
-          <button
-            type="button"
-            onClick={props.onDeleteSelection}
-            className={`flex items-center gap-1.5 rounded-md border border-rose-200 px-3 py-1.5 text-sm text-rose-700 hover:bg-rose-50 ${focusRing}`}
-          >
-            <Trash2 className="h-4 w-4" aria-hidden="true" />
-            {t('properties.delete')}
-          </button>
+          {deletable && (
+            <button
+              type="button"
+              onClick={props.onDeleteSelection}
+              className={`flex items-center gap-1.5 rounded-md border border-rose-200 px-3 py-1.5 text-sm text-rose-700 hover:bg-rose-50 ${focusRing}`}
+            >
+              <Trash2 className="h-4 w-4" aria-hidden="true" />
+              {t('properties.delete')}
+            </button>
+          )}
         </div>
       )
     }
     const device = doc.state.devices.find((candidate) => candidate.id === selection.deviceIds[0])
-    if (device) return <DeviceProperties key={device.id} doc={doc} device={device} onRename={(name) => props.onRename(device.id, name)} />
+    if (device) return props.renderDevice(device)
     const link = doc.state.links.find((candidate) => candidate.id === selection.linkIds[0])
-    if (link) return <LinkProperties doc={doc} link={link} onDisconnect={() => props.onDisconnect(link.id)} />
+    if (link) {
+      return (
+        <LinkProperties
+          doc={doc}
+          link={link}
+          onDisconnect={policy.canDeleteLink(link.id) ? () => props.onDisconnect(link.id) : undefined}
+          onSetConnected={policy.canUnplugLink(link.id) ? (connected) => props.onSetLinkConnected(link.id, connected) : undefined}
+        />
+      )
+    }
     const annotation = doc.annotations.find((candidate) => candidate.id === selection.annotationIds[0])
     if (annotation) {
       return (
@@ -87,7 +112,7 @@ function PropertiesPanel(props: PropertiesPanelProps) {
           </button>
         )}
       </div>
-      <div className="flex-1 overflow-y-auto p-4">{body()}</div>
+      <div className="flex flex-1 flex-col overflow-y-auto p-4">{body()}</div>
     </section>
   )
 }

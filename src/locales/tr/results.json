@@ -18,6 +18,11 @@
     "aria": "Sonraki adım",
     "backToList": "Alıştırma listesine dön",
     "solveAgain": "Tekrar çöz",
-    "next": "Sonraki alıştırma"
+    "next": "Sonraki alıştırma",
+    "openInLab": "Laboratuvarda aç"
+  },
+  "openInLab": {
+    "hint": "Onarılmış ağı kendi laboratuvarına yeni bir lab olarak kopyalar.",
+    "failed": "Lab bu tarayıcıya kaydedilemedi."
   }
 }

@@ -36,6 +36,11 @@ export interface LabDocumentState {
   apply(update: (doc: LabDocument) => LabDocument, options?: ApplyOptions): void
   /** Opens another document: clears undo / redo. */
   replace(doc: LabDocument, options?: ReplaceOptions): void
+  /**
+   * Rewrites the document and its undo / redo steps without adding an undo step or marking the lab
+   * as edited (e.g. relabelling an exercise lab after a language switch).
+   */
+  rewrite(update: (doc: LabDocument) => LabDocument): void
   undo(): void
   redo(): void
   canUndo: boolean
@@ -93,6 +98,10 @@ export function useLabDocument(initial?: LabDocument, options: UseLabDocumentOpt
     [autosaver],
   )
 
+  const rewrite = useCallback((update: (doc: LabDocument) => LabDocument) => {
+    setSession((current) => ({ ...current, history: current.history.map(update) }))
+  }, [])
+
   const undo = useCallback(() => setSession((current) => nextSession(current, current.history.undo())), [])
   const redo = useCallback(() => setSession((current) => nextSession(current, current.history.redo())), [])
 
@@ -101,6 +110,7 @@ export function useLabDocument(initial?: LabDocument, options: UseLabDocumentOpt
     labId: session.labId,
     apply,
     replace,
+    rewrite,
     undo,
     redo,
     canUndo: session.history.canUndo,

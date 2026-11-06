@@ -18,6 +18,11 @@
     "aria": "Next step",
     "backToList": "Back to the exercises",
     "solveAgain": "Solve again",
-    "next": "Next exercise"
+    "next": "Next exercise",
+    "openInLab": "Open in the lab"
+  },
+  "openInLab": {
+    "hint": "Copies the repaired network into a new lab of your own.",
+    "failed": "The lab could not be saved in this browser."
   }
 }

@@ -1,4 +1,4 @@
-import { Trash2, Unplug } from 'lucide-react'
+import { Plug, Trash2, Unplug } from 'lucide-react'
 import { useId } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Annotation, LabDocument, LinkV2, TextAnnotation } from '../../../domain/v2'
@@ -14,11 +14,16 @@ const selectClasses = `w-full rounded-md border border-slate-300 bg-white px-2 p
 interface LinkPropertiesProps {
   doc: LabDocument
   link: LinkV2
-  onDisconnect: () => void
+  /** Absent: the exercise does not allow removing this cable. */
+  onDisconnect?: () => void
+  /** Plug / unplug without removing the cable; absent when the cable is locked. */
+  onSetConnected?: (connected: boolean) => void
 }
 
-/** Cable type, ends and its extra settings (SSID, DCE end); "Remove cable". */
-export function LinkProperties({ doc, link, onDisconnect }: LinkPropertiesProps) {
+const secondaryButton = `flex items-center gap-1.5 rounded-md border border-slate-300 px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50 ${focusRing}`
+
+/** Cable type, ends and its extra settings (SSID, DCE end); plug / unplug and "Remove cable". */
+export function LinkProperties({ doc, link, onDisconnect, onSetConnected }: LinkPropertiesProps) {
   const { t } = useTranslation('workspace')
   const nameOf = (deviceId: string) => doc.state.devices.find((device) => device.id === deviceId)?.name ?? deviceId
   const endText = (side: 'a' | 'b') => `${nameOf(link[side].deviceId)} ${link[side].portId}`
@@ -48,10 +53,20 @@ export function LinkProperties({ doc, link, onDisconnect }: LinkPropertiesProps)
         )}
       </dl>
       {!link.connected && <p className="text-sm text-amber-700">{t('properties.unplugged')}</p>}
-      <button type="button" onClick={onDisconnect} className={dangerButton}>
-        <Unplug className="h-4 w-4" aria-hidden="true" />
-        {t('properties.disconnect')}
-      </button>
+      <div className="flex flex-wrap gap-2">
+        {onSetConnected && link.cable !== 'wireless' && (
+          <button type="button" onClick={() => onSetConnected(!link.connected)} className={secondaryButton}>
+            {link.connected ? <Unplug className="h-4 w-4" aria-hidden="true" /> : <Plug className="h-4 w-4" aria-hidden="true" />}
+            {t(link.connected ? 'properties.unplug' : 'properties.plug')}
+          </button>
+        )}
+        {onDisconnect && (
+          <button type="button" onClick={onDisconnect} className={dangerButton}>
+            <Trash2 className="h-4 w-4" aria-hidden="true" />
+            {t('properties.disconnect')}
+          </button>
+        )}
+      </div>
     </div>
   )
 }

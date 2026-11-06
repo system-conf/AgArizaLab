@@ -68,6 +68,14 @@ export class LabLibrary {
     return stored
   }
 
+  /**
+   * Makes a stored lab the one the workspace reopens (autosave pointer) without saving it again,
+   * so its "last changed" time and its place in the recent list stay as they are.
+   */
+  async markOpened(labId: string): Promise<void> {
+    await this.store.set(AUTOSAVE_KEY, { labId })
+  }
+
   /** The lab that was open last, or null (nothing saved, or the entry is unusable). */
   async loadAutosave(): Promise<StoredLab | null> {
     const pointer = autosaveSchema.safeParse(await this.store.get(AUTOSAVE_KEY))

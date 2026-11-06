@@ -96,7 +96,8 @@
     "dhcpNoServer": "No address received from a DHCP server",
     "dhcpPoolExhausted": "The DHCP server has no free addresses",
     "ipConflict": "IP address conflict",
-    "invalidHostAddress": "The IP address cannot be used on this subnet"
+    "invalidHostAddress": "The IP address cannot be used on this subnet",
+    "ttlExpired": "TTL expired in transit (routing loop)"
   },
   "hostForm": {
     "modeLabel": "IP address assignment",

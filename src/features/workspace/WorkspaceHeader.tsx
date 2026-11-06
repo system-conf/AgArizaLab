@@ -1,13 +1,14 @@
-import { Keyboard, Network, Redo2, Undo2 } from 'lucide-react'
+import { Keyboard, Redo2, Undo2 } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import LanguageSwitcher from '../layout/LanguageSwitcher'
 import { focusRing } from '../shared/focusRing'
-import CommitField from './panels/CommitField'
 
 interface WorkspaceHeaderProps {
-  title: string
-  onTitle: (title: string) => void
+  /** Start of the bar: home link, lab title and File menu (lab) or back link and exercise title. */
+  start: ReactNode
+  /** After the language switcher, e.g. the exercise's Guide button. */
+  end?: ReactNode
   canUndo: boolean
   canRedo: boolean
   onUndo: () => void
@@ -16,7 +17,7 @@ interface WorkspaceHeaderProps {
   onToggleShortcuts: () => void
 }
 
-function HeaderButton({ label, onClick, disabled, pressed, children }: {
+export function HeaderButton({ label, onClick, disabled, pressed, children }: {
   label: string
   onClick: () => void
   disabled?: boolean
@@ -38,31 +39,26 @@ function HeaderButton({ label, onClick, disabled, pressed, children }: {
   )
 }
 
-/** Lab title (editable), undo / redo, shortcuts help and the language switcher. */
+/** Top bar of the workspace: the screen's own start content, undo / redo, shortcuts help, language. */
 function WorkspaceHeader(props: WorkspaceHeaderProps) {
-  const { t } = useTranslation(['workspace', 'lab'])
+  const { t } = useTranslation('workspace')
   return (
-    <header className="flex items-center gap-2 border-b border-slate-200 bg-white px-3 py-2">
-      <Network className="hidden h-6 w-6 shrink-0 text-sky-600 sm:block" aria-hidden="true" />
-      <CommitField
-        label={t('header.titleLabel')}
-        value={props.title}
-        onCommit={props.onTitle}
-        placeholder={t('lab:untitled')}
-        hideLabel
-        className="min-w-0 max-w-md flex-1"
-      />
-      <div className="ms-auto flex items-center gap-1">
+    <header className="flex items-center gap-1 border-b border-slate-200 bg-white px-2 py-2 sm:gap-2 sm:px-3">
+      <div className="flex min-w-0 flex-1 items-center gap-1 sm:gap-2">{props.start}</div>
+      <div className="flex shrink-0 items-center gap-0.5 sm:gap-1">
         <HeaderButton label={t('header.undo')} onClick={props.onUndo} disabled={!props.canUndo}>
           <Undo2 className="h-5 w-5" aria-hidden="true" />
         </HeaderButton>
         <HeaderButton label={t('header.redo')} onClick={props.onRedo} disabled={!props.canRedo}>
           <Redo2 className="h-5 w-5" aria-hidden="true" />
         </HeaderButton>
-        <HeaderButton label={t('header.shortcuts')} onClick={props.onToggleShortcuts} pressed={props.shortcutsOpen}>
-          <Keyboard className="h-5 w-5" aria-hidden="true" />
-        </HeaderButton>
+        <span className="hidden sm:contents">
+          <HeaderButton label={t('header.shortcuts')} onClick={props.onToggleShortcuts} pressed={props.shortcutsOpen}>
+            <Keyboard className="h-5 w-5" aria-hidden="true" />
+          </HeaderButton>
+        </span>
         <LanguageSwitcher />
+        {props.end}
       </div>
     </header>
   )

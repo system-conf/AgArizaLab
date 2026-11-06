@@ -36,6 +36,8 @@ interface WorkspaceCanvasProps {
   cableActive: boolean
   cableHighlight: (deviceId: string) => CableHighlight
   snapToGrid: boolean
+  /** false: devices cannot be dragged (exercise with a locked topology). */
+  devicesDraggable: boolean
   screenToFlow: (point: CanvasPoint) => CanvasPoint
   canvasRef: RefObject<HTMLDivElement | null>
   /** Overlays inside the flow (cable hint, port picker). */
@@ -60,6 +62,7 @@ function WorkspaceCanvas({
   cableActive,
   cableHighlight,
   snapToGrid,
+  devicesDraggable,
   screenToFlow,
   canvasRef,
   children,
@@ -84,7 +87,7 @@ function WorkspaceCanvas({
     [t, translate],
   )
 
-  const nodes = buildNodes({ doc, selection, dragPositions, measured, labels, cableHighlight: cableHighlight })
+  const nodes = buildNodes({ doc, selection, dragPositions, measured, labels, cableHighlight, devicesDraggable })
   const edges = useMemo(
     () => buildEdges(doc, selection, (link) => linkLightOf(doc.state, link.id), labels),
     [doc, labels, selection],

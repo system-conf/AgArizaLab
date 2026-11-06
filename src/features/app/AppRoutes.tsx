@@ -1,0 +1,106 @@
+import { lazy, Suspense, useEffect, useState } from 'react'
+import { useLanguage } from '../../i18n'
+import { isShareHash } from '../../lab/shareHashPrefix'
+import { AppRouteCodec, RouteResolver, routes, useAppRoute, useAppRouter } from '../../routing'
+import { useExerciseSummaries } from '../../scenarios/exerciseSummaries'
+import { ProgressStore } from '../../session/ProgressStore'
+import type { SolvedExercise } from '../exercise/ExerciseScreen'
+import LandingScreen from '../landing/LandingScreen'
+import ExerciseListScreen from '../scenario/ExerciseListScreen'
+import ExerciseReport from './ExerciseReport'
+import LoadingScreen from './LoadingScreen'
+
+// The workspace and exercise screens (React Flow, engine, catalog, lab storage) load on demand.
+const LabWorkspaceScreen = lazy(() => import('../workspace/LabWorkspaceScreen'))
+const ExerciseScreen = lazy(() => import('../exercise/ExerciseScreen'))
+
+/** The share hash the page was opened with (`#lab=…`), or null. */
+function initialShareHash(): string | null {
+  return isShareHash(window.location.hash) ? window.location.hash : null
+}
+
+/** Picks the screen for the current route; redirects through RouteResolver. */
+function AppRoutes() {
+  const router = useAppRouter()
+  const route = useAppRoute()
+  const { language } = useLanguage()
+  const exercises = useExerciseSummaries()
+  const [progressStore] = useState(() => ProgressStore.fromBrowser())
+  const [progress, setProgress] = useState(() => progressStore.read())
+  const [solved, setSolved] = useState<SolvedExercise | null>(null)
+  const [shareHash, setShareHash] = useState(initialShareHash)
+
+  const decision = RouteResolver.resolve(route, {
+    exerciseIds: exercises.map((exercise) => exercise.id),
+    reportExerciseId: solved?.exerciseId ?? null,
+    hasShareHash: shareHash !== null,
+  })
+  const redirect = decision.kind === 'redirect' ? decision : null
+  const redirectUrl = redirect ? AppRouteCodec.format(redirect.to) : null
+
+  useEffect(() => {
+    if (redirect) router.navigate(redirect.to, { replace: true, keepHash: redirect.keepHash })
+    // redirectUrl identifies the redirect; the decision object is new on every render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [redirectUrl, router])
+
+  // `?lang=` in the address bar follows a language switch (it would win on reload otherwise).
+  useEffect(() => {
+    router.updateQueryParameter('lang', language)
+  }, [language, router])
+
+  // Every screen starts at the top, not at the scroll position of the previous one.
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [route])
+
+  if (redirect) return null
+
+  switch (route.name) {
+    case 'landing':
+    case 'notFound':
+      return <LandingScreen />
+    case 'lab':
+      return (
+        <Suspense fallback={<LoadingScreen />}>
+          <LabWorkspaceScreen shareHash={shareHash} onShareHashUsed={() => setShareHash(null)} />
+        </Suspense>
+      )
+    case 'exercises':
+      return (
+        <ExerciseListScreen
+          items={exercises.map((exercise) => ({
+            id: exercise.id,
+            order: exercise.order,
+            title: exercise.texts.title,
+            setting: exercise.setting,
+            topics: exercise.texts.topics,
+            completed: progress[exercise.id] !== undefined,
+          }))}
+          onStart={(exerciseId) => router.navigate(routes.exercise(exerciseId))}
+        />
+      )
+    case 'exercise':
+      return (
+        <Suspense fallback={<LoadingScreen />}>
+          <ExerciseScreen
+            key={route.exerciseId}
+            exerciseId={route.exerciseId}
+            onSolved={(result) => {
+              setProgress(progressStore.recordCompletion(result.exerciseId, result.guideStepsUsed))
+              setSolved(result)
+              router.navigate(routes.exerciseReport(result.exerciseId))
+            }}
+          />
+        </Suspense>
+      )
+    case 'exerciseReport': {
+      const index = exercises.findIndex((exercise) => exercise.id === route.exerciseId)
+      const exercise = exercises[index]
+      if (!exercise || !solved) return null
+      return <ExerciseReport solved={solved} exercise={exercise} next={exercises[index + 1]} />
+    }
+  }
+}
+
+export default AppRoutes

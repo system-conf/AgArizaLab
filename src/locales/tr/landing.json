@@ -1,9 +1,9 @@
 {
   "hero": {
-    "title": "Tarayıcında ağ arıza laboratuvarı",
-    "lead": "Restoran, ofis ve mağaza ağlarında gerçekte yaşanan arızalar. Cihazları incele, ping, ipconfig ve nslookup çalıştır, yanlış ayarı bul ve düzelt. Kurulum yok, üyelik yok.",
-    "comingNext": "Sırada: kendi ağını kurabileceğin serbest çalışma alanı ve paket düzeyinde simülasyon.",
-    "toExercises": "Alıştırmalara geç",
+    "title": "Tarayıcında ağ laboratuvarı",
+    "lead": "Router, switch, erişim noktası ve bilgisayarlarla ağını kur, kablola, ayarla; ping, ipconfig ve tracert ile test et. Küçük işletmelerde yaşanan gerçek arızalarla sorun gidermeyi öğren. Kurulum yok, üyelik yok.",
+    "openLab": "Laboratuvarı aç",
+    "toExercises": "Alıştırmalar",
     "viewOnGitHub": "GitHub’da incele"
   },
   "progress": {
@@ -14,20 +14,19 @@
   },
   "howItWorks": {
     "title": "Laboratuvar nasıl çalışır?",
-    "open": {
-      "title": "Bir alıştırma aç",
-      "text": "Her alıştırma küçük bir işletmeden gelen bir mesajla başlar. Şikâyeti oku, ağ haritasına bak."
+    "build": {
+      "title": "Ağını kur",
+      "text": "Cihazları tuvale sürükle ve doğru kabloyla bağla. Her cihazın gerçek portları var."
     },
-    "inspect": {
-      "title": "Cihazları incele, komut çalıştır",
-      "text": "Bir cihaza tıklayıp durumunu ve ayarlarını incele. Bilgisayar ve kasalarda ping, ipconfig ve nslookup çalıştır; trafiğin nerede takıldığını gör."
+    "configure": {
+      "title": "Ayarla ve test et",
+      "text": "IP adreslerini, VLAN’ları ve rotaları ayarla; bilgisayarlarda ping, ipconfig, nslookup ve tracert çalıştır."
     },
-    "verify": {
-      "title": "Düzelt ve doğrula",
-      "text": "Yanlış ayarı düzelt, “Doğrula” düğmesine bas. Çözüm raporu ne olduğunu ve mülakatta nasıl anlatacağını açıklar."
+    "troubleshoot": {
+      "title": "Sorun gidermeyi öğren",
+      "text": "Alıştırmalarda küçük bir işletmenin bozuk ağı seni bekliyor. Yanlış ayarı bul, düzelt ve doğrula."
     }
   },
-  "exercisesHeading": "Alıştırmalar",
   "exercisesHint": "İstediğin alıştırmadan başlayabilirsin.",
   "card": {
     "meta": "Alıştırma {{order}} · {{setting}}",
@@ -41,9 +40,9 @@
     "solveAgainAria": "Tekrar çöz: {{title}}"
   },
   "settings": {
-    "restoran": "Restoran",
-    "ofis": "Ofis",
-    "magaza": "Mağaza"
+    "restaurant": "Restoran",
+    "office": "Ofis",
+    "shop": "Mağaza"
   },
   "difficulty": {
     "easy": "Kolay",
@@ -53,5 +52,13 @@
   "footer": {
     "license": "{{license}} lisanslı açık kaynak proje · {{author}}",
     "sourceCode": "Kaynak kod (GitHub)"
-  }
+  },
+  "recentLabs": {
+    "hint": "Labların bu tarayıcıda otomatik olarak kaydedilir.",
+    "loading": "Labların yükleniyor…",
+    "import": "Lab dosyası içe aktar",
+    "importFailed": "Lab içe aktarılamadı:"
+  },
+  "exercisesTitle": "Arıza giderme alıştırmaları",
+  "exercisesLead": "Her alıştırma küçük bir işletmeden gelen bir mesajla başlar. Cihazları incele, yanlış ayarı bul, düzelt ve “Doğrula” düğmesine bas."
 }

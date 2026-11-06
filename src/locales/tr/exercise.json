@@ -29,5 +29,9 @@
     "notesPlaceholder": "Bulduklarını buraya not al…",
     "verify": "Doğrula",
     "notSolvedYet": "Henüz çözülmedi:"
+  },
+  "mode": {
+    "topologyLocked": "Bu alıştırmada ağ hazır verilir: cihaz ve kablo eklenemez, silinemez, taşınamaz.",
+    "complaintRegion": "Müşteri mesajı"
   }
 }

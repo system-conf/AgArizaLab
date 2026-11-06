@@ -1,7 +1,8 @@
 // The app's lab storage: IndexedDB database 'agArizaLab', object store 'labs', in-memory fallback.
+import type { LabDocument } from '../../domain/v2'
 import type { LabParseResult } from '../LabSerializer'
 import { IdbKeyValueStore, ResilientKeyValueStore } from './LabKeyValueStore'
-import { LabLibrary, type RecentLabEntry, type StoredLab } from './LabLibrary'
+import { LabLibrary, newLabId, type RecentLabEntry, type StoredLab } from './LabLibrary'
 
 const appStore = new ResilientKeyValueStore(new IdbKeyValueStore('agArizaLab', 'labs'))
 
@@ -29,4 +30,15 @@ export function openRecentLab(labId: string): Promise<LabParseResult> {
 
 export function deleteRecentLab(labId: string): Promise<void> {
   return labLibrary.remove(labId)
+}
+
+/** Makes a recent lab the one the workspace (`/lab`) opens next. */
+export function markLabOpened(labId: string): Promise<void> {
+  return labLibrary.markOpened(labId)
+}
+
+/** Saves `doc` under a new storage id (imported file, "open in lab"); the workspace opens it next. */
+export async function saveLabAsNew(doc: LabDocument): Promise<StoredLab> {
+  const labId = newLabId()
+  return { labId, doc: await labLibrary.save(labId, doc) }
 }

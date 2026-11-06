@@ -6,10 +6,15 @@ import { scenarioDefinitions } from './scenarioDefinitions'
 
 export { scenarioDefinitions } from './scenarioDefinitions'
 export { ScenarioLocalizer, localizeScenario } from './ScenarioLocalizer'
+export { ExerciseLocalizer } from './ExerciseLocalizer'
+export { ExerciseTextReader } from './ExerciseTextReader'
+export { useExerciseSummaries, type ExerciseSummary } from './exerciseSummaries'
+// v2 exercise definitions (with the migration) are imported from './exerciseDefinitions' and
+// './useLocalizedExercises' directly by the lazy exercise screen, never through this index.
 
 /**
- * Every exercise in the active UI language, sorted by order. Memoized per language: `t` from
- * useTranslation changes identity only when the language changes, which re-runs the localizer.
+ * v1: every exercise as a v1 Scenario in the active UI language, sorted by order. No longer used
+ * by the app (it runs exercises on v2: useLocalizedExercises); removed with the v1 types.
  */
 export function useLocalizedScenarios(): Scenario[] {
   const { t } = useTranslation('exercises')

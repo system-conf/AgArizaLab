@@ -2,11 +2,10 @@
 // LabSerializer (so v1 networks / exercises and older formats are upgraded too).
 import type { LabDocument } from '../domain/v2'
 import { localizedMessage } from '../i18n/messageKeys'
+import { LAB_FILE_EXTENSION } from './labFileTypes'
 import { labSerializer, type LabParseResult, type LabSerializer } from './LabSerializer'
 
-export const LAB_FILE_EXTENSION = '.agl.json'
-/** For `<input type="file" accept=…>`. */
-export const LAB_FILE_ACCEPT = '.agl.json,.json,application/json'
+export { LAB_FILE_ACCEPT, LAB_FILE_EXTENSION } from './labFileTypes'
 
 const MAX_NAME_LENGTH = 60
 

@@ -8,5 +8,7 @@
     "pageTitle": "{{page}} — {{appName}}",
     "description": "A free, open-source network troubleshooting lab in your browser. Inspect devices, run ping, ipconfig and nslookup, and fix realistic faults in restaurant, office and shop networks."
   },
-  "opensInNewTab": "(opens in a new tab)"
+  "opensInNewTab": "(opens in a new tab)",
+  "loading": "Loading…",
+  "home": "Home"
 }

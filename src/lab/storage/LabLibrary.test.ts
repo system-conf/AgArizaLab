@@ -161,4 +161,14 @@ describe('LabAutosaver', () => {
     await autosaver.flush()
     expect((await labs.loadAutosave())?.labId).toBe('labA')
   })
+
+  it('marks a recent lab as opened without saving it again', async () => {
+    const labs = library()
+    await labs.save('labA', sampleLab())
+    await labs.save('labB', createEmptyLab('B', FIXED_NOW))
+    const before = await labs.listRecent()
+    await labs.markOpened('labA')
+    expect((await labs.loadAutosave())?.labId).toBe('labA')
+    expect(await labs.listRecent()).toEqual(before)
+  })
 })

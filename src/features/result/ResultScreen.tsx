@@ -1,6 +1,7 @@
-import { ArrowRight, Briefcase, Building2, CircleCheck, Compass, List, RotateCcw, Search, type LucideIcon } from 'lucide-react'
+import { ArrowRight, Briefcase, Building2, CircleCheck, Compass, FlaskConical, List, RotateCcw, Search, type LucideIcon } from 'lucide-react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { ScenarioExplanation } from '../../domain/ScenarioTypes'
+import type { ExerciseTexts } from '../../domain/v2'
 import SiteHeader from '../layout/SiteHeader'
 import { useNumberFormat } from '../layout/useNumberFormat'
 import { focusRing } from '../shared/focusRing'
@@ -16,7 +17,11 @@ interface ResultScreenProps {
   onNext?: () => void
   onSolveAgain: () => void
   onBackToList: () => void
+  /** Copies the repaired network into a new free lab and opens it; resolves false when that failed. */
+  onOpenInLab?: () => Promise<boolean>
 }
+
+type ScenarioExplanation = ExerciseTexts['explanation']
 
 const sections: { key: keyof ScenarioExplanation; icon: LucideIcon }[] = [
   { key: 'whatHappened', icon: Search },
@@ -28,9 +33,22 @@ const secondaryButton = `flex items-center justify-center gap-2 rounded-lg borde
 
 /** Solution report after a successful verification: summary, explanation cards, sharing and navigation. */
 function ResultScreen(props: ResultScreenProps) {
-  const { title, explanation, topics, guideStepsUsed, totalGuideSteps, onNext, onSolveAgain, onBackToList } = props
+  const { title, explanation, topics, guideStepsUsed, totalGuideSteps, onNext, onSolveAgain, onBackToList, onOpenInLab } = props
   const { t } = useTranslation('results')
   const formatNumber = useNumberFormat()
+  const [openInLab, setOpenInLab] = useState<'idle' | 'busy' | 'failed'>('idle')
+
+  function handleOpenInLab() {
+    if (!onOpenInLab) return
+    setOpenInLab('busy')
+    onOpenInLab().then(
+      (opened) => setOpenInLab(opened ? 'idle' : 'failed'),
+      (error: unknown) => {
+        console.error('Open in lab failed', error)
+        setOpenInLab('failed')
+      },
+    )
+  }
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -78,6 +96,25 @@ function ResultScreen(props: ResultScreenProps) {
             </section>
           )
         })}
+        {onOpenInLab && (
+          <section className="flex flex-col items-start gap-2 rounded-2xl border border-sky-200 bg-sky-50 p-4 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-sm text-sky-900">{t('openInLab.hint')}</p>
+            <button
+              type="button"
+              onClick={handleOpenInLab}
+              disabled={openInLab === 'busy'}
+              className={`flex shrink-0 items-center gap-2 rounded-lg bg-sky-700 px-4 py-2 text-sm font-medium text-white hover:bg-sky-800 disabled:opacity-60 ${focusRing}`}
+            >
+              <FlaskConical className="h-4 w-4" aria-hidden="true" />
+              {t('nav.openInLab')}
+            </button>
+            {openInLab === 'failed' && (
+              <p role="alert" className="text-sm text-rose-800">
+                {t('openInLab.failed')}
+              </p>
+            )}
+          </section>
+        )}
         <ShareOnLinkedIn />
         <nav aria-label={t('nav.aria')} className="flex flex-col-reverse gap-3 sm:flex-row sm:flex-wrap sm:justify-center">
           <button type="button" onClick={onBackToList} className={secondaryButton}>

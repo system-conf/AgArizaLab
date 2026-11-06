@@ -1,20 +1,30 @@
-// Where to put a new device: the wanted point, or the nearest free spot so devices never stack.
+// Where to put a new item: the wanted point, or the nearest free spot so items (and the device
+// names hanging below the icons) never overlap.
 import type { CanvasPoint } from '../../../domain/v2'
 
+/** Minimum distance between the top-left points of two items, per axis. */
+export interface Spacing {
+  x: number
+  y: number
+}
+
 export class PlacementFinder {
-  private readonly step: number
+  private readonly spacing: Spacing
   private readonly maxTries: number
 
-  /** `step`: distance between candidate spots (also the minimum gap between two devices). */
-  constructor(step: number, maxTries = 64) {
-    this.step = step
+  /**
+   * `spacing`: an item is free when every other item is at least `spacing.x` away horizontally or
+   * `spacing.y` vertically; candidate spots are that far apart. A number means the same in both axes.
+   */
+  constructor(spacing: Spacing | number, maxTries = 64) {
+    this.spacing = typeof spacing === 'number' ? { x: spacing, y: spacing } : spacing
     this.maxTries = maxTries
   }
 
   /**
-   * `wanted` when no occupied point is closer than `step` in both axes; otherwise the first free
-   * spot on square rings around it (each ring tries right / down before left / up). Gives up after
-   * `maxTries` and returns `wanted` (stacking is harmless, just untidy).
+   * `wanted` when no occupied point is too close; otherwise the first free spot on square rings
+   * around it (each ring tries right / down before left / up). Gives up after `maxTries` and
+   * returns `wanted` (stacking is harmless, just untidy).
    */
   find(wanted: CanvasPoint, occupied: readonly CanvasPoint[]): CanvasPoint {
     for (const candidate of this.candidates(wanted)) {
@@ -24,7 +34,7 @@ export class PlacementFinder {
   }
 
   private isFree(point: CanvasPoint, occupied: readonly CanvasPoint[]): boolean {
-    return occupied.every((other) => Math.abs(other.x - point.x) >= this.step || Math.abs(other.y - point.y) >= this.step)
+    return occupied.every((other) => Math.abs(other.x - point.x) >= this.spacing.x || Math.abs(other.y - point.y) >= this.spacing.y)
   }
 
   private *candidates(wanted: CanvasPoint): Generator<CanvasPoint> {
@@ -33,7 +43,7 @@ export class PlacementFinder {
     for (let ring = 1; tries < this.maxTries; ring += 1) {
       for (const [dx, dy] of this.ring(ring)) {
         tries += 1
-        yield { x: wanted.x + dx * this.step, y: wanted.y + dy * this.step }
+        yield { x: wanted.x + dx * this.spacing.x, y: wanted.y + dy * this.spacing.y }
       }
     }
   }

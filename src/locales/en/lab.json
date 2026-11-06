@@ -6,7 +6,8 @@
     "import": "Import lab",
     "share": "Copy share link",
     "undo": "Undo",
-    "redo": "Redo"
+    "redo": "Redo",
+    "openRecent": "Open recent lab"
   },
   "recent": {
     "title": "Recent labs",
@@ -14,12 +15,15 @@
     "open": "Open",
     "delete": "Delete",
     "updatedAt": "Last changed {{date}}",
-    "notFound": "This lab is no longer in the browser storage."
+    "notFound": "This lab is no longer in the browser storage.",
+    "openAria": "Open lab: {{title}}",
+    "deleteAria": "Delete lab: {{title}}"
   },
   "share": {
     "copied": "Share link copied.",
     "tooLarge": "This lab is too large for a share link ({{size}} of at most {{limit}} characters). Export it as a file instead.",
-    "corrupt": "The share link is damaged or incomplete. Ask for a new link."
+    "corrupt": "The share link is damaged or incomplete. Ask for a new link.",
+    "copyFailed": "The link could not be copied to the clipboard."
   },
   "import": {
     "notJson": "The file is not valid JSON: {{detail}}",
@@ -65,5 +69,15 @@
   },
   "storage": {
     "unavailable": "Browser storage is not available. Your lab is kept only until this tab is closed; export it to keep it."
+  },
+  "toast": {
+    "newLab": "New lab started.",
+    "opened": "Lab opened: {{title}}",
+    "imported": "Lab imported: {{title}}",
+    "exported": "Lab exported as {{file}}.",
+    "importFailed": "The lab could not be imported.",
+    "openFailed": "The lab could not be opened.",
+    "sharedOpened": "Shared lab opened. It is saved as a new lab once you change it.",
+    "sharedFailed": "The shared lab could not be opened."
   }
 }

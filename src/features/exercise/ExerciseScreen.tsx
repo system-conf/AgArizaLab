@@ -1,91 +1,134 @@
-import { useRef } from 'react'
-import type { Scenario } from '../../domain/ScenarioTypes'
-import { networkEngine } from '../../engine'
-import { FailedCheckDescriber } from '../../session/FailedCheckDescriber'
-import { useScenarioSession } from '../../session/useScenarioSession'
-import DevicePanel from '../device/DevicePanel'
-import AppLayout from '../layout/AppLayout'
-import NetworkMap from '../map/NetworkMap'
-import { useFullscreen } from '../map/useFullscreen'
+import { ReactFlowProvider } from '@xyflow/react'
+import { ArrowLeft } from 'lucide-react'
+import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import type { Exercise, LabDocument } from '../../domain/v2'
+import { useLabDocument } from '../../lab/useLabDocument'
+import { routes } from '../../routing'
+import { useLocalizedExercises } from '../../scenarios/useLocalizedExercises'
+import { ExerciseAttempt } from '../../session/ExerciseAttempt'
+import { exerciseLabs } from '../../session/ExerciseLabs'
+import { ExerciseLockPolicy } from '../../session/ExerciseLockPolicy'
+import { useDocumentMeta } from '../layout/useDocumentMeta'
+import { useNumberFormat } from '../layout/useNumberFormat'
 import ComplaintCard from '../scenario/ComplaintCard'
 import GuideButton from '../scenario/GuideButton'
-import ScenarioHeader from '../scenario/ScenarioHeader'
 import SolveFooter from '../scenario/SolveFooter'
+import AppLink from '../shared/AppLink'
+import { focusRing } from '../shared/focusRing'
+import { labEditor } from '../workspace/labServices'
+import { useToasts } from '../workspace/useToasts'
+import WorkspaceView from '../workspace/WorkspaceView'
 
-export interface SolvedSummary {
+/** A verified exercise: what the solution report and "Open in lab" need. */
+export interface SolvedExercise {
+  exerciseId: string
   guideStepsUsed: number
+  /** The repaired lab at the moment of the successful verification. */
+  lab: LabDocument
 }
 
-interface ExerciseScreenProps {
-  scenario: Scenario
+export interface ExerciseScreenProps {
+  exerciseId: string
+  onSolved: (solved: SolvedExercise) => void
+}
+
+/** Typing in the notes field is one undo step. */
+const NOTES_EDIT = { coalesceKey: 'notes' }
+
+interface ExerciseWorkspaceProps {
+  exercise: Exercise
   total: number
-  onBack: () => void
-  onSolved: (summary: SolvedSummary) => void
+  onSolved: (solved: SolvedExercise) => void
 }
 
-/** One open exercise: header, complaint, map, device panel and the verify footer. */
-function ExerciseScreen({ scenario, total, onBack, onSolved }: ExerciseScreenProps) {
-  const controls = useScenarioSession(scenario)
-  // Fullscreen target: the whole exercise area, so the device panel stays usable in fullscreen.
-  const exerciseAreaRef = useRef<HTMLDivElement>(null)
-  const fullscreen = useFullscreen(exerciseAreaRef)
-  const { session } = controls
-  const selected = session.selectedDevice
-  const failedChecks = session.lastCheck ? FailedCheckDescriber.describeFailures(session.state, session.lastCheck) : []
+/**
+ * Exercise mode of the workspace: the exercise opens as a locked lab (not autosaved); complaint
+ * card, Guide button, notes and Verify. A language switch relabels device names in place.
+ */
+function ExerciseWorkspace({ exercise, total, onSolved }: ExerciseWorkspaceProps) {
+  const { t } = useTranslation('exercise')
+  const formatNumber = useNumberFormat()
+  const [initial] = useState(() => exerciseLabs.open(exercise))
+  const lab = useLabDocument(initial, { autosave: false })
+  const toasts = useToasts()
+  const policy = useMemo(() => new ExerciseLockPolicy(exercise.locks), [exercise.locks])
+  const [attempt, setAttempt] = useState(() => ExerciseAttempt.start(exercise))
+  const [labelledWith, setLabelledWith] = useState(exercise)
+  useDocumentMeta(exercise.texts.title)
 
-  function handleVerify() {
-    const checked = controls.checkSolved()
-    if (checked.isSolved) {
-      onSolved({ guideStepsUsed: checked.hintsRevealed })
-    }
+  // Same exercise in another language: relabel the open lab (and its undo steps) during render.
+  if (labelledWith !== exercise) {
+    setLabelledWith(exercise)
+    lab.rewrite((doc) => exerciseLabs.relabel(doc, labelledWith, exercise))
   }
 
+  function verify() {
+    const next = attempt.verify(lab.doc.state)
+    setAttempt(next)
+    if (next.isSolved) onSolved({ exerciseId: exercise.id, guideStepsUsed: next.guideStepsRevealed, lab: lab.doc })
+  }
+
+  const headerStart = (
+    <>
+      <AppLink
+        to={routes.exercises}
+        aria-label={t('header.backAria')}
+        className={`flex h-9 shrink-0 items-center gap-1.5 rounded-lg px-2 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900 ${focusRing}`}
+      >
+        <ArrowLeft className="h-4 w-4 rtl:-scale-x-100" aria-hidden="true" />
+        <span className="hidden sm:inline">{t('header.back')}</span>
+      </AppLink>
+      <div className="min-w-0">
+        <p className="truncate text-[11px] font-medium uppercase tracking-wide text-sky-700">
+          {t('header.position', { order: formatNumber(exercise.order), total: formatNumber(total) })}
+        </p>
+        <h1 className="truncate text-sm font-semibold text-slate-900 sm:text-base">{exercise.texts.title}</h1>
+      </div>
+    </>
+  )
+
   return (
-    <div ref={exerciseAreaRef} className="overflow-auto bg-slate-50">
-      <AppLayout
-        header={
-          <ScenarioHeader
-            title={scenario.title}
-            order={scenario.order}
-            total={total}
-            onBack={onBack}
-            actions={<GuideButton steps={scenario.hints} revealedCount={session.hintsRevealed} onReveal={controls.revealGuideStep} />}
-          />
-        }
-        complaint={<ComplaintCard from={scenario.complaint.from} message={scenario.complaint.message} />}
-        map={
-          <NetworkMap
-            state={session.state}
-            selectedDeviceId={session.selectedDeviceId}
-            onSelect={controls.selectDevice}
-            positionOf={(deviceId) => session.positionOf(deviceId)}
-            onMoveDevice={controls.moveDevice}
-            canResetLayout={session.hasCustomLayout}
-            onResetLayout={controls.resetLayout}
-            trace={session.lastTrace}
-            fullscreen={fullscreen}
-          />
-        }
-        panel={
-          selected ? (
-            <DevicePanel
-              key={selected.id}
-              device={selected}
-              state={session.state}
-              appLinkStatuses={networkEngine.appLinkStatus(session.state, selected.id)}
-              terminalLines={[...session.terminalLines(selected.id)]}
-              onRunCommand={(line) => controls.runCommand(selected.id, line)}
-              onUpdateDevice={controls.updateDevice}
-              onUpdateLink={controls.updateLink}
-            />
-          ) : null
-        }
-        footer={
-          <SolveFooter notes={session.notes} onNotesChange={controls.setNotes} onVerify={handleVerify} failedChecks={failedChecks} />
-        }
-        onClosePanel={() => controls.selectDevice(null)}
-      />
-    </div>
+    <WorkspaceView
+      lab={lab}
+      policy={policy}
+      toasts={toasts}
+      headerStart={headerStart}
+      headerEnd={
+        <GuideButton
+          steps={exercise.texts.guide}
+          revealedCount={attempt.guideStepsRevealed}
+          onReveal={() => setAttempt((current) => current.revealGuideStep())}
+        />
+      }
+      banner={
+        <section aria-label={t('mode.complaintRegion')} className="border-b border-slate-200 bg-slate-50 px-3 py-2 sm:px-4">
+          <ComplaintCard from={exercise.texts.complaint.from} message={exercise.texts.complaint.message} />
+        </section>
+      }
+      footer={
+        <SolveFooter
+          notes={lab.doc.notes}
+          onNotesChange={(notes) => lab.apply((doc) => labEditor.setNotes(doc, notes), NOTES_EDIT)}
+          onVerify={verify}
+          failedChecks={attempt.failedChecks(lab.doc.state)}
+        />
+      }
+      exerciseMode
+      lockedNote={policy.topologyLocked ? t('mode.topologyLocked') : undefined}
+    />
+  )
+}
+
+/** Lazy-loaded entry of the `/exercises/<id>` route (the app checks the id first). */
+function ExerciseScreen({ exerciseId, onSolved }: ExerciseScreenProps) {
+  const exercises = useLocalizedExercises()
+  const exercise = exercises.find((candidate) => candidate.id === exerciseId)
+  if (!exercise) throw new Error(`Unknown exercise id: ${exerciseId}`)
+  return (
+    <ReactFlowProvider key={exercise.id}>
+      <ExerciseWorkspace exercise={exercise} total={exercises.length} onSolved={onSolved} />
+    </ReactFlowProvider>
   )
 }
 

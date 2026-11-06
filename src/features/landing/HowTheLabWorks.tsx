@@ -1,13 +1,13 @@
-import { FolderOpen, SquareTerminal, Wrench, type LucideIcon } from 'lucide-react'
+import { Cable, SquareTerminal, Wrench, type LucideIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useNumberFormat } from '../layout/useNumberFormat'
 
-type StepKey = 'open' | 'inspect' | 'verify'
+type StepKey = 'build' | 'configure' | 'troubleshoot'
 
 const steps: { key: StepKey; icon: LucideIcon }[] = [
-  { key: 'open', icon: FolderOpen },
-  { key: 'inspect', icon: SquareTerminal },
-  { key: 'verify', icon: Wrench },
+  { key: 'build', icon: Cable },
+  { key: 'configure', icon: SquareTerminal },
+  { key: 'troubleshoot', icon: Wrench },
 ]
 
 /** "How the lab works" section of the start page: three numbered steps. */

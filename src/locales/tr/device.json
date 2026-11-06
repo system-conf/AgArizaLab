@@ -96,7 +96,8 @@
     "dhcpNoServer": "DHCP sunucusundan adres alınamadı",
     "dhcpPoolExhausted": "DHCP sunucusunda boş adres kalmadı",
     "ipConflict": "IP adresi çakışması",
-    "invalidHostAddress": "Bu IP adresi bu alt ağda kullanılamaz"
+    "invalidHostAddress": "Bu IP adresi bu alt ağda kullanılamaz",
+    "ttlExpired": "TTL yolda tükendi (yönlendirme döngüsü)"
   },
   "hostForm": {
     "modeLabel": "IP adresi alma şekli",

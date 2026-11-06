@@ -60,6 +60,14 @@ export class LabHistory<Doc extends object = LabDocument> {
     return new LabHistory([...this.past, this.present].slice(-this.limit), next, rest, this.limit, null)
   }
 
+  /**
+   * Every document (past, present, future) passed through `rewrite`, without adding an undo step,
+   * e.g. relabelling an exercise lab in another language so undo never brings old names back.
+   */
+  map(rewrite: (doc: Doc) => Doc): LabHistory<Doc> {
+    return new LabHistory(this.past.map(rewrite), rewrite(this.present), this.future.map(rewrite), this.limit, this.lastKey)
+  }
+
   /** Same limit, new document, no undo / redo (opening another lab). */
   reset(doc: Doc): LabHistory<Doc> {
     return new LabHistory<Doc>([], doc, [], this.limit, null)

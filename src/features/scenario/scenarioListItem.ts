@@ -1,12 +1,12 @@
-import type { ScenarioSetting } from '../../domain/ScenarioTypes'
+import type { ExerciseSetting } from '../../domain/v2'
 
-/** What the start page needs to know about one scenario. */
+/** What the exercise list needs to know about one exercise. */
 export interface ScenarioListItem {
   id: string
   order: number
   title: string
-  setting: ScenarioSetting
-  /** Short topic tags, e.g. ['VLAN', 'Switch portu']. */
+  setting: ExerciseSetting
+  /** Short topic tags, e.g. ['VLAN', 'Switch port']. */
   topics: string[]
   completed: boolean
 }

@@ -4,6 +4,7 @@ import 'i18next'
 import type catalog from '../locales/en/catalog.json'
 import type common from '../locales/en/common.json'
 import type device from '../locales/en/device.json'
+import type deviceConfig from '../locales/en/deviceConfig.json'
 import type engine from '../locales/en/engine.json'
 import type exercise from '../locales/en/exercise.json'
 import type exercises from '../locales/en/exercises.json'
@@ -29,6 +30,7 @@ export interface AppResources {
   catalog: typeof catalog
   workspace: typeof workspace
   lab: typeof lab
+  deviceConfig: typeof deviceConfig
 }
 
 declare module 'i18next' {

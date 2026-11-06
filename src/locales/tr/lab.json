@@ -6,7 +6,8 @@
     "import": "Lab içe aktar",
     "share": "Paylaşım bağlantısını kopyala",
     "undo": "Geri al",
-    "redo": "Yinele"
+    "redo": "Yinele",
+    "openRecent": "Son lablardan aç"
   },
   "recent": {
     "title": "Son lablar",
@@ -14,17 +15,20 @@
     "open": "Aç",
     "delete": "Sil",
     "updatedAt": "Son değişiklik {{date}}",
-    "notFound": "Bu lab artık tarayıcı depolamasında yok."
+    "notFound": "Bu lab artık tarayıcı depolamasında yok.",
+    "openAria": "Labı aç: {{title}}",
+    "deleteAria": "Labı sil: {{title}}"
   },
   "share": {
     "copied": "Paylaşım bağlantısı kopyalandı.",
-    "tooLarge": "Bu lab paylaşım bağlantısı için çok büyük ({{size}} karakter, en fazla {{limit}}). Bunun yerine dosya olarak dışa aktarın.",
-    "corrupt": "Paylaşım bağlantısı bozuk ya da eksik. Yeni bir bağlantı isteyin."
+    "tooLarge": "Bu lab paylaşım bağlantısı için çok büyük ({{size}} karakter, en fazla {{limit}}). Bunun yerine dosya olarak dışa aktar.",
+    "corrupt": "Paylaşım bağlantısı bozuk ya da eksik. Yeni bir bağlantı iste.",
+    "copyFailed": "Bağlantı panoya kopyalanamadı."
   },
   "import": {
     "notJson": "Dosya geçerli bir JSON değil: {{detail}}",
     "notALab": "Dosya bir AgArizaLab labı değil.",
-    "unsupportedVersion": "Bu lab AgArizaLab'ın daha yeni bir sürümüyle kaydedilmiş (biçim {{version}}; bu sürüm en fazla {{supported}} okuyabilir). Uygulamayı güncelleyip tekrar deneyin.",
+    "unsupportedVersion": "Bu lab AgArizaLab’ın daha yeni bir sürümüyle kaydedilmiş (biçim {{version}}; bu sürüm en fazla {{supported}} okuyabilir). Uygulamayı güncelleyip tekrar dene.",
     "invalidVersion": "Lab biçim sürümü \"{{version}}\" geçerli değil.",
     "migrationFailed": "Lab, {{version}} biçiminden güncel biçime yükseltilemedi: {{detail}}",
     "moreErrors": "…ve {{count}} sorun daha.",
@@ -64,6 +68,16 @@
     }
   },
   "storage": {
-    "unavailable": "Tarayıcı depolaması kullanılamıyor. Labınız yalnızca bu sekme kapanana kadar saklanır; korumak için dışa aktarın."
+    "unavailable": "Tarayıcı depolaması kullanılamıyor. Labın yalnızca bu sekme kapanana kadar saklanır; korumak için dışa aktar."
+  },
+  "toast": {
+    "newLab": "Yeni lab başladı.",
+    "opened": "Lab açıldı: {{title}}",
+    "imported": "Lab içe aktarıldı: {{title}}",
+    "exported": "Lab {{file}} olarak dışa aktarıldı.",
+    "importFailed": "Lab içe aktarılamadı.",
+    "openFailed": "Lab açılamadı.",
+    "sharedOpened": "Paylaşılan lab açıldı. Değiştirdiğinde yeni bir lab olarak kaydedilir.",
+    "sharedFailed": "Paylaşılan lab açılamadı."
   }
 }

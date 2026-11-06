@@ -29,5 +29,9 @@
     "notesPlaceholder": "Write down what you find…",
     "verify": "Verify",
     "notSolvedYet": "Not solved yet:"
+  },
+  "mode": {
+    "topologyLocked": "In this exercise the network is given: devices and cables cannot be added, removed or moved.",
+    "complaintRegion": "Customer message"
   }
 }

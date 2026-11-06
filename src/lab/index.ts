@@ -39,7 +39,9 @@ export {
   labLibrary,
   listRecentLabs,
   loadAutosave,
+  markLabOpened,
   openRecentLab,
+  saveLabAsNew,
 } from './storage/labStorage'
 export {
   useLabDocument,

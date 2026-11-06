@@ -1,9 +1,9 @@
 {
   "hero": {
-    "title": "A network troubleshooting lab in your browser",
-    "lead": "Real faults from small business networks: a restaurant, an office, a shop. Inspect the devices, run ping, ipconfig and nslookup, find the wrong setting and fix it. No installation, no account.",
-    "comingNext": "Coming next: a free-form workspace for your own networks and packet-level simulation.",
-    "toExercises": "Go to the exercises",
+    "title": "A network lab in your browser",
+    "lead": "Build networks from routers, switches, access points and computers, cable them, configure them and test them with ping, ipconfig and tracert. Practise troubleshooting on real faults from small businesses. No installation, no account.",
+    "openLab": "Open the lab",
+    "toExercises": "Exercises",
     "viewOnGitHub": "View on GitHub"
   },
   "progress": {
@@ -14,20 +14,19 @@
   },
   "howItWorks": {
     "title": "How the lab works",
-    "open": {
-      "title": "Open an exercise",
-      "text": "Each exercise starts with a message from a small business. Read the complaint and look at the network map."
+    "build": {
+      "title": "Build a network",
+      "text": "Drag devices onto the canvas and connect them with the right cable. Each device has real ports."
     },
-    "inspect": {
-      "title": "Inspect devices and run commands",
-      "text": "Click a device to see its status and settings. Run ping, ipconfig and nslookup on computers and POS terminals to see where the traffic stops."
+    "configure": {
+      "title": "Configure and test",
+      "text": "Set IP addresses, VLANs and routes, then run ping, ipconfig, nslookup and tracert on the computers."
     },
-    "verify": {
-      "title": "Fix and verify",
-      "text": "Correct the wrong setting and press Verify. The solution report explains what happened and how to describe it in a job interview."
+    "troubleshoot": {
+      "title": "Practise troubleshooting",
+      "text": "Exercises give you a broken small business network. Find the wrong setting, fix it and verify."
     }
   },
-  "exercisesHeading": "Exercises",
   "exercisesHint": "Start with any exercise you like.",
   "card": {
     "meta": "Exercise {{order}} · {{setting}}",
@@ -41,9 +40,9 @@
     "solveAgainAria": "Solve again: {{title}}"
   },
   "settings": {
-    "restoran": "Restaurant",
-    "ofis": "Office",
-    "magaza": "Shop"
+    "restaurant": "Restaurant",
+    "office": "Office",
+    "shop": "Shop"
   },
   "difficulty": {
     "easy": "Easy",
@@ -53,5 +52,13 @@
   "footer": {
     "license": "Open-source project under the {{license}} license · {{author}}",
     "sourceCode": "Source code (GitHub)"
-  }
+  },
+  "recentLabs": {
+    "hint": "Your labs are saved in this browser automatically.",
+    "loading": "Loading your labs…",
+    "import": "Import a lab file",
+    "importFailed": "The lab could not be imported:"
+  },
+  "exercisesTitle": "Troubleshooting exercises",
+  "exercisesLead": "Each exercise starts with a message from a small business. Inspect the devices, find the wrong setting, fix it and press Verify."
 }

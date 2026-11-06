@@ -4,6 +4,7 @@ import {
   AlignStartHorizontal,
   AlignStartVertical,
   Grid3x3,
+  Lock,
   Maximize,
   MousePointer2,
   StickyNote,
@@ -35,6 +36,10 @@ interface CanvasToolbarProps {
   activeTool: CableTool | null
   onSelectTool: () => void
   onChooseCable: (tool: CableTool) => void
+  /** false: no cable tools (exercise with a locked topology). */
+  cablesEnabled: boolean
+  /** Shown as a lock icon with this explanation (exercise mode). */
+  lockedNote?: string
   onAddNote: () => void
   canDelete: boolean
   onDelete: () => void
@@ -92,20 +97,24 @@ function CanvasToolbar(props: CanvasToolbarProps) {
     <div
       role="group"
       aria-label={t('toolbar.label')}
-      className="flex items-center gap-0.5 overflow-x-auto border-b border-slate-200 bg-white px-2 py-1 [scrollbar-width:none]"
+      className="relative flex items-center gap-0.5 overflow-x-auto border-b border-slate-200 bg-white px-2 py-1 [scrollbar-width:none]"
     >
       <ToolButton label={t('toolbar.select')} onClick={props.onSelectTool} pressed={activeTool === null}>
         <MousePointer2 className="h-5 w-5" aria-hidden="true" />
       </ToolButton>
       <Divider />
-      <div role="group" aria-label={t('toolbar.cables')} className="flex items-center gap-0.5">
-        {CABLE_TOOLS.map((tool) => (
-          <ToolButton key={tool} label={t(`cableTools.${tool}`)} onClick={() => props.onChooseCable(tool)} pressed={activeTool === tool}>
-            <CableGlyph tool={tool} />
-          </ToolButton>
-        ))}
-      </div>
-      <Divider />
+      {props.cablesEnabled && (
+        <>
+          <div role="group" aria-label={t('toolbar.cables')} className="flex items-center gap-0.5">
+            {CABLE_TOOLS.map((tool) => (
+              <ToolButton key={tool} label={t(`cableTools.${tool}`)} onClick={() => props.onChooseCable(tool)} pressed={activeTool === tool}>
+                <CableGlyph tool={tool} />
+              </ToolButton>
+            ))}
+          </div>
+          <Divider />
+        </>
+      )}
       <ToolButton label={t('toolbar.addNote')} onClick={props.onAddNote}>
         <StickyNote className="h-5 w-5" aria-hidden="true" />
       </ToolButton>
@@ -131,6 +140,12 @@ function CanvasToolbar(props: CanvasToolbarProps) {
       <ToolButton label={t('toolbar.fitView')} onClick={() => void flow.fitView(fitViewOptions)}>
         <Maximize className="h-5 w-5" aria-hidden="true" />
       </ToolButton>
+      {props.lockedNote && (
+        <p className="ms-auto flex shrink-0 items-center gap-1.5 ps-2 text-xs text-slate-500 lg:min-w-0 lg:shrink" title={props.lockedNote}>
+          <Lock className="h-4 w-4 shrink-0" aria-hidden="true" />
+          <span className="sr-only lg:not-sr-only lg:truncate">{props.lockedNote}</span>
+        </p>
+      )}
     </div>
   )
 }

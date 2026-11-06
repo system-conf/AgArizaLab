@@ -53,6 +53,8 @@ export interface NodeInput {
   measured: MeasuredSizes
   labels: FlowLabels
   cableHighlight: (deviceId: string) => CableHighlight
+  /** false: devices stay where they are (exercise with a locked topology). */
+  devicesDraggable: boolean
 }
 
 export function buildNodes(input: NodeInput): WorkspaceNode[] {
@@ -81,6 +83,7 @@ export function buildNodes(input: NodeInput): WorkspaceNode[] {
     position: dragPositions[device.id] ?? doc.layout.devices[device.id] ?? { x: 0, y: 0 },
     data: { device, modelName: labels.modelName(device), cableHighlight: input.cableHighlight(device.id) },
     selected: selection.deviceIds.includes(device.id),
+    draggable: input.devicesDraggable,
     measured: measured[device.id],
     ariaLabel: labels.device(device),
     className: 'group',

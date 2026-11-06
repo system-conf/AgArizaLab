@@ -1,17 +1,22 @@
 # AgArizaLab — Network Troubleshooting Lab
 
-A browser-based, open-source **network lab** for practising troubleshooting. Each exercise is a
-small business network (a restaurant, an office, a shop) with a real-world fault: you inspect the
-devices, read their settings, run `ping`, `ipconfig` and `nslookup`, find the wrong setting, fix
-it and verify. A solution report then explains what happened, how it shows up in real life and how
-to describe it in a job interview.
+A browser-based, open-source **network lab**. Build your own network in the workspace: drag routers,
+switches, access points and computers onto the canvas, connect them with the right cable, configure
+ports, VLANs, routes, DHCP and DNS, and test with `ping`, `ipconfig`, `nslookup` and `tracert`.
+Labs are saved in your browser automatically and can be exported as `.agl.json` files or shared as
+a link.
+
+**Exercises** add real-world faults from small business networks (a restaurant, an office, a
+shop): find the wrong setting, fix it and verify. A solution report then explains what happened,
+how it shows up in real life and how to describe it in a job interview — and opens the repaired
+network in the lab if you want to keep experimenting.
 
 No installation, no account. Available in **English** and **Turkish**.
 
-**Live:** https://agarizalab.slovveis.workers.dev
+**Live:** https://agarizalab.slovveis.workers.dev — `/lab` opens the workspace, `/exercises` the
+exercises.
 
-Coming next: a free-form workspace to build your own networks, packet-level simulation and device
-command lines (see [docs/PLAN_V2.md](docs/PLAN_V2.md)).
+Coming next: packet-level simulation and device command lines (see [docs/PLAN_V2.md](docs/PLAN_V2.md)).
 
 ## Run it locally
 
@@ -37,16 +42,18 @@ rules for UI code are in [docs/I18N.md](docs/I18N.md). Device output (Windows `p
 
 ## Türkçe
 
-**Ağ Arıza Laboratuvarı**, tarayıcıda çalışan, açık kaynaklı bir **ağ laboratuvarıdır**. Her
-alıştırmada bir restoranın, ofisin ya da mağazanın küçük ağında gerçek hayattan bir arıza vardır:
-cihazları incelersin, ayarlarını okursun, `ping`, `ipconfig` ve `nslookup` çalıştırırsın, yanlış
-ayarı bulup düzeltir ve doğrularsın. Çözüm raporu ne olduğunu, gerçek hayatta nasıl göründüğünü ve
-mülakatta nasıl anlatacağını açıklar.
+**Ağ Arıza Laboratuvarı**, tarayıcıda çalışan, açık kaynaklı bir **ağ laboratuvarıdır**. Çalışma
+alanında kendi ağını kurarsın: router, switch, erişim noktası ve bilgisayarları tuvale sürükler, doğru
+kabloyla bağlar, port, VLAN, rota, DHCP ve DNS ayarlarını yapar, `ping`, `ipconfig`, `nslookup` ve
+`tracert` ile test edersin. Lablar tarayıcında otomatik kaydedilir; `.agl.json` dosyası olarak dışa
+aktarılabilir ya da bağlantıyla paylaşılabilir. Alıştırmalarda bir restoranın, ofisin ya da mağazanın
+ağında gerçek hayattan bir arıza vardır: yanlış ayarı bulup düzeltir ve doğrularsın; çözüm raporu ne
+olduğunu ve mülakatta nasıl anlatacağını açıklar.
 
 Kurulum ve üyelik gerekmez. Canlı sürüm: https://agarizalab.slovveis.workers.dev
 
 Yerelde çalıştırmak için `npm install` ve ardından `npm run dev`. Yeni bir dil eklemek için
-[docs/I18N.md](docs/I18N.md) dosyasına bakın.
+[docs/I18N.md](docs/I18N.md) dosyasına bak.
 
 ## License
 
