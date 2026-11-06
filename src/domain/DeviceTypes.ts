@@ -1,4 +1,5 @@
 // Device model (docs/MODEL_V2.md §3).
+import type { ManagementSettings } from './ManagementTypes'
 import type { L3Settings, Port } from './PortTypes'
 import type { DeviceServices, InternetSettings } from './ServiceTypes'
 
@@ -158,8 +159,8 @@ export interface WirelessSettings {
 
 /** Extension point for device-wide packs (pattern: see L3Features). */
 export interface DeviceFeatures {
-  /** Phase 4 (K4): hostname, enable secret, lines, banner, startup-config. */
-  management?: never
+  /** Phase 4 (K4, docs/CLI.md §5): hostname, enable secret, lines, banner, startup-config. */
+  management?: ManagementSettings
   /** Pack 5.2: numbered / named ACL definitions. */
   accessLists?: never
   /** Pack 5.2: NAT pools, static mappings, overload. */

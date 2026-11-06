@@ -58,6 +58,19 @@ describe('RouteResolver', () => {
     expect(RouteResolver.resolve(review, { ...context, reviewBriefId: 'smallOffice' })).toEqual({ kind: 'render' })
   })
 
+  // SL1 (sample labs)
+  it('renders known samples and sends unknown or unavailable ones to the sample list', () => {
+    const withSamples: RouteContext = { ...context, sampleIds: ['twoPcsSwitch'] }
+    expect(RouteResolver.resolve({ name: 'samples' }, withSamples)).toEqual({ kind: 'render' })
+    expect(RouteResolver.resolve({ name: 'sample', sampleId: 'twoPcsSwitch' }, withSamples)).toEqual({ kind: 'render' })
+    expect(RouteResolver.resolve({ name: 'sample', sampleId: 'ghost' }, withSamples)).toEqual({
+      kind: 'redirect',
+      to: { name: 'samples' },
+      keepHash: false,
+    })
+    expect(RouteResolver.resolve({ name: 'sample', sampleId: 'ghost' }, context)).toEqual({ kind: 'render' })
+  })
+
   it('leaves design routes to the design module when the brief ids are not known', () => {
     const appLevel: RouteContext = { exerciseIds: [], reportExerciseId: null, hasShareHash: false }
     expect(RouteResolver.resolve({ name: 'design', briefId: 'anything' }, appLevel)).toEqual({ kind: 'render' })

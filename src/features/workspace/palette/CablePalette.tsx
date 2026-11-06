@@ -2,18 +2,7 @@ import { useTranslation } from 'react-i18next'
 import type { CableTool } from '../../../domain'
 import { focusRing } from '../../shared/focusRing'
 import CableGlyph from '../cable/CableGlyph'
-
-/** Cable tools in palette order (the same tools and order as the canvas toolbar). */
-const PALETTE_CABLE_TOOLS: readonly CableTool[] = [
-  'auto',
-  'copperStraight',
-  'copperCross',
-  'fiber',
-  'serial',
-  'console',
-  'coaxial',
-  'wireless',
-]
+import { CABLE_TOOLS } from '../cable/cableTools'
 
 interface CablePaletteProps {
   activeTool: CableTool | null
@@ -27,7 +16,7 @@ function CablePalette({ activeTool, onChoose }: CablePaletteProps) {
     <div className="space-y-2">
       <p className="text-xs text-slate-500">{t('palette.cableHint')}</p>
       <ul className="space-y-1">
-        {PALETTE_CABLE_TOOLS.map((tool) => {
+        {CABLE_TOOLS.map((tool) => {
           const name = t(`cableTools.${tool}`)
           const pressed = activeTool === tool
           return (

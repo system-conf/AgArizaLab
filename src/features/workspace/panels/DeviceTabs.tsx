@@ -2,6 +2,8 @@ import { useId, useRef, type KeyboardEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { LocalizedMessage } from '../../../domain/Messages'
 import type { Device, NetworkState, TerminalLine } from '../../../domain'
+// CI (CLI integration): the CLI and Config tabs of IOS devices.
+import { CliDevicePanel } from '../../cli'
 import AppLinkStatusList from '../../device/AppLinkStatusList'
 import TerminalTab from '../../device/TerminalTab'
 import { DeviceConfigPanel, DeviceInfoPanel } from '../../deviceConfig'
@@ -17,6 +19,8 @@ export interface DeviceTerminalProps {
 }
 
 interface DeviceTabsProps {
+  /** CI (CLI integration): storage id of the open lab; the CLI keeps one console per device of it. */
+  labId: string
   device: Device
   state: NetworkState
   policy: ExerciseLockPolicy
@@ -32,7 +36,7 @@ interface DeviceTabsProps {
 /** Info / Settings / Terminal of the selected device (accessible tab pattern, arrow keys move). */
 function DeviceTabs(props: DeviceTabsProps) {
   const { device, state, policy, tab, onTab, terminal } = props
-  const { t } = useTranslation(['workspace', 'device'])
+  const { t } = useTranslation(['workspace', 'device', 'cli'])
   const baseId = useId()
   const tabRefs = useRef(new Map<DeviceTab, HTMLButtonElement>())
   const tabs = availableDeviceTabs(device, policy, terminal !== null)
@@ -64,6 +68,11 @@ function DeviceTabs(props: DeviceTabsProps) {
         policy={policy}
         readOnly={policy.deviceAccess(device.id) === 'readOnly'}
       />
+    )
+  } else if (active === 'cli' || active === 'config') {
+    // CI (CLI integration): changes go through onUpdate like the Settings tab (same locks, undo).
+    panel = (
+      <CliDevicePanel tab={active} labId={props.labId} device={device} network={state} policy={policy} onUpdate={props.onUpdate} problems={props.problems} />
     )
   } else if (active === 'terminal' && terminal !== null) {
     panel = (
@@ -107,7 +116,8 @@ function DeviceTabs(props: DeviceTabsProps) {
               value === active ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
             } ${focusRing}`}
           >
-            {t(`properties.tabs.${value}`)}
+            {/* CI (CLI integration): the CLI tabs are named in the cli namespace. */}
+            {value === 'cli' || value === 'config' ? t(`cli:ui.tabs.${value}`) : t(`properties.tabs.${value}`)}
           </button>
         ))}
       </div>

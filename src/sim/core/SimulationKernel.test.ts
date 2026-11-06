@@ -171,4 +171,45 @@ describe('SimulationKernel', () => {
     SimulationKernel.create(off, { ...toyLayers, link }, { settle: false })
     expect(settled).toEqual([])
   })
+
+  it('builds snapshots on demand: the same object while nothing changes, never touched by later tasks', () => {
+    const kernel = created()
+    const before = kernel.snapshot()
+    expect(kernel.snapshot()).toBe(before)
+    const frozen = JSON.stringify(before)
+    kernel.inject(ping)
+    const queued = kernel.snapshot()
+    expect(queued).not.toBe(before)
+    expect(queued.queue).toHaveLength(1)
+    kernel.runUntilIdle()
+    expect(JSON.stringify(before)).toBe(frozen)
+    expect(queued.queue).toHaveLength(1)
+    kernel.restore(queued)
+    expect(kernel.snapshot()).toBe(queued)
+    expect(kernel.isIdle()).toBe(false)
+    kernel.runUntilIdle()
+    expect(queued.queue).toHaveLength(1)
+  })
+
+  it('leaves the state untouched when a layer throws in the middle of a task', () => {
+    const failing: LinkLayer = Object.assign(Object.create(toyLayers.link) as LinkLayer, {
+      onFrame: () => {
+        throw new Error('layer bug')
+      },
+    })
+    const kernel = SimulationKernel.create(hubLab(), { ...toyLayers, link: failing }, { settle: false })
+    for (;;) {
+      const mark = kernel.snapshot()
+      const marked = JSON.stringify(mark)
+      try {
+        kernel.step('task')
+      } catch (error) {
+        expect(String(error)).toContain('layer bug')
+        expect(JSON.stringify(kernel.snapshot())).toBe(marked)
+        expect(kernel.events()).toHaveLength(mark.counters.event - 1)
+        return
+      }
+      if (kernel.isIdle()) throw new Error('no task reached the failing layer')
+    }
+  })
 })

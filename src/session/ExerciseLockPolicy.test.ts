@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import type { Device, ExerciseLock, Port } from '../domain'
 import { hostNic, makeDevice, switchPort } from '../domain/testDevices'
+import { labLink } from '../engine/testLabs'
 import { ExerciseLockPolicy } from './ExerciseLockPolicy'
 
 const pc: Device = {
@@ -25,7 +26,7 @@ describe('ExerciseLockPolicy', () => {
   })
 
   it('locks the topology: no deletes of devices or cables, plugging stays free', () => {
-    const policy = new ExerciseLockPolicy([{ scope: 'topology' }])
+    const policy = new ExerciseLockPolicy([{ scope: 'topology' }], [])
     expect(policy.topologyLocked).toBe(true)
     expect(policy.canDeleteLink('link1')).toBe(false)
     expect(policy.canUnplugLink('link1')).toBe(true)
@@ -38,15 +39,30 @@ describe('ExerciseLockPolicy', () => {
   })
 
   it('locks single links against delete and unplug', () => {
-    const policy = new ExerciseLockPolicy([{ scope: 'link', linkId: 'uplink' }])
+    const policy = new ExerciseLockPolicy([{ scope: 'link', linkId: 'uplink' }], [])
     expect(policy.canDeleteLink('uplink')).toBe(false)
     expect(policy.canUnplugLink('uplink')).toBe(false)
     expect(policy.canDeleteLink('other')).toBe(true)
     expect(policy.allowedDeletion({ deviceIds: ['pc'], linkIds: ['uplink', 'other'], annotationIds: [] }).linkIds).toEqual(['other'])
   })
 
+  it('keeps the devices at both ends of a locked link on delete (the link would go with them)', () => {
+    const links = [labLink('uplink', ['pc', 'eth0'], ['sw', 'Fa0/1']), labLink('other', ['laptop', 'eth0'], ['sw', 'Fa0/2'])]
+    const policy = new ExerciseLockPolicy([{ scope: 'link', linkId: 'uplink' }], links)
+    expect(policy.canDeleteDevice('pc')).toBe(false)
+    expect(policy.canDeleteDevice('sw')).toBe(false)
+    expect(policy.canDeleteDevice('laptop')).toBe(true)
+    expect(policy.allowedDeletion({ deviceIds: ['pc', 'sw', 'laptop'], linkIds: ['uplink', 'other'], annotationIds: [] })).toEqual({
+      deviceIds: ['laptop'],
+      linkIds: ['other'],
+      annotationIds: [],
+    })
+    // Without link locks the same links change nothing.
+    expect(new ExerciseLockPolicy([], links).canDeleteDevice('pc')).toBe(true)
+  })
+
   it('keeps placement-locked devices on delete; moving, cabling and settings stay free', () => {
-    const policy = new ExerciseLockPolicy([{ scope: 'placement', deviceId: 'pc' }])
+    const policy = new ExerciseLockPolicy([{ scope: 'placement', deviceId: 'pc' }], [])
     expect(policy.topologyLocked).toBe(false)
     expect(policy.canDeleteDevice('pc')).toBe(false)
     expect(policy.canDeleteDevice('sw')).toBe(true)
@@ -65,7 +81,7 @@ describe('ExerciseLockPolicy', () => {
       { scope: 'device', deviceId: 'pc', access: 'readOnly' },
       { scope: 'section', deviceId: 'pc', section: 'terminal', access: 'hidden' },
     ]
-    const policy = new ExerciseLockPolicy(locks)
+    const policy = new ExerciseLockPolicy(locks, [])
     expect(policy.portAccess('sw', 'Fa0/1')).toBe('readOnly')
     expect(policy.portAccess('sw', 'Fa0/2')).toBe('hidden')
     expect(policy.sectionAccess('sw', 'power')).toBe('editable')
@@ -80,7 +96,7 @@ describe('ExerciseLockPolicy', () => {
       { scope: 'section', deviceId: 'pc', section: 'host', access: 'readOnly' },
       { scope: 'port', deviceId: 'sw', portId: 'Fa0/1', access: 'readOnly' },
       { scope: 'section', deviceId: 'sw', section: 'power', access: 'hidden' },
-    ])
+    ], [])
     const host = pc.host
     if (!host) throw new Error('pc needs host settings')
     expect(policy.allowsDeviceUpdate(pc, { ...pc, host: { ...host, defaultGateway: '10.0.0.1' } })).toBe(false)
@@ -92,7 +108,7 @@ describe('ExerciseLockPolicy', () => {
   })
 
   it('ignores key order when comparing locked data', () => {
-    const policy = new ExerciseLockPolicy([{ scope: 'device', deviceId: 'pc', access: 'readOnly' }])
+    const policy = new ExerciseLockPolicy([{ scope: 'device', deviceId: 'pc', access: 'readOnly' }], [])
     const host = pc.host
     if (!host) throw new Error('pc needs host settings')
     const reordered: Device = { ...pc, host: { appLinks: [], dnsServers: [...host.dnsServers], defaultGateway: host.defaultGateway } }

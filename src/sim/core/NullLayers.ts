@@ -1,16 +1,17 @@
-import type {
-  DeviceContext,
-  Ipv4Delivery,
-  Ipv4Send,
-  Ipv4SendResult,
-  LinkLayer,
-  LinkSend,
-  NetworkLayer,
-  RequestResult,
-  ServiceLayer,
-  SimLayers,
-  SimRequest,
-  TransportDelivery,
+import {
+  type DeviceContext,
+  type Ipv4Delivery,
+  type Ipv4Send,
+  type Ipv4SendResult,
+  type LinkLayer,
+  type LinkSend,
+  type NetworkLayer,
+  PingTally,
+  type RequestResult,
+  type ServiceLayer,
+  type SimLayers,
+  type SimRequest,
+  type TransportDelivery,
 } from '../contract'
 import type { NetworkState } from '../../domain'
 
@@ -87,7 +88,7 @@ class NullResults {
   static of(request: SimRequest): RequestResult {
     switch (request.kind) {
       case 'ping':
-        return { kind: 'ping', echoes: [{ kind: 'localFailure', sequence: 1, reason: 'unsupported' }] }
+        return PingTally.of([{ kind: 'localFailure', sequence: 1, reason: 'unsupported' }])
       case 'tracert':
         return { kind: 'tracert', hops: [], ending: { kind: 'localFailure', reason: 'unsupported' } }
       case 'dhcpRenew':

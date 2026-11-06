@@ -102,8 +102,34 @@ export const wirelessSettingsSchema = z.strictObject({
   radio: reservedKey,
 })
 
+// K4 (Phase 4 CLI): mirror of src/domain/ManagementTypes.ts. NVRAM text is longer than other texts.
+const STARTUP_CONFIG_LENGTH = 65_536
+
+const lineSettingsSchema = z.strictObject({
+  password: nameSchema.optional(),
+  login: z.boolean().optional(),
+  execTimeout: z.strictObject({ minutes: z.number().int().min(0), seconds: z.number().int().min(0) }).optional(),
+  loggingSynchronous: z.boolean().optional(),
+  transportInput: reservedKey,
+  loginLocal: reservedKey,
+})
+
+export const managementSettingsSchema = z.strictObject({
+  hostname: nameSchema.optional(),
+  enableSecret: nameSchema.optional(),
+  enablePassword: nameSchema.optional(),
+  passwordEncryption: z.boolean().optional(),
+  bannerMotd: textSchema.optional(),
+  domainLookup: z.boolean().optional(),
+  lines: z.strictObject({ console: lineSettingsSchema.optional(), vty: lineSettingsSchema.optional() }).optional(),
+  startupConfig: z.string().max(STARTUP_CONFIG_LENGTH).optional(),
+  domainName: reservedKey,
+  users: reservedKey,
+  ssh: reservedKey,
+})
+
 export const deviceFeaturesSchema = z.strictObject({
-  management: reservedKey,
+  management: managementSettingsSchema.optional(),
   accessLists: reservedKey,
   nat: reservedKey,
   discovery: reservedKey,

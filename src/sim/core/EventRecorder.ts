@@ -36,6 +36,9 @@ export interface TransmitSink {
   transmit(recorder: EventRecorder, target: TransmitTarget, frame: WireFrame, frameId: string): boolean
 }
 
+/** A SimEvent while `toEvent` fills it in. */
+type Draft = { -readonly [Key in keyof SimEvent]?: SimEvent[Key] }
+
 const REASONED: ReadonlySet<SimAction> = new Set<ReasonedAction>(['dropped', 'timedOut'])
 
 /** The kernel's EventBuilder: collects one event while a task runs, then becomes a SimEvent. */
@@ -103,26 +106,24 @@ export class EventRecorder implements EventBuilder {
     const { decision, init } = this
     if (!decision) throw new Error(`Event ${this.id} at ${init.deviceId} was never concluded`)
     const shown = init.inbound ?? this.outbound
-    return {
-      id: this.id,
-      time,
-      seq,
-      deviceId: init.deviceId,
-      ...(init.lastDeviceId === undefined ? {} : { lastDeviceId: init.lastDeviceId }),
-      ...(init.inPortId === undefined ? {} : { inPortId: init.inPortId }),
-      ...(init.transmissionId === undefined ? {} : { transmissionId: init.transmissionId }),
-      outPortIds: [...this.outPortIds],
-      flowId: init.flowId,
-      pduId: init.pduId,
-      frameId: init.frameId,
-      protocol: init.protocol ?? (shown ? PduLayers.protocolOf(shown) : null),
-      inbound: init.inbound ?? null,
-      outbound: this.outbound,
-      action: decision.action,
-      layer: decision.layer,
-      ...(decision.reason === undefined ? {} : { reason: decision.reason }),
-      notes: [...this.notes],
-      ...(init.causeEventId === undefined ? {} : { causeEventId: init.causeEventId }),
-    }
+    // Built field by field (same key order as the type): object spreads of optional fields are the
+    // slow path of V8, and every task of a big flood makes one of these.
+    const event: Draft = { id: this.id, time, seq, deviceId: init.deviceId }
+    if (init.lastDeviceId !== undefined) event.lastDeviceId = init.lastDeviceId
+    if (init.inPortId !== undefined) event.inPortId = init.inPortId
+    if (init.transmissionId !== undefined) event.transmissionId = init.transmissionId
+    event.outPortIds = this.outPortIds.slice()
+    event.flowId = init.flowId
+    event.pduId = init.pduId
+    event.frameId = init.frameId
+    event.protocol = init.protocol ?? (shown ? PduLayers.protocolOf(shown) : null)
+    event.inbound = init.inbound ?? null
+    event.outbound = this.outbound
+    event.action = decision.action
+    event.layer = decision.layer
+    if (decision.reason !== undefined) event.reason = decision.reason
+    event.notes = this.notes.slice()
+    if (init.causeEventId !== undefined) event.causeEventId = init.causeEventId
+    return event as SimEvent
   }
 }

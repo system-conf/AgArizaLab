@@ -123,7 +123,17 @@
     "terminal": {
       "stepToAnswer": "Simülasyon bekleniyor: cevabı görmek için İleri'ye ya da Oynat'a bas.",
       "running": "Çalışıyor…",
-      "cancelled": "Komut iptal edildi: simülasyon bitmeden sıfırlandı ya da geri alındı."
+      "cancelled": "Komut iptal edildi: simülasyon bitmeden sıfırlandı ya da geri alındı.",
+      "preparing": "Simülasyon hazırlanıyor… hazır olunca komut çalışacak.",
+      "reverted": "Bu komut bitmeden geri adım attın: ağda yaptığı değişiklik (DHCP adresi) geri alındı."
+    },
+    "prepare": {
+      "preparing": "Simülasyon hazırlanıyor…",
+      "dormant": "Simülasyon henüz başlamadı: Simülasyonu başlat'a bas, Simülasyon moduna geç ya da bir komut yaz.",
+      "start": "Simülasyonu başlat",
+      "startHint": "Bu büyük labın simülasyonunu şimdi kur (arka planda çalışır, düzenlemeye devam edebilirsin).",
+      "onDemand": "Bu labda {{count}} cihaz var: simülasyon sadece ihtiyacın olunca başlar (Simülasyonu başlat, Simülasyon modu ya da bir terminal komutu).",
+      "truncated": "Bu lab çok büyük: açılıştaki trafik yarıda kesildi, ilk adımlar onu tamamlayacak."
     }
   },
   "actions": {
@@ -220,6 +230,7 @@
     "noSubInterface": "Bu VLAN etiketi için alt arayüz yok.",
     "l2Loop": "Katman 2 döngüsü: çerçeve daha önce geçtiği bir anahtara geri döndü.",
     "arpTimeout": "ARP yanıt alamadı.",
+    "arpQueueFull": "ARP için bekleyen paket sayısı dolu.",
     "arpNotForUs": "ARP isteği başka bir adres için.",
     "unknownSsid": "Erişim noktası bu SSID'yi yayınlamıyor.",
     "ispServiceDown": "İnternet servis sağlayıcı hattı kesik.",
@@ -283,6 +294,7 @@
       "arpReplyLearned": "ARP yanıtına göre {{ip}} adresi {{mac}} üzerinde: ARP önbelleği güncelleniyor.",
       "arpCacheHit": "ARP önbelleğine göre {{ip}} adresi {{mac}} üzerinde.",
       "packetBuffered": "Paket, ARP {{ip}} adresini çözene kadar bekliyor.",
+      "arpQueueFull": "{{ip}} adresinin ARP ile çözülmesini zaten {{limit}} paket bekliyor (bir sonraki atlama için üst sınır): bu paket düşürülüyor.",
       "packetReleased": "ARP {{ip}} adresini çözdü: bekleyen paket gönderiliyor.",
       "arpTimeout": "{{attempts}} denemeden sonra {{ip}} adresinden ARP yanıtı gelmedi: bekleyen paketler düşürülüyor.",
       "arpProbe": "Yinelenen adres kontrolü: bir ARP yoklaması, {{ip}} adresini başka bir cihazın kullanıp kullanmadığını soruyor.",
@@ -299,7 +311,7 @@
       "floodNoPorts": "VLAN {{vlan}} başka hiçbir portta taşınmıyor: çerçeve hiçbir yere gitmiyor.",
       "sviDelivered": "Çerçeve anahtarın kendisine gönderilmiş: {{iface}} arayüzü onu alıyor.",
       "sviCopy": "Anahtar, yayının bir kopyasını kendi {{iface}} arayüzü için de alıyor.",
-      "sviCopyDiscarded": "{{iface}} arayüzü kendi kopyasını kullanmıyor:",
+      "sviCopyDiscarded": "{{iface}} arayüzü kendi kopyasını kullanmadan atıyor; diğer portlara yayılan çerçeve bundan etkilenmiyor.",
       "sviEgress": "{{iface}} arayüzü, anahtarın kendi portları üzerinden VLAN {{vlan}} içine gönderiyor.",
       "taggedAtNic": "Ağ kartı 802.1Q etiketlerini anlamaz: VLAN {{vlan}} etiketli çerçeve düşürülüyor.",
       "nativeSubInterface": "Etiketsiz çerçeve: yerel (native) alt arayüz {{iface}} onu alıyor.",

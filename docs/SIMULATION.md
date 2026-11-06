@@ -129,7 +129,7 @@ timeouts; printed ping / tracert times are derived from the hop count like today
 
 | Timer | Value | Note |
 |---|---|---|
-| ARP | 3 requests, 1000 ms apart, then waiting packets dropped | 3 s < ping timeout, so routers report unreachable in time |
+| ARP | 3 requests, 1000 ms apart, then waiting packets dropped; at most 4 packets wait per next hop, a further one is dropped (`arpQueueFull`, §5.6) | 3 s < ping timeout, so routers report unreachable in time |
 | ARP aging | hosts 120 s, routers / switches 4 h | lazy (`expiresAt`) |
 | MAC aging | 300 s | lazy |
 | ping / tracert | 4000 ms timeout, next echo 1000 ms after a reply / failure, at once after a timeout | Windows |
@@ -149,7 +149,7 @@ device starts, discarded when it stops.
 |---|---|---|---|
 | link (S1) | `arp` | CLI `show ip arp`, `arp -a` | `ArpEntry { interfaceId, ip, mac \| null, state: incomplete \| reachable, type: dynamic \| static, updatedAt, expiresAt \| null, attempts }` |
 | | `macTable` | `show mac address-table` | `MacTableEntry { vlan, mac, portId, type, learnedAt, expiresAt \| null }` |
-| | `pending` | — | `PendingPacket { interfaceId, nextHopIp, packet, ids, bufferedEventId, queuedAt, ingressInterfaceId? }` |
+| | `pending` | — | `PendingPacket { interfaceId, nextHopIp, packet, ids, bufferedEventId, queuedAt, ingressInterfaceId? }`, ≤ `SIM_LIMITS.arpPendingPerNextHop` per next hop |
 | | `claims` | S2 (`ipConflict`), `ipconfig` | `AddressClaim { interfaceId, address, duplicate, probedAt }` |
 | | `seenFrames` | — | loop guard `{ frameId, at }` |
 | network (S2) | `routes` | `show ip route`, `route print` | `RouteEntry { code: connected \| local \| static, prefix, mask, prefixLength, adminDistance, metric, nextHop \| null, exitInterfaceId \| null }` |
@@ -175,12 +175,13 @@ device starts, discarded when it stops.
 
 | Member | Semantics |
 |---|---|
-| `create` | starts every powered device (`onStart` per layer). `settle` (default true) runs the start-up traffic (duplicate-address probes) to idle and clears the logs: the user starts from a quiet, warmed-up network (switches may already know host MACs; ARP caches are empty). Options: `seed` (1), `latency`, `maxRetainedEvents` (50 000) |
+| `create` | starts every powered device (`onStart` per layer). `settle` (default true) runs the start-up traffic (duplicate-address probes) to idle — within its budget (§5.6) — and clears the logs: the user starts from a quiet, warmed-up network (switches may already know host MACs; ARP caches are empty). Options: `seed` (1), `latency`, `maxRetainedEvents` (50 000), `settleBudget { tasks?, timeMs? }` |
+| `settleTruncated` | true when `create` stopped settling at the budget (§5.6): the rest of the start-up traffic is still queued |
 | `inject(request, delayMs = 0)` | queues a request task, returns `r<n>` (= flow id); unknown device = throw |
 | `step(granularity = 'instant')` | `'instant'`: every task at the next point in time; `'task'`: one task. Returns `{ time, events, transmissions, processedTasks, idle }` |
 | `runUntilIdle(limit)`, `runUntil(time, limit)`, `runUntilDone(requestId, limit)` | `stoppedBy: idle \| limit \| time \| requestDone`; default limit 100 000 tasks. `runUntil` moves the clock to `time` (realtime) |
-| `snapshot()` / `restore(s)` | `SimSnapshot { network, time, counters, rngState, queue, devices, requests }`; logs are append-only beside it and truncated on restore, so step-back = keep snapshots, restore one |
-| `events(fromId)`, `transmissions(fromId)` | retained logs |
+| `snapshot()` / `restore(s)` | `SimSnapshot { network, time, counters, rngState, queue, devices, requests }`; logs are append-only beside it and truncated on restore, so step-back = keep snapshots, restore one. Built on demand from the live state and reused (same object) until the state changes |
+| `events(fromId)`, `transmissions(fromId)` | retained logs (the newest `maxRetainedEvents`, §5.6) |
 | `request(id)`, `requests()` | `RequestRecord { id, request, status: queued \| running \| done, queuedAt, finishedAt, result, aborted? }` |
 | `reconfigure(next)` | the user edited the lab (§5.3); returns `{ changedDevices, startedDevices, stoppedDevices, abortedRequests, events }` |
 | `network()`, `runtime(id)`, `time`, `isIdle()`, `nextTaskTime()` | reads |
@@ -194,9 +195,11 @@ Names are resolved by the caller: I3 injects `dnsQuery`, then `ping` with the an
 ### 5.2 Results
 The client on the source device reports through `ctx.report(requestId, result, done)` when it consumes an
 answer or gives up, so every result has events behind it (`delivered` reply, `timedOut`…). Reports after
-`done` are ignored. `PingResult { echoes: EchoResult[] }` with `reply { fromIp, ttl, bytes, rttMs }`,
+`done` are ignored. `PingResult { echoes: EchoResult[], stats: PingStats }` with `reply { fromIp, ttl, bytes, rttMs }`,
 `unreachable { fromIp, code }`, `ttlExpired { fromIp }`, `timeout`, `localFailure { reason }` (each with
-`sequence` and `requestPduId`). `TracertResult { hops: { ttl, probes }[], ending: reached | unreachable
+`sequence` and `requestPduId`); `echoes` holds the latest `SIM_LIMITS.echoResultsKept` results,
+`PingStats { results, replies, errors, timeouts, localFailures, minRttMs, maxRttMs, totalRttMs }` counts
+all of them (`PingTally`, §5.6). `TracertResult { hops: { ttl, probes }[], ending: reached | unreachable
 { reporterIp, code } | silent | hopLimit | localFailure }`. `DhcpResult { operation, adapters: per NIC ok
 { ip, mask, gateway, dnsServers, serverIp } | released | failure, effects }`. `DnsResult { name, answer:
 ResolveResult }` (the engine's own type). `HttpResult`, `ClearResult`.
@@ -237,6 +240,38 @@ document, so document and engine stay equal and the next `reconfigure` is a no-o
   switching to simulation keeps the runtime.
 - The engine has no DOM dependency and may run in a Web Worker (I3/U3 decision); snapshots, events and
   requests are structured-clone safe.
+
+### 5.6 Limits and cost (`SIM_LIMITS`)
+Everything the engine keeps or does per call is bounded; all bounds are deterministic (counts of tasks,
+records and virtual time, never wall time).
+
+| Limit | Value | What happens past it |
+|---|---|---|
+| `taskLimit` | 100 000 tasks per `runUntil*` call (argument) | `stoppedBy: 'limit'`; the queue stays as it is |
+| `settleTaskLimit`, `settleTimeMs` | 400 000 tasks, tasks up to 60 000 ms of virtual time (`SimOptions.settleBudget`) | `create` stops settling: the rest stays queued and runs with the next steps (in realtime with the next `runUntil`), `onSettled` still runs, the logs are cleared, `engine.settleTruncated` is true so the UI can say the start-up traffic was cut short |
+| `maxRetainedEvents` | 50 000 events and 50 000 transmissions | the oldest are forgotten; the log is trimmed in batches (at 1.5× the limit) so appending stays O(1); `events()` / `transmissions()` never return more than the limit |
+| `arpPendingPerNextHop` | 4 packets per unresolved next hop | the new packet is dropped at once (`dropped`, layer 2, `arpQueueFull`, note `l2.arpQueueFull`); no ICMP error and no `onUndeliverable` — like a full queue on a real device the sender only sees a timeout. Real stacks: IOS holds one packet, Linux a short queue |
+| `echoResultsKept` | 100 echo results per ping record and session | the oldest results leave `PingResult.echoes`; `PingResult.stats` keeps counting, so the statistics of a ping with `count` 1e9 stay right. ≥ the terminal's `PingOptions.maxCount` (20), so terminal output always sees every echo |
+
+Cost per task. A flat segment of n hosts needs about n² settle tasks (every host's duplicate-address probe
+reaches every host: 38 000 tasks at 200 devices, 240 000 at 500, 375 000 at 625), so the cost of one task
+must not grow with the lab:
+
+- the live state is mutable (`KernelState`); a task works on a `TaskScope` overlay of the runtimes and
+  requests it touches, and the kernel applies only that overlay after the task (a layer that throws
+  leaves the state as before the task);
+- the queue is a binary heap (`TaskHeap`, same (time, seq) order as the sorted snapshot queue);
+- `snapshot()` copies the device and request tables and sorts the queue only when asked, and returns the
+  same object until the state changes (SimulationPlayer compares identities);
+- links are found through `Topology` (per port), never by scanning `network.links`;
+- per-device tables that legitimately grow with the segment (a core switch's MAC table, the L2 loop
+  guard's recent frame ids) are read and rebuilt in one pass.
+
+Measured (node 24, dev machine, flat labs `src/sim/perf/flatTestLab.ts`): settle of 200 devices 0.18–0.25
+s (was 9 s), 500 devices 0.9–1.7 s (did not finish before), 3.5–7 µs per task at every size. Guarded by
+`src/sim/perf/SettlePerf.test.ts` (fastest run: 200 devices < 2.5 s, 500 devices < 15 s — headroom for the
+parallel test run, which was up to 5x slower; the targets 1 s / 5 s hold standalone). Duplicate-address
+probes are not coalesced: every host really receives every probe, and the event list shows them.
 
 ## 6. Device plug-in contract
 

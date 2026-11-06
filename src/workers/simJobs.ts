@@ -12,6 +12,7 @@ import {
   type SimSnapshot,
   type SimTransmission,
   type SimulationEngine,
+  type SimulationOptions,
 } from '../sim'
 
 /** A realtime terminal command simulated from `snapshot`. */
@@ -29,6 +30,13 @@ export interface CommandJobResult {
   readonly transmissions: readonly SimTransmission[]
 }
 
+/** A lab's engine built and settled off the main thread: restore `snapshot` on a blank engine. */
+export interface PreparedSimulation {
+  readonly snapshot: SimSnapshot
+  /** The start-up traffic hit its budget (`SimulationEngine.settleTruncated`); the snapshot does not carry it. */
+  readonly settleTruncated: boolean
+}
+
 const EMPTY_NETWORK: NetworkState = { devices: [], links: [] }
 
 /**
@@ -37,9 +45,21 @@ const EMPTY_NETWORK: NetworkState = { devices: [], links: [] }
  */
 export class SimJobs {
   private engine: SimulationEngine | null = null
+  private readonly options: SimulationOptions
+
+  /** `options`: of the engines `prepare` builds (tests: a small settle budget). */
+  constructor(options: SimulationOptions = {}) {
+    this.options = options
+  }
 
   solve(state: NetworkState, conditions: readonly SolveCondition[]): ConditionResult[] {
     return SimSolveChecker.check(state, conditions)
+  }
+
+  /** Builds and settles the engine of a lab (opening a large lab). */
+  prepare(state: NetworkState): PreparedSimulation {
+    const engine = createSimulation(state, this.options)
+    return { snapshot: engine.snapshot(), settleTruncated: engine.settleTruncated }
   }
 
   command(job: CommandJob): CommandJobResult {

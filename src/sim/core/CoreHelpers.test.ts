@@ -3,8 +3,10 @@ import { editDevice, editLink, labHost, labLink } from '../../engine/testLabs'
 import type { NetworkState } from '../../domain'
 import type { QueuedTask } from '../contract'
 import { DeviceChanges } from './DeviceChanges'
+import { RetainedLog } from './RetainedLog'
 import { RuntimeTables } from './RuntimeTables'
 import { SeededRandom } from './SeededRandom'
+import { TaskHeap } from './TaskHeap'
 import { TaskQueue } from './TaskQueue'
 
 function task(time: number, seq: number): QueuedTask {
@@ -20,6 +22,51 @@ describe('TaskQueue', () => {
     expect(TaskQueue.insertAll([task(2, 9)], [task(0, 10), task(2, 1)]).map((item) => item.seq)).toEqual([10, 1, 9])
     expect(TaskQueue.pop(next)?.task.seq).toBe(1)
     expect(TaskQueue.pop([])).toBeNull()
+  })
+})
+
+describe('TaskHeap', () => {
+  it('pops in (time, seq) order, the same total order as the sorted snapshot queue', () => {
+    const random = { state: SeededRandom.seed(5) }
+    const tasks = Array.from({ length: 200 }, (_, seq) => {
+      const next = SeededRandom.next(random.state)
+      random.state = next.state
+      return task(Math.floor(next.value * 20), seq)
+    })
+    const heap = TaskHeap.fromSorted([...tasks.slice(0, 50)].sort(TaskQueue.compare))
+    for (const item of tasks.slice(50)) heap.push(item)
+    const sorted = [...tasks].sort(TaskQueue.compare)
+    expect(heap.toSorted()).toEqual(sorted)
+    expect(heap.size).toBe(200)
+    const popped: QueuedTask[] = []
+    for (let item = heap.pop(); item; item = heap.pop()) popped.push(item)
+    expect(popped).toEqual(sorted)
+    expect(heap.peek()).toBeUndefined()
+  })
+})
+
+describe('RetainedLog', () => {
+  const entries = (from: number, to: number) => Array.from({ length: to - from + 1 }, (_, index) => ({ id: from + index }))
+
+  it('shows the newest `limit` records, by id, and truncates for a restore', () => {
+    const log = new RetainedLog<{ id: number }>(4)
+    log.append(entries(1, 3))
+    expect(log.from(0)).toEqual(entries(1, 3))
+    log.append(entries(4, 9))
+    expect(log.from(0)).toEqual(entries(6, 9))
+    expect(log.from(8)).toEqual(entries(8, 9))
+    expect(log.from(10)).toEqual([])
+    log.truncate(8)
+    expect(log.from(0)).toEqual(entries(6, 7))
+    log.clear()
+    expect(log.from(0)).toEqual([])
+  })
+
+  it('trims in batches: a long run appends in amortized constant time', () => {
+    const log = new RetainedLog<{ id: number }>(1000)
+    for (let id = 1; id <= 100_000; id += 1) log.append([{ id }])
+    expect(log.from(0)).toHaveLength(1000)
+    expect(log.from(0)[0]?.id).toBe(99_001)
   })
 })
 

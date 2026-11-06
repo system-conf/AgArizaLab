@@ -15,6 +15,10 @@ export type AppRoute =
   | { name: 'design'; briefId: string }
   /** Design (D2): design review after "Submit design" (`/design/<id>/review`). */
   | { name: 'designReview'; briefId: string }
+  /** SL1 (sample labs): the sample list (`/samples`). */
+  | { name: 'samples' }
+  /** SL1 (sample labs): one sample opened as a free lab with its lesson panel (`/samples/<id>`). */
+  | { name: 'sample'; sampleId: string }
   /** Any other path; the app sends the user to the landing page. */
   | { name: 'notFound'; path: string }
 
@@ -29,6 +33,8 @@ export class AppRouteCodec {
     const [first, second, third, ...rest] = segments
     if (first === undefined) return { name: 'landing' }
     if (first === 'lab' && second === undefined) return { name: 'lab' }
+    // SL1 (sample labs): `/samples` and `/samples/<id>`; anything deeper is not found.
+    if (first === 'samples') return AppRouteCodec.parseSample(pathname, second, third)
     if ((first !== 'exercises' && first !== 'design') || rest.length > 0) return { name: 'notFound', path: pathname }
     if (second === undefined) return first === 'exercises' ? { name: 'exercises' } : { name: 'designs' }
     const id = AppRouteCodec.decode(second)
@@ -60,6 +66,11 @@ export class AppRouteCodec {
         return `/design/${encodeURIComponent(route.briefId)}`
       case 'designReview':
         return `/design/${encodeURIComponent(route.briefId)}/review`
+      // SL1 (sample labs)
+      case 'samples':
+        return '/samples'
+      case 'sample':
+        return `/samples/${encodeURIComponent(route.sampleId)}`
       case 'notFound':
         return route.path
     }
@@ -67,6 +78,14 @@ export class AppRouteCodec {
 
   static equals(first: AppRoute, second: AppRoute): boolean {
     return AppRouteCodec.format(first) === AppRouteCodec.format(second)
+  }
+
+  /** SL1 (sample labs): `/samples` (no id) or `/samples/<camelCase id>`. */
+  private static parseSample(pathname: string, idSegment: string | undefined, deeper: string | undefined): AppRoute {
+    if (idSegment === undefined) return { name: 'samples' }
+    const id = AppRouteCodec.decode(idSegment)
+    if (deeper !== undefined || id === null || !EXERCISE_ID.test(id)) return { name: 'notFound', path: pathname }
+    return { name: 'sample', sampleId: id }
   }
 
   private static decode(segment: string): string | null {
@@ -89,4 +108,7 @@ export const routes = {
   designs: { name: 'designs' },
   design: (briefId: string): AppRoute => ({ name: 'design', briefId }),
   designReview: (briefId: string): AppRoute => ({ name: 'designReview', briefId }),
+  // SL1 (sample labs)
+  samples: { name: 'samples' },
+  sample: (sampleId: string): AppRoute => ({ name: 'sample', sampleId }),
 } as const satisfies Record<string, AppRoute | ((id: string) => AppRoute)>

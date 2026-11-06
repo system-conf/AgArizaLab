@@ -3,7 +3,7 @@ import type { Device, NetworkState } from '../../domain'
 import { accessMode, editAddress, editLink, editPort, labCloud, labHost, labLink, labRouter, labSwitch, trunkMode } from '../../engine/testLabs'
 import { RuntimeTables } from '../core/RuntimeTables'
 import { SimulationKernel } from '../core/SimulationKernel'
-import type { DeviceContext, NetworkLayer, SimLayers, SimRequest } from '../contract'
+import { type DeviceContext, type NetworkLayer, PingTally, type SimLayers, type SimRequest } from '../contract'
 import { actions, linkTestLayers, noteKeys, pingRequest, startLab } from './testStack'
 
 /** Hosts with the given addresses on switch ports Fa0/1… (VLAN 1), plus extra devices / links. */
@@ -29,7 +29,7 @@ const readinessNetwork: NetworkLayer = {
     if (request.kind !== 'ping') return
     const ready = ctx.layers.link.interfaceReady(ctx, request.targetIp)
     const reason = ready.ok ? 'unsupported' : ready.reason
-    ctx.report(requestId, { kind: 'ping', echoes: [{ kind: 'localFailure', sequence: 1, reason }] }, true)
+    ctx.report(requestId, PingTally.of([{ kind: 'localFailure', sequence: 1, reason }]), true)
   },
 }
 

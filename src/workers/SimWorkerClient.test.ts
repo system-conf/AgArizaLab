@@ -17,14 +17,22 @@ class FakeWorker implements WorkerPort {
 
   postMessage(message: SimWorkerRequest): void {
     this.received.push(message)
-    const response: SimWorkerResponse =
-      message.kind === 'solve'
-        ? { id: message.id, kind: 'solve', results: this.jobs.solve(message.state, message.conditions) }
-        : { id: message.id, kind: 'command', result: this.jobs.command(message) }
+    const response = this.answer(message)
     queueMicrotask(() => this.onmessage?.(new MessageEvent('message', { data: structuredClone(response) })))
   }
 
   terminate(): void {}
+
+  private answer(message: SimWorkerRequest): SimWorkerResponse {
+    switch (message.kind) {
+      case 'solve':
+        return { id: message.id, kind: 'solve', results: this.jobs.solve(message.state, message.conditions) }
+      case 'command':
+        return { id: message.id, kind: 'command', result: this.jobs.command(message) }
+      case 'prepare':
+        return { id: message.id, kind: 'prepare', result: this.jobs.prepare(message.state) }
+    }
+  }
 }
 
 describe('SimWorkerClient', () => {
@@ -39,6 +47,19 @@ describe('SimWorkerClient', () => {
     expect(client.usesWorker(lab)).toBe(true)
     await expect(client.solve(lab, CONDITIONS)).resolves.toEqual([])
     expect(worker.received.map((request) => request.kind)).toEqual(['solve'])
+  })
+
+  it('settles large labs in the worker; the snapshot restores into the same engine state', async () => {
+    const worker = new FakeWorker()
+    const client = new SimWorkerClient({ createWorker: () => worker })
+    const lab = largeLab()
+    const prepared = await client.prepare(lab)
+    expect(worker.received.map((request) => request.kind)).toEqual(['prepare'])
+    expect(prepared.settleTruncated).toBe(false)
+    expect(prepared.snapshot).toEqual(new SimJobs().prepare(lab).snapshot)
+    // Small labs are settled here, without a message.
+    await expect(client.prepare(SMALL)).resolves.toMatchObject({ settleTruncated: false })
+    expect(worker.received).toHaveLength(1)
   })
 
   it('runs everything here when the environment has no workers', async () => {

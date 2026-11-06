@@ -107,10 +107,16 @@ function SimulationControls({ simulation, expanded, onToggleExpanded, bodyId }: 
           {expanded ? <ChevronDown className="h-5 w-5" aria-hidden="true" /> : <ChevronUp className="h-5 w-5" aria-hidden="true" />}
         </button>
       </div>
-      {!canForward && (
+      {view.status !== 'ready' ? (
         <p className="w-full text-xs text-slate-500" role="status">
-          {t('ui.controls.idle')}
+          {t(view.status === 'preparing' ? 'ui.prepare.preparing' : 'ui.prepare.dormant')}
         </p>
+      ) : (
+        !canForward && (
+          <p className="w-full text-xs text-slate-500" role="status">
+            {t('ui.controls.idle')}
+          </p>
+        )
       )}
     </div>
   )

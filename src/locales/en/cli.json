@@ -1,0 +1,42 @@
+{
+  "poweredOff": "The device is powered off. Turn it on to use its console.",
+  "noCli": "This device has no command line.",
+  "onlyStartupConfig": "Only startup-config can be the destination in this lab.",
+  "busy": "Running… the command waits for the network.",
+  "hints": {
+    "help": "Type ? for help; Tab completes a word.",
+    "more": "Space: next page · Enter: next line · any other key: stop"
+  },
+  "unsupported": {
+    "spanningTree": "Spanning Tree (STP) is not simulated yet: the command was accepted but changes nothing."
+  },
+  "ui": {
+    "tabs": {
+      "cli": "CLI",
+      "config": "Config"
+    },
+    "windowTitle": "Console – {{name}}",
+    "outputLabel": "Console output",
+    "inputLabel": "Console command",
+    "clear": "Clear",
+    "locked": "% Configuration locked by the exercise",
+    "readOnly": "In this exercise the console of this device is read-only: show commands work, configuration commands are refused.",
+    "problems": "The lab did not take the last change:",
+    "config": {
+      "running": "Running configuration",
+      "startup": "Startup configuration",
+      "copy": "Copy",
+      "copyRunning": "Copy running configuration",
+      "copyStartup": "Copy startup configuration",
+      "copied": "Copied",
+      "copyFailed": "Copy failed",
+      "unsaved": "The running configuration has changes that are not saved yet (copy running-config startup-config).",
+      "noStartup": "Nothing saved yet. Type copy running-config startup-config (or write memory) in the CLI to save the running configuration."
+    },
+    "export": {
+      "menuItem": "Export configs",
+      "done": "Configurations saved as {{file}}.",
+      "failed": "The configurations could not be exported."
+    }
+  }
+}

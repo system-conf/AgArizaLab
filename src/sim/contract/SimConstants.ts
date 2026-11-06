@@ -54,4 +54,22 @@ export const SIM_LIMITS = {
   /** Default task limit of runUntilIdle / runUntil / runUntilDone. */
   taskLimit: 100_000,
   maxRetainedEvents: 50_000,
+  /**
+   * Budget of the start-up traffic `create` runs (`settle`): at most this many tasks, and only tasks up
+   * to this virtual time. Past it the engine stops settling, keeps the rest queued and reports
+   * `settleTruncated`. A flat segment of n hosts needs about n² tasks (every probe reaches every
+   * host): ~240 000 at 500 devices, ~375 000 at 625, a few µs each.
+   */
+  settleTaskLimit: 400_000,
+  settleTimeMs: 60_000,
+  /**
+   * IPv4 packets one unresolved next hop holds while ARP runs (real stacks keep a few: IOS one, Linux a
+   * small queue). A further packet is dropped ('arpQueueFull'), silently: its sender times out.
+   */
+  arpPendingPerNextHop: 4,
+  /**
+   * Echo results a ping keeps in its record and session (the latest ones); `PingResult.stats` counts all
+   * of them. At least the terminal's PingOptions.maxCount, so terminal output always sees every echo.
+   */
+  echoResultsKept: 100,
 } as const

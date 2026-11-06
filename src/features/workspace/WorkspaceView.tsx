@@ -1,11 +1,11 @@
 import { useReactFlow } from '@xyflow/react'
 import { LayoutGrid, X } from 'lucide-react'
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { CableTool, Device, DeviceModel } from '../../domain'
 import { focusRing } from '../shared/focusRing'
 import { useMediaQuery } from '../shared/useMediaQuery'
-import { SimplePduHint, SimulationMapLayer, SimulationPanel, SimulationToolbar, useSimulation } from '../simulation'
+import { SimplePduHint, SimulationToolbar, useSimulation } from '../simulation'
 import CableHint from './cable/CableHint'
 import PortPicker from './cable/PortPicker'
 import SsidPicker from './cable/SsidPicker'
@@ -15,6 +15,7 @@ import CanvasToolbar from './canvas/CanvasToolbar'
 import { EMPTY_SELECTION, type WorkspaceNode, type WorkspaceSelection } from './canvas/canvasTypes'
 import { annotationIdOf } from './canvas/flowElements'
 import { SelectionModel } from './canvas/SelectionModel'
+import { useSnapPreference } from './canvas/useSnapPreference'
 import WorkspaceCanvas from './canvas/WorkspaceCanvas'
 import type { WorkspaceCommand } from './keyboard/ShortcutResolver'
 import { useWorkspaceKeyboard } from './keyboard/useWorkspaceKeyboard'
@@ -30,6 +31,10 @@ import { useDeviceEditing } from './useDeviceEditing'
 import type { ToastControls } from './useToasts'
 import { useWorkspaceActions } from './useWorkspaceActions'
 import WorkspaceHeader from './WorkspaceHeader'
+
+// Simulation (U3): the panel and the packets on the map load when first needed.
+const SimulationPanel = lazy(() => import('../simulation/SimulationPanel'))
+const SimulationMapLayer = lazy(() => import('../simulation/SimulationMapLayer'))
 
 export interface WorkspaceViewProps {
   lab: LabDocumentState
@@ -69,7 +74,7 @@ function WorkspaceView(props: WorkspaceViewProps) {
   const canvasRef = useRef<HTMLDivElement>(null)
   const [rawSelection, setSelection] = useState<WorkspaceSelection>(EMPTY_SELECTION)
   const selection = useMemo(() => SelectionModel.prune(rawSelection, doc), [doc, rawSelection])
-  const [snapToGrid, setSnapToGrid] = useState(true)
+  const { snapToGrid, toggle: toggleSnap } = useSnapPreference()
   const [editingId, setEditingId] = useState<string | null>(null)
   const [shortcutsOpen, setShortcutsOpen] = useState(false)
   const [paletteOpen, setPaletteOpen] = useState(false)
@@ -182,6 +187,8 @@ function WorkspaceView(props: WorkspaceViewProps) {
       <div key={device.id} className="space-y-3">
         <h3 className="break-words text-base font-semibold text-slate-900">{device.name}</h3>
         <DeviceTabs
+          // CI (CLI integration): the CLI keeps one console per device of the open lab.
+          labId={lab.labId}
           device={device}
           state={doc.state}
           policy={policy}
@@ -259,7 +266,7 @@ function WorkspaceView(props: WorkspaceViewProps) {
                 canDelete={deletableCount > 0}
                 onDelete={actions.deleteSelection}
                 snapToGrid={snapToGrid}
-                onToggleSnap={() => setSnapToGrid((snap) => !snap)}
+                onToggleSnap={toggleSnap}
                 canAlign={(editable ? selection.deviceIds.length : 0) + selection.annotationIds.length > 1}
                 onAlign={actions.align}
               />
@@ -288,7 +295,11 @@ function WorkspaceView(props: WorkspaceViewProps) {
               >
                 <CableHint state={cable.state} nameOf={nameOf} />
                 {/* Simulation (U3) */}
-                <SimulationMapLayer simulation={simulation} layout={doc.layout} links={doc.state.links} nameOf={nameOf} />
+                {(simulation.mode === 'simulation' || simulation.replay !== null) && (
+                  <Suspense fallback={null}>
+                    <SimulationMapLayer simulation={simulation} layout={doc.layout} links={doc.state.links} nameOf={nameOf} />
+                  </Suspense>
+                )}
                 <SimplePduHint state={simulation.pduTool.state} nameOf={nameOf} />
                 {menu && menuDevice && (
                   <PortPicker
@@ -318,7 +329,11 @@ function WorkspaceView(props: WorkspaceViewProps) {
             <ToastRegion toasts={toasts.toasts} onDismiss={toasts.dismiss} />
           </div>
           {/* Simulation (U3) */}
-          {simulation.mode === 'simulation' && <SimulationPanel simulation={simulation} nameOf={nameOf} />}
+          {simulation.mode === 'simulation' && (
+            <Suspense fallback={null}>
+              <SimulationPanel simulation={simulation} nameOf={nameOf} />
+            </Suspense>
+          )}
         </main>
         {/* Design (D2): the brief panel */}
         {props.sidePanel}

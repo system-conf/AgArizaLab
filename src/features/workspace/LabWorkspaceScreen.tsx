@@ -3,6 +3,8 @@ import { Network } from 'lucide-react'
 import { lazy, Suspense, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { routes } from '../../routing'
+// CI (CLI integration): File menu "Export configs".
+import { useLabConfigExport } from '../cli'
 import { useDocumentMeta } from '../layout/useDocumentMeta'
 import AppLink from '../shared/AppLink'
 import { focusRing } from '../shared/focusRing'
@@ -31,6 +33,7 @@ function LabWorkspace({ shareHash, onShareHashUsed }: LabWorkspaceScreenProps) {
   const toasts = useToasts()
   useLabOpening({ lab, notify: toasts.show, shareHash, onShareHashUsed })
   const files = useLabFileActions(lab, toasts.show)
+  const exportConfigs = useLabConfigExport(lab.doc, toasts.show)
   const [recentOpen, setRecentOpen] = useState(false)
   const [handoverOpen, setHandoverOpen] = useState(false)
   const title = lab.doc.meta.title
@@ -55,7 +58,7 @@ function LabWorkspace({ shareHash, onShareHashUsed }: LabWorkspaceScreenProps) {
         maxLength={LAB_LIMITS.nameLength}
         className="min-w-0 max-w-md flex-1"
       />
-      <FileMenu actions={files} onOpenRecent={() => setRecentOpen(true)} onHandover={() => setHandoverOpen(true)} />
+      <FileMenu actions={files} onOpenRecent={() => setRecentOpen(true)} onHandover={() => setHandoverOpen(true)} onExportConfigs={exportConfigs} />
     </>
   )
 

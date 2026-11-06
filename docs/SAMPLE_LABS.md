@@ -41,3 +41,97 @@ level and required feature; "Open" loads it as a free lab (unlocked) with the le
 - **SL2 content** (`src/samples/**`, `samples` ns): every "now" + "Phase 3" row above, tested: each
   sample loads, passes `StateInvariants`, its checks are false before and true after the guided steps.
 - Later packs add their own rows (each pack's definition of done includes its samples).
+
+## Contract (SL0, fixed API — SL1 and SL2 build on these names)
+
+Code: `src/samples/contract/**` (pure TS, no React), re-exported from `src/samples` (import from
+there). Definitions list: `sampleDefinitions` in `src/samples/sampleDefinitions.ts` (SL2 fills it).
+
+### `SampleDefinition` (`SampleTypes.ts`)
+| Field | Meaning |
+|---|---|
+| `id` | camelCase; key under `samples:labs.<id>` and the `/samples/<id>` path segment |
+| `category: SampleCategoryId` | one of the 16 rows above: `basics`, `dhcp`, `dns`, `switching`, `routing`, `packetView`, `deviceCli`, `switchingAdvanced`, `security`, `dynamicRouting`, `ipv6`, `servers`, `wireless`, `wanSecurity`, `operations`, `industrial` (order and delivery: `SAMPLE_CATEGORIES`) |
+| `order` | ascending order inside the category (unique per category) |
+| `level: SampleLevel` | `beginner` \| `intermediate` \| `advanced` (`SAMPLE_LEVELS`) |
+| `features: SampleFeature[]` | features beyond the core: `simulation`, `dhcpRelay`, `dnsForwarding`, `deviceCli`; `SAMPLE_FEATURE_AVAILABILITY` says which exist (`deviceCli: false` until Phase 4). Unavailable → the sample is not listed. Packs add their features. |
+| `lab: () => SampleLab` | factory, fresh objects every call: `{ state, layout, annotations? }`; every device has a position |
+| `groups?: DeviceGroup[]` | named device sets for `network` checks |
+| `steps: SampleStep[]` | 3–5 (`SAMPLE_STEP_LIMITS`): `{ id, checks?, mode?: 'simulation', focusDeviceId? }` |
+| `breakIt: string[]` | ≥ 1 idea ids |
+| `related: SampleLink[]` | `{ kind: 'exercise', exerciseId }` \| `{ kind: 'design', briefId }` \| `{ kind: 'sample', sampleId }` |
+
+Device names in sample labs are final, language-neutral hostnames (`PC1`, `SW1`, `R1`, `DNS1`): user
+content once opened, never translated (unlike exercise placeholders).
+
+### Step checks (`StepCheck`, evaluated by `StepChecker` with the rule engine)
+- `{ type: 'solve', condition: SolveCondition }` — exercise conditions (`internet`, `resolves`,
+  `reachable`, `appLinksOk`).
+- `{ type: 'network', condition: NetworkCondition }` — design conditions (`reachable`,
+  `notReachable`, `internet`, `resolves`, `dhcpServes`, `separateSubnets`, `sameVlan`, `addressPlan`)
+  on the state **as it is** (no DHCP settling, unlike design review). A group id that is not in
+  `groups` names a single device (its device id).
+- `{ type: 'hasAddress', deviceId, prefix? }` — the device has an IPv4 address (inside the CIDR).
+- `{ type: 'not', check }` — negation ("PC1 can no longer reach PC2").
+- No `checks` (or `[]`) = **manual** step: the learner ticks it. Use it for everything only visible in
+  Simulation mode (ARP request, MAC learning, TTL), and for DHCP relay (the rule engine does not
+  relay; only the simulator does).
+- A step passes when all its checks hold. A check about a deleted device fails, never throws.
+
+`new StepChecker(sample)` → `check(state): StepStatus[]` (step order), `checkStep(state, step)`,
+`holds(state, check)`. `StepStatus` = `{ stepId, kind: 'manual' }` \| `{ stepId, kind: 'auto', ok,
+checks: CheckResult[] }`. Cheap enough to run debounced on every lab change (a few reach probes).
+
+### Texts (`samples` namespace)
+```
+samples:
+  ui.*                               SL1 (screens, buttons, lesson panel)
+  categories.<categoryId>.title|description
+  levels.<level>
+  features.<feature>
+  labs.<sampleId>.title              card + lesson header
+  labs.<sampleId>.summary            one line for the card
+  labs.<sampleId>.intro.what|why|realWorld
+  labs.<sampleId>.steps.<stepId>.title|detail
+  labs.<sampleId>.breakIt.<ideaId>.change|result
+  labs.<sampleId>.topics             string array (search, card tags)
+```
+Keys: `SampleTextKeys` (`title`, `summary`, `intro`, `step`, `breakIt`, `topics`, `categoryTitle`,
+`categoryDescription`, `level`, `feature`, `stringKeys(sample)` = every string key of one sample).
+Reading: `new SampleTextReader(t).texts(sample)` → `SampleTexts` (missing text → warn + id fallback);
+`title(id)`, `summary(id)`. Owners: SL1 `ui.*`; SL2 `labs.*`; SL0 / packs `categories`, `levels`,
+`features`. Turkish uses the informal "sen" register; device output quoted in steps stays English.
+
+### Catalogue, opening, progress
+- `new SampleCatalog(sampleDefinitions)`: `byCategory()` (non-empty categories in order, samples by
+  `order`), `available()`, `find(id)` (undefined when unknown or unavailable), `isAvailable(sample)`,
+  static `matches(fields, query, language)` (every query word in one localized field; case / accent /
+  Turkish İ-ı insensitive).
+- `openSampleLab(sample, { title, now })` → a free, unlocked `LabDocument` (pass the localized title).
+- `SampleProgressBook` (immutable): `empty()`, `fromJson(text | null)`, `parse(unknown)`, `of(id)`,
+  `isDone(id, stepId)`, `completion(sample)` → `{ done, total, complete }`,
+  `withPassedSteps(sample, statuses, now)` (records passed auto steps; a step stays done when the lab is
+  broken later), `withStepsDone(sample, stepIds, now)` (ticks), `withStepUndone`, `withReset(id)`,
+  `toJson()`. Stored in localStorage under `SAMPLE_PROGRESS_STORAGE_KEY`
+  (`agArizaLab.samples.progress`). `SampleProgress` = `{ sampleId, doneStepIds, updatedAt,
+  completedAt? }`; the learning path (BACKLOG 9) will read the same book.
+- `SampleValidator` (tests only): `validate(sample)` / `validateAll(samples)` → `SampleIssue[]`
+  (ids, step count, break-it, invariants, positions, fresh factory, device references, CIDR, related
+  links against `{ exerciseIds, briefIds, sampleIds }`).
+
+### Routes (SL1 implements; SL0 does not edit routing)
+- `AppRoute` additions: `{ name: 'samples' }` ↔ `/samples`, `{ name: 'sample'; sampleId: string }` ↔
+  `/samples/<id>` (id must match the camelCase id pattern; anything deeper → `notFound`).
+- `routes.samples` and `routes.sample(sampleId)` in `src/routing/AppRoute.ts`; codec tests for both.
+- `/samples/<id>` with an unknown or unavailable id → replace with `/samples`.
+- `/samples/<id>` opens the workspace with `openSampleLab` (unlocked, normal editing) and the lesson
+  panel beside it; it does not overwrite the learner's autosaved `/lab` lab. A reload reopens the
+  fresh sample (progress survives in the book); "Save as my lab" stores it with `saveLabAsNew`.
+- Landing: a "Samples" entry next to Exercises.
+
+### SL2 content checklist (per sample)
+- Definition file under `src/samples/<category>/`, listed in `sampleDefinitions`; texts tr + en.
+- Test: `new SampleValidator({ exerciseIds, briefIds }).validateAll(sampleDefinitions)` is `[]`;
+  every `SampleTextKeys.stringKeys` key exists in tr and en; each automatic step is not ok on the
+  fresh lab and ok after applying the guided change (unless the step only observes — then make it a
+  manual step or say so in the test).

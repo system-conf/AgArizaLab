@@ -76,7 +76,7 @@ function applyFix(doc: LabDocument, policy: ExerciseLockPolicy, id: string): Lab
 describe.each(exerciseDefinitions.map((definition) => [definition.id]))('exercise %s in exercise mode', (id) => {
   it('opens as a topology-locked lab with localized names', () => {
     const { exercise, doc } = openExercise(id)
-    expect(new ExerciseLockPolicy(exercise.locks).topologyLocked).toBe(true)
+    expect(new ExerciseLockPolicy(exercise.locks, exercise.lab.state.links).topologyLocked).toBe(true)
     expect(doc.meta.title).toBe(exercise.texts.title)
     expect(doc.state.devices.every((device) => device.name !== device.id || device.name === '')).toBe(true)
     expect(Object.keys(doc.layout.devices).sort()).toEqual(doc.state.devices.map((device) => device.id).sort())
@@ -91,7 +91,7 @@ describe.each(exerciseDefinitions.map((definition) => [definition.id]))('exercis
 
   it('is solved by the hint-3 fix made through the settings path', () => {
     const { exercise, doc } = openExercise(id)
-    const fixed = applyFix(doc, new ExerciseLockPolicy(exercise.locks), id)
+    const fixed = applyFix(doc, new ExerciseLockPolicy(exercise.locks, exercise.lab.state.links), id)
     const attempt = ExerciseAttempt.start(exercise).verify(fixed.state)
     expect(attempt.isSolved).toBe(true)
     expect(attempt.failedChecks(fixed.state)).toEqual([])
@@ -105,7 +105,7 @@ describe('ExerciseAttempt', () => {
     for (let step = 0; step < 5; step += 1) attempt = attempt.revealGuideStep()
     expect(attempt.guideStepsRevealed).toBe(3)
     expect(attempt.lastCheck).toBeNull()
-    const solved = attempt.verify(applyFix(doc, new ExerciseLockPolicy(exercise.locks), 'wrongDns').state)
+    const solved = attempt.verify(applyFix(doc, new ExerciseLockPolicy(exercise.locks, exercise.lab.state.links), 'wrongDns').state)
     expect(solved.isSolved).toBe(true)
     const broken = solved.verify(doc.state)
     expect(broken.isSolved).toBe(true)

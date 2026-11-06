@@ -1,6 +1,9 @@
 ﻿// Test-only: hand-made events and transmissions (docs/SIMULATION.md §8: U3 builds against fixtures).
 import type { ArpPacket, EthernetFrame } from '../../../sim'
-import type { SimEvent, SimTransmission } from '../simulationServices'
+import { simulationRuntime } from '../simulationRuntime'
+import type { EngineFactory, SimEvent, SimTransmission } from '../simulationServices'
+import type { PlayerEngine } from './SimulationPlayer'
+import type { NetworkState } from '../../../domain'
 
 export const MAC_A = '02:00:00:00:00:0A'
 export const MAC_B = '02:00:00:00:00:0B'
@@ -49,5 +52,13 @@ export function transmission(overrides: Partial<SimTransmission> & Pick<SimTrans
     frame: ECHO_FRAME,
     protocol: 'icmp',
     ...overrides,
+  }
+}
+
+/** Builds engines at once on this thread (tests): `createEngine` of the real simulator unless given. */
+export function localBuild(createEngine: EngineFactory = simulationRuntime.createEngine): (network: NetworkState) => PlayerEngine {
+  return (network) => {
+    const engine = createEngine(network)
+    return { engine, runtime: simulationRuntime, settleTruncated: engine.settleTruncated }
   }
 }

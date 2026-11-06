@@ -1,5 +1,5 @@
-// The simulator's Web Worker (BACKLOG item 6): verifies exercises and runs realtime terminal commands of
-// large labs off the main thread. Loaded by SimWorkerClient through Vite's `new Worker(new URL(...))`.
+// The simulator's Web Worker (BACKLOG item 6): builds and settles the engines of large labs, verifies
+// exercises and runs realtime terminal commands of large labs off the main thread. Loaded by SimWorkerClient through Vite's `new Worker(new URL(...))`.
 import { SimJobs } from './simJobs'
 import type { SimWorkerRequest, SimWorkerResponse } from './simWorkerProtocol'
 
@@ -18,6 +18,8 @@ function handle(request: SimWorkerRequest): SimWorkerResponse {
       return { id: request.id, kind: 'solve', results: jobs.solve(request.state, request.conditions) }
     case 'command':
       return { id: request.id, kind: 'command', result: jobs.command(request) }
+    case 'prepare':
+      return { id: request.id, kind: 'prepare', result: jobs.prepare(request.state) }
   }
 }
 

@@ -38,6 +38,28 @@
 13. **Product name** — the name now covers only part of the product (troubleshooting); decide a
     broader name before the public release (owner's decision).
 
+14. **Dark mode** (approved 2026-11-06): design tokens (CSS variables) + Tailwind `dark:`; Light / Dark /
+    System; canvas, cables, packet colours, event list, design and sample screens; contrast check (WCAG AA).
+15. **Preferences screen** (approved): tabs Appearance (theme, font size, density, high contrast), Map
+    (device name / model labels, port labels always / hover / never, link lights, grid + snap, minimap),
+    Animation & simulation (on/off, speed, default mode, default event filters), Terminal / CLI (CLI as
+    default tab for network devices, font size, history length), Cables (auto cable on/off; cable length
+    effects with the physical view), Language, Data (autosave, clear local data, reset progress,
+    export / import preferences). Stored locally; later items added with their features.
+16. **Canvas performance pass** (reported: React Flow feels laggy): profile first; no simulator
+    reconfigure / live checks during drags (run once on release); memoised node and edge components with
+    stable objects; packet animation outside React state (requestAnimationFrame + direct SVG);
+    `onlyRenderVisibleElements`; cheaper styles (shadows / blur) and minimap off while dragging; measure
+    with 50 / 150 / 300-device labs. Only if still slow at 300 devices: evaluate a Canvas/WebGL renderer.
+    Schedule: "UI polish" workflow (14 + 15 + 16 + 17 in parallel tracks) after the current CLI/samples workflow.
+17. **Icon redesign** (approved): our own SVG icon set in the classic, generic network-diagram symbol
+    language (router = cylinder with four arrows, switch = flat box with two-way arrows, L3 switch, hub,
+    firewall = brick wall, access point = box with waves, cloud, server tower, PC, laptop, phone, camera…);
+    readable at 32 px, distinct silhouettes, colour by category (network blue, end devices slate,
+    security orange, WAN/cloud violet), good in light and dark mode. Never copy Cisco / Packet Tracer
+    artwork or Cisco's topology icon set (licence covers diagrams, not embedding in another product).
+    Realistic artwork stays with item 3 (AI-generated, physical view).
+
 ## Follow-ups from wave 3.1 (small, schedule with the next integration wave)
 - Canvas node and device info panel should pass `modelId` to `DeviceKindIcon` (smart TV shows the chef-hat icon).
 - Default device names per model, not per kind (smart TV → "Smart TV 1", modems → "DSL modem 1").

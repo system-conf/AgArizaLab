@@ -7,6 +7,7 @@ import {
   type Ipv4Packet,
   type NetworkTimer,
   type PingSession,
+  PingTally,
   SIM_TIMING,
   SIM_TTL,
   type SimPingRequest,
@@ -19,7 +20,8 @@ import type { PacketSender } from './PacketSender'
 /**
  * Windows `ping` (docs/SIMULATION.md §7.2, §3.4): echoes 1..count one at a time; the next echo leaves
  * 1000 ms after a reply or an error and at once after a 4000 ms timeout. Every echo's result is
- * reported as it happens; the last one finishes the request.
+ * reported as it happens; the last one finishes the request. The record keeps the latest echoes and
+ * counters over all of them (PingTally), so even `count` 1e9 stays a record of fixed size.
  */
 export class PingClient {
   private readonly sender: PacketSender
@@ -40,10 +42,9 @@ export class PingClient {
       ttl: request.ttl ?? defaultTtl,
       sent: 0,
       awaiting: null,
-      echoes: [],
     }
     if (session.count < 1) {
-      ctx.report(requestId, { kind: 'ping', echoes: [] }, true)
+      ctx.report(requestId, PingTally.of([]), true)
       return
     }
     NetworkRuntimes.putSession(ctx, session)
@@ -116,12 +117,12 @@ export class PingClient {
 
   /** Stores one echo's result, reports, and goes on (`nextInMs` 0 = at once) or finishes. */
   private record(ctx: DeviceContext, session: PingSession, result: EchoResult, nextInMs: number): void {
-    const echoes = [...(session.echoes ?? []), result]
-    const updated: PingSession = { ...session, awaiting: null, echoes }
+    const tally = PingTally.next(session.result ?? null, result)
+    const updated: PingSession = { ...session, awaiting: null, result: tally }
     const done = updated.sent >= updated.count
     if (done) NetworkRuntimes.removeSession(ctx, session.requestId)
     else NetworkRuntimes.putSession(ctx, updated)
-    ctx.report(session.requestId, { kind: 'ping', echoes }, done)
+    ctx.report(session.requestId, tally, done)
     if (done) return
     if (nextInMs === 0) this.sendNext(ctx, updated)
     else ctx.schedule(nextInMs, { layer: 'network', kind: 'nextEcho', requestId: session.requestId })

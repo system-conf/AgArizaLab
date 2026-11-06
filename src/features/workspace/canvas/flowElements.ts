@@ -131,3 +131,40 @@ export function buildEdges(
   }
   return edges
 }
+
+/** Top-left point of a node as the document has it (device layout or annotation), or null. */
+export function documentPosition(doc: LabDocument, nodeId: string): CanvasPoint | null {
+  const annotationId = annotationIdOf(nodeId)
+  if (annotationId === null) return doc.layout.devices[nodeId] ?? null
+  const annotation = doc.annotations.find((candidate) => candidate.id === annotationId)
+  return annotation ? annotationPosition(annotation) : null
+}
+
+/** Same own keys with identical values (one level deep). */
+function shallowEqual(first: object, second: object): boolean {
+  const firstEntries = Object.entries(first)
+  if (firstEntries.length !== Object.keys(second).length) return false
+  const secondRecord: Record<string, unknown> = { ...second }
+  return firstEntries.every(([key, value]) => Object.hasOwn(secondRecord, key) && Object.is(value, secondRecord[key]))
+}
+
+/** Equal for React Flow: the same fields, with position, size and data compared by value. */
+function sameNode(previous: WorkspaceNode, next: WorkspaceNode): boolean {
+  const { position, measured, data, ...rest } = next
+  const { position: previousPosition, measured: previousMeasured, data: previousData, ...previousRest } = previous
+  if (!shallowEqual(rest, previousRest) || !shallowEqual(position, previousPosition) || !shallowEqual(data, previousData)) return false
+  if (measured === undefined || previousMeasured === undefined) return measured === previousMeasured
+  return shallowEqual(measured, previousMeasured)
+}
+
+/**
+ * `next` with every node that did not change replaced by its previous object, so React Flow and the
+ * memoised node components re-render only what changed (during a drag: the moved nodes).
+ */
+export function reuseUnchanged(previousNodes: readonly WorkspaceNode[], next: readonly WorkspaceNode[]): WorkspaceNode[] {
+  const previous = new Map(previousNodes.map((node) => [node.id, node]))
+  return next.map((node) => {
+    const before = previous.get(node.id)
+    return before && sameNode(before, node) ? before : node
+  })
+}

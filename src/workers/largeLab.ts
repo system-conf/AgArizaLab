@@ -20,10 +20,10 @@ export function largeLabAddress(switchIndex: number, port: number): string {
 }
 
 /**
- * 100 devices: internet — router (VLAN 10 / 20 on a stick) — core switch — 4 access switches with 23
+ * 100 devices (default; 4 + 24 per access switch): internet — router (VLAN 10 / 20 on a stick) — core switch — 4 access switches with 23
  * static hosts each (alternating VLANs, /16 per VLAN) + 1 server on the core = 1 + 1 + 1 + 4 + 92 + 1.
  */
-export function largeLab(): NetworkState {
+export function largeLab(accessSwitches: number = ACCESS_SWITCHES): NetworkState {
   const router = labRouter(
     'router',
     [{ id: 'Gi0/0', subInterfaces: [{ vlan: 10, ip: '10.10.0.1', mask: '255.255.0.0' }, { vlan: 20, ip: '10.20.0.1', mask: '255.255.0.0' }] }, { id: 'Gi0/1' }],
@@ -31,9 +31,9 @@ export function largeLab(): NetworkState {
   )
   const devices: Device[] = [labCloud('isp'), router]
   const links: Link[] = [labLink('wan', ['isp', 'eth0'], ['router', 'Gi0/1']), labLink('uplink', ['router', 'Gi0/0'], ['core', 'Fa0/1'])]
-  const corePorts = [trunkMode(), ...Array.from({ length: ACCESS_SWITCHES }, () => trunkMode()), accessMode(10)]
+  const corePorts = [trunkMode(), ...Array.from({ length: accessSwitches }, () => trunkMode()), accessMode(10)]
   devices.push(labSwitch('core', corePorts, [10, 20]))
-  for (let index = 1; index <= ACCESS_SWITCHES; index += 1) {
+  for (let index = 1; index <= accessSwitches; index += 1) {
     const ports = [trunkMode(), ...Array.from({ length: HOSTS_PER_SWITCH }, (_, port) => accessMode(vlanOf(port)))]
     devices.push(labSwitch(`acc${index}`, ports, [10, 20]))
     links.push(labLink(`core${index}`, ['core', `Fa0/${index + 1}`], [`acc${index}`, 'Fa0/1']))
@@ -44,6 +44,6 @@ export function largeLab(): NetworkState {
     }
   }
   devices.push(labHost('server', '10.10.0.10', { kind: 'server', mask: '255.255.0.0', gateway: '10.10.0.1' }))
-  links.push(labLink('serverLink', ['server', 'eth0'], ['core', `Fa0/${ACCESS_SWITCHES + 2}`]))
+  links.push(labLink('serverLink', ['server', 'eth0'], ['core', `Fa0/${accessSwitches + 2}`]))
   return { devices, links }
 }

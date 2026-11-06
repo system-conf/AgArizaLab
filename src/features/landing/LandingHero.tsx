@@ -1,4 +1,4 @@
-import { ArrowRight, CodeXml, FlaskConical, ListChecks, PencilRuler } from 'lucide-react'
+import { ArrowRight, BookOpen, CodeXml, FlaskConical, ListChecks, PencilRuler } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { siteInfo } from '../layout/siteInfo'
 import { routes } from '../../routing'
@@ -7,7 +7,8 @@ import { focusRing } from '../shared/focusRing'
 
 /** Top of the start page: what the lab is and the two ways in (the lab first, then the exercises). */
 function LandingHero() {
-  const { t } = useTranslation(['landing', 'common', 'design'])
+  // SL1: 'samples' for the sample labs entry.
+  const { t } = useTranslation(['landing', 'common', 'design', 'samples'])
 
   return (
     <section
@@ -35,6 +36,15 @@ function LandingHero() {
         >
           <ListChecks className="h-4 w-4" aria-hidden="true" />
           {t('hero.toExercises')}
+        </AppLink>
+        {/* SL1 (sample labs): ready labs with a short lesson, next to the exercises */}
+        <AppLink
+          to={routes.samples}
+          title={t('samples:ui.landing.title')}
+          className={`flex items-center gap-2 rounded-lg border border-white/40 bg-white/10 px-4 py-2.5 text-sm font-medium text-white hover:bg-white/20 ${focusRing} focus-visible:outline-white`}
+        >
+          <BookOpen className="h-4 w-4" aria-hidden="true" />
+          {t('samples:ui.landing.cta')}
         </AppLink>
         {/* Design (D2): design tasks */}
         <AppLink

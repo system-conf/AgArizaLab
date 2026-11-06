@@ -1,4 +1,4 @@
-import { CircleAlert, CircleCheck, Info, X } from 'lucide-react'
+import { CircleAlert, CircleCheck, Info, TriangleAlert, X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { focusRing } from '../shared/focusRing'
 import type { Toast, ToastTone } from './useToasts'
@@ -11,10 +11,11 @@ interface ToastRegionProps {
 const TONE_CLASSES: Readonly<Record<ToastTone, string>> = {
   info: 'border-slate-200 bg-white text-slate-800',
   success: 'border-emerald-200 bg-emerald-50 text-emerald-900',
+  warning: 'border-amber-200 bg-amber-50 text-amber-900',
   error: 'border-rose-200 bg-rose-50 text-rose-900',
 }
 
-const TONE_ICONS = { info: Info, success: CircleCheck, error: CircleAlert } as const
+const TONE_ICONS = { info: Info, success: CircleCheck, warning: TriangleAlert, error: CircleAlert } as const
 
 /** Bottom-centre message stack; announced politely to screen readers. */
 function ToastRegion({ toasts, onDismiss }: ToastRegionProps) {

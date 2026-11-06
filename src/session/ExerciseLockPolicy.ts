@@ -1,6 +1,6 @@
 // What an exercise lab lets the learner change (MODEL_V2 §10 `ExerciseLock`). Anything not locked is
 // editable; the strictest lock wins (hidden > readOnly > editable). A free lab uses `none`.
-import type { Device, DeviceSection, ExerciseLock, LockAccess } from '../domain'
+import type { Device, DeviceSection, ExerciseLock, Link, LockAccess } from '../domain'
 
 export type EditAccess = 'editable' | LockAccess
 
@@ -42,12 +42,20 @@ const SECTION_DATA: Readonly<Record<Exclude<DeviceSection, 'terminal'>, (device:
 
 export class ExerciseLockPolicy {
   /** A free lab: nothing locked. */
-  static readonly none = new ExerciseLockPolicy([])
+  static readonly none = new ExerciseLockPolicy([], [])
 
   readonly locks: readonly ExerciseLock[]
+  /** Devices at either end of a locked link: deleting one would delete the link with it. */
+  private readonly lockedLinkDevices: ReadonlySet<string>
 
-  constructor(locks: readonly ExerciseLock[]) {
+  /**
+   * `links`: the links of the exercise's starting lab. Locked links can be neither deleted nor rewired,
+   * so their ends stay the devices they connect there.
+   */
+  constructor(locks: readonly ExerciseLock[], links: readonly Link[]) {
     this.locks = locks
+    const locked = new Set(locks.flatMap((lock) => (lock.scope === 'link' ? [lock.linkId] : [])))
+    this.lockedLinkDevices = new Set(links.filter((link) => locked.has(link.id)).flatMap((link) => [link.a.deviceId, link.b.deviceId]))
   }
 
   get hasLocks(): boolean {
@@ -59,9 +67,13 @@ export class ExerciseLockPolicy {
     return this.locks.some((lock) => lock.scope === 'topology')
   }
 
-  /** Design (D2): a `placement` lock pins a customer device (moving, cabling and settings stay free). */
+  /**
+   * Design (D2): a `placement` lock pins a customer device (moving, cabling and settings stay free). A
+   * device at either end of a locked link stays as well: deleting it would delete the link.
+   */
   canDeleteDevice(deviceId: string): boolean {
-    return !this.topologyLocked && !this.locks.some((lock) => lock.scope === 'placement' && lock.deviceId === deviceId)
+    if (this.topologyLocked || this.lockedLinkDevices.has(deviceId)) return false
+    return !this.locks.some((lock) => lock.scope === 'placement' && lock.deviceId === deviceId)
   }
 
   canDeleteLink(linkId: string): boolean {

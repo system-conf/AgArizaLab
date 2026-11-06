@@ -1,0 +1,1117 @@
+{
+  "ui": {
+    "title": "Samples",
+    "landing": {
+      "cta": "Samples",
+      "title": "Ready-made labs with a short lesson"
+    },
+    "callout": {
+      "title": "Learn from sample labs",
+      "text": "Ready, working networks with a short lesson: open one, try the steps, then break it on purpose."
+    },
+    "list": {
+      "lead": "Every sample is a small, working network with a short lesson: what the topic is, why it exists, a few things to try and ideas for breaking it on purpose.",
+      "hint": "A sample opens as a free copy: change anything you like, your own lab stays as it is.",
+      "progressLabel": "Finished samples",
+      "progress": "{{complete}} of {{total}} finished",
+      "searchLabel": "Search the samples",
+      "searchPlaceholder": "Topic, protocol or device…",
+      "levelFilter": "Level",
+      "featureFilter": "Needs",
+      "clearFilters": "Clear filters",
+      "resultCount_one": "{{formatted}} sample",
+      "resultCount_other": "{{formatted}} samples",
+      "empty": "No samples yet. They arrive with the next update.",
+      "noMatch": "No sample matches. Try another word or clear the filters.",
+      "toExercises": "Troubleshooting exercises"
+    },
+    "card": {
+      "open": "Open",
+      "openAria": "Open sample: {{title}}",
+      "level": "Level: {{level}}",
+      "needs": "Needs",
+      "topics": "Topics",
+      "steps": "{{done}}/{{total}} steps",
+      "stepsAria": "{{done}} of {{total}} steps done",
+      "complete": "Finished",
+      "notStarted": "Not started"
+    },
+    "lesson": {
+      "title": "Lesson",
+      "back": "Samples",
+      "backAria": "Back to the samples",
+      "freeNote": "This is your free copy of the sample: change anything. Reset the lab to get the original back.",
+      "intro": {
+        "title": "About this topic",
+        "what": "What is it?",
+        "why": "Why does it exist?",
+        "realWorld": "In real networks"
+      },
+      "steps": {
+        "title": "Try this",
+        "progress": "{{done}} of {{total}} steps done",
+        "number": "Step {{number}}",
+        "checking": "Checking your lab…",
+        "state": {
+          "passing": "Works now",
+          "done": "Done",
+          "doneBroken": "Done earlier; it does not hold in the lab right now",
+          "checking": "Checking…",
+          "open": "Not yet",
+          "ticked": "Ticked off",
+          "unticked": "Tick it off when you have done it"
+        },
+        "tick": "I did this",
+        "tickAria": "Step {{number}} done: {{title}}",
+        "simulation": "Do this in Simulation mode: switch with the mode button above the canvas.",
+        "focus": "Device: {{name}}"
+      },
+      "complete": {
+        "title": "Every step done!",
+        "text": "Now try the break-it ideas below, or move on to something related."
+      },
+      "breakIt": {
+        "title": "Break it",
+        "lead": "Change something on purpose and watch what happens. Reset the lab when you are done.",
+        "result": "What happens"
+      },
+      "related": {
+        "title": "Where next",
+        "kind": {
+          "exercise": "Exercise",
+          "design": "Design task",
+          "sample": "Sample"
+        }
+      },
+      "resetProgress": "Start the steps again",
+      "resetLab": "Reset the lab",
+      "resetLabShort": "Reset",
+      "resetLabDone": "The sample is back in its original state.",
+      "saveAsMine": "Open as my own lab",
+      "saveShort": "My lab",
+      "saveFailed": "The lab could not be saved. Check the browser's storage settings.",
+      "close": "Close the lesson",
+      "toggle": "Lesson"
+    }
+  },
+  "categories": {
+    "basics": { "title": "Basics", "description": "Addresses, masks, gateways and what happens when they are wrong." },
+    "dhcp": { "title": "DHCP", "description": "How devices get their addresses automatically." },
+    "dns": { "title": "DNS", "description": "How names turn into addresses." },
+    "switching": { "title": "Switching", "description": "VLANs, trunks and routing between VLANs." },
+    "routing": { "title": "Routing", "description": "Static and default routes, and how routes go wrong." },
+    "packetView": { "title": "Packet view", "description": "Follow ARP, MAC learning and TTL packet by packet." },
+    "deviceCli": { "title": "Device CLI", "description": "Configure switches and routers from the command line." },
+    "switchingAdvanced": { "title": "STP, EtherChannel and port security", "description": "Loops, bundles, neighbour discovery and port protection." },
+    "security": { "title": "ACL, NAT and SSH", "description": "Filtering traffic, translating addresses and secure logins." },
+    "dynamicRouting": { "title": "Dynamic routing and HSRP", "description": "RIP, OSPF, EIGRP and gateway redundancy." },
+    "ipv6": { "title": "IPv6", "description": "IPv6 addressing, SLAAC, DHCPv6 and dual stack." },
+    "servers": { "title": "Servers and apps", "description": "Web, file transfer, e-mail, time and logging services." },
+    "wireless": { "title": "Wireless", "description": "Home routers, guest Wi-Fi, WPA2 and controllers." },
+    "wanSecurity": { "title": "WAN and security", "description": "Serial links, tunnels, VPNs and firewalls." },
+    "operations": { "title": "Operations", "description": "QoS, monitoring, mirroring and voice." },
+    "industrial": { "title": "Industrial and IoT", "description": "OT segmentation, industrial rings and IoT gateways." }
+  },
+  "levels": {
+    "beginner": "Beginner",
+    "intermediate": "Intermediate",
+    "advanced": "Advanced"
+  },
+  "features": {
+    "simulation": "Simulation mode",
+    "dhcpRelay": "DHCP relay",
+    "dnsForwarding": "DNS forwarding",
+    "deviceCli": "Device CLI"
+  },
+  "labs": {
+    "basicsTwoPcs": {
+      "title": "Two PCs and a switch",
+      "summary": "The smallest network: two computers, one switch, one subnet.",
+      "intro": {
+        "what": "Two PCs plugged into one switch form a local network (LAN). Each PC needs an IPv4 address and a subnet mask; with both in the same subnet they talk to each other directly, without any router.",
+        "why": "A switch only moves frames between its ports. Whether two PCs can talk is decided by their addresses: same subnet = neighbours that send to each other directly.",
+        "realWorld": "Every office, shop and home network starts like this: a switch (or the LAN ports of a home router) and the devices plugged into it. When a new PC 'cannot see' the others, check its address and mask first."
+      },
+      "steps": {
+        "readAddress": {
+          "title": "Read PC1's address",
+          "detail": "Open PC1's command prompt and type ipconfig. PC1 has 192.168.1.10 with mask 255.255.255.0. Do the same on PC2: it only shows an 'Autoconfiguration IPv4 Address' (169.254.x.x) because it is waiting for a DHCP server that does not exist here."
+        },
+        "addressPc2": {
+          "title": "Give PC2 an address",
+          "detail": "In PC2's settings set eth0 to the static address 192.168.1.11 with mask 255.255.255.0 (no gateway is needed). Then ping 192.168.1.11 from PC1: four replies."
+        },
+        "watchPing": {
+          "title": "Watch the ping in Simulation mode",
+          "detail": "Switch to Simulation mode and ping PC2 from PC1 again, stepping forward. First an ARP request asks who has 192.168.1.11, PC2 answers, then the ICMP echo request and reply travel through SW1."
+        }
+      },
+      "breakIt": {
+        "unplugCable": {
+          "change": "Unplug PC2's cable and ping it from PC1.",
+          "result": "PC1 asks for PC2's MAC address with ARP, nobody answers, and ping shows 'Destination host unreachable' from PC1's own address."
+        },
+        "otherNetwork": {
+          "change": "Change PC2's address to 192.168.2.11.",
+          "result": "PC1 now sees PC2 in another subnet. It would need a default gateway (a router) to reach it, so ping fails with 'General failure' although both PCs are on the same switch."
+        }
+      },
+      "topics": [
+        "LAN",
+        "Switch",
+        "IPv4 address",
+        "Subnet mask"
+      ]
+    },
+    "basicsSubnets": {
+      "title": "Subnets and masks",
+      "summary": "The mask decides who is a neighbour. Two hosts that disagree break the conversation.",
+      "intro": {
+        "what": "An IPv4 address has a network part and a host part; the subnet mask says where one ends. 192.168.10.10 with 255.255.255.0 (/24) belongs to network 192.168.10.0, whose hosts run from .1 to .254.",
+        "why": "Before sending, a host checks with its own mask whether the destination is in its own subnet. Neighbours are reached directly; everything else goes to the default gateway. A wrong mask makes a host treat neighbours as strangers.",
+        "realWorld": "Masks are planned with the address plan: /24 for an office LAN, /30 for a link between two routers. A single mistyped mask on a printer or a camera is a classic 'some devices can talk to it, others cannot' fault."
+      },
+      "steps": {
+        "compareMasks": {
+          "title": "Compare the masks",
+          "detail": "Run ipconfig on PC1, PC2 and PC3. PC3 has 255.255.255.128 (/25), so for PC3 the network is 192.168.10.128–.255. PC1 (.10) is outside it, PC2 (.200) is inside."
+        },
+        "fixMask": {
+          "title": "Fix PC3's mask",
+          "detail": "Ping PC1 (192.168.10.10) from PC3: 'General failure', PC3 thinks PC1 is in another subnet and has no gateway. Set PC3's mask to 255.255.255.0 and ping again."
+        },
+        "splitSubnets": {
+          "title": "Move PC2 into its own subnet",
+          "detail": "Give PC2 the address 192.168.20.20 (mask 255.255.255.0). It is still on the same switch, but PC1 can no longer ping it: different subnets need a router between them."
+        }
+      },
+      "breakIt": {
+        "tinyMask": {
+          "change": "Set PC1's mask to 255.255.255.252 (/30).",
+          "result": "PC1's subnet shrinks to 192.168.10.8–.11, so PC2 and PC3 are suddenly 'outside'. Without a gateway every ping from PC1 fails with 'General failure'."
+        },
+        "broadcastAddress": {
+          "change": "Give PC2 the address 192.168.10.255 with mask 255.255.255.0.",
+          "result": ".255 is the broadcast address of 192.168.10.0/24, not a host address. PC2 cannot use it: its pings fail with 'General failure'."
+        }
+      },
+      "topics": [
+        "Subnet mask",
+        "CIDR",
+        "Network address",
+        "Broadcast address"
+      ]
+    },
+    "basicsGateway": {
+      "title": "Default gateway",
+      "summary": "To leave its own subnet, a host needs a default gateway, and the reply needs one too.",
+      "intro": {
+        "what": "The default gateway is the router address a host sends every packet to that is not for its own subnet. R1 joins two subnets here: 192.168.1.0/24 (PC1) and 192.168.2.0/24 (PC2).",
+        "why": "A host only knows its own subnet. Without a gateway it cannot send anywhere else, and a reply is a packet too: the answering host also needs a gateway, otherwise the reply never leaves.",
+        "realWorld": "The gateway is usually the router's LAN address (often .1 or .254) and comes from DHCP. 'The internet works on my phone but not on this PC' is often a static PC with a missing or wrong gateway."
+      },
+      "steps": {
+        "pingGateway": {
+          "title": "Ping the gateway",
+          "detail": "On PC1 run ipconfig: its gateway is 192.168.1.1. Ping 192.168.1.1: R1 answers. Now ping PC2 (192.168.2.10): 'Request timed out'. The request reaches PC2, but PC2 has no gateway to send the reply back through."
+        },
+        "setGateway": {
+          "title": "Give PC2 its gateway",
+          "detail": "Set PC2's default gateway to 192.168.2.1 (R1's address in PC2's subnet). Ping PC2 from PC1 again: now the replies come back."
+        },
+        "tracertHops": {
+          "title": "See the hop",
+          "detail": "On PC1 run tracert 192.168.2.10. Hop 1 is 192.168.1.1 (R1), hop 2 is PC2: the packet crossed one router."
+        }
+      },
+      "breakIt": {
+        "wrongGateway": {
+          "change": "Set PC1's gateway to 192.168.1.254, an address nobody has.",
+          "result": "PC1 asks for the MAC of 192.168.1.254 with ARP, nobody answers: 'Destination host unreachable' from PC1's own address. Local pings still work."
+        },
+        "gatewayElsewhere": {
+          "change": "Set PC1's gateway to 192.168.2.1 (R1's other side).",
+          "result": "A gateway must be in the host's own subnet; PC1 cannot reach 192.168.2.1 directly, so it fails the same way as a wrong gateway."
+        }
+      },
+      "topics": [
+        "Default gateway",
+        "Router",
+        "tracert"
+      ]
+    },
+    "basicsIpConflict": {
+      "title": "IP address conflict",
+      "summary": "Two devices with the same address: Windows notices it and neither can use it.",
+      "intro": {
+        "what": "Every address may be used by one device in a network. PC1 and PC3 were both given 192.168.1.10 by hand.",
+        "why": "When a PC takes an address, it first asks with ARP whether anyone else already uses it (duplicate address detection). Here both PCs see each other, so both mark the address '(Duplicate)' and stop using it: neither can send.",
+        "realWorld": "Conflicts come from static addresses typed without a plan, or a static address inside a DHCP pool. Windows shows 'Windows has detected an IP address conflict'. Keep a list of static addresses and keep them outside the DHCP pool."
+      },
+      "steps": {
+        "spotConflict": {
+          "title": "Spot the conflict",
+          "detail": "Run ipconfig on PC1: '192.168.1.10(Duplicate)' and an extra 169.254.x.x address. Ping PC2 (192.168.1.20) from PC1 or PC3: 'General failure'. PC2 is fine, it is the duplicate that blocks the senders."
+        },
+        "fixConflict": {
+          "title": "Give PC3 its own address",
+          "detail": "Change PC3's address to 192.168.1.30: PC3 can ping PC2 at once. PC1 still shows '(Duplicate)': like Windows, it does not take a lost address back by itself. Switch PC1 off and on again (or unplug and replug its cable), then ping PC2 from PC1."
+        },
+        "watchProbe": {
+          "title": "Watch the address probe",
+          "detail": "In Simulation mode change PC3's address back to 192.168.1.10 and step forward: PC3 sends an ARP probe for its new address, PC1 answers, and the conflict is detected again. Put 192.168.1.30 back afterwards."
+        }
+      },
+      "breakIt": {
+        "powerOffPc1": {
+          "change": "While PC1 and PC3 share 192.168.1.10, switch PC1 off, then switch PC3 off and on again.",
+          "result": "PC3 keeps the address and can ping PC2: only devices that are switched on can collide. Switch PC1 back on: its check finds PC3 and both lose the address again."
+        },
+        "otherMask": {
+          "change": "Keep the conflict but give PC3 the mask 255.255.0.0.",
+          "result": "Still a conflict: the same address in the same network segment collides, whatever the mask."
+        }
+      },
+      "topics": [
+        "IP conflict",
+        "Duplicate address detection",
+        "ARP"
+      ]
+    },
+    "basicsApipa": {
+      "title": "APIPA: no DHCP server",
+      "summary": "A 169.254.x.x address means: I asked for DHCP and nobody answered.",
+      "intro": {
+        "what": "PCs set to 'obtain an address automatically' ask a DHCP server for one. When no server answers, Windows gives itself an APIPA address from 169.254.0.0/16 (Automatic Private IP Addressing).",
+        "why": "APIPA keeps the network card configured while it keeps waiting for DHCP. It is a symptom, not a solution: such an address has no gateway and no DNS server.",
+        "realWorld": "A 169.254 address on a user's PC is one of the quickest clues in support: the DHCP server is off, the cable or switch port is dead, or the port is in the wrong VLAN. Look there, not at the PC."
+      },
+      "steps": {
+        "seeApipa": {
+          "title": "Find the APIPA address",
+          "detail": "Run ipconfig on PC1: 'Autoconfiguration IPv4 Address 169.254.x.x' with mask 255.255.0.0. ipconfig /renew ends with 'unable to contact your DHCP server'. Look at the canvas: the DHCP server DHCP1 is switched off."
+        },
+        "startServer": {
+          "title": "Switch the DHCP server on",
+          "detail": "Switch DHCP1 on, then run ipconfig /renew on PC1. PC1 now gets an address from 192.168.1.100–.199 (DHCP1's pool)."
+        },
+        "pingNeighbour": {
+          "title": "Renew PC2 and ping PC1",
+          "detail": "Run ipconfig /renew on PC2 too, then ping PC1's new address from PC2."
+        }
+      },
+      "breakIt": {
+        "unplugServer": {
+          "change": "Unplug DHCP1's cable and run ipconfig /release and ipconfig /renew on PC1.",
+          "result": "The request times out and PC1 is back on a 169.254.x.x address."
+        },
+        "serverOffLater": {
+          "change": "After both PCs have addresses, switch DHCP1 off again.",
+          "result": "The PCs keep working: a lease stays valid until it runs out or you release it. A DHCP outage hurts only devices that ask for a new address."
+        }
+      },
+      "topics": [
+        "APIPA",
+        "169.254.0.0/16",
+        "DHCP"
+      ]
+    },
+    "dhcpRouterServer": {
+      "title": "Router as DHCP server",
+      "summary": "R1 hands out addresses, gateway and DNS server to the PCs.",
+      "intro": {
+        "what": "R1 runs a DHCP server with a pool for 192.168.1.0/24: addresses .100–.199, default router 192.168.1.1 and DNS server 192.168.1.1 (R1 forwards DNS to the internet).",
+        "why": "DHCP saves typing an address into every device and avoids typos and duplicates. A client sends DISCOVER, the server OFFERs an address, the client REQUESTs it and the server ACKs: the DORA exchange.",
+        "realWorld": "Small offices use the router or the modem as DHCP server; bigger networks use a Windows or Linux server. On a Cisco router this is 'ip dhcp pool' with 'network', 'default-router' and 'dns-server'."
+      },
+      "steps": {
+        "renewPc1": {
+          "title": "Let PC1 ask for an address",
+          "detail": "PC1 is set to DHCP but has not asked yet. Run ipconfig /renew on PC1: it gets 192.168.1.100 with gateway 192.168.1.1."
+        },
+        "readLease": {
+          "title": "Read the lease on both sides",
+          "detail": "On PC1 run ipconfig /all: DHCP is enabled, the DNS server is 192.168.1.1. Open R1's DHCP settings: the pool lists the lease (PC1's MAC address and 192.168.1.100)."
+        },
+        "pc2Online": {
+          "title": "Bring PC2 online",
+          "detail": "Run ipconfig /renew on PC2, then ping 8.8.8.8 and nslookup google.com. Everything PC2 needs came from DHCP."
+        },
+        "releaseRenew": {
+          "title": "Release and renew",
+          "detail": "On PC1 run ipconfig /release (the address is gone) and then ipconfig /renew: PC1 gets 192.168.1.100 again, because the server remembers its MAC address."
+        }
+      },
+      "breakIt": {
+        "noDefaultRouter": {
+          "change": "Clear the default router of R1's pool and renew PC1.",
+          "result": "PC1 still gets an address and can ping R1, but not 8.8.8.8 ('General failure'): without a gateway it can only talk inside its own subnet."
+        },
+        "lanPortDown": {
+          "change": "Shut down R1's Gi0/0 and renew PC2.",
+          "result": "No answer reaches PC2: the renew times out and PC2 falls back to 169.254.x.x (see the APIPA sample)."
+        }
+      },
+      "topics": [
+        "DHCP",
+        "DORA",
+        "Lease",
+        "Default router"
+      ]
+    },
+    "dhcpPoolsExclusions": {
+      "title": "DHCP pools and exclusions",
+      "summary": "One pool per subnet, and a reserved block for static devices.",
+      "intro": {
+        "what": "R1 serves two subnets: the office (192.168.10.0/24, Gi0/0) and the guests (192.168.20.0/24, Gi0/1). A DHCP server picks the pool that matches the subnet of the interface the request arrived on. Exclusions are addresses the server never hands out.",
+        "why": "Routers, printers and servers keep fixed addresses. Excluding a block such as .1–.99 keeps the pool away from them, also from devices that are switched off today and come back tomorrow.",
+        "realWorld": "On a Cisco router: 'ip dhcp excluded-address 192.168.10.1 192.168.10.99' and one 'ip dhcp pool' per VLAN or subnet. Document the static block, so that nobody puts a printer in the middle of the pool."
+      },
+      "steps": {
+        "excludeStatics": {
+          "title": "Exclude the static block",
+          "detail": "Add the exclusion 192.168.10.1 – 192.168.10.99 to R1's DHCP settings, then run ipconfig /renew on PC1. PC1 gets 192.168.10.100, the first address after the block. (Renewing before the exclusion gives 192.168.10.2: try it and renew again after the change.)"
+        },
+        "guestPool": {
+          "title": "Create the guest pool",
+          "detail": "PC3 in the guest network gets no address: R1 has no pool for 192.168.20.0/24. Add a pool GUEST with network 192.168.20.0, mask 255.255.255.0 and default router 192.168.20.1. Renew PC3 and ping the printer (192.168.10.5) from it."
+        },
+        "readBindings": {
+          "title": "Read the bindings",
+          "detail": "Open R1's DHCP settings: each pool lists its own leases. PC1 is in OFFICE, PC3 in GUEST: the interface the request came in on decided the pool."
+        }
+      },
+      "breakIt": {
+        "excludeEverything": {
+          "change": "Change the exclusion to 192.168.10.1 – 192.168.10.254 and renew PC2.",
+          "result": "No address is left in the pool: the request goes unanswered and PC2 ends up with 169.254.x.x."
+        },
+        "wrongPoolNetwork": {
+          "change": "Set the guest pool's network to 192.168.30.0 and renew PC3.",
+          "result": "No pool matches the subnet of Gi0/1 (192.168.20.0/24), so R1 does not answer at all. The pool network must match the interface's subnet."
+        }
+      },
+      "topics": [
+        "DHCP pool",
+        "Excluded addresses",
+        "Multiple subnets"
+      ]
+    },
+    "dhcpStaticMapping": {
+      "title": "Reservation-style static mapping",
+      "summary": "The NAS stays on DHCP but always gets the same address.",
+      "intro": {
+        "what": "A reservation ties an address to a client's MAC address: the server always hands NAS1 192.168.1.200 and never gives that address to anyone else. In this lab the binding is already stored in R1's pool (its lease list).",
+        "why": "Everyone finds the NAS at the same address, but it is still managed centrally by DHCP: no typing on the device, and a change of gateway or DNS reaches it with the next renewal.",
+        "realWorld": "Home routers call it 'address reservation', Windows Server a 'reservation'. On a Cisco router it is a separate host pool ('host 192.168.1.200' with 'client-identifier' or 'hardware-address'). Typical users: NAS, printers, cameras, door controllers."
+      },
+      "steps": {
+        "renewNas": {
+          "title": "Renew the NAS",
+          "detail": "Run ipconfig /renew on NAS1: it gets 192.168.1.200, not the next free address. Find its MAC address in R1's pool: that is the binding."
+        },
+        "renewPcs": {
+          "title": "Renew the PCs",
+          "detail": "Run ipconfig /renew on PC1 and PC2: they get .100 and .101 (the server never offers .200 to them). Ping NAS1 from PC1."
+        },
+        "nasOff": {
+          "title": "Switch the NAS off",
+          "detail": "Switch NAS1 off and run ipconfig /release and ipconfig /renew on PC2: PC2 gets its own address back. .200 stays reserved even while the NAS is off."
+        },
+        "releaseRenewNas": {
+          "title": "Bring the NAS back",
+          "detail": "Switch NAS1 on, run ipconfig /release and ipconfig /renew on it: it is again 192.168.1.200."
+        }
+      },
+      "breakIt": {
+        "staticClash": {
+          "change": "Give PC2 the static address 192.168.1.200.",
+          "result": "A reservation does not stop someone from typing the address by hand: PC2 and NAS1 now collide and both show the address as '(Duplicate)'."
+        },
+        "newNas": {
+          "change": "Delete NAS1 and add a new server in its place with DHCP.",
+          "result": "The new server has a different MAC address, so it gets an ordinary pool address. A reservation belongs to the MAC, not to the device's name."
+        }
+      },
+      "topics": [
+        "DHCP reservation",
+        "MAC address",
+        "Lease"
+      ]
+    },
+    "dhcpRelay": {
+      "title": "DHCP relay (ip helper-address)",
+      "summary": "The DHCP server is in another subnet; R1 passes the requests on.",
+      "intro": {
+        "what": "A DHCP DISCOVER is a broadcast, and routers do not forward broadcasts. With 'ip helper-address 192.168.20.10' on Gi0/0, R1 turns each request into a unicast to DHCP1 and writes its own address (the giaddr, 192.168.10.1) into it.",
+        "why": "The server uses the giaddr to choose the pool (CLIENTS, 192.168.10.0/24) and sends its answer back to the relay, which hands it to the client. One central server can serve every VLAN.",
+        "realWorld": "Companies run one or two central DHCP servers and configure a helper address on every VLAN interface of the routers or layer-3 switches. A new VLAN whose clients get 169.254 addresses usually lacks its helper address. (Helper addresses are set from the device CLI, which is coming in Phase 4; this lab ships with one.)"
+      },
+      "steps": {
+        "renewPc1": {
+          "title": "Get an address across the router",
+          "detail": "Run ipconfig /renew on PC1. It gets 192.168.10.100 from DHCP1, although DHCP1 is in 192.168.20.0/24."
+        },
+        "watchRelay": {
+          "title": "Watch the relay",
+          "detail": "Switch to Simulation mode, run ipconfig /release and ipconfig /renew on PC1 and step through: the DISCOVER broadcast reaches R1, R1 sends it on as a unicast to 192.168.20.10, and the OFFER comes back through R1."
+        },
+        "readServerPool": {
+          "title": "Read the server's pool",
+          "detail": "Open DHCP1's DHCP settings: the pool CLIENTS is for 192.168.10.0/24, a network DHCP1 is not even part of. PC1's lease is listed there."
+        },
+        "pc2Ping": {
+          "title": "Renew PC2 and ping the server",
+          "detail": "Run ipconfig /renew on PC2 and ping DHCP1 (192.168.20.10)."
+        }
+      },
+      "breakIt": {
+        "removePool": {
+          "change": "Delete the pool CLIENTS on DHCP1 and renew PC2.",
+          "result": "The relay still delivers the request, but no pool matches the giaddr: no answer, the renew times out."
+        },
+        "serverNoGateway": {
+          "change": "Clear DHCP1's default gateway and renew PC1.",
+          "result": "DHCP1 receives the relayed request but cannot send the reply to 192.168.10.1, which is in another subnet: the renew times out."
+        }
+      },
+      "topics": [
+        "DHCP relay",
+        "ip helper-address",
+        "giaddr",
+        "Broadcast"
+      ]
+    },
+    "dhcpConflict": {
+      "title": "DHCP conflict",
+      "summary": "A static printer took an address the DHCP server had leased.",
+      "intro": {
+        "what": "PC1 leased 192.168.1.100 from R1. Later someone gave the printer the same address by hand. PC1 and the printer now have the same address and neither can use it.",
+        "why": "A DHCP server only hands out addresses it believes are free; it cannot stop a static address typed into its pool afterwards. Static addresses belong outside the pool (here .1–.99 are excluded for them).",
+        "realWorld": "Cisco routers check an address with a ping before offering it and list clashes in 'show ip dhcp conflict'. The cure is the same everywhere: statics outside the pool, or a reservation."
+      },
+      "steps": {
+        "spotDuplicate": {
+          "title": "Find the duplicate",
+          "detail": "Run ipconfig on PC1: '192.168.1.100(Duplicate)'. Ping R1 (192.168.1.1): 'General failure'."
+        },
+        "renewPc1": {
+          "title": "Renew PC1",
+          "detail": "Run ipconfig /renew on PC1. The server sees .100 in use and gives PC1 192.168.1.101; PC1 can ping R1 again. The printer still has .100 marked as duplicate and does not take it back by itself, so it does not answer yet."
+        },
+        "movePrinter": {
+          "title": "Move the printer out of the pool",
+          "detail": "Give the printer a static address from the excluded block: 192.168.1.10. A new address means a new check, and the printer answers again: ping 192.168.1.10 from PC1."
+        },
+        "readBindings": {
+          "title": "Read the bindings",
+          "detail": "Open R1's DHCP settings: PC1's lease now shows 192.168.1.101. The printer has no lease: static devices never appear there."
+        }
+      },
+      "breakIt": {
+        "printerBack": {
+          "change": "Set the printer to 192.168.1.101.",
+          "result": "Now it collides with PC1's new lease: same symptoms again. Never pick a static address from the pool range."
+        },
+        "pc2Static": {
+          "change": "Give PC2 the static address 192.168.1.101.",
+          "result": "Same conflict with PC1: anyone can cause it, not only printers."
+        }
+      },
+      "topics": [
+        "DHCP",
+        "IP conflict",
+        "Excluded addresses"
+      ]
+    },
+    "dnsLocalRecords": {
+      "title": "Local DNS records",
+      "summary": "DNS1 answers names of the office's own servers.",
+      "intro": {
+        "what": "A DNS server turns names into addresses. DNS1 holds A records: intranet.office.lan → 192.168.1.20. A PC asks the DNS servers in its settings.",
+        "why": "People remember names, not addresses. When a server moves to a new address, only its record changes, not every PC.",
+        "realWorld": "Companies run an internal DNS (often on the domain controller) for names like intranet, files or printer. 'The site works with the IP but not with the name' is a DNS problem: a missing record or a wrong DNS server on the PC."
+      },
+      "steps": {
+        "resolveIntranet": {
+          "title": "Look up a name",
+          "detail": "On PC1 run nslookup intranet.office.lan. The answer comes from 192.168.1.5 (DNS1): 192.168.1.20."
+        },
+        "addFilesRecord": {
+          "title": "Add a record",
+          "detail": "nslookup files.office.lan says 'Non-existent domain'. On DNS1 add the A record files.office.lan → 192.168.1.30 and look it up again."
+        },
+        "pc2Dns": {
+          "title": "Give PC2 a DNS server",
+          "detail": "On PC2, nslookup says 'Default servers are not available': PC2 has no DNS server. Set its DNS server to 192.168.1.5 and look up intranet.office.lan."
+        },
+        "pingByName": {
+          "title": "Ping by name",
+          "detail": "On PC1 run ping files.office.lan. The first line shows the address the name was resolved to: [192.168.1.30]."
+        }
+      },
+      "breakIt": {
+        "wrongRecord": {
+          "change": "Change the files record to 192.168.1.31.",
+          "result": "The name still resolves, to a wrong address: ping files.office.lan fails. DNS answers what it was told; check the address in the first line of ping."
+        },
+        "dnsServerOff": {
+          "change": "Switch DNS1 off.",
+          "result": "nslookup times out, but ping 192.168.1.20 still works. Only names are broken, not the network."
+        }
+      },
+      "topics": [
+        "DNS",
+        "A record",
+        "nslookup"
+      ]
+    },
+    "dnsForwarders": {
+      "title": "DNS forwarders",
+      "summary": "DNS1 answers local names itself and asks a public resolver for the rest.",
+      "intro": {
+        "what": "DNS1 knows the office names. For any other name it can forward the question to a forwarder (here 8.8.8.8) and pass the answer back. PC1 only needs one DNS server: DNS1.",
+        "why": "Without a forwarder an internal DNS server can only answer its own names: google.com is 'Non-existent'. With a forwarder the PCs get both, local and internet names, from one server.",
+        "realWorld": "Internal DNS servers forward to the ISP's resolvers or to public ones such as 8.8.8.8, 1.1.1.1 or 9.9.9.9; usually two, in case one fails. Routers do the same with 'ip dns server' and 'ip name-server'."
+      },
+      "steps": {
+        "localName": {
+          "title": "Local names work",
+          "detail": "On PC1 run nslookup intranet.office.lan (answered by DNS1) and nslookup google.com: 'Non-existent domain', DNS1 does not know it and has no one to ask."
+        },
+        "addForwarder": {
+          "title": "Add a forwarder",
+          "detail": "In DNS1's DNS settings add the forwarder 8.8.8.8. Run nslookup google.com on PC1 again: the answer comes back through DNS1."
+        },
+        "watchForwarding": {
+          "title": "Watch the forwarding",
+          "detail": "In Simulation mode run nslookup google.com on PC1 and step: PC1 asks DNS1, DNS1 asks 8.8.8.8 through R1, and the answer travels back the same way."
+        },
+        "backupForwarder": {
+          "title": "Add a second forwarder",
+          "detail": "Add 1.1.1.1 as a second forwarder. DNS1 asks them in order: the second is only used when the first does not answer."
+        }
+      },
+      "breakIt": {
+        "wrongForwarder": {
+          "change": "Replace the forwarder with 192.168.1.99 (no such server).",
+          "result": "Internet names time out ('DNS request timed out'), local names still work: DNS1 answers its own records without asking anyone."
+        },
+        "wanUnplugged": {
+          "change": "Unplug R1's WAN cable.",
+          "result": "google.com times out, intranet.office.lan still resolves. Local DNS keeps the office working when the internet is down."
+        }
+      },
+      "topics": [
+        "DNS forwarder",
+        "Recursive DNS",
+        "nslookup"
+      ]
+    },
+    "dnsMultiLevel": {
+      "title": "Multi-level DNS",
+      "summary": "Branch DNS → head-office DNS → internet: each level forwards what it does not know.",
+      "intro": {
+        "what": "The branch (192.168.2.0/24, behind R2) has its own DNS-BR for branch names. Head-office names live on DNS-HQ (192.168.1.5), internet names on public resolvers. Each server forwards what it cannot answer to the next level.",
+        "why": "Each site answers its own names quickly and keeps working when the link to the head office is down, yet every PC can resolve every name through one DNS server.",
+        "realWorld": "Branch offices often have a local DNS (a domain controller or the branch router) forwarding to the head office, which forwards to the internet. Loops between forwarders make queries for unknown names time out."
+      },
+      "steps": {
+        "branchLocal": {
+          "title": "Branch names",
+          "detail": "On PC1 (branch) run nslookup pc2.branch.office.lan: DNS-BR answers 192.168.2.11. nslookup intranet.office.lan says 'Non-existent domain': DNS-BR has no forwarder."
+        },
+        "forwardToHq": {
+          "title": "Forward to the head office",
+          "detail": "On DNS-BR add the forwarder 192.168.1.5 (DNS-HQ). Look up intranet.office.lan on PC1 again: 192.168.1.20."
+        },
+        "hqForwarder": {
+          "title": "Let the head office reach the internet",
+          "detail": "nslookup google.com on PC1 still fails: DNS-HQ has no forwarder either. On DNS-HQ add the forwarder 8.8.8.8 and try again."
+        },
+        "watchChain": {
+          "title": "Watch the chain",
+          "detail": "In Simulation mode run nslookup google.com on PC1 and step: PC1 → DNS-BR → DNS-HQ → 8.8.8.8, and the answer back down the same chain."
+        }
+      },
+      "breakIt": {
+        "forwardLoop": {
+          "change": "On DNS-HQ replace 8.8.8.8 with 192.168.2.5 (DNS-BR).",
+          "result": "The two servers now forward to each other. A name neither knows goes round in circles until the query times out."
+        },
+        "siteLinkDown": {
+          "change": "Unplug the cable between R1 and R2.",
+          "result": "Branch names still resolve at DNS-BR; head-office and internet names time out. The local server keeps the branch partly working."
+        }
+      },
+      "topics": [
+        "DNS hierarchy",
+        "DNS forwarder",
+        "Branch office"
+      ]
+    },
+    "switchingVlansTrunks": {
+      "title": "VLANs and trunks",
+      "summary": "Staff and guests share two switches but stay in separate VLANs.",
+      "intro": {
+        "what": "A VLAN splits one switch into several separate networks. PC1 and PC3 are in VLAN 10 (STAFF), PC2 and PC4 in VLAN 20 (GUESTS). A trunk carries several VLANs over one cable, each frame marked with an 802.1Q tag.",
+        "why": "VLANs separate traffic without extra switches: guests do not see staff devices. Between switches an access port carries one VLAN only; a trunk carries them all.",
+        "realWorld": "Offices, schools and hotels put users, guests, phones and cameras in their own VLANs. Uplinks between switches are trunks. A new VLAN must exist on every switch it passes through."
+      },
+      "steps": {
+        "makeTrunk": {
+          "title": "Make the uplink a trunk",
+          "detail": "PC1 cannot ping PC3 (192.168.10.12): the uplink Fa0/8 is an access port in VLAN 1, so VLAN 10 does not cross. Set Fa0/8 to trunk mode on SW1 and on SW2 and ping again."
+        },
+        "createVlan20": {
+          "title": "Create VLAN 20 on SW2",
+          "detail": "PC2 still cannot reach PC4: VLAN 20 is missing from SW2's VLAN database, so its port Fa0/2 forwards nothing. Add VLAN 20 on SW2 and ping 192.168.20.12 from PC2."
+        },
+        "vlansIsolated": {
+          "title": "Check the separation",
+          "detail": "From PC1 ping PC2 (192.168.20.11): 'General failure'. Different VLAN, different subnet and no router: the two groups cannot talk, as planned."
+        },
+        "watchTag": {
+          "title": "See the tag",
+          "detail": "In Simulation mode ping PC3 from PC1 and click the frame on the uplink: its Ethernet header carries an 802.1Q tag with VLAN 10. On the access ports the same frame is untagged."
+        }
+      },
+      "breakIt": {
+        "deleteVlan10": {
+          "change": "Delete VLAN 10 from SW1's VLAN database.",
+          "result": "PC1's port belongs to a VLAN that no longer exists and goes inactive: PC1 is cut off, although its cable is fine."
+        },
+        "accessUplink": {
+          "change": "Set Fa0/8 on both switches back to access mode, in VLAN 10.",
+          "result": "VLAN 10 crosses again (untagged), VLAN 20 does not. An access link can carry only one VLAN."
+        }
+      },
+      "topics": [
+        "VLAN",
+        "Trunk",
+        "802.1Q",
+        "Access port"
+      ]
+    },
+    "switchingNativeVlan": {
+      "title": "Native VLAN mismatch",
+      "summary": "Untagged frames land in different VLANs on each side of the trunk.",
+      "intro": {
+        "what": "On a trunk, frames of the native VLAN travel without a tag. SW1's trunk uses native VLAN 99, SW2's the default VLAN 1. Untagged frames from SW2 therefore end up in VLAN 99 on SW1.",
+        "why": "Both ends must agree on the native VLAN. On a mismatch, traffic of the native VLAN breaks or leaks into the wrong VLAN, while tagged VLANs keep working, which makes it hard to spot.",
+        "realWorld": "A native VLAN other than 1 (an unused one such as 99) is a common hardening step. Cisco switches log '%CDP-4-NATIVE_VLAN_MISMATCH' when the two sides differ."
+      },
+      "steps": {
+        "compareTrunks": {
+          "title": "Compare the trunks",
+          "detail": "Open Fa0/8 on SW1 and on SW2: both are trunks, but the native VLAN is 99 on SW1 and 1 on SW2. PC1 (SW1, VLAN 1) cannot ping PC3 (SW2, VLAN 1)."
+        },
+        "watchReply": {
+          "title": "Follow the lost frames",
+          "detail": "In Simulation mode ping PC3 from PC1. SW1 sends VLAN 1 frames tagged (it is not SW1's native VLAN). SW2's answers in VLAN 1 leave untagged and SW1 puts them into VLAN 99, where PC1 is not."
+        },
+        "fixNative": {
+          "title": "Match the native VLAN",
+          "detail": "On SW2 set Fa0/8's native VLAN to 99, like SW1. Ping PC3 from PC1: replies."
+        },
+        "taggedFine": {
+          "title": "Tagged VLANs did not care",
+          "detail": "Ping PC4 (192.168.10.12) from PC2: VLAN 10 worked the whole time, because its frames always carry a tag."
+        }
+      },
+      "breakIt": {
+        "vlanLeak": {
+          "change": "Undo the fix (SW2 native VLAN 1) and move PC1's port to VLAN 99.",
+          "result": "PC1 (VLAN 99) now reaches PC3 (VLAN 1): untagged frames jump between VLANs. That is why a mismatch is also a security problem."
+        },
+        "bothDefault": {
+          "change": "Set the native VLAN of both trunks to 1.",
+          "result": "It works too: the native VLAN only has to match. Choosing an unused one like 99 is a security habit, not a requirement."
+        }
+      },
+      "topics": [
+        "Native VLAN",
+        "Trunk",
+        "802.1Q",
+        "VLAN hopping"
+      ]
+    },
+    "switchingAllowedVlans": {
+      "title": "Allowed VLANs on a trunk",
+      "summary": "A trunk carries only the VLANs on its allowed list.",
+      "intro": {
+        "what": "'switchport trunk allowed vlan' limits which VLANs a trunk carries. Both trunks here allow only VLAN 10; VLAN 20 exists on both switches but cannot cross.",
+        "why": "Pruning keeps broadcasts of a VLAN off links where nobody needs it and limits where a VLAN can reach. But a VLAN missing from the list is cut off, even though everything else looks right.",
+        "realWorld": "'I created the VLAN and set the port, but it still does not work' is often an allowed list on an uplink. On IOS, 'switchport trunk allowed vlan add 20' extends the list; without 'add' the list is replaced."
+      },
+      "steps": {
+        "readAllowed": {
+          "title": "Read the allowed list",
+          "detail": "Open Fa0/8 on SW1 and SW2: trunk, allowed VLANs: 10. PC1 reaches PC3 (VLAN 10), PC2 cannot reach PC4 (VLAN 20)."
+        },
+        "watchDrop": {
+          "title": "See where VLAN 20 stops",
+          "detail": "In Simulation mode ping PC4 from PC2: the ARP request is flooded in VLAN 20 on SW1 but never sent out of the trunk."
+        },
+        "allowVlan20": {
+          "title": "Allow VLAN 20",
+          "detail": "Set the allowed VLANs of Fa0/8 to 10 and 20 on both switches. Ping PC4 from PC2, and check that PC1 still reaches PC3."
+        }
+      },
+      "breakIt": {
+        "oneEndOnly": {
+          "change": "Allow VLAN 20 only on SW1's trunk.",
+          "result": "SW1 now sends VLAN 20 frames, but SW2 drops them on arrival: both ends of a trunk must allow the VLAN."
+        },
+        "missingFromDatabase": {
+          "change": "With 20 allowed on both trunks, delete VLAN 20 from SW2.",
+          "result": "Broken again: a trunk only carries VLANs that are both allowed and in the switch's VLAN database."
+        }
+      },
+      "topics": [
+        "Trunk",
+        "Allowed VLANs",
+        "VLAN pruning"
+      ]
+    },
+    "switchingRouterOnAStick": {
+      "title": "Router-on-a-stick",
+      "summary": "One router port, one sub-interface per VLAN, routing between them.",
+      "intro": {
+        "what": "R1's Gi0/0 is a trunk to SW1 with one sub-interface per VLAN: Gi0/0.10 (802.1Q VLAN 10, 192.168.10.1) is the gateway of VLAN 10. VLAN 20 has no gateway yet.",
+        "why": "VLANs separate networks; a router joins them again where you want it. With sub-interfaces one physical port is enough for many VLANs.",
+        "realWorld": "Small sites and labs with a single router use router-on-a-stick: 'interface Gi0/0.20', 'encapsulation dot1Q 20', 'ip address 192.168.20.1 255.255.255.0'. The trunk link becomes the bottleneck for traffic between VLANs."
+      },
+      "steps": {
+        "pingOwnGateway": {
+          "title": "Ping the VLAN 10 gateway",
+          "detail": "From PC1 ping 192.168.10.1: R1 answers through the trunk. From PC2 ping 192.168.20.1: no gateway answers."
+        },
+        "addSubInterface": {
+          "title": "Add Gi0/0.20",
+          "detail": "On R1 add a sub-interface to Gi0/0 for VLAN 20 (dot1Q 20) with address 192.168.20.1/24. Then ping PC2 (192.168.20.11) from PC1."
+        },
+        "tracertStick": {
+          "title": "Trace the path",
+          "detail": "On PC1 run tracert 192.168.20.11: hop 1 is 192.168.10.1, hop 2 is PC2. The packet went up the trunk to R1 and came back down the same cable in VLAN 20."
+        },
+        "watchTags": {
+          "title": "See both tags",
+          "detail": "In Simulation mode ping PC2 from PC1 and inspect the frames on the trunk: towards R1 they carry tag 10, back from R1 tag 20."
+        }
+      },
+      "breakIt": {
+        "accessUplink": {
+          "change": "Set SW1's Fa0/8 to access mode (VLAN 1).",
+          "result": "R1 only gets untagged frames now, no sub-interface matches them: both VLANs lose their gateway."
+        },
+        "wrongDot1q": {
+          "change": "Change Gi0/0.20 to dot1Q 30.",
+          "result": "The sub-interface now listens to VLAN 30. Pings from PC2 to its gateway end with 'Destination host unreachable'."
+        }
+      },
+      "topics": [
+        "Inter-VLAN routing",
+        "Sub-interface",
+        "802.1Q",
+        "Trunk"
+      ]
+    },
+    "switchingSvi": {
+      "title": "Inter-VLAN routing with SVIs",
+      "summary": "A layer-3 switch routes between its own VLANs.",
+      "intro": {
+        "what": "MLS1 is a layer-3 switch. Each VLAN gets a switch virtual interface (SVI): interface Vlan10 with 192.168.10.1 is the gateway of VLAN 10. With 'ip routing' on, the switch routes between its SVIs.",
+        "why": "No trunk to an external router: the switch routes in hardware, much faster than router-on-a-stick, and every new VLAN only needs a VLAN, an SVI and ports.",
+        "realWorld": "The core or distribution switch of most companies routes between VLANs with SVIs; the router only handles the WAN and the internet. On a layer-3 switch 'ip routing' is off by default: a classic forgotten command."
+      },
+      "steps": {
+        "pingSvi": {
+          "title": "Ping the SVI",
+          "detail": "From PC1 ping 192.168.10.1: MLS1's SVI answers. Ping PC2 (192.168.20.11): 'Request timed out'. The switch owns both SVIs but does not route yet."
+        },
+        "enableRouting": {
+          "title": "Turn on ip routing",
+          "detail": "Enable IP routing on MLS1 and ping PC2 from PC1 again."
+        },
+        "addVlan30": {
+          "title": "Add VLAN 30",
+          "detail": "PC3 (192.168.30.11, gateway .30.1) is in VLAN 1. On MLS1 create VLAN 30, add SVI Vlan30 with 192.168.30.1/24 and put Gi1/0/3 into VLAN 30. Ping PC1 from PC3."
+        },
+        "compareStick": {
+          "title": "Compare with router-on-a-stick",
+          "detail": "Run tracert 192.168.20.11 on PC1: hop 1 is 192.168.10.1, hop 2 is PC2. Same logic as router-on-a-stick, but the routing happens inside the switch, without a trunk to a router."
+        }
+      },
+      "breakIt": {
+        "sviShutdown": {
+          "change": "Shut down the interface Vlan20.",
+          "result": "VLAN 20 loses its gateway: PC2's pings to other VLANs end with 'Destination host unreachable'."
+        },
+        "deleteVlan10": {
+          "change": "Delete VLAN 10 from MLS1's VLAN database.",
+          "result": "Port Gi1/0/1 and SVI Vlan10 both go down: PC1 cannot even reach its gateway."
+        }
+      },
+      "topics": [
+        "SVI",
+        "Layer-3 switch",
+        "ip routing",
+        "Inter-VLAN routing"
+      ]
+    },
+    "routingStaticDefault": {
+      "title": "Static and default routes",
+      "summary": "Two sites, two routers: teach each one the way to the other, and to the internet.",
+      "intro": {
+        "what": "A router knows its connected subnets by itself. Everything else needs a route: a static route names a network and the next hop towards it; the default route (0.0.0.0/0) catches every destination without a better match.",
+        "why": "Packets must find the way there and back: every router on the path needs a route to the destination and, for the reply, to the source.",
+        "realWorld": "Small networks and branch offices use static routes and a default route to the ISP; large ones learn routes dynamically (OSPF and others, coming in a later pack). IOS: 'ip route 192.168.2.0 255.255.255.0 10.0.0.2'."
+      },
+      "steps": {
+        "readTable": {
+          "title": "Read R1's routes",
+          "detail": "Open R1's routing settings: a default route to the ISP. Nothing for 192.168.2.0/24, so a ping from PC1 to PC2 gets 'Destination host unreachable' from 192.168.1.1."
+        },
+        "staticBothWays": {
+          "title": "Routes in both directions",
+          "detail": "On R1 add 192.168.2.0 255.255.255.0 via 10.0.0.2. Ping PC2 from PC1: 'Request timed out', the reply is missing. On R2 add 192.168.1.0 255.255.255.0 via 10.0.0.1 and ping again."
+        },
+        "defaultOnR2": {
+          "title": "Default route on R2",
+          "detail": "PC2 cannot reach 8.8.8.8: R2 knows no way to the internet. On R2 add the default route 0.0.0.0 0.0.0.0 via 10.0.0.1 and ping 8.8.8.8 from PC2."
+        },
+        "tracertInternet": {
+          "title": "Trace to the internet",
+          "detail": "On PC2 run tracert 8.8.8.8: 192.168.2.1 (R2), 10.0.0.1 (R1), then 8.8.8.8."
+        }
+      },
+      "breakIt": {
+        "wrongNextHop": {
+          "change": "Change R1's route to 192.168.2.0/24 to next hop 10.0.0.3.",
+          "result": "Nobody has 10.0.0.3: R1 cannot deliver and PC1 gets 'Destination host unreachable' from 192.168.1.1."
+        },
+        "removeReturnRoute": {
+          "change": "Delete R2's route to 192.168.1.0/24, but keep its default route.",
+          "result": "Still works: the default route via R1 also covers 192.168.1.0/24. Delete the default route too and the replies are lost again."
+        }
+      },
+      "topics": [
+        "Static route",
+        "Default route",
+        "Next hop",
+        "Routing table"
+      ]
+    },
+    "routingFloatingStatic": {
+      "title": "Floating static route",
+      "summary": "A backup route that only takes over when the main line is down.",
+      "intro": {
+        "what": "A floating static route is a backup route with a higher administrative distance (here 5 instead of 1). While the main route is usable it stays hidden; when the main link goes down it takes over.",
+        "why": "R1 and R2 are joined directly (primary, 10.0.12.0/30) and through R3 (backup). The primary cable has just been unplugged ('the fibre was cut'): R1 has no usable route to 192.168.2.0/24 any more.",
+        "realWorld": "Branch offices with a fibre line and a 4G or second-ISP backup use floating static routes: 'ip route 192.168.2.0 255.255.255.0 10.0.13.2 5'. Both directions need a backup, otherwise replies still try the dead line."
+      },
+      "steps": {
+        "outage": {
+          "title": "See the outage",
+          "detail": "The cable between R1 and R2 is unplugged (link light off). PC1 cannot ping PC2. R2 already has a backup route (192.168.1.0/24 via 10.0.23.1, distance 5); R1 has none."
+        },
+        "addFloating": {
+          "title": "Add R1's floating route",
+          "detail": "On R1 add 192.168.2.0 255.255.255.0 via 10.0.13.2 with administrative distance 5. Ping PC2 from PC1: it works through R3."
+        },
+        "restorePrimary": {
+          "title": "Plug the primary back in",
+          "detail": "Plug the R1–R2 cable back in and run tracert 192.168.2.10 on PC1: hop 2 is 10.0.12.2 again. Distance 1 beats 5, the backup steps back."
+        },
+        "failover": {
+          "title": "Watch the failover",
+          "detail": "In Simulation mode unplug the primary cable again and ping PC2: the packets now go R1 → R3 → R2 (tracert shows 10.0.13.2 and 10.0.23.2)."
+        }
+      },
+      "breakIt": {
+        "noReturnBackup": {
+          "change": "With the primary unplugged, delete R2's backup route (via 10.0.23.1).",
+          "result": "Requests reach PC2 through R3, but the replies have no usable route back: 'Request timed out'."
+        },
+        "shutInterface": {
+          "change": "Instead of unplugging, shut down R1's Gi0/1.",
+          "result": "Same failover: a route whose next hop is behind a down interface leaves the table, and the floating route takes over."
+        }
+      },
+      "topics": [
+        "Floating static route",
+        "Administrative distance",
+        "Redundancy"
+      ]
+    },
+    "routingLoop": {
+      "title": "Routing loop",
+      "summary": "Two routers send a packet back and forth until its TTL runs out.",
+      "intro": {
+        "what": "R2's route to 192.168.3.0/24 points back to R1 (10.0.12.1) instead of R3. R1 sends the packet to R2 with its default route, R2 sends it back to R1, and so on.",
+        "why": "Every router lowers the packet's TTL (time to live) by one; at zero it drops the packet and sends 'TTL expired in transit' to the sender. Without TTL a looping packet would circle forever.",
+        "realWorld": "Loops come from typos in static routes, two default routes pointing at each other, or redistribution mistakes. tracert shows them at once: the same two addresses alternate."
+      },
+      "steps": {
+        "tracertLoop": {
+          "title": "Find the loop",
+          "detail": "On PC1 ping 192.168.3.10: 'Reply from 10.0.12.2: TTL expired in transit'. Run tracert 192.168.3.10: after 192.168.1.1 the hops alternate 10.0.12.2, 10.0.12.1, 10.0.12.2…"
+        },
+        "watchTtl": {
+          "title": "Watch the TTL fall",
+          "detail": "In Simulation mode ping 192.168.3.10 once and click the echo request at each hop: the TTL drops by one per router, back and forth between R1 and R2, until a router sends ICMP 'time exceeded'."
+        },
+        "fixRoute": {
+          "title": "Fix R2's route",
+          "detail": "On R2 change the route to 192.168.3.0/24 to next hop 10.0.23.2 (R3). Ping PC2 from PC1."
+        }
+      },
+      "breakIt": {
+        "deleteRoute": {
+          "change": "Delete R2's route to 192.168.3.0/24 instead.",
+          "result": "No loop, but no route either: 'Reply from 10.0.12.2: Destination host unreachable'. A missing route fails fast; a loop burns TTL first."
+        },
+        "defaultsFacingEachOther": {
+          "change": "After the fix, give R2 a default route via 10.0.12.1 and ping 172.16.0.1 from PC1.",
+          "result": "R1's default points to R2 and R2's to R1: any unknown address now loops ('TTL expired in transit')."
+        }
+      },
+      "topics": [
+        "Routing loop",
+        "TTL",
+        "tracert",
+        "ICMP time exceeded"
+      ]
+    },
+    "packetArp": {
+      "title": "ARP step by step",
+      "summary": "Before the first ping, PC1 has to find PC2's MAC address.",
+      "intro": {
+        "what": "Ethernet delivers frames to MAC addresses, not IP addresses. ARP (Address Resolution Protocol) finds the MAC address that belongs to an IP address in the own subnet: a broadcast question, a unicast answer.",
+        "why": "Every first packet to a neighbour starts with ARP. For destinations in other subnets the host does not ARP for the destination at all, but for its default gateway.",
+        "realWorld": "'arp -a' shows a PC's ARP cache. Wrong or missing ARP answers explain many 'Destination host unreachable' replies: the device is off, unplugged, or in another VLAN."
+      },
+      "steps": {
+        "arpRequest": {
+          "title": "The ARP request",
+          "detail": "Switch to Simulation mode and ping 192.168.1.20 from PC1, stepping forward. The first frame is an ARP request to FF:FF:FF:FF:FF:FF: 'who has 192.168.1.20? tell 192.168.1.10'. SW1 floods it to every port, also to R1."
+        },
+        "arpReply": {
+          "title": "The ARP reply",
+          "detail": "Keep stepping: only PC2 answers, with a unicast ARP reply to PC1's MAC. R1 receives the request too but stays silent. Now PC1 sends the ICMP echo request straight to PC2's MAC."
+        },
+        "arpCache": {
+          "title": "Read the ARP cache",
+          "detail": "On PC1 run arp -a: 192.168.1.20 with PC2's MAC, type dynamic. Ping PC2 again in Simulation mode: no ARP this time, the cache answers."
+        },
+        "gatewayArp": {
+          "title": "ARP for the gateway",
+          "detail": "PC1 has no default gateway, so ping 192.168.2.10 (PC3) fails at once. Set PC1's gateway to 192.168.1.1 and ping PC3 in Simulation mode: PC1 ARPs for 192.168.1.1, not for PC3, and R1 ARPs for PC3 on its other side."
+        }
+      },
+      "breakIt": {
+        "unplugPc2": {
+          "change": "Unplug PC2 and ping it from PC1 in Simulation mode.",
+          "result": "The ARP requests stay unanswered; after the timeout ping shows 'Destination host unreachable' from PC1's own address."
+        },
+        "otherSubnet": {
+          "change": "Give PC2 the address 192.168.5.20 and ping it from PC1 (with the gateway set).",
+          "result": "PC1 no longer ARPs for PC2: it is in another subnet now, so PC1 sends the packet to its gateway's MAC instead."
+        }
+      },
+      "topics": [
+        "ARP",
+        "MAC address",
+        "Broadcast",
+        "ARP cache"
+      ]
+    },
+    "packetMacLearning": {
+      "title": "MAC learning",
+      "summary": "A switch learns where each MAC address lives by reading source addresses.",
+      "intro": {
+        "what": "A switch keeps a MAC address table: for each source MAC it records the port the frame came in on. Frames to a known MAC go out of that one port; broadcasts and unknown destinations are flooded to all ports of the VLAN.",
+        "why": "Learning lets a switch send traffic only where it belongs, unlike a hub, which repeats everything to every port.",
+        "realWorld": "On Cisco switches 'show mac address-table' lists the entries; on an uplink you see many MACs on one port. A MAC table that keeps changing ports is a sign of a loop or a moved device."
+      },
+      "steps": {
+        "floodFirst": {
+          "title": "The first frame is flooded",
+          "detail": "In Simulation mode ping PC2 (192.168.1.12) from PC1. The ARP broadcast arrives at SW1 on Fa0/1; SW1 learns PC1's MAC on Fa0/1 and floods the frame out of Fa0/2, Fa0/3 and Fa0/8."
+        },
+        "learnedReply": {
+          "title": "The reply goes one way",
+          "detail": "PC2's ARP reply is addressed to PC1's MAC, which SW1 has just learned: SW1 forwards it only out of Fa0/1. PC3 never sees it. SW1 has now learned PC2's MAC on Fa0/2 as well."
+        },
+        "plugPc4": {
+          "title": "Plug in PC4",
+          "detail": "PC4's cable to SW2 is unplugged. Plug it in and ping PC4 (192.168.1.14) from PC1."
+        },
+        "uplinkLearning": {
+          "title": "Many MACs on the uplink",
+          "detail": "Ping PC4 from PC1 in Simulation mode and follow the reply: SW1 learns PC4's MAC on Fa0/8, the uplink. Every device behind SW2 will appear on that one port."
+        }
+      },
+      "breakIt": {
+        "hubInstead": {
+          "change": "Replace SW2 with a hub (hub8) and connect PC4 and the uplink to it.",
+          "result": "It still works, but in Simulation mode every frame from SW1 to PC4 goes out of every hub port: a hub does not learn."
+        },
+        "unplugLearned": {
+          "change": "Unplug PC2's cable and ping it again in Simulation mode.",
+          "result": "The port went down, so SW1 forgot the MAC learned on it. PC1 still has PC2 in its ARP cache and sends the echo request; SW1 floods it as unknown unicast out of every other port, and nobody answers."
+        }
+      },
+      "topics": [
+        "MAC address table",
+        "Switching",
+        "Flooding",
+        "Hub"
+      ]
+    },
+    "packetTtlTracert": {
+      "title": "TTL and tracert",
+      "summary": "tracert uses the TTL to make each router on the path introduce itself.",
+      "intro": {
+        "what": "Every router lowers a packet's TTL by one. tracert sends probes with TTL 1, 2, 3…: the router where the TTL reaches zero answers with ICMP 'time exceeded' and its address, until the destination itself replies.",
+        "why": "tracert shows the path hop by hop and where it ends. A path that stops after a certain router points to the next device: a missing route, a link down, or a missing way back.",
+        "realWorld": "Support uses tracert (traceroute on Linux and macOS) to see where traffic stops. Remember that every hop must also be able to answer: a missing return route looks like a dead hop."
+      },
+      "steps": {
+        "tracertStops": {
+          "title": "A trace that stops",
+          "detail": "On PC1 run tracert 192.168.3.10: hop 1 192.168.1.1 (R1), hop 2 10.0.12.2 (R2), then only 'Request timed out'. R3 gets the probes, but has no route back to 192.168.1.0/24 to answer."
+        },
+        "addReturnRoute": {
+          "title": "Give R3 a way back",
+          "detail": "On R3 add the default route 0.0.0.0 0.0.0.0 via 10.0.23.1. Run tracert again: 192.168.1.1, 10.0.12.2, 10.0.23.2, 192.168.3.10."
+        },
+        "watchTtl": {
+          "title": "Watch the probes",
+          "detail": "In Simulation mode run tracert 192.168.3.10 and inspect the probes: the first has TTL 1 and dies at R1, which sends 'time exceeded'; the next has TTL 2 and dies at R2, and so on."
+        },
+        "replyTtl": {
+          "title": "Read the reply TTL",
+          "detail": "Ping PC2 from PC1: 'TTL=125'. PC2 sent its reply with TTL 128 (Windows), and three routers each took one off."
+        }
+      },
+      "breakIt": {
+        "removeMiddleRoute": {
+          "change": "Delete R2's route to 192.168.3.0/24.",
+          "result": "tracert ends at hop 3 with '10.0.12.2 reports: Destination host unreachable': R2 says it has no route."
+        },
+        "makeLoop": {
+          "change": "Point R2's route to 192.168.3.0/24 at 10.0.12.1 (R1).",
+          "result": "A routing loop: tracert alternates between 10.0.12.2 and 10.0.12.1 until hop 30 (see the routing loop sample)."
+        }
+      },
+      "topics": [
+        "TTL",
+        "tracert",
+        "ICMP time exceeded",
+        "Hops"
+      ]
+    }
+  }
+}

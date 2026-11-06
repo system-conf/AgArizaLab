@@ -86,8 +86,8 @@
       "over": "{{total, number}} birim: {{budget, number}} birimlik bütçe {{over, number}} birim aşıldı."
     },
     "spof": {
-      "access": "{{device}}, “{{groups}}” cihazlarını doğrudan bağlıyor. Tek kabloyla bağlı bir cihaz her zaman switch’ine veya erişim noktasına bağımlıdır: yedek bulundurun ya da kritik cihazlara ikinci bir bağlantı verin.",
-      "core": "{{device}} arızalanırsa “{{groups}}” listelenen hizmetleri kaybeder. Bu tek hata noktasıdır: ikinci bir cihaz veya yol ekleyin ya da riski müşteriye açıklayın."
+      "access": "{{device}}, “{{groups}}” cihazlarını doğrudan bağlıyor. Tek kabloyla bağlı bir cihaz her zaman switch’ine veya erişim noktasına bağımlıdır: yedek bulundur ya da kritik cihazlara ikinci bir bağlantı ver.",
+      "core": "{{device}} arızalanırsa “{{groups}}” cihazları listelenen hizmetleri kaybeder. Bu tek hata noktasıdır: ikinci bir cihaz veya yol ekle ya da riski müşteriye açıkla."
     }
   },
   "handover": {

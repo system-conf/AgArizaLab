@@ -1,8 +1,9 @@
-import { useId, useState } from 'react'
+import { useId, useRef, useState, type KeyboardEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { focusRing } from '../shared/focusRing'
 import { useMediaQuery } from '../shared/useMediaQuery'
 import EventList from './EventList'
+import { PANEL_TABS, tabAfterKey, type PanelTab } from './panelTabs'
 import PduInspector from './PduInspector'
 import ProtocolFilterBar from './ProtocolFilterBar'
 import SimulationControls from './SimulationControls'
@@ -12,8 +13,6 @@ interface SimulationPanelProps {
   simulation: WorkspaceSimulation
   nameOf: (deviceId: string) => string
 }
-
-type PanelTab = 'events' | 'inspector'
 
 /**
  * The simulation panel under the canvas: playback controls, protocol filters, the event list and the
@@ -27,6 +26,7 @@ function SimulationPanel({ simulation, nameOf }: SimulationPanelProps) {
   const [tab, setTab] = useState<PanelTab>('events')
   const baseId = useId()
   const bodyId = `${baseId}-body`
+  const tabButtons = useRef(new Map<PanelTab, HTMLButtonElement>())
   const { view, selectedEvent } = simulation
 
   function select(eventId: number) {
@@ -34,10 +34,20 @@ function SimulationPanel({ simulation, nameOf }: SimulationPanelProps) {
     if (!split) setTab('inspector')
   }
 
+  /** Arrow keys, Home and End move between the tabs (WAI-ARIA tabs: roving tabindex, selection follows focus). */
+  function onTabKey(event: KeyboardEvent<HTMLButtonElement>) {
+    const rtl = getComputedStyle(event.currentTarget).direction === 'rtl'
+    const next = tabAfterKey(tab, event.key, rtl)
+    if (next === null) return
+    event.preventDefault()
+    setTab(next)
+    tabButtons.current.get(next)?.focus()
+  }
+
   const events = (
     <div className="flex min-h-0 flex-1 flex-col">
       <ProtocolFilterBar filter={simulation.filter} onChange={simulation.setFilter} />
-      <EventList events={view?.events ?? []} filter={simulation.filter} selectedId={selectedEvent?.id ?? null} onSelect={select} nameOf={nameOf} />
+      <EventList events={view.events} filter={simulation.filter} selectedId={selectedEvent?.id ?? null} onSelect={select} nameOf={nameOf} />
     </div>
   )
   const inspector = (
@@ -45,10 +55,7 @@ function SimulationPanel({ simulation, nameOf }: SimulationPanelProps) {
       <PduInspector event={selectedEvent} nameOf={nameOf} onSelectEvent={select} />
     </section>
   )
-  const tabs: readonly { id: PanelTab; label: string }[] = [
-    { id: 'events', label: t('ui.panel.eventsTab') },
-    { id: 'inspector', label: t('ui.panel.inspectorTab') },
-  ]
+  const tabLabels: Readonly<Record<PanelTab, string>> = { events: t('ui.panel.eventsTab'), inspector: t('ui.panel.inspectorTab') }
 
   return (
     <section
@@ -68,20 +75,26 @@ function SimulationPanel({ simulation, nameOf }: SimulationPanelProps) {
           ) : (
             <>
               <div role="tablist" aria-label={t('ui.panel.tabsLabel')} className="flex border-b border-slate-200">
-                {tabs.map((entry) => (
+                {PANEL_TABS.map((id) => (
                   <button
-                    key={entry.id}
+                    key={id}
+                    ref={(element) => {
+                      if (element) tabButtons.current.set(id, element)
+                      else tabButtons.current.delete(id)
+                    }}
                     type="button"
                     role="tab"
-                    id={`${baseId}-${entry.id}-tab`}
-                    aria-selected={tab === entry.id}
-                    aria-controls={`${baseId}-${entry.id}-panel`}
-                    onClick={() => setTab(entry.id)}
+                    id={`${baseId}-${id}-tab`}
+                    aria-selected={tab === id}
+                    aria-controls={`${baseId}-${id}-panel`}
+                    tabIndex={tab === id ? 0 : -1}
+                    onClick={() => setTab(id)}
+                    onKeyDown={onTabKey}
                     className={`flex-1 border-b-2 px-3 py-2 text-sm font-medium ${
-                      tab === entry.id ? 'border-sky-600 text-sky-800' : 'border-transparent text-slate-600'
+                      tab === id ? 'border-sky-600 text-sky-800' : 'border-transparent text-slate-600'
                     } ${focusRing}`}
                   >
-                    {entry.label}
+                    {tabLabels[id]}
                   </button>
                 ))}
               </div>

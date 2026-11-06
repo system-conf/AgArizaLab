@@ -1,0 +1,9 @@
+// The command sets the app's CLI loads besides the core one, in registration order (docs/CLI.md §8).
+// Owned by the integrator (CI): `switchCommandSet` (C2, src/cli/switch) and `routerCommandSet`
+// (C3, src/cli/router); C2 / C3 never edit this file and test with `new CliShell([theirSet])`.
+// The router set owns interface `ip address` (also for SVIs), so the switch set without it is used.
+import type { CliCommandSet } from './contract'
+import { routerCommandSet } from './router'
+import { switchCommandSet } from './switch'
+
+export const CLI_COMMAND_SETS: readonly CliCommandSet[] = [switchCommandSet, routerCommandSet]

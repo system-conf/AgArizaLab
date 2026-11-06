@@ -1,0 +1,8 @@
+{
+  "help": {
+    "ipconfigDisplayDns": "  ipconfig /displaydns   DNS önbelleğini gösterir: bu bilgisayarın son sorguladığı adlar",
+    "ipconfigFlushDns": "  ipconfig /flushdns     DNS önbelleğini boşaltır",
+    "netstat": "  netstat [-a] [-n]      TCP bağlantılarını listeler; -a ile dinlenen portları da görürsün",
+    "hostname": "  hostname               Bu bilgisayarın adını gösterir"
+  }
+}

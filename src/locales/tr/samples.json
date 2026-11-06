@@ -1,0 +1,1117 @@
+{
+  "ui": {
+    "title": "Örnek lablar",
+    "landing": {
+      "cta": "Örnek lablar",
+      "title": "Kısa bir dersle gelen hazır lablar"
+    },
+    "callout": {
+      "title": "Örnek lablarla öğren",
+      "text": "Hazır, çalışan ağlar ve kısa bir ders: birini aç, adımları dene, sonra bilerek boz."
+    },
+    "list": {
+      "lead": "Her örnek küçük, çalışan bir ağ ve kısa bir ders: konunun ne olduğu, neden var olduğu, deneyebileceğin birkaç şey ve bilerek bozmak için fikirler.",
+      "hint": "Örnek serbest bir kopya olarak açılır: istediğini değiştir, kendi labına dokunulmaz.",
+      "progressLabel": "Bitirdiğin örnekler",
+      "progress": "{{total}} örnekten {{complete}} tanesi bitti",
+      "searchLabel": "Örneklerde ara",
+      "searchPlaceholder": "Konu, protokol ya da cihaz…",
+      "levelFilter": "Seviye",
+      "featureFilter": "Gerekenler",
+      "clearFilters": "Filtreleri temizle",
+      "resultCount_one": "{{formatted}} örnek",
+      "resultCount_other": "{{formatted}} örnek",
+      "empty": "Henüz örnek yok. Bir sonraki güncellemeyle gelecekler.",
+      "noMatch": "Eşleşen örnek yok. Başka bir kelime dene ya da filtreleri temizle.",
+      "toExercises": "Arıza giderme alıştırmaları"
+    },
+    "card": {
+      "open": "Aç",
+      "openAria": "Örneği aç: {{title}}",
+      "level": "Seviye: {{level}}",
+      "needs": "Gerekenler",
+      "topics": "Konular",
+      "steps": "{{done}}/{{total}} adım",
+      "stepsAria": "{{total}} adımdan {{done}} tanesi tamam",
+      "complete": "Bitti",
+      "notStarted": "Başlamadın"
+    },
+    "lesson": {
+      "title": "Ders",
+      "back": "Örnekler",
+      "backAria": "Örneklere dön",
+      "freeNote": "Bu, örneğin senin serbest kopyan: istediğini değiştir. Aslını geri almak için labı sıfırla.",
+      "intro": {
+        "title": "Bu konu hakkında",
+        "what": "Nedir?",
+        "why": "Neden var?",
+        "realWorld": "Gerçek ağlarda"
+      },
+      "steps": {
+        "title": "Bunu dene",
+        "progress": "{{total}} adımdan {{done}} tanesi tamam",
+        "number": "{{number}}. adım",
+        "checking": "Labın kontrol ediliyor…",
+        "state": {
+          "passing": "Şu an çalışıyor",
+          "done": "Tamam",
+          "doneBroken": "Daha önce tamamladın; labda şu an geçerli değil",
+          "checking": "Kontrol ediliyor…",
+          "open": "Henüz değil",
+          "ticked": "İşaretledin",
+          "unticked": "Yaptığında işaretle"
+        },
+        "tick": "Bunu yaptım",
+        "tickAria": "{{number}}. adım tamam: {{title}}",
+        "simulation": "Bunu Simülasyon modunda yap: tuvalin üstündeki mod düğmesiyle geç.",
+        "focus": "Cihaz: {{name}}"
+      },
+      "complete": {
+        "title": "Bütün adımları bitirdin!",
+        "text": "Şimdi aşağıdaki bozma fikirlerini dene ya da ilgili bir konuya geç."
+      },
+      "breakIt": {
+        "title": "Boz bakalım",
+        "lead": "Bir şeyi bilerek değiştir ve ne olduğunu izle. İşin bitince labı sıfırla.",
+        "result": "Ne olur"
+      },
+      "related": {
+        "title": "Sırada ne var",
+        "kind": {
+          "exercise": "Alıştırma",
+          "design": "Tasarım görevi",
+          "sample": "Örnek"
+        }
+      },
+      "resetProgress": "Adımlara baştan başla",
+      "resetLab": "Labı sıfırla",
+      "resetLabShort": "Sıfırla",
+      "resetLabDone": "Örnek ilk hâline döndü.",
+      "saveAsMine": "Kendi labım olarak aç",
+      "saveShort": "Labım",
+      "saveFailed": "Lab kaydedilemedi. Tarayıcının depolama ayarlarını kontrol et.",
+      "close": "Dersi kapat",
+      "toggle": "Ders"
+    }
+  },
+  "categories": {
+    "basics": { "title": "Temeller", "description": "Adresler, maskeler, ağ geçitleri ve bunlar yanlış olunca ne olduğu." },
+    "dhcp": { "title": "DHCP", "description": "Cihazların adreslerini nasıl kendiliğinden aldığını gör." },
+    "dns": { "title": "DNS", "description": "İsimlerin nasıl adrese dönüştüğünü gör." },
+    "switching": { "title": "Anahtarlama", "description": "VLAN'lar, trunk'lar ve VLAN'lar arası yönlendirme." },
+    "routing": { "title": "Yönlendirme", "description": "Statik ve varsayılan rotalar, rotalar bozulunca ne olduğu." },
+    "packetView": { "title": "Paket görünümü", "description": "ARP'ı, MAC öğrenmeyi ve TTL'i paket paket izle." },
+    "deviceCli": { "title": "Cihaz komut satırı", "description": "Switch ve router'ları komut satırından yapılandır." },
+    "switchingAdvanced": { "title": "STP, EtherChannel ve port güvenliği", "description": "Döngüler, bağlantı demetleri, komşu keşfi ve port koruması." },
+    "security": { "title": "ACL, NAT ve SSH", "description": "Trafiği süzme, adres çevirme ve güvenli oturum açma." },
+    "dynamicRouting": { "title": "Dinamik yönlendirme ve HSRP", "description": "RIP, OSPF, EIGRP ve ağ geçidi yedekliliği." },
+    "ipv6": { "title": "IPv6", "description": "IPv6 adresleme, SLAAC, DHCPv6 ve çift yığın." },
+    "servers": { "title": "Sunucular ve uygulamalar", "description": "Web, dosya aktarımı, e-posta, saat ve kayıt servisleri." },
+    "wireless": { "title": "Kablosuz", "description": "Ev router'ları, misafir Wi-Fi, WPA2 ve denetleyiciler." },
+    "wanSecurity": { "title": "WAN ve güvenlik", "description": "Seri hatlar, tüneller, VPN'ler ve güvenlik duvarları." },
+    "operations": { "title": "İşletim", "description": "QoS, izleme, port yansıtma ve ses." },
+    "industrial": { "title": "Endüstriyel ve IoT", "description": "OT ağ ayrımı, endüstriyel halkalar ve IoT ağ geçitleri." }
+  },
+  "levels": {
+    "beginner": "Başlangıç",
+    "intermediate": "Orta",
+    "advanced": "İleri"
+  },
+  "features": {
+    "simulation": "Simülasyon modu",
+    "dhcpRelay": "DHCP aktarımı",
+    "dnsForwarding": "DNS yönlendirme",
+    "deviceCli": "Cihaz komut satırı"
+  },
+  "labs": {
+    "basicsTwoPcs": {
+      "title": "İki PC ve bir switch",
+      "summary": "En küçük ağ: iki bilgisayar, bir switch, tek bir alt ağ.",
+      "intro": {
+        "what": "Aynı switch'e takılı iki PC bir yerel ağ (LAN) oluşturur. Her PC'nin bir IPv4 adresine ve alt ağ maskesine ihtiyacı vardır; ikisi aynı alt ağdaysa router olmadan doğrudan konuşurlar.",
+        "why": "Switch yalnızca portları arasında çerçeve taşır. İki PC'nin konuşup konuşamayacağına adresleri karar verir: aynı alt ağ = doğrudan birbirine gönderen komşular.",
+        "realWorld": "Her ofis, dükkân ve ev ağı böyle başlar: bir switch (ya da ev router'ının LAN portları) ve ona takılı cihazlar. Yeni bir PC diğerlerini 'görmüyorsa' önce adresine ve maskesine bak."
+      },
+      "steps": {
+        "readAddress": {
+          "title": "PC1'in adresini oku",
+          "detail": "PC1'in komut istemini aç ve ipconfig yaz. PC1'in adresi 192.168.1.10, maskesi 255.255.255.0. Aynısını PC2'de yap: yalnızca bir 'Autoconfiguration IPv4 Address' (169.254.x.x) görürsün, çünkü burada olmayan bir DHCP sunucusunu bekliyor."
+        },
+        "addressPc2": {
+          "title": "PC2'ye adres ver",
+          "detail": "PC2'nin ayarlarında eth0'ı statik 192.168.1.11 adresine, 255.255.255.0 maskesine ayarla (ağ geçidi gerekmez). Sonra PC1'den 192.168.1.11'e ping at: dört yanıt gelir."
+        },
+        "watchPing": {
+          "title": "Ping'i Simülasyon modunda izle",
+          "detail": "Simülasyon moduna geç ve PC1'den PC2'ye yeniden ping at, adım adım ilerle. Önce bir ARP isteği 192.168.1.11'in kimde olduğunu sorar, PC2 yanıt verir, sonra ICMP echo isteği ve yanıtı SW1 üzerinden gider gelir."
+        }
+      },
+      "breakIt": {
+        "unplugCable": {
+          "change": "PC2'nin kablosunu çıkar ve PC1'den ona ping at.",
+          "result": "PC1 ARP ile PC2'nin MAC adresini sorar, kimse yanıt vermez ve ping, PC1'in kendi adresinden 'Destination host unreachable' gösterir."
+        },
+        "otherNetwork": {
+          "change": "PC2'nin adresini 192.168.2.11 yap.",
+          "result": "PC1 artık PC2'yi başka bir alt ağda görür. Ona ulaşmak için bir varsayılan ağ geçidine (router'a) ihtiyacı olurdu; bu yüzden iki PC aynı switch'te olsa da ping 'General failure' ile başarısız olur."
+        }
+      },
+      "topics": [
+        "LAN",
+        "Switch",
+        "IPv4 adresi",
+        "Alt ağ maskesi"
+      ]
+    },
+    "basicsSubnets": {
+      "title": "Alt ağlar ve maskeler",
+      "summary": "Kimin komşu olduğuna maske karar verir. Anlaşamayan iki cihaz konuşamaz.",
+      "intro": {
+        "what": "Bir IPv4 adresinin ağ kısmı ve host kısmı vardır; alt ağ maskesi birinin nerede bitip diğerinin nerede başladığını söyler. 255.255.255.0 (/24) maskeli 192.168.10.10, host'ları .1'den .254'e uzanan 192.168.10.0 ağına aittir.",
+        "why": "Bir cihaz göndermeden önce kendi maskesiyle hedefin kendi alt ağında olup olmadığına bakar. Komşulara doğrudan gider, geri kalan her şey varsayılan ağ geçidine. Yanlış maske, cihazın komşularını yabancı sanmasına yol açar.",
+        "realWorld": "Maskeler adres planıyla birlikte planlanır: ofis LAN'ı için /24, iki router arasındaki hat için /30. Bir yazıcıda ya da kamerada yanlış yazılmış tek bir maske, klasik 'bazı cihazlar ona ulaşıyor, bazıları ulaşamıyor' arızasıdır."
+      },
+      "steps": {
+        "compareMasks": {
+          "title": "Maskeleri karşılaştır",
+          "detail": "PC1, PC2 ve PC3'te ipconfig çalıştır. PC3'ün maskesi 255.255.255.128 (/25); yani PC3'e göre ağ 192.168.10.128–.255. PC1 (.10) bunun dışında, PC2 (.200) içinde."
+        },
+        "fixMask": {
+          "title": "PC3'ün maskesini düzelt",
+          "detail": "PC3'ten PC1'e (192.168.10.10) ping at: 'General failure'; PC3, PC1'i başka bir alt ağda sanıyor ve ağ geçidi yok. PC3'ün maskesini 255.255.255.0 yap ve yeniden ping at."
+        },
+        "splitSubnets": {
+          "title": "PC2'yi kendi alt ağına taşı",
+          "detail": "PC2'ye 192.168.20.20 adresini ver (maske 255.255.255.0). Hâlâ aynı switch'te, ama PC1 artık ona ping atamaz: farklı alt ağlar arasında bir router gerekir."
+        }
+      },
+      "breakIt": {
+        "tinyMask": {
+          "change": "PC1'in maskesini 255.255.255.252 (/30) yap.",
+          "result": "PC1'in alt ağı 192.168.10.8–.11'e küçülür; PC2 ve PC3 birden 'dışarıda' kalır. Ağ geçidi olmadığı için PC1'den atılan her ping 'General failure' ile biter."
+        },
+        "broadcastAddress": {
+          "change": "PC2'ye 255.255.255.0 maskesiyle 192.168.10.255 adresini ver.",
+          "result": ".255, 192.168.10.0/24 ağının yayın (broadcast) adresidir, host adresi değildir. PC2 bu adresi kullanamaz: ping'leri 'General failure' ile biter."
+        }
+      },
+      "topics": [
+        "Alt ağ maskesi",
+        "CIDR",
+        "Ağ adresi",
+        "Yayın adresi"
+      ]
+    },
+    "basicsGateway": {
+      "title": "Varsayılan ağ geçidi",
+      "summary": "Kendi alt ağından çıkmak için bir cihazın varsayılan ağ geçidine ihtiyacı var; yanıtın da.",
+      "intro": {
+        "what": "Varsayılan ağ geçidi, bir cihazın kendi alt ağına ait olmayan her paketi gönderdiği router adresidir. Burada R1 iki alt ağı birleştiriyor: 192.168.1.0/24 (PC1) ve 192.168.2.0/24 (PC2).",
+        "why": "Bir cihaz yalnızca kendi alt ağını bilir. Ağ geçidi olmadan başka hiçbir yere gönderemez; yanıt da bir pakettir: yanıtlayan cihazın da ağ geçidi olmalı, yoksa yanıt hiç yola çıkmaz.",
+        "realWorld": "Ağ geçidi genellikle router'ın LAN adresidir (çoğu zaman .1 ya da .254) ve DHCP'den gelir. 'Telefonumda internet var ama bu PC'de yok' şikâyetinin arkasında çoğu zaman ağ geçidi eksik ya da yanlış girilmiş statik bir PC vardır."
+      },
+      "steps": {
+        "pingGateway": {
+          "title": "Ağ geçidine ping at",
+          "detail": "PC1'de ipconfig çalıştır: ağ geçidi 192.168.1.1. 192.168.1.1'e ping at: R1 yanıt verir. Şimdi PC2'ye (192.168.2.10) ping at: 'Request timed out'. İstek PC2'ye ulaşıyor, ama PC2'nin yanıtı geri gönderebileceği bir ağ geçidi yok."
+        },
+        "setGateway": {
+          "title": "PC2'ye ağ geçidini ver",
+          "detail": "PC2'nin varsayılan ağ geçidini 192.168.2.1 yap (R1'in PC2'nin alt ağındaki adresi). PC1'den PC2'ye yeniden ping at: yanıtlar artık geri geliyor."
+        },
+        "tracertHops": {
+          "title": "Sekmeyi gör",
+          "detail": "PC1'de tracert 192.168.2.10 çalıştır. 1. sekme 192.168.1.1 (R1), 2. sekme PC2: paket bir router'dan geçti."
+        }
+      },
+      "breakIt": {
+        "wrongGateway": {
+          "change": "PC1'in ağ geçidini kimsede olmayan 192.168.1.254 yap.",
+          "result": "PC1 ARP ile 192.168.1.254'ün MAC adresini sorar, kimse yanıt vermez: PC1'in kendi adresinden 'Destination host unreachable'. Yerel ping'ler çalışmaya devam eder."
+        },
+        "gatewayElsewhere": {
+          "change": "PC1'in ağ geçidini 192.168.2.1 yap (R1'in öbür tarafı).",
+          "result": "Ağ geçidi cihazın kendi alt ağında olmalı; PC1 192.168.2.1'e doğrudan ulaşamaz, bu yüzden yanlış ağ geçidindeki gibi başarısız olur."
+        }
+      },
+      "topics": [
+        "Varsayılan ağ geçidi",
+        "Router",
+        "tracert"
+      ]
+    },
+    "basicsIpConflict": {
+      "title": "IP adresi çakışması",
+      "summary": "Aynı adrese sahip iki cihaz: Windows bunu fark eder ve ikisi de adresi kullanamaz.",
+      "intro": {
+        "what": "Bir ağda her adresi tek bir cihaz kullanabilir. PC1'e de PC3'e de elle 192.168.1.10 verilmiş.",
+        "why": "Bir PC adres alırken önce ARP ile başka birinin bu adresi kullanıp kullanmadığını sorar (yinelenen adres tespiti). Burada iki PC birbirini görüyor; ikisi de adresi '(Duplicate)' olarak işaretleyip kullanmayı bırakıyor: ikisi de gönderemez.",
+        "realWorld": "Çakışmalar plansız girilen statik adreslerden ya da DHCP havuzunun içine verilmiş statik bir adresten çıkar. Windows 'Windows has detected an IP address conflict' der. Statik adreslerin listesini tut ve onları DHCP havuzunun dışında tut."
+      },
+      "steps": {
+        "spotConflict": {
+          "title": "Çakışmayı bul",
+          "detail": "PC1'de ipconfig çalıştır: '192.168.1.10(Duplicate)' ve fazladan bir 169.254.x.x adresi. PC1'den ya da PC3'ten PC2'ye (192.168.1.20) ping at: 'General failure'. PC2'de sorun yok; gönderenleri engelleyen çakışma."
+        },
+        "fixConflict": {
+          "title": "PC3'e kendi adresini ver",
+          "detail": "PC3'ün adresini 192.168.1.30 yap: PC3 hemen PC2'ye ping atabilir. PC1 ise hâlâ '(Duplicate)' gösterir: Windows gibi, kaybettiği adresi kendiliğinden geri almaz. PC1'i kapatıp aç (ya da kablosunu çıkarıp yeniden tak), sonra PC1'den PC2'ye ping at."
+        },
+        "watchProbe": {
+          "title": "Adres yoklamasını izle",
+          "detail": "Simülasyon modunda PC3'ün adresini yeniden 192.168.1.10 yap ve adım adım ilerle: PC3 yeni adresi için bir ARP yoklaması gönderir, PC1 yanıt verir ve çakışma yine tespit edilir. Sonra 192.168.1.30'u geri koy."
+        }
+      },
+      "breakIt": {
+        "powerOffPc1": {
+          "change": "PC1 ve PC3 192.168.1.10'u paylaşırken PC1'i kapat, sonra PC3'ü kapatıp aç.",
+          "result": "PC3 adresi korur ve PC2'ye ping atabilir: yalnızca açık cihazlar çakışabilir. PC1'i yeniden aç: kontrolü PC3'ü bulur ve ikisi de adresi yine kaybeder."
+        },
+        "otherMask": {
+          "change": "Çakışmayı bırak ama PC3'ün maskesini 255.255.0.0 yap.",
+          "result": "Yine çakışma: aynı ağ bölümündeki aynı adres, maske ne olursa olsun çakışır."
+        }
+      },
+      "topics": [
+        "IP çakışması",
+        "Yinelenen adres tespiti",
+        "ARP"
+      ]
+    },
+    "basicsApipa": {
+      "title": "APIPA: DHCP sunucusu yok",
+      "summary": "169.254.x.x adresi şu demek: DHCP'ye sordum, kimse yanıt vermedi.",
+      "intro": {
+        "what": "'Adresi otomatik al' ayarındaki PC'ler adresi bir DHCP sunucusundan ister. Hiçbir sunucu yanıt vermezse Windows kendine 169.254.0.0/16 aralığından bir APIPA adresi verir (Automatic Private IP Addressing).",
+        "why": "APIPA, DHCP'yi beklemeye devam ederken ağ kartını yapılandırılmış tutar. Bir çözüm değil, bir belirtidir: böyle bir adresin ağ geçidi de DNS sunucusu da yoktur.",
+        "realWorld": "Kullanıcının PC'sinde 169.254 adresi görmek destekte en hızlı ipuçlarından biridir: DHCP sunucusu kapalı, kablo ya da switch portu ölü, ya da port yanlış VLAN'da. PC'ye değil, oralara bak."
+      },
+      "steps": {
+        "seeApipa": {
+          "title": "APIPA adresini bul",
+          "detail": "PC1'de ipconfig çalıştır: 255.255.0.0 maskeli 'Autoconfiguration IPv4 Address 169.254.x.x'. ipconfig /renew 'unable to contact your DHCP server' ile biter. Kanvasa bak: DHCP sunucusu DHCP1 kapalı."
+        },
+        "startServer": {
+          "title": "DHCP sunucusunu aç",
+          "detail": "DHCP1'i aç, sonra PC1'de ipconfig /renew çalıştır. PC1 artık 192.168.1.100–.199 aralığından (DHCP1'in havuzu) bir adres alır."
+        },
+        "pingNeighbour": {
+          "title": "PC2'yi yenile ve PC1'e ping at",
+          "detail": "PC2'de de ipconfig /renew çalıştır, sonra PC2'den PC1'in yeni adresine ping at."
+        }
+      },
+      "breakIt": {
+        "unplugServer": {
+          "change": "DHCP1'in kablosunu çıkar ve PC1'de ipconfig /release ve ipconfig /renew çalıştır.",
+          "result": "İstek zaman aşımına uğrar ve PC1 yeniden 169.254.x.x adresine düşer."
+        },
+        "serverOffLater": {
+          "change": "İki PC de adres aldıktan sonra DHCP1'i yeniden kapat.",
+          "result": "PC'ler çalışmaya devam eder: bir kira (lease), süresi dolana ya da sen bırakana kadar geçerlidir. DHCP kesintisi yalnızca yeni adres isteyen cihazları etkiler."
+        }
+      },
+      "topics": [
+        "APIPA",
+        "169.254.0.0/16",
+        "DHCP"
+      ]
+    },
+    "dhcpRouterServer": {
+      "title": "DHCP sunucusu olarak router",
+      "summary": "R1, PC'lere adresi, ağ geçidini ve DNS sunucusunu dağıtır.",
+      "intro": {
+        "what": "R1'de 192.168.1.0/24 için havuzu olan bir DHCP sunucusu çalışıyor: .100–.199 adresleri, varsayılan router 192.168.1.1 ve DNS sunucusu 192.168.1.1 (R1, DNS sorgularını internete iletir).",
+        "why": "DHCP, her cihaza tek tek adres yazma zahmetini, yazım hatalarını ve çakışmaları ortadan kaldırır. İstemci DISCOVER gönderir, sunucu bir adres OFFER eder, istemci onu REQUEST eder ve sunucu ACK ile onaylar: DORA alışverişi.",
+        "realWorld": "Küçük ofislerde DHCP sunucusu router ya da modemdir; büyük ağlarda Windows ya da Linux bir sunucu. Cisco router'da bu, 'network', 'default-router' ve 'dns-server' satırlarıyla bir 'ip dhcp pool'dur."
+      },
+      "steps": {
+        "renewPc1": {
+          "title": "PC1 adres istesin",
+          "detail": "PC1 DHCP'ye ayarlı ama henüz adres istemedi. PC1'de ipconfig /renew çalıştır: 192.168.1.1 ağ geçidiyle 192.168.1.100 adresini alır."
+        },
+        "readLease": {
+          "title": "Kirayı iki tarafta da oku",
+          "detail": "PC1'de ipconfig /all çalıştır: DHCP açık, DNS sunucusu 192.168.1.1. R1'in DHCP ayarlarını aç: havuz, kirayı (PC1'in MAC adresi ve 192.168.1.100) listeler."
+        },
+        "pc2Online": {
+          "title": "PC2'yi ağa al",
+          "detail": "PC2'de ipconfig /renew çalıştır, sonra 8.8.8.8'e ping at ve nslookup google.com yaz. PC2'nin ihtiyacı olan her şey DHCP'den geldi."
+        },
+        "releaseRenew": {
+          "title": "Bırak ve yenile",
+          "detail": "PC1'de ipconfig /release çalıştır (adres gider), ardından ipconfig /renew: PC1 yine 192.168.1.100'ü alır, çünkü sunucu MAC adresini hatırlıyor."
+        }
+      },
+      "breakIt": {
+        "noDefaultRouter": {
+          "change": "R1'in havuzundaki varsayılan router'ı sil ve PC1'i yenile.",
+          "result": "PC1 yine adres alır ve R1'e ping atabilir, ama 8.8.8.8'e atamaz ('General failure'): ağ geçidi olmadan yalnızca kendi alt ağında konuşabilir."
+        },
+        "lanPortDown": {
+          "change": "R1'in Gi0/0 portunu kapat (shutdown) ve PC2'yi yenile.",
+          "result": "PC2'ye hiçbir yanıt ulaşmaz: yenileme zaman aşımına uğrar ve PC2 169.254.x.x'e düşer (APIPA örneğine bak)."
+        }
+      },
+      "topics": [
+        "DHCP",
+        "DORA",
+        "Kira (lease)",
+        "Varsayılan router"
+      ]
+    },
+    "dhcpPoolsExclusions": {
+      "title": "DHCP havuzları ve hariç tutulan adresler",
+      "summary": "Her alt ağa bir havuz, statik cihazlara ayrılmış bir blok.",
+      "intro": {
+        "what": "R1 iki alt ağa hizmet veriyor: ofis (192.168.10.0/24, Gi0/0) ve misafirler (192.168.20.0/24, Gi0/1). DHCP sunucusu, isteğin geldiği arayüzün alt ağına uyan havuzu seçer. Hariç tutulan adresler, sunucunun asla dağıtmadığı adreslerdir.",
+        "why": "Router'lar, yazıcılar ve sunucular sabit adreslerde kalır. .1–.99 gibi bir bloğu hariç tutmak havuzu onlardan uzak tutar; bugün kapalı olup yarın geri gelecek cihazlardan da.",
+        "realWorld": "Cisco router'da: 'ip dhcp excluded-address 192.168.10.1 192.168.10.99' ve her VLAN ya da alt ağ için bir 'ip dhcp pool'. Statik bloğu belgeleyin ki kimse havuzun ortasına bir yazıcı koymasın."
+      },
+      "steps": {
+        "excludeStatics": {
+          "title": "Statik bloğu hariç tut",
+          "detail": "R1'in DHCP ayarlarına 192.168.10.1 – 192.168.10.99 hariç tutma aralığını ekle, sonra PC1'de ipconfig /renew çalıştır. PC1, bloktan sonraki ilk adres olan 192.168.10.100'ü alır. (Hariç tutmadan önce yenilersen 192.168.10.2 gelir: dene, değişiklikten sonra yeniden yenile.)"
+        },
+        "guestPool": {
+          "title": "Misafir havuzunu oluştur",
+          "detail": "Misafir ağındaki PC3 adres alamıyor: R1'de 192.168.20.0/24 için havuz yok. Ağı 192.168.20.0, maskesi 255.255.255.0 ve varsayılan router'ı 192.168.20.1 olan GUEST adında bir havuz ekle. PC3'ü yenile ve oradan yazıcıya (192.168.10.5) ping at."
+        },
+        "readBindings": {
+          "title": "Kiraları oku",
+          "detail": "R1'in DHCP ayarlarını aç: her havuz kendi kiralarını listeler. PC1 OFFICE'te, PC3 GUEST'te: havuzu, isteğin geldiği arayüz belirledi."
+        }
+      },
+      "breakIt": {
+        "excludeEverything": {
+          "change": "Hariç tutma aralığını 192.168.10.1 – 192.168.10.254 yap ve PC2'yi yenile.",
+          "result": "Havuzda adres kalmadı: istek yanıtsız kalır ve PC2 169.254.x.x ile kalır."
+        },
+        "wrongPoolNetwork": {
+          "change": "Misafir havuzunun ağını 192.168.30.0 yap ve PC3'ü yenile.",
+          "result": "Hiçbir havuz Gi0/1'in alt ağına (192.168.20.0/24) uymuyor, bu yüzden R1 hiç yanıt vermez. Havuzun ağı arayüzün alt ağıyla aynı olmalı."
+        }
+      },
+      "topics": [
+        "DHCP havuzu",
+        "Hariç tutulan adresler",
+        "Birden çok alt ağ"
+      ]
+    },
+    "dhcpStaticMapping": {
+      "title": "Rezervasyon tarzı sabit eşleme",
+      "summary": "NAS DHCP'de kalır ama hep aynı adresi alır.",
+      "intro": {
+        "what": "Rezervasyon, bir adresi istemcinin MAC adresine bağlar: sunucu NAS1'e hep 192.168.1.200 verir ve bu adresi başka kimseye vermez. Bu labda eşleme R1'in havuzunda (kira listesinde) zaten kayıtlı.",
+        "why": "Herkes NAS'ı hep aynı adreste bulur, ama NAS yine DHCP ile merkezden yönetilir: cihazda elle ayar yok, ağ geçidi ya da DNS değişirse bir sonraki yenilemede ona da ulaşır.",
+        "realWorld": "Ev router'ları buna 'adres rezervasyonu', Windows Server 'reservation' der. Cisco router'da ayrı bir host havuzudur ('host 192.168.1.200' ile 'client-identifier' ya da 'hardware-address'). Tipik kullanıcılar: NAS, yazıcılar, kameralar, kapı kontrol cihazları."
+      },
+      "steps": {
+        "renewNas": {
+          "title": "NAS'ı yenile",
+          "detail": "NAS1'de ipconfig /renew çalıştır: sıradaki boş adresi değil, 192.168.1.200'ü alır. MAC adresini R1'in havuzunda bul: eşleme bu."
+        },
+        "renewPcs": {
+          "title": "PC'leri yenile",
+          "detail": "PC1 ve PC2'de ipconfig /renew çalıştır: .100 ve .101'i alırlar (sunucu .200'ü onlara asla önermez). PC1'den NAS1'e ping at."
+        },
+        "nasOff": {
+          "title": "NAS'ı kapat",
+          "detail": "NAS1'i kapat ve PC2'de ipconfig /release ve ipconfig /renew çalıştır: PC2 kendi adresini geri alır. .200, NAS kapalıyken bile ayrılmış kalır."
+        },
+        "releaseRenewNas": {
+          "title": "NAS'ı geri getir",
+          "detail": "NAS1'i aç, onda ipconfig /release ve ipconfig /renew çalıştır: yine 192.168.1.200."
+        }
+      },
+      "breakIt": {
+        "staticClash": {
+          "change": "PC2'ye statik 192.168.1.200 adresini ver.",
+          "result": "Rezervasyon, birinin adresi elle yazmasını engellemez: PC2 ile NAS1 artık çakışır ve ikisi de adresi '(Duplicate)' gösterir."
+        },
+        "newNas": {
+          "change": "NAS1'i sil ve yerine DHCP'li yeni bir sunucu ekle.",
+          "result": "Yeni sunucunun MAC adresi farklı, bu yüzden havuzdan sıradan bir adres alır. Rezervasyon cihazın adına değil, MAC adresine aittir."
+        }
+      },
+      "topics": [
+        "DHCP rezervasyonu",
+        "MAC adresi",
+        "Kira (lease)"
+      ]
+    },
+    "dhcpRelay": {
+      "title": "DHCP aktarımı (ip helper-address)",
+      "summary": "DHCP sunucusu başka bir alt ağda; istekleri R1 iletiyor.",
+      "intro": {
+        "what": "DHCP DISCOVER bir yayındır (broadcast) ve router'lar yayınları iletmez. Gi0/0'daki 'ip helper-address 192.168.20.10' ile R1 her isteği DHCP1'e giden bir unicast'e çevirir ve içine kendi adresini (giaddr, 192.168.10.1) yazar.",
+        "why": "Sunucu havuzu (CLIENTS, 192.168.10.0/24) giaddr'a göre seçer ve yanıtını aktarıcıya geri gönderir, aktarıcı da istemciye teslim eder. Tek bir merkezi sunucu bütün VLAN'lara hizmet verebilir.",
+        "realWorld": "Şirketler bir ya da iki merkezi DHCP sunucusu çalıştırır ve router'ların ya da katman 3 switch'lerin her VLAN arayüzüne bir helper adresi yazar. İstemcileri 169.254 adresi alan yeni bir VLAN'da genellikle helper adresi eksiktir. (Helper adresi cihaz komut satırından girilir, o da Faz 4'te geliyor; bu lab hazır ayarlı gelir.)"
+      },
+      "steps": {
+        "renewPc1": {
+          "title": "Router'ın ötesinden adres al",
+          "detail": "PC1'de ipconfig /renew çalıştır. DHCP1 192.168.20.0/24'te olduğu hâlde PC1 ondan 192.168.10.100'ü alır."
+        },
+        "watchRelay": {
+          "title": "Aktarımı izle",
+          "detail": "Simülasyon moduna geç, PC1'de ipconfig /release ve ipconfig /renew çalıştır ve adım adım ilerle: DISCOVER yayını R1'e ulaşır, R1 onu unicast olarak 192.168.20.10'a iletir ve OFFER R1 üzerinden geri gelir."
+        },
+        "readServerPool": {
+          "title": "Sunucunun havuzunu oku",
+          "detail": "DHCP1'in DHCP ayarlarını aç: CLIENTS havuzu 192.168.10.0/24 için, DHCP1'in içinde bile olmadığı bir ağ. PC1'in kirası orada listeleniyor."
+        },
+        "pc2Ping": {
+          "title": "PC2'yi yenile ve sunucuya ping at",
+          "detail": "PC2'de ipconfig /renew çalıştır ve DHCP1'e (192.168.20.10) ping at."
+        }
+      },
+      "breakIt": {
+        "removePool": {
+          "change": "DHCP1'deki CLIENTS havuzunu sil ve PC2'yi yenile.",
+          "result": "Aktarıcı isteği yine ulaştırır, ama giaddr'a uyan havuz yok: yanıt gelmez, yenileme zaman aşımına uğrar."
+        },
+        "serverNoGateway": {
+          "change": "DHCP1'in varsayılan ağ geçidini sil ve PC1'i yenile.",
+          "result": "DHCP1 aktarılan isteği alır ama yanıtı başka bir alt ağdaki 192.168.10.1'e gönderemez: yenileme zaman aşımına uğrar."
+        }
+      },
+      "topics": [
+        "DHCP aktarımı",
+        "ip helper-address",
+        "giaddr",
+        "Yayın (broadcast)"
+      ]
+    },
+    "dhcpConflict": {
+      "title": "DHCP çakışması",
+      "summary": "Statik ayarlı bir yazıcı, DHCP sunucusunun kiraladığı bir adresi aldı.",
+      "intro": {
+        "what": "PC1, R1'den 192.168.1.100'ü kiraladı. Sonra biri yazıcıya elle aynı adresi verdi. PC1 ile yazıcı artık aynı adrese sahip ve ikisi de kullanamıyor.",
+        "why": "DHCP sunucusu yalnızca boş olduğuna inandığı adresleri dağıtır; sonradan havuzun içine elle yazılan statik bir adresi engelleyemez. Statik adresler havuzun dışında olmalı (burada .1–.99 onlar için hariç tutulmuş).",
+        "realWorld": "Cisco router'lar bir adresi önermeden önce ping ile kontrol eder ve çakışmaları 'show ip dhcp conflict' ile listeler. Çare her yerde aynı: statikler havuzun dışında ya da rezervasyonla."
+      },
+      "steps": {
+        "spotDuplicate": {
+          "title": "Çakışmayı bul",
+          "detail": "PC1'de ipconfig çalıştır: '192.168.1.100(Duplicate)'. R1'e (192.168.1.1) ping at: 'General failure'."
+        },
+        "renewPc1": {
+          "title": "PC1'i yenile",
+          "detail": "PC1'de ipconfig /renew çalıştır. Sunucu .100'ün kullanımda olduğunu görür ve PC1'e 192.168.1.101'i verir; PC1 yine R1'e ping atabilir. Yazıcı ise .100'ü hâlâ çakışmalı olarak işaretli tutuyor ve kendiliğinden geri almıyor, bu yüzden henüz yanıt vermez."
+        },
+        "movePrinter": {
+          "title": "Yazıcıyı havuzun dışına taşı",
+          "detail": "Yazıcıya hariç tutulan bloktan statik bir adres ver: 192.168.1.10. Yeni adres yeni bir kontrol demek ve yazıcı yeniden yanıt verir: PC1'den 192.168.1.10'a ping at."
+        },
+        "readBindings": {
+          "title": "Kiraları oku",
+          "detail": "R1'in DHCP ayarlarını aç: PC1'in kirası artık 192.168.1.101 gösteriyor. Yazıcının kirası yok: statik cihazlar orada hiç görünmez."
+        }
+      },
+      "breakIt": {
+        "printerBack": {
+          "change": "Yazıcıyı 192.168.1.101 yap.",
+          "result": "Şimdi de PC1'in yeni kirasıyla çakışır: aynı belirtiler yeniden. Statik adresi asla havuz aralığından seçme."
+        },
+        "pc2Static": {
+          "change": "PC2'ye statik 192.168.1.101 adresini ver.",
+          "result": "PC1 ile aynı çakışma: bunu yalnızca yazıcılar değil, herkes yapabilir."
+        }
+      },
+      "topics": [
+        "DHCP",
+        "IP çakışması",
+        "Hariç tutulan adresler"
+      ]
+    },
+    "dnsLocalRecords": {
+      "title": "Yerel DNS kayıtları",
+      "summary": "DNS1, ofisin kendi sunucularının isimlerini yanıtlar.",
+      "intro": {
+        "what": "Bir DNS sunucusu isimleri adreslere çevirir. DNS1'de A kayıtları var: intranet.office.lan → 192.168.1.20. Bir PC, ayarlarındaki DNS sunucularına sorar.",
+        "why": "İnsanlar adresleri değil isimleri hatırlar. Bir sunucu yeni bir adrese taşındığında her PC değil, yalnızca onun kaydı değişir.",
+        "realWorld": "Şirketler intranet, dosya ya da yazıcı gibi isimler için bir iç DNS çalıştırır (çoğu zaman etki alanı denetleyicisinde). 'Site IP ile açılıyor ama isimle açılmıyor' bir DNS sorunudur: eksik bir kayıt ya da PC'de yanlış DNS sunucusu."
+      },
+      "steps": {
+        "resolveIntranet": {
+          "title": "Bir ismi sorgula",
+          "detail": "PC1'de nslookup intranet.office.lan çalıştır. Yanıt 192.168.1.5'ten (DNS1) gelir: 192.168.1.20."
+        },
+        "addFilesRecord": {
+          "title": "Bir kayıt ekle",
+          "detail": "nslookup files.office.lan 'Non-existent domain' diyor. DNS1'e files.office.lan → 192.168.1.30 A kaydını ekle ve yeniden sorgula."
+        },
+        "pc2Dns": {
+          "title": "PC2'ye bir DNS sunucusu ver",
+          "detail": "PC2'de nslookup 'Default servers are not available' diyor: PC2'nin DNS sunucusu yok. DNS sunucusunu 192.168.1.5 yap ve intranet.office.lan'ı sorgula."
+        },
+        "pingByName": {
+          "title": "İsimle ping at",
+          "detail": "PC1'de ping files.office.lan çalıştır. İlk satır, ismin çözüldüğü adresi gösterir: [192.168.1.30]."
+        }
+      },
+      "breakIt": {
+        "wrongRecord": {
+          "change": "files kaydını 192.168.1.31 yap.",
+          "result": "İsim yine çözülür, ama yanlış bir adrese: ping files.office.lan başarısız olur. DNS ona ne söylendiyse onu yanıtlar; ping'in ilk satırındaki adrese bak."
+        },
+        "dnsServerOff": {
+          "change": "DNS1'i kapat.",
+          "result": "nslookup zaman aşımına uğrar, ama ping 192.168.1.20 hâlâ çalışır. Bozuk olan ağ değil, yalnızca isimler."
+        }
+      },
+      "topics": [
+        "DNS",
+        "A kaydı",
+        "nslookup"
+      ]
+    },
+    "dnsForwarders": {
+      "title": "DNS ileticileri",
+      "summary": "DNS1 yerel isimleri kendisi yanıtlar, gerisini genel bir çözümleyiciye sorar.",
+      "intro": {
+        "what": "DNS1 ofisin isimlerini biliyor. Başka her isim için soruyu bir ileticiye (forwarder, burada 8.8.8.8) iletip yanıtı geri verebilir. PC1'in tek bir DNS sunucusuna ihtiyacı var: DNS1.",
+        "why": "İletici olmadan bir iç DNS sunucusu yalnızca kendi isimlerini yanıtlayabilir: google.com 'Non-existent' olur. İleticiyle PC'ler hem yerel hem internet isimlerini tek bir sunucudan alır.",
+        "realWorld": "İç DNS sunucuları sorguları servis sağlayıcının çözümleyicilerine ya da 8.8.8.8, 1.1.1.1, 9.9.9.9 gibi genel çözümleyicilere iletir; biri çökerse diye genellikle iki tane. Router'lar da 'ip dns server' ve 'ip name-server' ile aynısını yapar."
+      },
+      "steps": {
+        "localName": {
+          "title": "Yerel isimler çalışıyor",
+          "detail": "PC1'de nslookup intranet.office.lan (DNS1 yanıtlar) ve nslookup google.com çalıştır: 'Non-existent domain'; DNS1 bu ismi bilmiyor ve soracak kimsesi yok."
+        },
+        "addForwarder": {
+          "title": "Bir iletici ekle",
+          "detail": "DNS1'in DNS ayarlarına 8.8.8.8 ileticisini ekle. PC1'de nslookup google.com'u yeniden çalıştır: yanıt DNS1 üzerinden gelir."
+        },
+        "watchForwarding": {
+          "title": "İletmeyi izle",
+          "detail": "Simülasyon modunda PC1'de nslookup google.com çalıştır ve adım adım ilerle: PC1 DNS1'e sorar, DNS1 R1 üzerinden 8.8.8.8'e sorar ve yanıt aynı yoldan geri döner."
+        },
+        "backupForwarder": {
+          "title": "İkinci bir iletici ekle",
+          "detail": "İkinci iletici olarak 1.1.1.1'i ekle. DNS1 onlara sırayla sorar: ikincisi yalnızca ilki yanıt vermediğinde kullanılır."
+        }
+      },
+      "breakIt": {
+        "wrongForwarder": {
+          "change": "İleticiyi 192.168.1.99 ile değiştir (böyle bir sunucu yok).",
+          "result": "İnternet isimleri zaman aşımına uğrar ('DNS request timed out'), yerel isimler çalışmaya devam eder: DNS1 kendi kayıtlarını kimseye sormadan yanıtlar."
+        },
+        "wanUnplugged": {
+          "change": "R1'in WAN kablosunu çıkar.",
+          "result": "google.com zaman aşımına uğrar, intranet.office.lan hâlâ çözülür. İnternet kesikken ofisi yerel DNS ayakta tutar."
+        }
+      },
+      "topics": [
+        "DNS iletici",
+        "Özyinelemeli DNS",
+        "nslookup"
+      ]
+    },
+    "dnsMultiLevel": {
+      "title": "Çok katmanlı DNS",
+      "summary": "Şube DNS → merkez DNS → internet: her katman bilmediğini bir üste iletir.",
+      "intro": {
+        "what": "Şubenin (192.168.2.0/24, R2'nin arkasında) şube isimleri için kendi DNS-BR sunucusu var. Merkez isimleri DNS-HQ'da (192.168.1.5), internet isimleri genel çözümleyicilerde. Her sunucu yanıtlayamadığını bir sonraki katmana iletir.",
+        "why": "Her yer kendi isimlerini hızlıca yanıtlar ve merkezle bağlantı kopsa da çalışmaya devam eder; yine de her PC tek bir DNS sunucusu üzerinden her ismi çözebilir.",
+        "realWorld": "Şubelerde çoğu zaman merkeze ileten yerel bir DNS (bir etki alanı denetleyicisi ya da şube router'ı) bulunur, merkez de internete iletir. İleticiler arasındaki döngüler, bilinmeyen isimler için sorguların zaman aşımına uğramasına yol açar."
+      },
+      "steps": {
+        "branchLocal": {
+          "title": "Şube isimleri",
+          "detail": "PC1'de (şube) nslookup pc2.branch.office.lan çalıştır: DNS-BR 192.168.2.11 yanıtını verir. nslookup intranet.office.lan 'Non-existent domain' diyor: DNS-BR'nin ileticisi yok."
+        },
+        "forwardToHq": {
+          "title": "Merkeze ilet",
+          "detail": "DNS-BR'ye 192.168.1.5 (DNS-HQ) ileticisini ekle. PC1'de intranet.office.lan'ı yeniden sorgula: 192.168.1.20."
+        },
+        "hqForwarder": {
+          "title": "Merkez internete ulaşsın",
+          "detail": "PC1'de nslookup google.com hâlâ başarısız: DNS-HQ'nun da ileticisi yok. DNS-HQ'ya 8.8.8.8 ileticisini ekle ve yeniden dene."
+        },
+        "watchChain": {
+          "title": "Zinciri izle",
+          "detail": "Simülasyon modunda PC1'de nslookup google.com çalıştır ve adım adım ilerle: PC1 → DNS-BR → DNS-HQ → 8.8.8.8, yanıt da aynı zincirden geri."
+        }
+      },
+      "breakIt": {
+        "forwardLoop": {
+          "change": "DNS-HQ'da 8.8.8.8 yerine 192.168.2.5'i (DNS-BR) yaz.",
+          "result": "İki sunucu artık birbirine iletiyor. İkisinin de bilmediği bir isim, sorgu zaman aşımına uğrayana kadar döner durur."
+        },
+        "siteLinkDown": {
+          "change": "R1 ile R2 arasındaki kabloyu çıkar.",
+          "result": "Şube isimleri DNS-BR'de çözülmeye devam eder; merkez ve internet isimleri zaman aşımına uğrar. Yerel sunucu şubeyi kısmen ayakta tutar."
+        }
+      },
+      "topics": [
+        "DNS hiyerarşisi",
+        "DNS iletici",
+        "Şube ofisi"
+      ]
+    },
+    "switchingVlansTrunks": {
+      "title": "VLAN'lar ve trunk'lar",
+      "summary": "Çalışanlar ve misafirler iki switch'i paylaşıyor ama ayrı VLAN'larda kalıyor.",
+      "intro": {
+        "what": "VLAN bir switch'i birbirinden ayrı birkaç ağa böler. PC1 ve PC3 VLAN 10'da (STAFF), PC2 ve PC4 VLAN 20'de (GUESTS). Trunk, tek kablo üzerinden birkaç VLAN taşır; her çerçeve bir 802.1Q etiketiyle işaretlenir.",
+        "why": "VLAN'lar trafiği ek switch olmadan ayırır: misafirler çalışan cihazlarını görmez. Switch'ler arasında access port yalnızca tek bir VLAN taşır; trunk hepsini taşır.",
+        "realWorld": "Ofisler, okullar ve oteller kullanıcıları, misafirleri, telefonları ve kameraları kendi VLAN'larına koyar. Switch'ler arasındaki uplink'ler trunk'tır. Yeni bir VLAN, geçtiği her switch'te tanımlı olmalı."
+      },
+      "steps": {
+        "makeTrunk": {
+          "title": "Uplink'i trunk yap",
+          "detail": "PC1, PC3'e (192.168.10.12) ping atamıyor: Fa0/8 uplink'i VLAN 1'de bir access port, bu yüzden VLAN 10 karşıya geçmiyor. SW1'de ve SW2'de Fa0/8'i trunk moduna al ve yeniden ping at."
+        },
+        "createVlan20": {
+          "title": "SW2'de VLAN 20'yi oluştur",
+          "detail": "PC2 hâlâ PC4'e ulaşamıyor: VLAN 20, SW2'nin VLAN veritabanında yok, bu yüzden Fa0/2 portu hiçbir şey iletmiyor. SW2'ye VLAN 20'yi ekle ve PC2'den 192.168.20.12'ye ping at."
+        },
+        "vlansIsolated": {
+          "title": "Ayrımı kontrol et",
+          "detail": "PC1'den PC2'ye (192.168.20.11) ping at: 'General failure'. Farklı VLAN, farklı alt ağ ve router yok: iki grup, planlandığı gibi konuşamıyor."
+        },
+        "watchTag": {
+          "title": "Etiketi gör",
+          "detail": "Simülasyon modunda PC1'den PC3'e ping at ve uplink üzerindeki çerçeveye tıkla: Ethernet başlığında VLAN 10 içeren bir 802.1Q etiketi var. Access portlarda aynı çerçeve etiketsiz."
+        }
+      },
+      "breakIt": {
+        "deleteVlan10": {
+          "change": "VLAN 10'u SW1'in VLAN veritabanından sil.",
+          "result": "PC1'in portu artık var olmayan bir VLAN'a ait ve devre dışı kalır: kablosu sağlam olsa da PC1'in bağlantısı kesilir."
+        },
+        "accessUplink": {
+          "change": "İki switch'te de Fa0/8'i yeniden access moduna, VLAN 10'a al.",
+          "result": "VLAN 10 yine geçer (etiketsiz), VLAN 20 geçmez. Access bağlantı yalnızca tek bir VLAN taşıyabilir."
+        }
+      },
+      "topics": [
+        "VLAN",
+        "Trunk",
+        "802.1Q",
+        "Access port"
+      ]
+    },
+    "switchingNativeVlan": {
+      "title": "Native VLAN uyuşmazlığı",
+      "summary": "Etiketsiz çerçeveler trunk'ın iki ucunda farklı VLAN'lara düşüyor.",
+      "intro": {
+        "what": "Bir trunk'ta native VLAN'ın çerçeveleri etiketsiz gider. SW1'in trunk'ı native VLAN 99 kullanıyor, SW2'ninki varsayılan VLAN 1. Bu yüzden SW2'den gelen etiketsiz çerçeveler SW1'de VLAN 99'a düşüyor.",
+        "why": "İki uç native VLAN'da anlaşmalı. Uyuşmazlıkta native VLAN'ın trafiği bozulur ya da yanlış VLAN'a sızar; etiketli VLAN'lar ise çalışmaya devam ettiği için fark etmesi zordur.",
+        "realWorld": "Native VLAN'ı 1'den farklı (99 gibi kullanılmayan bir VLAN) yapmak yaygın bir sıkılaştırma adımıdır. Cisco switch'ler iki taraf farklıysa '%CDP-4-NATIVE_VLAN_MISMATCH' kaydı düşer."
+      },
+      "steps": {
+        "compareTrunks": {
+          "title": "Trunk'ları karşılaştır",
+          "detail": "SW1'de ve SW2'de Fa0/8'i aç: ikisi de trunk, ama native VLAN SW1'de 99, SW2'de 1. PC1 (SW1, VLAN 1), PC3'e (SW2, VLAN 1) ping atamıyor."
+        },
+        "watchReply": {
+          "title": "Kaybolan çerçeveleri izle",
+          "detail": "Simülasyon modunda PC1'den PC3'e ping at. SW1, VLAN 1 çerçevelerini etiketli gönderir (SW1'in native VLAN'ı değil). SW2'nin VLAN 1'deki yanıtları etiketsiz çıkar ve SW1 onları PC1'in olmadığı VLAN 99'a koyar."
+        },
+        "fixNative": {
+          "title": "Native VLAN'ı eşitle",
+          "detail": "SW2'de Fa0/8'in native VLAN'ını SW1'deki gibi 99 yap. PC1'den PC3'e ping at: yanıtlar geliyor."
+        },
+        "taggedFine": {
+          "title": "Etiketli VLAN'lar etkilenmedi",
+          "detail": "PC2'den PC4'e (192.168.10.12) ping at: VLAN 10 baştan beri çalışıyordu, çünkü çerçeveleri hep etiket taşıyor."
+        }
+      },
+      "breakIt": {
+        "vlanLeak": {
+          "change": "Düzeltmeyi geri al (SW2'de native VLAN 1) ve PC1'in portunu VLAN 99'a al.",
+          "result": "PC1 (VLAN 99) artık PC3'e (VLAN 1) ulaşıyor: etiketsiz çerçeveler VLAN'lar arasında atlıyor. Uyuşmazlığın aynı zamanda bir güvenlik sorunu olmasının sebebi bu."
+        },
+        "bothDefault": {
+          "change": "İki trunk'ın da native VLAN'ını 1 yap.",
+          "result": "Bu da çalışır: native VLAN'ın yalnızca eşleşmesi gerekir. 99 gibi kullanılmayan bir VLAN seçmek zorunluluk değil, bir güvenlik alışkanlığıdır."
+        }
+      },
+      "topics": [
+        "Native VLAN",
+        "Trunk",
+        "802.1Q",
+        "VLAN atlama"
+      ]
+    },
+    "switchingAllowedVlans": {
+      "title": "Trunk'ta izin verilen VLAN'lar",
+      "summary": "Bir trunk yalnızca izin listesindeki VLAN'ları taşır.",
+      "intro": {
+        "what": "'switchport trunk allowed vlan' bir trunk'ın hangi VLAN'ları taşıyacağını sınırlar. Buradaki iki trunk da yalnızca VLAN 10'a izin veriyor; VLAN 20 iki switch'te de var ama karşıya geçemiyor.",
+        "why": "Budama (pruning), bir VLAN'ın yayınlarını kimsenin ihtiyacı olmayan hatlardan uzak tutar ve VLAN'ın nereye ulaşabileceğini sınırlar. Ama listede olmayan bir VLAN, her şey doğru görünse de kesilir.",
+        "realWorld": "'VLAN'ı oluşturdum, portu ayarladım, yine çalışmıyor' şikâyetinin arkasında çoğu zaman bir uplink'in izin listesi vardır. IOS'ta 'switchport trunk allowed vlan add 20' listeyi genişletir; 'add' olmadan liste baştan yazılır."
+      },
+      "steps": {
+        "readAllowed": {
+          "title": "İzin listesini oku",
+          "detail": "SW1'de ve SW2'de Fa0/8'i aç: trunk, izin verilen VLAN'lar: 10. PC1, PC3'e (VLAN 10) ulaşıyor; PC2, PC4'e (VLAN 20) ulaşamıyor."
+        },
+        "watchDrop": {
+          "title": "VLAN 20'nin nerede durduğunu gör",
+          "detail": "Simülasyon modunda PC2'den PC4'e ping at: ARP isteği SW1'de VLAN 20 içinde dağıtılır ama trunk'tan hiç çıkmaz."
+        },
+        "allowVlan20": {
+          "title": "VLAN 20'ye izin ver",
+          "detail": "İki switch'te de Fa0/8'in izin verilen VLAN'larını 10 ve 20 yap. PC2'den PC4'e ping at ve PC1'in hâlâ PC3'e ulaştığını kontrol et."
+        }
+      },
+      "breakIt": {
+        "oneEndOnly": {
+          "change": "VLAN 20'ye yalnızca SW1'in trunk'ında izin ver.",
+          "result": "SW1 artık VLAN 20 çerçevelerini gönderiyor, ama SW2 onları geldiği anda atıyor: trunk'ın iki ucu da VLAN'a izin vermeli."
+        },
+        "missingFromDatabase": {
+          "change": "İki trunk'ta da 20'ye izin verilmişken VLAN 20'yi SW2'den sil.",
+          "result": "Yine bozuk: trunk yalnızca hem izin verilen hem de switch'in VLAN veritabanında olan VLAN'ları taşır."
+        }
+      },
+      "topics": [
+        "Trunk",
+        "İzin verilen VLAN'lar",
+        "VLAN budama"
+      ]
+    },
+    "switchingRouterOnAStick": {
+      "title": "Router-on-a-stick",
+      "summary": "Tek router portu, her VLAN'a bir alt arayüz ve aralarında yönlendirme.",
+      "intro": {
+        "what": "R1'in Gi0/0 portu SW1'e giden bir trunk ve her VLAN için bir alt arayüzü (sub-interface) var: Gi0/0.10 (802.1Q VLAN 10, 192.168.10.1) VLAN 10'un ağ geçidi. VLAN 20'nin henüz ağ geçidi yok.",
+        "why": "VLAN'lar ağları ayırır; router onları istediğin yerde yeniden birleştirir. Alt arayüzlerle tek bir fiziksel port birçok VLAN'a yeter.",
+        "realWorld": "Tek router'lı küçük yerler ve lablar router-on-a-stick kullanır: 'interface Gi0/0.20', 'encapsulation dot1Q 20', 'ip address 192.168.20.1 255.255.255.0'. VLAN'lar arası trafikte darboğaz trunk bağlantısı olur."
+      },
+      "steps": {
+        "pingOwnGateway": {
+          "title": "VLAN 10'un ağ geçidine ping at",
+          "detail": "PC1'den 192.168.10.1'e ping at: R1 trunk üzerinden yanıt verir. PC2'den 192.168.20.1'e ping at: yanıt veren bir ağ geçidi yok."
+        },
+        "addSubInterface": {
+          "title": "Gi0/0.20'yi ekle",
+          "detail": "R1'de Gi0/0'a VLAN 20 için (dot1Q 20) 192.168.20.1/24 adresli bir alt arayüz ekle. Sonra PC1'den PC2'ye (192.168.20.11) ping at."
+        },
+        "tracertStick": {
+          "title": "Yolu izle",
+          "detail": "PC1'de tracert 192.168.20.11 çalıştır: 1. sekme 192.168.10.1, 2. sekme PC2. Paket trunk'tan R1'e çıktı ve aynı kablodan VLAN 20'de geri indi."
+        },
+        "watchTags": {
+          "title": "İki etiketi de gör",
+          "detail": "Simülasyon modunda PC1'den PC2'ye ping at ve trunk üzerindeki çerçeveleri incele: R1'e giderken 10, R1'den dönerken 20 etiketini taşıyorlar."
+        }
+      },
+      "breakIt": {
+        "accessUplink": {
+          "change": "SW1'in Fa0/8 portunu access moduna (VLAN 1) al.",
+          "result": "R1 artık yalnızca etiketsiz çerçeve alıyor ve hiçbir alt arayüz bunlara uymuyor: iki VLAN da ağ geçidini kaybeder."
+        },
+        "wrongDot1q": {
+          "change": "Gi0/0.20'yi dot1Q 30 yap.",
+          "result": "Alt arayüz artık VLAN 30'u dinliyor. PC2'nin ağ geçidine attığı ping'ler 'Destination host unreachable' ile biter."
+        }
+      },
+      "topics": [
+        "VLAN'lar arası yönlendirme",
+        "Alt arayüz",
+        "802.1Q",
+        "Trunk"
+      ]
+    },
+    "switchingSvi": {
+      "title": "SVI ile VLAN'lar arası yönlendirme",
+      "summary": "Katman 3 switch, kendi VLAN'ları arasında yönlendirme yapar.",
+      "intro": {
+        "what": "MLS1 bir katman 3 switch. Her VLAN bir sanal switch arayüzü (SVI) alır: 192.168.10.1 adresli interface Vlan10, VLAN 10'un ağ geçidi. 'ip routing' açıkken switch SVI'ları arasında yönlendirme yapar.",
+        "why": "Harici bir router'a trunk gerekmez: switch donanımda yönlendirir, router-on-a-stick'ten çok daha hızlıdır ve her yeni VLAN için yalnızca bir VLAN, bir SVI ve portlar yeter.",
+        "realWorld": "Çoğu şirketin çekirdek ya da dağıtım switch'i VLAN'lar arasında SVI'larla yönlendirir; router yalnızca WAN'ı ve interneti üstlenir. Katman 3 switch'te 'ip routing' varsayılan olarak kapalıdır: klasik bir unutulan komut."
+      },
+      "steps": {
+        "pingSvi": {
+          "title": "SVI'a ping at",
+          "detail": "PC1'den 192.168.10.1'e ping at: MLS1'in SVI'ı yanıt verir. PC2'ye (192.168.20.11) ping at: 'Request timed out'. Switch iki SVI'a da sahip ama henüz yönlendirme yapmıyor."
+        },
+        "enableRouting": {
+          "title": "ip routing'i aç",
+          "detail": "MLS1'de IP yönlendirmeyi aç ve PC1'den PC2'ye yeniden ping at."
+        },
+        "addVlan30": {
+          "title": "VLAN 30'u ekle",
+          "detail": "PC3 (192.168.30.11, ağ geçidi .30.1) VLAN 1'de. MLS1'de VLAN 30'u oluştur, 192.168.30.1/24 adresli Vlan30 SVI'ını ekle ve Gi1/0/3'ü VLAN 30'a al. PC3'ten PC1'e ping at."
+        },
+        "compareStick": {
+          "title": "Router-on-a-stick ile karşılaştır",
+          "detail": "PC1'de tracert 192.168.20.11 çalıştır: 1. sekme 192.168.10.1, 2. sekme PC2. Mantık router-on-a-stick ile aynı, ama yönlendirme bir router'a trunk olmadan switch'in içinde oluyor."
+        }
+      },
+      "breakIt": {
+        "sviShutdown": {
+          "change": "Vlan20 arayüzünü kapat (shutdown).",
+          "result": "VLAN 20 ağ geçidini kaybeder: PC2'nin diğer VLAN'lara attığı ping'ler 'Destination host unreachable' ile biter."
+        },
+        "deleteVlan10": {
+          "change": "VLAN 10'u MLS1'in VLAN veritabanından sil.",
+          "result": "Gi1/0/1 portu da Vlan10 SVI'ı da kapanır: PC1 ağ geçidine bile ulaşamaz."
+        }
+      },
+      "topics": [
+        "SVI",
+        "Katman 3 switch",
+        "ip routing",
+        "VLAN'lar arası yönlendirme"
+      ]
+    },
+    "routingStaticDefault": {
+      "title": "Statik ve varsayılan rotalar",
+      "summary": "İki yer, iki router: her birine diğerinin ve internetin yolunu öğret.",
+      "intro": {
+        "what": "Bir router doğrudan bağlı alt ağlarını kendiliğinden bilir. Geri kalan her şey için bir rota gerekir: statik rota bir ağı ve ona giden sonraki sekmeyi (next hop) söyler; varsayılan rota (0.0.0.0/0) daha iyi eşleşmesi olmayan her hedefi yakalar.",
+        "why": "Paketler hem gidiş hem dönüş yolunu bulmalı: yoldaki her router'ın hedefe ve yanıt için kaynağa giden bir rotası olmalı.",
+        "realWorld": "Küçük ağlar ve şubeler statik rotalar ve servis sağlayıcıya giden bir varsayılan rota kullanır; büyük ağlar rotaları dinamik olarak öğrenir (OSPF ve diğerleri sonraki bir pakette geliyor). IOS: 'ip route 192.168.2.0 255.255.255.0 10.0.0.2'."
+      },
+      "steps": {
+        "readTable": {
+          "title": "R1'in rotalarını oku",
+          "detail": "R1'in yönlendirme ayarlarını aç: servis sağlayıcıya giden bir varsayılan rota. 192.168.2.0/24 için hiçbir şey yok, bu yüzden PC1'den PC2'ye atılan ping 192.168.1.1'den 'Destination host unreachable' alır."
+        },
+        "staticBothWays": {
+          "title": "İki yönde rotalar",
+          "detail": "R1'e 10.0.0.2 üzerinden 192.168.2.0 255.255.255.0 rotasını ekle. PC1'den PC2'ye ping at: 'Request timed out', yanıt eksik. R2'ye 10.0.0.1 üzerinden 192.168.1.0 255.255.255.0 rotasını ekle ve yeniden ping at."
+        },
+        "defaultOnR2": {
+          "title": "R2'de varsayılan rota",
+          "detail": "PC2 8.8.8.8'e ulaşamıyor: R2 internete giden bir yol bilmiyor. R2'ye 10.0.0.1 üzerinden 0.0.0.0 0.0.0.0 varsayılan rotasını ekle ve PC2'den 8.8.8.8'e ping at."
+        },
+        "tracertInternet": {
+          "title": "İnternete giden yolu izle",
+          "detail": "PC2'de tracert 8.8.8.8 çalıştır: 192.168.2.1 (R2), 10.0.0.1 (R1), sonra 8.8.8.8."
+        }
+      },
+      "breakIt": {
+        "wrongNextHop": {
+          "change": "R1'in 192.168.2.0/24 rotasının sonraki sekmesini 10.0.0.3 yap.",
+          "result": "10.0.0.3 kimsede yok: R1 teslim edemez ve PC1, 192.168.1.1'den 'Destination host unreachable' alır."
+        },
+        "removeReturnRoute": {
+          "change": "R2'nin 192.168.1.0/24 rotasını sil ama varsayılan rotasını bırak.",
+          "result": "Yine çalışır: R1 üzerinden giden varsayılan rota 192.168.1.0/24'ü de kapsıyor. Varsayılan rotayı da silersen yanıtlar yine kaybolur."
+        }
+      },
+      "topics": [
+        "Statik rota",
+        "Varsayılan rota",
+        "Sonraki sekme",
+        "Yönlendirme tablosu"
+      ]
+    },
+    "routingFloatingStatic": {
+      "title": "Yüzen (floating) statik rota",
+      "summary": "Yalnızca ana hat kopunca devreye giren bir yedek rota.",
+      "intro": {
+        "what": "Yüzen statik rota, daha yüksek yönetimsel mesafeye (administrative distance; burada 1 yerine 5) sahip bir yedek rotadır. Ana rota kullanılabilir olduğu sürece gizli kalır; ana bağlantı koparsa devreye girer.",
+        "why": "R1 ile R2 doğrudan (ana hat, 10.0.12.0/30) ve R3 üzerinden (yedek) bağlı. Ana kablo az önce çıkarıldı ('fiber kesildi'): R1'in 192.168.2.0/24'e giden kullanılabilir bir rotası kalmadı.",
+        "realWorld": "Fiber hattı ve 4G ya da ikinci servis sağlayıcı yedeği olan şubeler yüzen statik rota kullanır: 'ip route 192.168.2.0 255.255.255.0 10.0.13.2 5'. Yedek her iki yönde de gerekir, yoksa yanıtlar hâlâ ölü hattı dener."
+      },
+      "steps": {
+        "outage": {
+          "title": "Kesintiyi gör",
+          "detail": "R1 ile R2 arasındaki kablo çıkarılmış (bağlantı ışığı sönük). PC1, PC2'ye ping atamıyor. R2'nin zaten bir yedek rotası var (10.0.23.1 üzerinden 192.168.1.0/24, mesafe 5); R1'in yok."
+        },
+        "addFloating": {
+          "title": "R1'in yüzen rotasını ekle",
+          "detail": "R1'e 10.0.13.2 üzerinden, yönetimsel mesafesi 5 olan 192.168.2.0 255.255.255.0 rotasını ekle. PC1'den PC2'ye ping at: R3 üzerinden çalışıyor."
+        },
+        "restorePrimary": {
+          "title": "Ana hattı yeniden tak",
+          "detail": "R1–R2 kablosunu yeniden tak ve PC1'de tracert 192.168.2.10 çalıştır: 2. sekme yine 10.0.12.2. Mesafe 1, 5'i yener; yedek geri çekilir."
+        },
+        "failover": {
+          "title": "Yedeğe geçişi izle",
+          "detail": "Simülasyon modunda ana kabloyu yeniden çıkar ve PC2'ye ping at: paketler artık R1 → R3 → R2 yolundan gidiyor (tracert 10.0.13.2 ve 10.0.23.2'yi gösterir)."
+        }
+      },
+      "breakIt": {
+        "noReturnBackup": {
+          "change": "Ana hat çıkarılmışken R2'nin yedek rotasını (10.0.23.1 üzerinden) sil.",
+          "result": "İstekler R3 üzerinden PC2'ye ulaşır, ama yanıtların geri dönecek kullanılabilir bir rotası yok: 'Request timed out'."
+        },
+        "shutInterface": {
+          "change": "Kabloyu çıkarmak yerine R1'in Gi0/1 portunu kapat (shutdown).",
+          "result": "Aynı geçiş: sonraki sekmesi kapalı bir arayüzün arkasında kalan rota tablodan çıkar ve yüzen rota devreye girer."
+        }
+      },
+      "topics": [
+        "Yüzen statik rota",
+        "Yönetimsel mesafe",
+        "Yedeklilik"
+      ]
+    },
+    "routingLoop": {
+      "title": "Yönlendirme döngüsü",
+      "summary": "İki router bir paketi TTL'i bitene kadar birbirine geri gönderiyor.",
+      "intro": {
+        "what": "R2'nin 192.168.3.0/24 rotası R3 yerine R1'i (10.0.12.1) gösteriyor. R1 paketi varsayılan rotasıyla R2'ye yollar, R2 onu R1'e geri yollar ve bu böyle sürer.",
+        "why": "Her router paketin TTL'ini (time to live, yaşam süresi) bir azaltır; sıfırda paketi atar ve göndericiye 'TTL expired in transit' yollar. TTL olmasaydı döngüdeki bir paket sonsuza dek dönerdi.",
+        "realWorld": "Döngüler statik rotalardaki yazım hatalarından, birbirini gösteren iki varsayılan rotadan ya da yeniden dağıtım (redistribution) hatalarından doğar. tracert onları hemen gösterir: aynı iki adres sırayla tekrarlanır."
+      },
+      "steps": {
+        "tracertLoop": {
+          "title": "Döngüyü bul",
+          "detail": "PC1'den 192.168.3.10'a ping at: 'Reply from 10.0.12.2: TTL expired in transit'. tracert 192.168.3.10 çalıştır: 192.168.1.1'den sonra sekmeler sırayla 10.0.12.2, 10.0.12.1, 10.0.12.2… diye gider."
+        },
+        "watchTtl": {
+          "title": "TTL'in düşüşünü izle",
+          "detail": "Simülasyon modunda 192.168.3.10'a bir kez ping at ve her sekmede echo isteğine tıkla: TTL her router'da bir azalıyor, R1 ile R2 arasında gidip geliyor, ta ki bir router ICMP 'time exceeded' gönderene kadar."
+        },
+        "fixRoute": {
+          "title": "R2'nin rotasını düzelt",
+          "detail": "R2'de 192.168.3.0/24 rotasının sonraki sekmesini 10.0.23.2 (R3) yap. PC1'den PC2'ye ping at."
+        }
+      },
+      "breakIt": {
+        "deleteRoute": {
+          "change": "Bunun yerine R2'nin 192.168.3.0/24 rotasını sil.",
+          "result": "Döngü yok ama rota da yok: 'Reply from 10.0.12.2: Destination host unreachable'. Eksik rota hızlı başarısız olur; döngü önce TTL'i tüketir."
+        },
+        "defaultsFacingEachOther": {
+          "change": "Düzeltmeden sonra R2'ye 10.0.12.1 üzerinden bir varsayılan rota ver ve PC1'den 172.16.0.1'e ping at.",
+          "result": "R1'in varsayılanı R2'yi, R2'ninki R1'i gösteriyor: bilinmeyen her adres artık döngüye giriyor ('TTL expired in transit')."
+        }
+      },
+      "topics": [
+        "Yönlendirme döngüsü",
+        "TTL",
+        "tracert",
+        "ICMP time exceeded"
+      ]
+    },
+    "packetArp": {
+      "title": "Adım adım ARP",
+      "summary": "İlk ping'den önce PC1'in PC2'nin MAC adresini bulması gerekiyor.",
+      "intro": {
+        "what": "Ethernet çerçeveleri IP adreslerine değil, MAC adreslerine teslim eder. ARP (Address Resolution Protocol), kendi alt ağındaki bir IP adresine ait MAC adresini bulur: yayınla (broadcast) bir soru, unicast bir yanıt.",
+        "why": "Bir komşuya giden her ilk paket ARP ile başlar. Başka alt ağlardaki hedefler için cihaz hedefi hiç ARP'lamaz, varsayılan ağ geçidini ARP'lar.",
+        "realWorld": "'arp -a' bir PC'nin ARP önbelleğini gösterir. Yanlış ya da eksik ARP yanıtları birçok 'Destination host unreachable' yanıtını açıklar: cihaz kapalı, kablosu çıkmış ya da başka bir VLAN'da."
+      },
+      "steps": {
+        "arpRequest": {
+          "title": "ARP isteği",
+          "detail": "Simülasyon moduna geç ve PC1'den 192.168.1.20'ye ping at, adım adım ilerle. İlk çerçeve FF:FF:FF:FF:FF:FF adresine giden bir ARP isteği: 'who has 192.168.1.20? tell 192.168.1.10'. SW1 onu R1 dahil her porta dağıtır."
+        },
+        "arpReply": {
+          "title": "ARP yanıtı",
+          "detail": "İlerlemeye devam et: yalnızca PC2, PC1'in MAC adresine unicast bir ARP yanıtıyla cevap verir. R1 de isteği alır ama sessiz kalır. Şimdi PC1, ICMP echo isteğini doğrudan PC2'nin MAC adresine gönderir."
+        },
+        "arpCache": {
+          "title": "ARP önbelleğini oku",
+          "detail": "PC1'de arp -a çalıştır: PC2'nin MAC adresiyle 192.168.1.20, türü dynamic. Simülasyon modunda PC2'ye yeniden ping at: bu kez ARP yok, önbellek yanıt veriyor."
+        },
+        "gatewayArp": {
+          "title": "Ağ geçidi için ARP",
+          "detail": "PC1'in varsayılan ağ geçidi yok, bu yüzden 192.168.2.10'a (PC3) ping anında başarısız olur. PC1'in ağ geçidini 192.168.1.1 yap ve Simülasyon modunda PC3'e ping at: PC1, PC3'ü değil 192.168.1.1'i ARP'lar; R1 de öbür tarafında PC3'ü ARP'lar."
+        }
+      },
+      "breakIt": {
+        "unplugPc2": {
+          "change": "PC2'nin kablosunu çıkar ve Simülasyon modunda PC1'den ona ping at.",
+          "result": "ARP istekleri yanıtsız kalır; zaman aşımından sonra ping, PC1'in kendi adresinden 'Destination host unreachable' gösterir."
+        },
+        "otherSubnet": {
+          "change": "PC2'ye 192.168.5.20 adresini ver ve PC1'den ona ping at (ağ geçidi ayarlıyken).",
+          "result": "PC1 artık PC2'yi ARP'lamaz: PC2 başka bir alt ağda, bu yüzden PC1 paketi ağ geçidinin MAC adresine gönderir."
+        }
+      },
+      "topics": [
+        "ARP",
+        "MAC adresi",
+        "Yayın (broadcast)",
+        "ARP önbelleği"
+      ]
+    },
+    "packetMacLearning": {
+      "title": "MAC öğrenme",
+      "summary": "Switch, kaynak adreslere bakarak her MAC adresinin nerede olduğunu öğrenir.",
+      "intro": {
+        "what": "Switch bir MAC adres tablosu tutar: her kaynak MAC için çerçevenin geldiği portu kaydeder. Bilinen bir MAC'e giden çerçeveler yalnızca o porttan çıkar; yayınlar ve bilinmeyen hedefler VLAN'ın bütün portlarına dağıtılır (flooding).",
+        "why": "Öğrenme sayesinde switch trafiği yalnızca ait olduğu yere gönderir; her şeyi her porta tekrarlayan hub'dan farkı budur.",
+        "realWorld": "Cisco switch'lerde 'show mac address-table' kayıtları listeler; bir uplink'te tek portta birçok MAC görürsün. Portu sürekli değişen bir MAC kaydı, bir döngünün ya da yer değiştiren bir cihazın işaretidir."
+      },
+      "steps": {
+        "floodFirst": {
+          "title": "İlk çerçeve dağıtılır",
+          "detail": "Simülasyon modunda PC1'den PC2'ye (192.168.1.12) ping at. ARP yayını SW1'e Fa0/1'den gelir; SW1, PC1'in MAC adresini Fa0/1'de öğrenir ve çerçeveyi Fa0/2, Fa0/3 ve Fa0/8'den dağıtır."
+        },
+        "learnedReply": {
+          "title": "Yanıt tek yöne gider",
+          "detail": "PC2'nin ARP yanıtı, SW1'in az önce öğrendiği PC1'in MAC adresine gidiyor: SW1 onu yalnızca Fa0/1'den iletir. PC3 onu hiç görmez. SW1 artık PC2'nin MAC adresini de Fa0/2'de öğrendi."
+        },
+        "plugPc4": {
+          "title": "PC4'ü tak",
+          "detail": "PC4'ün SW2'ye giden kablosu çıkarılmış. Tak ve PC1'den PC4'e (192.168.1.14) ping at."
+        },
+        "uplinkLearning": {
+          "title": "Uplink'te birçok MAC",
+          "detail": "Simülasyon modunda PC1'den PC4'e ping at ve yanıtı izle: SW1, PC4'ün MAC adresini uplink olan Fa0/8'de öğrenir. SW2'nin arkasındaki her cihaz o tek portta görünecek."
+        }
+      },
+      "breakIt": {
+        "hubInstead": {
+          "change": "SW2'nin yerine bir hub (hub8) koy ve PC4'ü ve uplink'i ona bağla.",
+          "result": "Yine çalışır, ama Simülasyon modunda SW1'den PC4'e giden her çerçeve hub'ın bütün portlarından çıkar: hub öğrenmez."
+        },
+        "unplugLearned": {
+          "change": "PC2'nin kablosunu çıkar ve Simülasyon modunda ona yeniden ping at.",
+          "result": "Port kapandı, bu yüzden SW1 o portta öğrendiği MAC'i unuttu. PC1'in ARP önbelleğinde PC2 hâlâ var ve echo isteğini gönderir; SW1 onu bilinmeyen unicast olarak diğer bütün portlardan dağıtır ve kimse yanıt vermez."
+        }
+      },
+      "topics": [
+        "MAC adres tablosu",
+        "Anahtarlama",
+        "Flooding",
+        "Hub"
+      ]
+    },
+    "packetTtlTracert": {
+      "title": "TTL ve tracert",
+      "summary": "tracert, yoldaki her router'ın kendini tanıtması için TTL'i kullanır.",
+      "intro": {
+        "what": "Her router bir paketin TTL'ini bir azaltır. tracert TTL'i 1, 2, 3… olan yoklamalar gönderir: TTL'in sıfıra indiği router ICMP 'time exceeded' ve kendi adresiyle yanıt verir; ta ki hedefin kendisi yanıt verene kadar.",
+        "why": "tracert yolu sekme sekme ve nerede bittiğini gösterir. Belirli bir router'dan sonra duran bir yol, bir sonraki cihazı işaret eder: eksik bir rota, kopuk bir bağlantı ya da eksik bir dönüş yolu.",
+        "realWorld": "Destek ekipleri trafiğin nerede durduğunu görmek için tracert (Linux ve macOS'ta traceroute) kullanır. Unutma: her sekmenin de yanıt verebilmesi gerekir; eksik bir dönüş rotası ölü bir sekme gibi görünür."
+      },
+      "steps": {
+        "tracertStops": {
+          "title": "Duran bir tracert",
+          "detail": "PC1'de tracert 192.168.3.10 çalıştır: 1. sekme 192.168.1.1 (R1), 2. sekme 10.0.12.2 (R2), sonra yalnızca 'Request timed out'. R3 yoklamaları alıyor ama yanıt vermek için 192.168.1.0/24'e dönüş rotası yok."
+        },
+        "addReturnRoute": {
+          "title": "R3'e dönüş yolu ver",
+          "detail": "R3'e 10.0.23.1 üzerinden 0.0.0.0 0.0.0.0 varsayılan rotasını ekle. tracert'i yeniden çalıştır: 192.168.1.1, 10.0.12.2, 10.0.23.2, 192.168.3.10."
+        },
+        "watchTtl": {
+          "title": "Yoklamaları izle",
+          "detail": "Simülasyon modunda tracert 192.168.3.10 çalıştır ve yoklamaları incele: ilkinin TTL'i 1 ve R1'de ölür, R1 'time exceeded' gönderir; sonrakinin TTL'i 2 ve R2'de ölür, böyle devam eder."
+        },
+        "replyTtl": {
+          "title": "Yanıtın TTL'ini oku",
+          "detail": "PC1'den PC2'ye ping at: 'TTL=125'. PC2 yanıtını TTL 128 ile (Windows) gönderdi ve üç router her biri bir eksiltti."
+        }
+      },
+      "breakIt": {
+        "removeMiddleRoute": {
+          "change": "R2'nin 192.168.3.0/24 rotasını sil.",
+          "result": "tracert 3. sekmede '10.0.12.2 reports: Destination host unreachable' ile biter: R2 rotası olmadığını söylüyor."
+        },
+        "makeLoop": {
+          "change": "R2'nin 192.168.3.0/24 rotasını 10.0.12.1'e (R1) yönlendir.",
+          "result": "Bir yönlendirme döngüsü: tracert 30. sekmeye kadar 10.0.12.2 ile 10.0.12.1 arasında gidip gelir (yönlendirme döngüsü örneğine bak)."
+        }
+      },
+      "topics": [
+        "TTL",
+        "tracert",
+        "ICMP time exceeded",
+        "Sekmeler"
+      ]
+    }
+  }
+}

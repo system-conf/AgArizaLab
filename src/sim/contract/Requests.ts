@@ -94,8 +94,27 @@ export type EchoResult =
 
 export interface PingResult {
   readonly kind: 'ping'
-  /** In sequence order; complete when the record is done. */
+  /**
+   * In sequence order: every echo result so far, or the latest SIM_LIMITS.echoResultsKept of them once a
+   * long ping (`count` 1e9) passed that many. `stats` always covers all of them.
+   */
   readonly echoes: readonly EchoResult[]
+  readonly stats: PingStats
+}
+
+/** Counters over every echo result of a ping, also those no longer kept in `echoes`. */
+export interface PingStats {
+  /** Echo results reported (= echoes that ended). */
+  readonly results: number
+  readonly replies: number
+  /** ICMP errors about an echo (unreachable, TTL expired): Windows counts them as received. */
+  readonly errors: number
+  readonly timeouts: number
+  readonly localFailures: number
+  /** Round trip times of the replies; null before the first reply. */
+  readonly minRttMs: number | null
+  readonly maxRttMs: number | null
+  readonly totalRttMs: number
 }
 
 export type TracertProbeResult =

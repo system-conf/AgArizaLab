@@ -13,6 +13,7 @@ import {
   type Ipv4Send,
   type Ipv4SendResult,
   type NetworkLayer,
+  PingTally,
   type SimEvent,
   type SimLayers,
   type SimOptions,
@@ -52,7 +53,7 @@ class StubNetworkLayer implements NetworkLayer {
       event.conclude('delivered', 3)
       if (payload.kind === 'icmp' && payload.type === 'echoReply' && event.flowId.startsWith('r')) {
         const echo = { kind: 'reply', sequence: payload.sequence, requestPduId: 'stub', fromIp: packet.src, ttl: packet.ttl, bytes: payload.dataBytes, rttMs: 0 } as const
-        ctx.report(event.flowId, { kind: 'ping', echoes: [echo] }, true)
+        ctx.report(event.flowId, PingTally.of([echo]), true)
       }
       return
     }
@@ -111,14 +112,14 @@ class StubNetworkLayer implements NetworkLayer {
   onUndeliverable(ctx: DeviceContext, failure: Undeliverable): void {
     if (!failure.ids.flowId.startsWith('r') || failure.ingressInterfaceId !== undefined) return
     const echo = { kind: 'unreachable', sequence: 1, requestPduId: failure.ids.pduId, fromIp: failure.packet.src, code: 'host' } as const
-    ctx.report(failure.ids.flowId, { kind: 'ping', echoes: [echo] }, true)
+    ctx.report(failure.ids.flowId, PingTally.of([echo]), true)
   }
 
   onRequest(ctx: DeviceContext, requestId: string, request: SimRequest): void {
     if (request.kind !== 'ping') return ctx.report(requestId, { kind: 'cleared', entries: 0 }, true)
     const payload = { kind: 'icmp', type: 'echoRequest', identifier: 1, sequence: 1, dataBytes: request.size } as const
     const result = this.send(ctx, { ids: ctx.newPdu(requestId), dst: request.targetIp, payload })
-    if (!result.ok) ctx.report(requestId, { kind: 'ping', echoes: [{ kind: 'localFailure', sequence: 1, reason: result.reason }] }, true)
+    if (!result.ok) ctx.report(requestId, PingTally.of([{ kind: 'localFailure', sequence: 1, reason: result.reason }]), true)
   }
 }
 

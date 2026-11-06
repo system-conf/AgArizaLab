@@ -5,6 +5,7 @@ import {
   type LinkRuntime,
   type MacTableEntry,
   type PendingPacket,
+  type SeenFrame,
   SIM_TIMING,
 } from '../contract'
 import { RuntimeTables } from '../core/RuntimeTables'
@@ -25,18 +26,28 @@ export class LinkTables {
   // ------------------------------------------------------------ MAC table
 
   static macLookup(ctx: DeviceContext, vlan: number, mac: string): MacTableEntry | undefined {
-    return RuntimeTables.macTable(ctx.runtime, ctx.now).find((entry) => entry.vlan === vlan && entry.mac === mac)
+    const { now } = ctx
+    for (const entry of ctx.runtime.link.macTable) {
+      if (entry.vlan === vlan && entry.mac === mac && RuntimeTables.isLive(entry, now)) return entry
+    }
+    return undefined
   }
 
+  /** One pass over the table (a core switch knows every MAC of the lab, and learns on every frame). */
   static learnMac(ctx: DeviceContext, vlan: number, mac: string, portId: string): MacLearning {
     const known = LinkTables.macLookup(ctx, vlan, mac)
     if (known?.type === 'static') return 'static'
     const outcome: MacLearning = known?.portId === portId ? 'refreshed' : 'learned'
-    const entry: MacTableEntry = { vlan, mac, portId, type: 'dynamic', learnedAt: ctx.now, expiresAt: ctx.now + SIM_TIMING.macAgeMs }
-    LinkTables.update(ctx, (link) => ({
-      ...link,
-      macTable: [...LinkTables.liveMac(link, ctx.now).filter((old) => old.vlan !== vlan || old.mac !== mac), entry],
-    }))
+    const { now } = ctx
+    const entry: MacTableEntry = { vlan, mac, portId, type: 'dynamic', learnedAt: now, expiresAt: now + SIM_TIMING.macAgeMs }
+    LinkTables.update(ctx, (link) => {
+      const macTable: MacTableEntry[] = []
+      for (const old of link.macTable) {
+        if (RuntimeTables.isLive(old, now) && (old.vlan !== vlan || old.mac !== mac)) macTable.push(old)
+      }
+      macTable.push(entry)
+      return { ...link, macTable }
+    })
     return outcome
   }
 
@@ -108,9 +119,14 @@ export class LinkTables {
   /** True when the frame id passed this device in the last SIM_TIMING.seenFrameMs; records it otherwise. */
   static seenBefore(ctx: DeviceContext, frameId: string): boolean {
     const since = ctx.now - SIM_TIMING.seenFrameMs
-    const recent = ctx.runtime.link.seenFrames.filter((seen) => seen.at > since)
-    if (recent.some((seen) => seen.frameId === frameId)) return true
-    LinkTables.update(ctx, (link) => ({ ...link, seenFrames: [...recent, { frameId, at: ctx.now }] }))
+    const recent: SeenFrame[] = []
+    for (const seen of ctx.runtime.link.seenFrames) {
+      if (seen.at <= since) continue
+      if (seen.frameId === frameId) return true
+      recent.push(seen)
+    }
+    recent.push({ frameId, at: ctx.now })
+    LinkTables.update(ctx, (link) => ({ ...link, seenFrames: recent }))
     return false
   }
 

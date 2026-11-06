@@ -20,6 +20,12 @@ export const namespaces = [
   'simulation',
   'design',
   'designBriefs',
+  // SL0 (sample labs contract): docs/SAMPLE_LABS.md
+  'samples',
+  // K4 (CLI contract): docs/CLI.md
+  'cli',
+  // C4 (host commands): src/cli/host
+  'hostCli',
 ] as const
 
 export type Namespace = (typeof namespaces)[number]

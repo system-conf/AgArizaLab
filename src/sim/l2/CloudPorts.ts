@@ -100,7 +100,7 @@ export class CloudPorts {
    * (engine rule: WAN down = silence).
    */
   private static refusal(ctx: DeviceContext, portId: string, linkId: string, event: EventBuilder, arp: boolean): 'ispNoService' | 'ispServiceDown' | null {
-    const link = ctx.network.links.find((candidate) => candidate.id === linkId)
+    const link = ctx.topology.linksAt(ctx.device.id, portId).find((candidate) => candidate.id === linkId)
     const far = link ? ctx.topology.farEnd(link, ctx.device.id, portId) : undefined
     if (far?.port?.role !== 'routed') {
       event.note(2, 'in', localizedMessage('simulation:notes.l2.ispNoService', { port: portId }))

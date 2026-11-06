@@ -8,6 +8,7 @@ import {
   type LinkSend,
   type LinkTimer,
   type PendingPacket,
+  SIM_LIMITS,
   SIM_TIMING,
   type Undeliverable,
   UNSPECIFIED_IP,
@@ -20,13 +21,19 @@ import { LinkTables } from './LinkTables'
 /**
  * Address resolution on the sending side (docs/SIMULATION.md §3.4, §7.1): packets wait in
  * `runtime.link.pending` while ARP asks (3 requests, 1000 ms apart); a reply releases them as 'sent'
- * with a new frame id, silence drops them (`arpTimeout`) and tells the network layer.
+ * with a new frame id, silence drops them (`arpTimeout`) and tells the network layer. One next hop holds
+ * at most SIM_LIMITS.arpPendingPerNextHop packets; a further one is dropped at once ('arpQueueFull',
+ * no ICMP error: like a real full queue, the sender only notices a timeout).
  */
 export class ArpResolver {
   /** The next hop is not resolved: the packet waits, and an ARP request goes out unless one already did. */
   static buffer(ctx: DeviceContext, iface: L3Interface, request: LinkSend, frameId: string, routed: boolean): void {
     const { event, packet, nextHopIp } = request
     event.setOutbound(packet)
+    if (ArpResolver.waiting(ctx, iface.id, nextHopIp) >= SIM_LIMITS.arpPendingPerNextHop) {
+      event.note(2, 'out', localizedMessage('simulation:notes.l2.arpQueueFull', { ip: nextHopIp, limit: SIM_LIMITS.arpPendingPerNextHop }))
+      return event.conclude('dropped', 2, 'arpQueueFull')
+    }
     event.note(2, 'out', localizedMessage('simulation:notes.l2.packetBuffered', { ip: nextHopIp }))
     event.conclude('buffered', routed ? 3 : LinkInterfaces.layerOf(packet))
     LinkTables.addPending(ctx, {
@@ -92,6 +99,13 @@ export class ArpResolver {
       droppedEventId: event.id,
       ...(packet.ingressInterfaceId === undefined ? {} : { ingressInterfaceId: packet.ingressInterfaceId }),
     })
+  }
+
+  /** Packets already waiting for this next hop (bounded by SIM_LIMITS.arpPendingPerNextHop). */
+  private static waiting(ctx: DeviceContext, interfaceId: string, ip: string): number {
+    let count = 0
+    for (const packet of ctx.runtime.link.pending) if (packet.interfaceId === interfaceId && packet.nextHopIp === ip) count += 1
+    return count
   }
 
   private static request(ctx: DeviceContext, iface: L3Interface, ip: string, flowId: string, causeEventId: number | undefined, attempt: number): void {

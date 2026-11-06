@@ -22,6 +22,7 @@ import {
   type LinkSend,
   type NetworkLayer,
   PduLayers,
+  PingTally,
   type SimLayers,
   SIM_TTL,
   type SimNote,
@@ -112,7 +113,7 @@ class StubNetworkLayer implements NetworkLayer {
   onTimer(): void {}
 
   onRequest(ctx: DeviceContext, requestId: string): void {
-    ctx.report(requestId, { kind: 'ping', echoes: [] }, true)
+    ctx.report(requestId, PingTally.of([]), true)
   }
 
   send(ctx: DeviceContext, request: Ipv4Send): Ipv4SendResult {

@@ -14,6 +14,11 @@ export interface RouteContext {
   briefIds?: readonly string[]
   /** Design (D2): brief whose submitted design is in memory (review ready), or null. */
   reviewBriefId?: string | null
+  /**
+   * SL1 (sample labs): ids of the available samples. Absent = not known here: the sample routes
+   * render and the lazily loaded sample module resolves them again with the ids.
+   */
+  sampleIds?: readonly string[]
 }
 
 export type RouteDecision = { kind: 'render' } | { kind: 'redirect'; to: AppRoute; keepHash: boolean }
@@ -38,6 +43,7 @@ export class RouteResolver {
       case 'lab':
       case 'exercises':
       case 'designs':
+      case 'samples':
         return RENDER
       case 'notFound':
         return redirect({ name: 'landing' })
@@ -54,6 +60,10 @@ export class RouteResolver {
         if (!context.briefIds.includes(route.briefId)) return redirect({ name: 'designs' })
         if (route.name === 'designReview' && (context.reviewBriefId ?? null) !== route.briefId) return redirect({ name: 'design', briefId: route.briefId })
         return RENDER
+      // SL1 (sample labs): an unknown or unavailable sample → the sample list.
+      case 'sample':
+        if (context.sampleIds === undefined || context.sampleIds.includes(route.sampleId)) return RENDER
+        return redirect({ name: 'samples' })
     }
   }
 }

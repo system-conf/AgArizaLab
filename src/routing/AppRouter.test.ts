@@ -62,6 +62,10 @@ describe('AppRouteCodec', () => {
     ['/design/', { name: 'designs' }],
     ['/design/smallOffice', { name: 'design', briefId: 'smallOffice' }],
     ['/design/smallOffice/review', { name: 'designReview', briefId: 'smallOffice' }],
+    // SL1 (sample labs)
+    ['/samples', { name: 'samples' }],
+    ['/samples/', { name: 'samples' }],
+    ['/samples/twoPcsSwitch', { name: 'sample', sampleId: 'twoPcsSwitch' }],
   ]
 
   it.each(cases)('parses %s', (path, route) => {
@@ -82,6 +86,11 @@ describe('AppRouteCodec', () => {
     '/design/small-office',
     '/design/x/report',
     '/design/x/review/more',
+    // SL1 (sample labs)
+    '/samples/two-pcs',
+    '/samples/twoPcs/more',
+    '/samples/1abc',
+    '/samples/%E0%A4%A',
   ]
 
   it.each(notFound)('treats %s as not found', (path) => {

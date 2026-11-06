@@ -35,6 +35,12 @@ export interface AppResources {
   simulation: typeof simulation
   design: typeof import('../locales/en/design.json')
   designBriefs: typeof import('../locales/en/designBriefs.json')
+  // SL0 (sample labs contract): docs/SAMPLE_LABS.md
+  samples: typeof import('../locales/en/samples.json')
+  // K4 (CLI contract): docs/CLI.md
+  cli: typeof import('../locales/en/cli.json')
+  // C4 (host commands): src/cli/host
+  hostCli: typeof import('../locales/en/hostCli.json')
 }
 
 declare module 'i18next' {

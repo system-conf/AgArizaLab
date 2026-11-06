@@ -123,7 +123,17 @@
     "terminal": {
       "stepToAnswer": "Waiting for the simulation: press Step forward or Play to get the answer.",
       "running": "Running…",
-      "cancelled": "The command was cancelled: the simulation was reset or stepped back before it ended."
+      "cancelled": "The command was cancelled: the simulation was reset or stepped back before it ended.",
+      "preparing": "Preparing the simulation… the command runs as soon as it is ready.",
+      "reverted": "Stepped back before this command finished: its change to the network (the DHCP address) was undone."
+    },
+    "prepare": {
+      "preparing": "Preparing the simulation…",
+      "dormant": "The simulation has not started yet: press Start simulation, switch to Simulation or type a command.",
+      "start": "Start simulation",
+      "startHint": "Build the simulation of this large lab now (it runs in the background; you can keep editing).",
+      "onDemand": "This lab has {{count}} devices: the simulation starts only when you need it (Start simulation, Simulation mode or a terminal command).",
+      "truncated": "This lab is very large: the start-up traffic was cut short, so the first steps still finish it."
     }
   },
   "actions": {
@@ -220,6 +230,7 @@
     "noSubInterface": "No sub-interface for this VLAN tag.",
     "l2Loop": "Layer-2 loop: the frame came back to a switch it already passed.",
     "arpTimeout": "ARP got no reply.",
+    "arpQueueFull": "Too many packets are already waiting for ARP.",
     "arpNotForUs": "The ARP request is for another address.",
     "unknownSsid": "The access point does not offer this SSID.",
     "ispServiceDown": "The internet provider line is down.",
@@ -283,6 +294,7 @@
       "arpReplyLearned": "The ARP reply says {{ip}} is at {{mac}}: the ARP cache is updated.",
       "arpCacheHit": "The ARP cache knows that {{ip}} is at {{mac}}.",
       "packetBuffered": "The packet waits until ARP resolves {{ip}}.",
+      "arpQueueFull": "{{limit}} packets already wait for ARP to resolve {{ip}} (the most a next hop holds): this one is dropped.",
       "packetReleased": "ARP resolved {{ip}}: the waiting packet is sent.",
       "arpTimeout": "No ARP reply from {{ip}} after {{attempts}} attempts: the waiting packets are dropped.",
       "arpProbe": "Duplicate address check: an ARP probe asks whether another device uses {{ip}}.",
@@ -299,7 +311,7 @@
       "floodNoPorts": "No other port carries VLAN {{vlan}}: the frame goes nowhere.",
       "sviDelivered": "The frame is addressed to the switch itself: interface {{iface}} takes it.",
       "sviCopy": "The switch also keeps a copy of the broadcast for its own interface {{iface}}.",
-      "sviCopyDiscarded": "Interface {{iface}} does not use its copy:",
+      "sviCopyDiscarded": "Interface {{iface}} discards its copy; the frame flooded to the other ports is not affected.",
       "sviEgress": "Interface {{iface}} sends into VLAN {{vlan}} through the switch's own ports.",
       "taggedAtNic": "A network card does not understand 802.1Q tags: the frame tagged for VLAN {{vlan}} is dropped.",
       "nativeSubInterface": "Untagged frame: the native sub-interface {{iface}} takes it.",

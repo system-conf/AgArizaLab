@@ -15,7 +15,7 @@ describe('ConfigLocks', () => {
     { scope: 'device', deviceId: 'pc', access: 'readOnly' },
     { scope: 'section', deviceId: 'pc', section: 'host', access: 'hidden' },
   ]
-  const policy = new ExerciseLockPolicy(locks)
+  const policy = new ExerciseLockPolicy(locks, [])
 
   it('applies only the locks of its own device', () => {
     const switchLocks = new ConfigLocks('sw', policy)

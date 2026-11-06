@@ -11,6 +11,7 @@ import {
   type LinkLayer,
   type NetworkLayer,
   type NetworkTimer,
+  PingTally,
   type SimLayers,
   type ServiceLayer,
   type SimRequest,
@@ -68,7 +69,7 @@ class ToyLinkLayer implements LinkLayer {
     }
     if (arp.operation === 'reply' && frame.dst === own.mac) {
       event.conclude('delivered', 2)
-      const result = { kind: 'ping', echoes: [{ kind: 'reply', sequence: 1, requestPduId: 'p0', fromIp: arp.senderIp, ttl: 128, bytes: 32, rttMs: ctx.now }] } as const
+      const result = PingTally.of([{ kind: 'reply', sequence: 1, requestPduId: 'p0', fromIp: arp.senderIp, ttl: 128, bytes: 32, rttMs: ctx.now }])
       ctx.report(arrival.ids.flowId, result, true)
       return
     }
@@ -113,7 +114,7 @@ class ToyNetworkLayer implements NetworkLayer {
   onTimer(ctx: DeviceContext, timer: NetworkTimer): void {
     if (timer.kind !== 'echoTimeout') return
     ctx.openEvent({ flowId: timer.requestId, protocol: 'icmp' }).conclude('timedOut', 3, 'requestTimedOut')
-    ctx.report(timer.requestId, { kind: 'ping', echoes: [{ kind: 'timeout', sequence: 1, requestPduId: 'p0' }] }, true)
+    ctx.report(timer.requestId, PingTally.of([{ kind: 'timeout', sequence: 1, requestPduId: 'p0' }]), true)
   }
 }
 

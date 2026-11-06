@@ -9,6 +9,7 @@ export interface FarEnd {
 }
 
 const cableRules = new CableRules()
+const NO_LINKS: readonly Link[] = []
 
 /**
  * Read-only index over one NetworkState (devices, ports, links per port, link status). States
@@ -20,7 +21,8 @@ export class Topology {
   readonly state: NetworkState
   private readonly devices = new Map<string, Device>()
   private readonly linksByDevice = new Map<string, Link[]>()
-  private readonly linksByPort = new Map<string, Link[]>()
+  /** Device id → port id → links (no composite string keys: the simulator asks this per frame). */
+  private readonly linksByPort = new Map<string, Map<string, Link[]>>()
   private readonly linkUp = new Map<string, boolean>()
 
   private constructor(state: NetworkState) {
@@ -29,7 +31,12 @@ export class Topology {
     for (const link of state.links) {
       for (const end of [link.a, link.b]) {
         this.push(this.linksByDevice, end.deviceId, link)
-        this.push(this.linksByPort, Topology.portKey(end.deviceId, end.portId), link)
+        let ports = this.linksByPort.get(end.deviceId)
+        if (!ports) {
+          ports = new Map()
+          this.linksByPort.set(end.deviceId, ports)
+        }
+        this.push(ports, end.portId, link)
       }
     }
   }
@@ -61,7 +68,7 @@ export class Topology {
 
   /** Links plugged into one port (radio ports hold several), in state order. */
   linksAt(deviceId: string, portId: string): readonly Link[] {
-    return this.linksByPort.get(Topology.portKey(deviceId, portId)) ?? []
+    return this.linksByPort.get(deviceId)?.get(portId) ?? NO_LINKS
   }
 
   /** The other end of `link` as seen from `deviceId`'s end `portId`. */
@@ -110,9 +117,5 @@ export class Topology {
     const list = map.get(key)
     if (list) list.push(link)
     else map.set(key, [link])
-  }
-
-  private static portKey(deviceId: string, portId: string): string {
-    return `${deviceId}\u0000${portId}`
   }
 }

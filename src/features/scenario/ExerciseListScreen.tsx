@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import DesignTasksCallout from '../design/list/DesignTasksCallout'
 import LandingFooter from '../landing/LandingFooter'
+import SamplesCallout from '../samples/SamplesCallout'
 import SiteHeader from '../layout/SiteHeader'
 import { useDocumentMeta } from '../layout/useDocumentMeta'
 import ProgressBar from './ProgressBar'
@@ -43,6 +44,8 @@ function ExerciseListScreen({ items, onStart }: ExerciseListScreenProps) {
           </ul>
           {/* Design (D2): link to the design tasks */}
           <DesignTasksCallout />
+          {/* SL1 (sample labs): link to the samples */}
+          <SamplesCallout />
         </section>
         <LandingFooter />
       </main>

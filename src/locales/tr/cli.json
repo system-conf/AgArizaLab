@@ -1,0 +1,42 @@
+{
+  "poweredOff": "Cihaz kapalı. Konsolu kullanmak için cihazı aç.",
+  "noCli": "Bu cihazın komut satırı yok.",
+  "onlyStartupConfig": "Bu laboratuvarda hedef olarak yalnızca startup-config kullanabilirsin.",
+  "busy": "Çalışıyor… komut ağdan yanıt bekliyor.",
+  "hints": {
+    "help": "Yardım için ? yaz; Tab kelimeyi tamamlar.",
+    "more": "Boşluk: sonraki sayfa · Enter: sonraki satır · başka bir tuş: durdur"
+  },
+  "unsupported": {
+    "spanningTree": "Spanning Tree (STP) henüz simüle edilmiyor: komut kabul edildi ama hiçbir şeyi değiştirmez."
+  },
+  "ui": {
+    "tabs": {
+      "cli": "CLI",
+      "config": "Yapılandırma"
+    },
+    "windowTitle": "Konsol – {{name}}",
+    "outputLabel": "Konsol çıktısı",
+    "inputLabel": "Konsol komutu",
+    "clear": "Temizle",
+    "locked": "% Yapılandırma alıştırma tarafından kilitli",
+    "readOnly": "Bu alıştırmada bu cihazın konsolu salt okunur: show komutları çalışır, yapılandırma komutları reddedilir.",
+    "problems": "Laboratuvar son değişikliği kabul etmedi:",
+    "config": {
+      "running": "Çalışan yapılandırma",
+      "startup": "Başlangıç yapılandırması",
+      "copy": "Kopyala",
+      "copyRunning": "Çalışan yapılandırmayı kopyala",
+      "copyStartup": "Başlangıç yapılandırmasını kopyala",
+      "copied": "Kopyalandı",
+      "copyFailed": "Kopyalanamadı",
+      "unsaved": "Çalışan yapılandırmada henüz kaydetmediğin değişiklikler var (copy running-config startup-config).",
+      "noStartup": "Henüz kaydedilmiş bir şey yok. Çalışan yapılandırmayı kaydetmek için CLI’da copy running-config startup-config (ya da write memory) yaz."
+    },
+    "export": {
+      "menuItem": "Yapılandırmaları dışa aktar",
+      "done": "Yapılandırmalar {{file}} olarak kaydedildi.",
+      "failed": "Yapılandırmalar dışa aktarılamadı."
+    }
+  }
+}

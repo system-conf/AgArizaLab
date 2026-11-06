@@ -59,6 +59,11 @@ export interface SimOptions {
    * the user starts from a quiet network. Default true.
    */
   readonly settle?: boolean
+  /**
+   * Budget of `settle`: tasks, and the virtual time up to which tasks run. Defaults
+   * `SIM_LIMITS.settleTaskLimit` / `SIM_LIMITS.settleTimeMs`. Past it see `SimulationEngine.settleTruncated`.
+   */
+  readonly settleBudget?: { readonly tasks?: number; readonly timeMs?: number }
   readonly latency?: LatencyModel
   /** Oldest events / transmissions are forgotten beyond this many. Default 50 000. */
   readonly maxRetainedEvents?: number
@@ -99,6 +104,11 @@ export interface ReconfigureReport {
  */
 export interface SimulationEngine {
   readonly time: number
+  /**
+   * `create` stopped the start-up traffic at its budget (`SimOptions.settleBudget`) before the network
+   * was quiet: the rest stays queued and runs with the next steps. False when settled or `settle: false`.
+   */
+  readonly settleTruncated: boolean
   /** Current configuration: the lab's plus the effects the simulation applied (DHCP leases). */
   network(): NetworkState
   runtime(deviceId: string): DeviceRuntime | undefined

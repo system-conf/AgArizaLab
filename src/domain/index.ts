@@ -2,6 +2,7 @@
 export type * from './PortTypes'
 export type * from './ServiceTypes'
 export type * from './DeviceTypes'
+export type * from './ManagementTypes'
 export type * from './LinkTypes'
 export type * from './NetworkState'
 export type * from './DeviceModel'

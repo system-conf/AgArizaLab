@@ -1,4 +1,4 @@
-import { ChevronDown, Download, FilePlus2, FileText, FolderOpen, Link2, Upload, type LucideIcon } from 'lucide-react'
+import { ChevronDown, Download, FileCode2, FilePlus2, FileText, FolderOpen, Link2, Upload, type LucideIcon } from 'lucide-react'
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { focusRing } from '../../shared/focusRing'
@@ -10,9 +10,11 @@ interface FileMenuProps {
   onOpenRecent: () => void
   /** Design (D2): opens the handover pack of the lab. */
   onHandover: () => void
+  /** CI (CLI integration): downloads the running-config of every device; absent = no menu item. */
+  onExportConfigs?: () => void
 }
 
-type ItemKey = 'newLab' | 'openRecent' | 'import' | 'export' | 'share' | 'handover'
+type ItemKey = 'newLab' | 'openRecent' | 'import' | 'export' | 'share' | 'handover' | 'exportConfigs'
 
 const ITEMS: readonly { key: ItemKey; icon: LucideIcon }[] = [
   { key: 'newLab', icon: FilePlus2 },
@@ -22,11 +24,15 @@ const ITEMS: readonly { key: ItemKey; icon: LucideIcon }[] = [
   { key: 'share', icon: Link2 },
   // Design (D2)
   { key: 'handover', icon: FileText },
+  // CI (CLI integration)
+  { key: 'exportConfigs', icon: FileCode2 },
 ]
 
 /** "File" menu button of the free lab (menu button pattern: arrows, Home / End, Esc, Tab closes). */
-function FileMenu({ actions, onOpenRecent, onHandover }: FileMenuProps) {
-  const { t } = useTranslation(['workspace', 'lab', 'design'])
+function FileMenu({ actions, onOpenRecent, onHandover, onExportConfigs }: FileMenuProps) {
+  const { t } = useTranslation(['workspace', 'lab', 'design', 'cli'])
+  // CI (CLI integration): "Export configs" only where the screen offers it.
+  const items = ITEMS.filter((item) => item.key !== 'exportConfigs' || onExportConfigs !== undefined)
   const [open, setOpen] = useState(false)
   const menuId = useId()
   const rootRef = useRef<HTMLDivElement>(null)
@@ -61,6 +67,8 @@ function FileMenu({ actions, onOpenRecent, onHandover }: FileMenuProps) {
         return actions.copyShareLink()
       case 'handover':
         return onHandover()
+      case 'exportConfigs':
+        return onExportConfigs?.()
     }
   }
 
@@ -97,6 +105,8 @@ function FileMenu({ actions, onOpenRecent, onHandover }: FileMenuProps) {
         return t('lab:actions.share')
       case 'handover':
         return t('design:ui.handover.menuItem')
+      case 'exportConfigs':
+        return t('cli:ui.export.menuItem')
     }
   }
 
@@ -128,7 +138,7 @@ function FileMenu({ actions, onOpenRecent, onHandover }: FileMenuProps) {
           onKeyDown={handleMenuKeyDown}
           className="absolute start-0 z-50 mt-1 w-60 rounded-xl border border-slate-200 bg-white p-1 shadow-lg"
         >
-          {ITEMS.map(({ key, icon: Icon }, index) => (
+          {items.map(({ key, icon: Icon }, index) => (
             <button
               key={key}
               ref={(element) => {

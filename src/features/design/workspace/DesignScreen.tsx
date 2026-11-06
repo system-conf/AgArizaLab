@@ -59,7 +59,7 @@ function DesignWorkspace({ brief, total, draft, onSubmit, onLeave }: DesignScree
   const [initial] = useState(() => (draft ? designLabs.relabel(draft.lab, draft.brief, brief) : designLabs.open(brief)))
   const lab = useLabDocument(initial, { autosave: false })
   const toasts = useToasts()
-  const policy = useMemo(() => new ExerciseLockPolicy(brief.locks), [brief.locks])
+  const policy = useMemo(() => new ExerciseLockPolicy(brief.locks, brief.lab.state.links), [brief])
   const checker = useMemo(() => new RequirementChecker(brief), [brief])
   const live = useLiveRequirementCheck(checker, lab.doc.state)
   const checklist = useMemo(() => {

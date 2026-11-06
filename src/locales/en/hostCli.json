@@ -1,0 +1,8 @@
+{
+  "help": {
+    "ipconfigDisplayDns": "  ipconfig /displaydns   Shows the DNS cache: the names this computer looked up recently",
+    "ipconfigFlushDns": "  ipconfig /flushdns     Empties the DNS cache",
+    "netstat": "  netstat [-a] [-n]      Lists TCP connections; -a also shows listening ports",
+    "hostname": "  hostname               Shows the name of this computer"
+  }
+}

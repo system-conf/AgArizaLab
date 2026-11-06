@@ -49,7 +49,7 @@ describe('DeviceInfoModel', () => {
   it('summarises port settings and hides locked ones', () => {
     const state = lab()
     const router = device(state, 'router')
-    const locks = new ConfigLocks('router', new ExerciseLockPolicy([{ scope: 'port', deviceId: 'router', portId: 'Se0/0/0', access: 'hidden' }]))
+    const locks = new ConfigLocks('router', new ExerciseLockPolicy([{ scope: 'port', deviceId: 'router', portId: 'Se0/0/0', access: 'hidden' }], []))
     const [gi, serial] = DeviceInfoModel.ports(state, router, locks)
     expect(gi).toMatchObject({
       id: 'Gi0/0',

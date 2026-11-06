@@ -25,6 +25,8 @@ export const SIM_REASONS = [
   'l2Loop',
   /** ARP got no answer: the packets waiting for it are dropped. */
   'arpTimeout',
+  /** The unresolved next hop already holds SIM_LIMITS.arpPendingPerNextHop packets: the new one is dropped (silently: no ICMP error). */
+  'arpQueueFull',
   /** ARP request for an address this interface does not own (or cannot use). */
   'arpNotForUs',
   /** Wi-Fi client on an SSID the radio does not offer. */

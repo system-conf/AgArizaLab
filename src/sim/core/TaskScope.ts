@@ -11,7 +11,6 @@ import type {
   SimCounters,
   SimEvent,
   SimLayers,
-  SimSnapshot,
   SimTask,
   SimTimer,
   SimTransmission,
@@ -23,16 +22,29 @@ import { PduLayers } from '../contract'
 import { EventRecorder, type RecorderInit, type TransmitSink } from './EventRecorder'
 import { ScopedContext } from './ScopedContext'
 import { SeededRandom } from './SeededRandom'
-import { TaskQueue } from './TaskQueue'
 
 export interface ScopeDependencies {
   readonly layers: SimLayers
   readonly latency: LatencyModel
 }
 
-/** What one task changed. */
+/** The engine state a scope starts from; read only — the scope never writes into it. */
+export interface ScopeBase {
+  readonly network: NetworkState
+  readonly time: number
+  readonly counters: SimCounters
+  readonly rngState: number
+  readonly devices: Readonly<Record<string, DeviceRuntime>>
+  readonly requests: Readonly<Record<string, RequestRecord>>
+}
+
+/** What one task changed: only the touched runtimes and requests (undefined runtime = stopped). */
 export interface ScopeResult {
-  readonly snapshot: SimSnapshot
+  readonly counters: SimCounters
+  readonly rngState: number
+  readonly devices: ReadonlyMap<string, DeviceRuntime | undefined>
+  readonly requests: ReadonlyMap<string, RequestRecord>
+  readonly tasks: readonly QueuedTask[]
   readonly events: SimEvent[]
   readonly transmissions: SimTransmission[]
   readonly effects: StateEffect[]
@@ -41,28 +53,29 @@ export interface ScopeResult {
 type Counters = { -readonly [Key in keyof SimCounters]: number }
 
 /**
- * The working copy of a snapshot while one task (or one batch of lifecycle hooks) runs at one point in
- * time. Layers change it through DeviceContexts; `commit` turns it into the next immutable snapshot.
+ * The working copy of the engine state while one task (or one batch of lifecycle hooks) runs at one
+ * point in time. Layers change it through DeviceContexts; changes go into small overlays over the base,
+ * so a task costs what it touches, not the size of the lab. `commit` hands the changes to the kernel.
  */
 export class TaskScope implements TransmitSink {
   readonly time: number
   readonly network: NetworkState
   readonly topology: Topology
   readonly layers: SimLayers
-  private readonly base: SimSnapshot
+  private readonly base: ScopeBase
   private readonly seq: number
   private readonly latency: LatencyModel
   private readonly counters: Counters
   private rngState: number
-  private readonly devices: Record<string, DeviceRuntime>
-  private readonly requests: Record<string, RequestRecord>
+  private readonly devices = new Map<string, DeviceRuntime | undefined>()
+  private readonly requests = new Map<string, RequestRecord>()
   private readonly tasks: QueuedTask[] = []
   private readonly recorders: EventRecorder[] = []
   private readonly transmissions: SimTransmission[] = []
   private readonly effects: StateEffect[] = []
 
-  /** `base.queue` must no longer contain the task being processed. */
-  constructor(base: SimSnapshot, seq: number, deps: ScopeDependencies) {
+  /** The task being processed must no longer be queued in the engine (or be popped before the commit is applied). */
+  constructor(base: ScopeBase, seq: number, deps: ScopeDependencies) {
     this.base = base
     this.seq = seq
     this.time = base.time
@@ -72,27 +85,24 @@ export class TaskScope implements TransmitSink {
     this.latency = deps.latency
     this.counters = { ...base.counters }
     this.rngState = base.rngState
-    this.devices = { ...base.devices }
-    this.requests = { ...base.requests }
   }
 
   hasRuntime(deviceId: string): boolean {
-    return this.devices[deviceId] !== undefined
+    return this.currentRuntime(deviceId) !== undefined
   }
 
   runtimeOf(deviceId: string): DeviceRuntime {
-    const runtime = this.devices[deviceId]
+    const runtime = this.currentRuntime(deviceId)
     if (!runtime) throw new Error(`Device ${deviceId} is not running`)
     return runtime
   }
 
   setRuntime(deviceId: string, runtime: DeviceRuntime | undefined): void {
-    if (runtime) this.devices[deviceId] = runtime
-    else delete this.devices[deviceId]
+    this.devices.set(deviceId, runtime)
   }
 
   updateRuntime(deviceId: string, change: (runtime: DeviceRuntime) => DeviceRuntime): void {
-    this.devices[deviceId] = change(this.runtimeOf(deviceId))
+    this.devices.set(deviceId, change(this.runtimeOf(deviceId)))
   }
 
   /** Context of a running device; `arrival` = the builder of the task's arriving frame. */
@@ -138,27 +148,28 @@ export class TaskScope implements TransmitSink {
   }
 
   request(requestId: string): RequestRecord | undefined {
-    return this.requests[requestId]
+    return this.requests.get(requestId) ?? this.base.requests[requestId]
   }
 
   setRequest(record: RequestRecord): void {
-    this.requests[record.id] = record
+    this.requests.set(record.id, record)
   }
 
   report(requestId: string, result: RequestResult, done: boolean): void {
-    const record = this.requests[requestId]
+    const record = this.request(requestId)
     if (!record) throw new Error(`Unknown request: ${requestId}`)
     if (record.status === 'done') return
-    this.requests[requestId] = { ...record, result, status: done ? 'done' : 'running', finishedAt: done ? this.time : null }
+    this.requests.set(requestId, { ...record, result, status: done ? 'done' : 'running', finishedAt: done ? this.time : null })
   }
 
   /** Every unfinished request of the device ends without a final result. */
   abortRequests(deviceId: string, why: NonNullable<RequestRecord['aborted']>): string[] {
     const aborted: string[] = []
-    for (const record of Object.values(this.requests)) {
-      if (record.status === 'done' || record.request.deviceId !== deviceId) continue
-      this.requests[record.id] = { ...record, status: 'done', finishedAt: this.time, aborted: why }
-      aborted.push(record.id)
+    for (const id of Object.keys(this.base.requests)) {
+      const record = this.request(id)
+      if (!record || record.status === 'done' || record.request.deviceId !== deviceId) continue
+      this.requests.set(id, { ...record, status: 'done', finishedAt: this.time, aborted: why })
+      aborted.push(id)
     }
     return aborted
   }
@@ -196,21 +207,20 @@ export class TaskScope implements TransmitSink {
   }
 
   commit(): ScopeResult {
-    const events = this.recorders.map((recorder) => recorder.toEvent(this.time, this.seq))
     return {
-      snapshot: {
-        network: this.network,
-        time: this.time,
-        counters: { ...this.counters },
-        rngState: this.rngState,
-        queue: TaskQueue.insertAll(this.base.queue, this.tasks),
-        devices: this.devices,
-        requests: this.requests,
-      },
-      events,
-      transmissions: [...this.transmissions],
-      effects: [...this.effects],
+      counters: { ...this.counters },
+      rngState: this.rngState,
+      devices: this.devices,
+      requests: this.requests,
+      tasks: this.tasks,
+      events: this.recorders.map((recorder) => recorder.toEvent(this.time, this.seq)),
+      transmissions: this.transmissions,
+      effects: this.effects,
     }
+  }
+
+  private currentRuntime(deviceId: string): DeviceRuntime | undefined {
+    return this.devices.has(deviceId) ? this.devices.get(deviceId) : this.base.devices[deviceId]
   }
 
   /** The link a frame leaves on: the port's only link, or the named one (radio ports hold several). */

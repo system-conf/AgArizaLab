@@ -15,10 +15,11 @@ import { useMessageTranslator } from '../../../i18n'
 import { useMapAriaLabels } from './mapLabels'
 import { findDeviceModel, linkLightOf } from '../labServices'
 import type { NodeMove } from '../WorkspaceOperations'
-import { GRID_SIZE, MODEL_DRAG_TYPE } from '../workspaceConstants'
+import { MoveSnapper } from '../geometry/MoveSnapper'
+import { GRID_SIZE, MODEL_DRAG_TYPE, NUDGE_STEP } from '../workspaceConstants'
 import AnnotationNodeView from './AnnotationNodeView'
 import type { CableHighlight, LinkFlowEdge, WorkspaceNode, WorkspaceSelection } from './canvasTypes'
-import { annotationText, buildEdges, buildNodes, type FlowLabels, type MeasuredSizes } from './flowElements'
+import { annotationText, buildEdges, buildNodes, documentPosition, reuseUnchanged, type FlowLabels, type MeasuredSizes } from './flowElements'
 import { SelectionModel } from './SelectionModel'
 import WorkspaceDeviceNode from './WorkspaceDeviceNode'
 import WorkspaceLinkEdge from './WorkspaceLinkEdge'
@@ -34,6 +35,7 @@ interface WorkspaceCanvasProps {
   onDeviceClick: (deviceId: string) => void
   cableActive: boolean
   cableHighlight: (deviceId: string) => CableHighlight
+  /** Finished drags land on the grid (the drag itself stays free); arrow keys move by grid steps. */
   snapToGrid: boolean
   /** false: devices cannot be dragged (exercise with a locked topology). */
   devicesDraggable: boolean
@@ -45,7 +47,7 @@ interface WorkspaceCanvasProps {
 
 const nodeTypes = { device: WorkspaceDeviceNode, annotation: AnnotationNodeView }
 const edgeTypes = { link: WorkspaceLinkEdge }
-const snapGrid: [number, number] = [GRID_SIZE, GRID_SIZE]
+const moveSnapper = new MoveSnapper(GRID_SIZE, NUDGE_STEP)
 const fitViewOptions = { padding: 0.3, maxZoom: 1.25 }
 const selectionKey = 'Shift'
 const multiSelectionKeys = ['Shift', 'Meta', 'Control']
@@ -86,7 +88,18 @@ function WorkspaceCanvas({
     [t, translate],
   )
 
-  const nodes = buildNodes({ doc, selection, dragPositions, measured, labels, cableHighlight, devicesDraggable })
+  // Unchanged nodes keep their objects: a drag frame re-renders only the moved nodes.
+  const built = useMemo(
+    () => buildNodes({ doc, selection, dragPositions, measured, labels, cableHighlight, devicesDraggable }),
+    [cableHighlight, devicesDraggable, doc, dragPositions, labels, measured, selection],
+  )
+  // Adjusting state while rendering (React's "previous render" pattern): the kept list follows `built`.
+  const [kept, setKept] = useState(() => ({ built, nodes: built }))
+  let nodes = kept.nodes
+  if (kept.built !== built) {
+    nodes = reuseUnchanged(kept.nodes, built)
+    setKept({ built, nodes })
+  }
   const edges = useMemo(
     () => buildEdges(doc, selection, (link) => linkLightOf(doc.state, link.id), labels),
     [doc, labels, selection],
@@ -103,10 +116,13 @@ function WorkspaceCanvas({
         else if (change.type === 'select') onSelectionChange((current) => SelectionModel.node(current, change.id, change.selected))
         else if (change.type === 'position' && change.position) {
           if (change.dragging) dragging[change.id] = change.position
-          else {
-            finished.push({ nodeId: change.id, to: change.position })
+          else if (dragPositions[change.id] !== undefined) {
+            finished.push({ nodeId: change.id, to: moveSnapper.dragEnd(change.position, snapToGrid) })
+          } else {
             // Arrow keys on a focused node move it without a drag before.
-            if (dragPositions[change.id] === undefined) fromKeyboard = true
+            fromKeyboard = true
+            const from = documentPosition(doc, change.id) ?? change.position
+            finished.push({ nodeId: change.id, to: moveSnapper.keyMove(from, change.position, snapToGrid) })
           }
         }
       }
@@ -118,7 +134,7 @@ function WorkspaceCanvas({
         setDragPositions((current) => Object.fromEntries(Object.entries(current).filter(([id]) => !ids.includes(id))))
       }
     },
-    [dragPositions, onCommitMoves, onSelectionChange],
+    [doc, dragPositions, onCommitMoves, onSelectionChange, snapToGrid],
   )
 
   const handleEdgesChange = useCallback(
@@ -168,8 +184,6 @@ function WorkspaceCanvas({
         fitViewOptions={fitViewOptions}
         minZoom={0.2}
         maxZoom={2.5}
-        snapToGrid={snapToGrid}
-        snapGrid={snapGrid}
         nodesConnectable={false}
         elementsSelectable={!cableActive}
         deleteKeyCode={null}

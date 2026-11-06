@@ -18,19 +18,8 @@ import { useTranslation } from 'react-i18next'
 import type { CableTool } from '../../../domain'
 import { focusRing } from '../../shared/focusRing'
 import CableGlyph from '../cable/CableGlyph'
+import { CABLE_TOOLS } from '../cable/cableTools'
 import type { AlignMode } from '../geometry/AlignCalculator'
-
-/** Cable tools in toolbar order. */
-const CABLE_TOOLS: readonly CableTool[] = [
-  'auto',
-  'copperStraight',
-  'copperCross',
-  'fiber',
-  'serial',
-  'console',
-  'coaxial',
-  'wireless',
-]
 
 interface CanvasToolbarProps {
   activeTool: CableTool | null

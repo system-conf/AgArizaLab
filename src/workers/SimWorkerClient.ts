@@ -1,13 +1,15 @@
 // Main-thread side of the simulator's Web Worker (docs/SIMULATION.md §5.5, BACKLOG item 6).
 //
 // The split: the stepping player (Simulation mode, the realtime clock, the Simple PDU tool) stays on the
-// main thread — one step is a handful of tasks. Two jobs that can take long on a large lab go to the
-// worker: exercise verification (`SimSolveChecker.check` builds and settles fresh engines) and realtime
+// main thread — one step is a handful of tasks. Three jobs that can take long on a large lab go to the
+// worker: building and settling the lab's engine when it opens (`prepare`; the player restores the
+// snapshot), exercise verification (`SimSolveChecker.check` builds and settles fresh engines) and realtime
 // terminal commands (`SimTerminal.run` runs a request to its end). Small labs and environments without
-// workers (tests) run them synchronously on the main thread.
+// workers (tests) run them on the main thread; the simulator's code is then loaded on first use, so the
+// pages that import this client do not carry it.
 import type { NetworkState, SolveCondition } from '../domain'
 import type { ConditionResult } from '../engine'
-import { SimJobs, type CommandJob, type CommandJobResult } from './simJobs'
+import type { CommandJob, CommandJobResult, PreparedSimulation, SimJobs } from './simJobs'
 import type { SimWorkerRequest, SimWorkerResponse } from './simWorkerProtocol'
 
 /** Labs with at least this many devices are simulated in the worker. */
@@ -40,7 +42,8 @@ function createBrowserWorker(): WorkerPort | null {
 export class SimWorkerClient {
   private readonly minDevices: number
   private readonly createWorker: () => WorkerPort | null
-  private readonly jobs = new SimJobs()
+  /** The jobs on the main thread, loaded on first use. */
+  private localJobs: Promise<SimJobs> | null = null
   private readonly waiting = new Map<number, Waiting>()
   private worker: WorkerPort | null = null
   /** The worker failed to load: everything runs on the main thread from then on. */
@@ -59,26 +62,41 @@ export class SimWorkerClient {
 
   /** Verification of solve conditions; in the worker for large labs. */
   solve(state: NetworkState, conditions: readonly SolveCondition[]): Promise<ConditionResult[]> {
-    if (!this.usesWorker(state)) return Promise.resolve(this.jobs.solve(state, conditions))
+    if (!this.usesWorker(state)) return this.here().then((jobs) => jobs.solve(state, conditions))
     return this.post({ id: this.nextId++, kind: 'solve', state, conditions }).then((response) => {
       if (response.kind !== 'solve') throw new Error(`Simulation worker answered ${response.kind} to solve`)
       return response.results
-    }, (error: unknown) => this.retryHere(error, () => this.jobs.solve(state, conditions)))
+    }, (error: unknown) => this.retryHere(error, (jobs) => jobs.solve(state, conditions)))
   }
 
   /** A realtime terminal command; always in the worker (callers check `usesWorker` first), else here. */
   command(job: CommandJob): Promise<CommandJobResult> {
-    if (this.broken || this.port() === null) return Promise.resolve(this.jobs.command(job))
+    if (this.broken || this.port() === null) return this.here().then((jobs) => jobs.command(job))
     return this.post({ id: this.nextId++, kind: 'command', ...job }).then((response) => {
       if (response.kind !== 'command') throw new Error(`Simulation worker answered ${response.kind} to a command`)
       return response.result
-    }, (error: unknown) => this.retryHere(error, () => this.jobs.command(job)))
+    }, (error: unknown) => this.retryHere(error, (jobs) => jobs.command(job)))
+  }
+
+  /** Builds and settles a lab's engine (a lab opens); in the worker for large labs, else here. */
+  prepare(state: NetworkState): Promise<PreparedSimulation> {
+    if (!this.usesWorker(state)) return this.here().then((jobs) => jobs.prepare(state))
+    return this.post({ id: this.nextId++, kind: 'prepare', state }).then((response) => {
+      if (response.kind !== 'prepare') throw new Error(`Simulation worker answered ${response.kind} to prepare`)
+      return response.result
+    }, (error: unknown) => this.retryHere(error, (jobs) => jobs.prepare(state)))
   }
 
   /** The worker failed the job: the main thread runs it (the same plain data gives the same result). */
-  private retryHere<Result>(error: unknown, job: () => Result): Result {
+  private retryHere<Result>(error: unknown, job: (jobs: SimJobs) => Result): Promise<Result> {
     console.warn('Simulation worker job failed; running it on the main thread', error)
-    return job()
+    return this.here().then(job)
+  }
+
+  /** The jobs on the main thread; the simulator's code loads with the first of them. */
+  private here(): Promise<SimJobs> {
+    this.localJobs ??= import('./simJobs').then((module) => new module.SimJobs())
+    return this.localJobs
   }
 
   private port(): WorkerPort | null {

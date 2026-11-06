@@ -1,5 +1,5 @@
 // Path-based navigation (History API): `/`, `/lab`, `/exercises`, `/exercises/<id>`, `/exercises/<id>/report`,
-// `/design`, `/design/<id>`, `/design/<id>/review`.
+// `/design`, `/design/<id>`, `/design/<id>/review`, `/samples`, `/samples/<id>` (SL1).
 export { AppRouteCodec, routes, type AppRoute } from './AppRoute'
 export { AppRouter, type HistoryPort, type NavigateOptions, type UrlParts } from './AppRouter'
 export { AppRouterContext, useAppRoute, useAppRouter } from './useAppRouter'

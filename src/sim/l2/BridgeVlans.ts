@@ -85,7 +85,7 @@ export class BridgeVlans {
       event.note(2, 'in', localizedMessage('simulation:notes.l2.taggedFromClient', { vlan: tag }))
       return 'vlanNotAllowed'
     }
-    const link = ctx.network.links.find((candidate) => candidate.id === arrival.linkId)
+    const link = ctx.topology.linksAt(ctx.device.id, arrival.portId).find((candidate) => candidate.id === arrival.linkId)
     const ssid = link?.cable === 'wireless' ? link.ssid : ''
     const entry = ctx.device.wireless?.ssids.find((candidate) => candidate.ssid === ssid)
     if (!entry) {

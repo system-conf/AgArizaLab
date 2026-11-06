@@ -53,7 +53,7 @@ function ExerciseWorkspace({ exercise, total, onSolved }: ExerciseWorkspaceProps
   const [initial] = useState(() => exerciseLabs.open(exercise))
   const lab = useLabDocument(initial, { autosave: false })
   const toasts = useToasts()
-  const policy = useMemo(() => new ExerciseLockPolicy(exercise.locks), [exercise.locks])
+  const policy = useMemo(() => new ExerciseLockPolicy(exercise.locks, exercise.lab.state.links), [exercise])
   const [attempt, setAttempt] = useState(() => ExerciseAttempt.start(exercise))
   const [checking, setChecking] = useState(false)
   const [labelledWith, setLabelledWith] = useState(exercise)
