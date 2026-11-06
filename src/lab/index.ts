@@ -23,8 +23,10 @@ export {
   type ShareHashResult,
   type ShareUrlResult,
 } from './LabShareLink'
+export { SharedLabInbox, type SharedLabOutcome } from './SharedLabInbox'
 export { exportLabFile, importLabFile, LAB_FILE_ACCEPT, LAB_FILE_EXTENSION, labFileName } from './labFiles'
 export { labDocumentSchema } from './schemas/labDocumentSchema'
+export { LAB_LIMITS, MAX_LAB_TEXT_SIZE } from './schemas/labLimits'
 export { AUTOSAVE_DELAY_MS, LabAutosaver, type DelayScheduler } from './storage/LabAutosaver'
 export {
   IdbKeyValueStore,

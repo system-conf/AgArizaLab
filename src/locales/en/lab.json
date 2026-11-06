@@ -23,7 +23,8 @@
     "copied": "Share link copied.",
     "tooLarge": "This lab is too large for a share link ({{size}} of at most {{limit}} characters). Export it as a file instead.",
     "corrupt": "The share link is damaged or incomplete. Ask for a new link.",
-    "copyFailed": "The link could not be copied to the clipboard."
+    "copyFailed": "The link could not be copied to the clipboard.",
+    "linkTooLong": "This share link is too long ({{size}} characters, at most {{limit}}). It is damaged or was not made by AgArizaLab; ask for the lab file instead."
   },
   "import": {
     "notJson": "The file is not valid JSON: {{detail}}",
@@ -32,7 +33,8 @@
     "invalidVersion": "The lab format version \"{{version}}\" is not valid.",
     "migrationFailed": "The lab could not be upgraded from format {{version}} to the current format: {{detail}}",
     "moreErrors": "…and {{count}} more problems.",
-    "readFailed": "The file could not be read: {{detail}}"
+    "readFailed": "The file could not be read: {{detail}}",
+    "fileTooLarge": "The file is too large to be a lab ({{size}} MB, at most {{limit}} MB)."
   },
   "schema": {
     "invalidType": "{{path}}: expected {{expected}}.",
@@ -41,7 +43,8 @@
     "tooSmall": "{{path}}: value too small or too short (minimum {{minimum}}).",
     "tooBig": "{{path}}: value too large or too long (maximum {{maximum}}).",
     "notInteger": "{{path}}: must be a whole number.",
-    "invalid": "{{path}}: invalid value."
+    "invalid": "{{path}}: invalid value.",
+    "reservedId": "{{path}}: this id is reserved (__proto__, constructor and prototype cannot be used)."
   },
   "invariant": {
     "duplicateDeviceId": "Two devices share the id \"{{deviceId}}\".",

@@ -103,17 +103,22 @@ export class LabEditor {
       ? moves
       : Object.entries(moves).map(([id, to]) => ({ id, to }))
     const known = new Set(doc.state.devices.map((device) => device.id))
-    const layoutDevices = { ...doc.layout.devices }
-    let changed = false
+    const before = doc.layout.devices
+    const moved = new Map<string, CanvasPoint>()
     for (const move of list) {
       checkPoint(move.to, `moveDevices ${move.id}`)
       if (!known.has(move.id)) continue
-      const current = layoutDevices[move.id]
+      const current = moved.get(move.id) ?? (Object.hasOwn(before, move.id) ? before[move.id] : undefined)
       if (current?.x === move.to.x && current.y === move.to.y) continue
-      layoutDevices[move.id] = { x: move.to.x, y: move.to.y }
-      changed = true
+      moved.set(move.id, { x: move.to.x, y: move.to.y })
     }
-    return changed ? { ...doc, layout: { ...doc.layout, devices: layoutDevices } } : doc
+    if (moved.size === 0) return doc
+    // Built with Object.fromEntries (own data properties only): an id can never reach the prototype.
+    const layoutDevices = Object.fromEntries([
+      ...Object.entries(before).map(([id, point]): [string, CanvasPoint] => [id, moved.get(id) ?? point]),
+      ...[...moved].filter(([id]) => !Object.hasOwn(before, id)),
+    ])
+    return { ...doc, layout: { ...doc.layout, devices: layoutDevices } }
   }
 
   /** Adds a cable if CableRules accepts it; otherwise returns its refusal. Ids: nextLinkId. */

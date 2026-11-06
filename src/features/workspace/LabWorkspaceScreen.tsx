@@ -10,7 +10,7 @@ import FileMenu from './file/FileMenu'
 import RecentLabsDialog from './file/RecentLabsDialog'
 import { useLabFileActions } from './file/useLabFileActions'
 import { useLabOpening } from './file/useLabOpening'
-import { ExerciseLockPolicy, labEditor, useLabDocument } from './labServices'
+import { ExerciseLockPolicy, LAB_LIMITS, labEditor, useLabDocument } from './labServices'
 import CommitField from './panels/CommitField'
 import { useToasts } from './useToasts'
 import WorkspaceView from './WorkspaceView'
@@ -48,6 +48,7 @@ function LabWorkspace({ shareHash, onShareHashUsed }: LabWorkspaceScreenProps) {
         onCommit={(next) => lab.apply((doc) => labEditor.updateMeta(doc, { title: next.trim() }))}
         placeholder={t('lab:untitled')}
         hideLabel
+        maxLength={LAB_LIMITS.nameLength}
         className="min-w-0 max-w-md flex-1"
       />
       <FileMenu actions={files} onOpenRecent={() => setRecentOpen(true)} />

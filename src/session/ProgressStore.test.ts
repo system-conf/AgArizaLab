@@ -122,4 +122,16 @@ describe('ProgressStore', () => {
     expect(new ProgressStore(storage).read()).toEqual({ posGateway: { guideStepsUsed: 2 } })
     expect(warn).toHaveBeenCalledTimes(2)
   })
+
+  it('stores prototype-like exercise ids as plain entries', () => {
+    const storage = new MemoryStorage()
+    storage.setItem(key, '{"version":2,"completed":{"__proto__":{"guideStepsUsed":1}}}')
+    const store = new ProgressStore(storage)
+    const loaded = store.read()
+    expect(Object.getPrototypeOf(loaded)).toBe(Object.prototype)
+    expect(Object.getOwnPropertyDescriptor(loaded, '__proto__')?.value).toEqual({ guideStepsUsed: 1 })
+    const recorded = store.recordCompletion('constructor', 3)
+    expect(Object.getOwnPropertyDescriptor(recorded, 'constructor')?.value).toEqual({ guideStepsUsed: 3 })
+    expect(Object.getPrototypeOf(recorded)).toBe(Object.prototype)
+  })
 })

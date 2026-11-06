@@ -4,12 +4,12 @@ import type { AppLinkStatus, CommandResult, Device, LinkLight, NetworkState } fr
 import { networkEngine, TerminalAvailability } from '../../engine'
 
 export {
-  clearShareHash,
   createEmptyLab,
   deleteRecentLab,
   exportLabFile,
   importLabFile,
   isLabStorageAvailable,
+  LAB_LIMITS,
   LAB_FILE_ACCEPT,
   labEditor,
   labFileName,
@@ -20,6 +20,7 @@ export {
   markLabOpened,
   openRecentLab,
   saveLabAsNew,
+  SharedLabInbox,
   useLabDocument,
   type DeviceMove,
   type LabDocumentState,

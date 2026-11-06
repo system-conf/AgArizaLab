@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import type { Device, NetworkState, Port } from '../../../domain'
 import { cableLab, updatePort, withLinks } from '../../../domain/testDevices'
+import { ExerciseLockPolicy } from '../../../session/ExerciseLockPolicy'
 import { ConfigLocks } from './ConfigLocks'
 import { DeviceInfoModel } from './DeviceInfoModel'
 
@@ -48,7 +49,7 @@ describe('DeviceInfoModel', () => {
   it('summarises port settings and hides locked ones', () => {
     const state = lab()
     const router = device(state, 'router')
-    const locks = new ConfigLocks('router', [{ scope: 'port', deviceId: 'router', portId: 'Se0/0/0', access: 'hidden' }])
+    const locks = new ConfigLocks('router', new ExerciseLockPolicy([{ scope: 'port', deviceId: 'router', portId: 'Se0/0/0', access: 'hidden' }]))
     const [gi, serial] = DeviceInfoModel.ports(state, router, locks)
     expect(gi).toMatchObject({
       id: 'Gi0/0',

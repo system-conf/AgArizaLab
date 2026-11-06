@@ -5,7 +5,7 @@ import type { Annotation, Device, LabDocument } from '../../../domain'
 import { focusRing } from '../../shared/focusRing'
 import type { WorkspaceSelection } from '../canvas/canvasTypes'
 import { SelectionModel } from '../canvas/SelectionModel'
-import type { ExerciseLockPolicy } from '../labServices'
+import { LAB_LIMITS, type ExerciseLockPolicy } from '../labServices'
 import CommitField from './CommitField'
 import { AnnotationProperties, LinkProperties } from './ItemProperties'
 
@@ -39,7 +39,7 @@ function PropertiesPanel(props: PropertiesPanelProps) {
     if (count === 0) {
       if (props.onNotes) {
         return (
-          <CommitField label={t('properties.notes')} value={doc.notes} onCommit={props.onNotes} multiline hint={t('properties.notesHint')} />
+          <CommitField label={t('properties.notes')} value={doc.notes} onCommit={props.onNotes} multiline hint={t('properties.notesHint')} maxLength={LAB_LIMITS.notesLength} />
         )
       }
       return (

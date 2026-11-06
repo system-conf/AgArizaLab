@@ -3,6 +3,7 @@ import { useId } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { LocalizedMessage } from '../../domain/Messages'
 import { useMessageTranslator } from '../../i18n'
+import { LAB_LIMITS } from '../../lab/schemas/labLimits'
 import { focusRing } from '../shared/focusRing'
 
 interface SolveFooterProps {
@@ -30,6 +31,7 @@ function SolveFooter({ notes, onNotesChange, onVerify, failedChecks }: SolveFoot
           id={notesId}
           value={notes}
           onChange={(event) => onNotesChange(event.target.value)}
+          maxLength={LAB_LIMITS.notesLength}
           rows={2}
           placeholder={t('footer.notesPlaceholder')}
           className={`resize-y rounded-md border border-slate-300 px-2 py-1.5 text-sm ${focusRing}`}

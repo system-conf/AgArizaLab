@@ -1,7 +1,8 @@
 import { useTranslation } from 'react-i18next'
 import { findDeviceModel } from '../../catalog'
-import type { Device, ExerciseLock, NetworkState } from '../../domain'
+import type { Device, NetworkState } from '../../domain'
 import type { LocalizedMessage } from '../../domain/Messages'
+import { ExerciseLockPolicy } from '../../session/ExerciseLockPolicy'
 import ProblemList from './fields/ProblemList'
 import { ConfigLocks, type ConfigAccess } from './model/ConfigLocks'
 import { DeviceSections, LOCK_SECTION_OF, type ConfigSectionId } from './model/DeviceSections'
@@ -25,8 +26,8 @@ export interface DeviceConfigPanelProps {
   onChange: (next: Device) => void
   /** Problems from LabEditor.deviceUpdateProblems for the last refused change (shown at top), optional. */
   problems?: readonly LocalizedMessage[]
-  /** The exercise's whole `ExerciseDefinition.locks`; only locks for `device.id` apply. */
-  locks?: readonly ExerciseLock[]
+  /** The exercise's locks (`ExerciseLockPolicy.none` by default); only locks for `device.id` apply. */
+  policy?: ExerciseLockPolicy
   readOnly?: boolean
 }
 
@@ -39,10 +40,10 @@ function draftKey(section: ConfigSectionId, device: Device, slice: unknown): str
  * Settings of one device, one card per settings area the device has. Each card edits a local
  * draft and hands the whole edited device to `onChange` on Save; props are never mutated.
  */
-function DeviceConfigPanel({ device, state, onChange, problems = [], locks = [], readOnly = false }: DeviceConfigPanelProps) {
+function DeviceConfigPanel({ device, state, onChange, problems = [], policy = ExerciseLockPolicy.none, readOnly = false }: DeviceConfigPanelProps) {
   const { t } = useTranslation('deviceConfig')
   const model = findDeviceModel(device.modelId)
-  const configLocks = new ConfigLocks(device.id, locks, readOnly)
+  const configLocks = new ConfigLocks(device.id, policy, readOnly)
   const powerAccess = configLocks.section('power')
   const { savedKey, expectSaved } = useSaveConfirmation<ConfigSectionId>(device, problems.length)
 

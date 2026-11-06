@@ -4,6 +4,7 @@ import type { LabDocument } from '../domain'
 import { localizedMessage } from '../i18n/messageKeys'
 import { LAB_FILE_EXTENSION } from './labFileTypes'
 import { labSerializer, type LabParseResult, type LabSerializer } from './LabSerializer'
+import { MAX_LAB_TEXT_SIZE } from './schemas/labLimits'
 
 export { LAB_FILE_ACCEPT, LAB_FILE_EXTENSION } from './labFileTypes'
 
@@ -34,8 +35,21 @@ export function exportLabFile(doc: LabDocument, serializer: LabSerializer = labS
   globalThis.setTimeout(() => URL.revokeObjectURL(url), 0)
 }
 
-/** Reads and validates a picked file. Never throws: read errors become `lab:import.readFailed`. */
+const BYTES_PER_MB = 1024 * 1024
+
+/** Megabytes with one decimal, rounded up (so a file just over the limit never shows the limit). */
+function megabytes(bytes: number): number {
+  return Math.ceil((bytes / BYTES_PER_MB) * 10) / 10
+}
+
+/**
+ * Reads and validates a picked file. Never throws: files above MAX_LAB_TEXT_SIZE are refused
+ * before reading (`lab:import.fileTooLarge`), read errors become `lab:import.readFailed`.
+ */
 export async function importLabFile(file: Blob, serializer: LabSerializer = labSerializer): Promise<LabParseResult> {
+  if (file.size > MAX_LAB_TEXT_SIZE) {
+    return { ok: false, errors: [localizedMessage('lab:import.fileTooLarge', { size: megabytes(file.size), limit: megabytes(MAX_LAB_TEXT_SIZE) })] }
+  }
   let text: string
   try {
     text = await file.text()

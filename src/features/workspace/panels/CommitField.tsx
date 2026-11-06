@@ -12,12 +12,14 @@ interface CommitFieldProps {
   /** Visually hidden label (the context already names the field). */
   hideLabel?: boolean
   className?: string
+  /** Longest text the document accepts (LAB_LIMITS). */
+  maxLength?: number
 }
 
 const fieldClasses = `w-full rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm text-slate-800 ${focusRing}`
 
 /** Draft field: typing is local, the document changes once when editing ends. Esc reverts. */
-function DraftField({ label, value, onCommit, multiline, hint, placeholder, hideLabel, className }: CommitFieldProps) {
+function DraftField({ label, value, onCommit, multiline, hint, placeholder, hideLabel, className, maxLength }: CommitFieldProps) {
   const [draft, setDraft] = useState(value)
   const id = useId()
   const hintId = useId()
@@ -39,6 +41,7 @@ function DraftField({ label, value, onCommit, multiline, hint, placeholder, hide
     id,
     value: draft,
     placeholder,
+    maxLength,
     onBlur: commit,
     onKeyDown: handleKeyDown,
     'aria-describedby': hint ? hintId : undefined,

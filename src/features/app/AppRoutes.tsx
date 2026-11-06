@@ -1,7 +1,6 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
 import { useLanguage } from '../../i18n'
-import { isShareHash } from '../../lab/shareHashPrefix'
-import { AppRouteCodec, RouteResolver, routes, useAppRoute, useAppRouter } from '../../routing'
+import { AppRouteCodec, RouteResolver, routes, ShareHashWatcher, useAppRoute, useAppRouter } from '../../routing'
 import { useExerciseSummaries } from '../../scenarios/exerciseSummaries'
 import { ProgressStore } from '../../session/ProgressStore'
 import type { SolvedExercise } from '../exercise/ExerciseScreen'
@@ -14,11 +13,6 @@ import LoadingScreen from './LoadingScreen'
 const LabWorkspaceScreen = lazy(() => import('../workspace/LabWorkspaceScreen'))
 const ExerciseScreen = lazy(() => import('../exercise/ExerciseScreen'))
 
-/** The share hash the page was opened with (`#lab=…`), or null. */
-function initialShareHash(): string | null {
-  return isShareHash(window.location.hash) ? window.location.hash : null
-}
-
 /** Picks the screen for the current route; redirects through RouteResolver. */
 function AppRoutes() {
   const router = useAppRouter()
@@ -28,7 +22,13 @@ function AppRoutes() {
   const [progressStore] = useState(() => ProgressStore.fromBrowser())
   const [progress, setProgress] = useState(() => progressStore.read())
   const [solved, setSolved] = useState<SolvedExercise | null>(null)
-  const [shareHash, setShareHash] = useState(initialShareHash)
+  const [shareWatcher] = useState(() => ShareHashWatcher.browser())
+  // `#lab=…` the page was opened with; later a link pasted into the open tab (hashchange).
+  const [shareHash, setShareHash] = useState(() => shareWatcher.current())
+
+  // A pasted share link goes the same way as on load: RouteResolver forwards it to /lab, the
+  // workspace opens it, clears the hash and reports errors in a toast.
+  useEffect(() => shareWatcher.watch(setShareHash), [shareWatcher])
 
   const decision = RouteResolver.resolve(route, {
     exerciseIds: exercises.map((exercise) => exercise.id),

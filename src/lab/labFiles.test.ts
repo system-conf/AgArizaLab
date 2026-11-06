@@ -1,7 +1,8 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { createEmptyLab } from './createLab'
 import { importLabFile, labFileName } from './labFiles'
 import { LabSerializer } from './LabSerializer'
+import { MAX_LAB_TEXT_SIZE } from './schemas/labLimits'
 import { expectLabMessage, FIXED_NOW, sampleLab } from './testLabs'
 
 describe('lab files', () => {
@@ -26,5 +27,17 @@ describe('lab files', () => {
     const garbage = await importLabFile(new Blob(['not json']))
     if (garbage.ok) throw new Error('expected an error')
     expectLabMessage(garbage.errors[0], 'lab:import.notJson')
+  })
+})
+
+describe('lab file size limit', () => {
+  it('refuses a file above the limit without reading it', async () => {
+    const text = vi.fn(() => Promise.resolve('{}'))
+    const huge = { size: MAX_LAB_TEXT_SIZE + 1, text } as unknown as Blob
+    const result = await importLabFile(huge)
+    if (result.ok) throw new Error('expected an error')
+    expectLabMessage(result.errors[0], 'lab:import.fileTooLarge')
+    expect(result.errors[0]?.params).toEqual({ size: 5.1, limit: 5 })
+    expect(text).not.toHaveBeenCalled()
   })
 })

@@ -1,37 +1,37 @@
 // zod mirror of src/domain/ServiceTypes.ts (see portSchemas.ts for the conventions).
 import { z } from 'zod'
-import { idSchema, reservedKey } from './portSchemas'
+import { idSchema, listOf, nameSchema, reservedKey } from './portSchemas'
 
-export const addressRangeSchema = z.strictObject({ start: z.string(), end: z.string() })
+export const addressRangeSchema = z.strictObject({ start: nameSchema, end: nameSchema })
 
-export const dhcpLeaseSchema = z.strictObject({ mac: z.string(), ip: z.string() })
+export const dhcpLeaseSchema = z.strictObject({ mac: nameSchema, ip: nameSchema })
 
 export const dhcpPoolSchema = z.strictObject({
   id: idSchema,
-  network: z.string(),
-  mask: z.string(),
+  network: nameSchema,
+  mask: nameSchema,
   range: addressRangeSchema.optional(),
-  defaultRouter: z.string(),
-  dnsServers: z.array(z.string()),
-  leases: z.array(dhcpLeaseSchema),
+  defaultRouter: nameSchema,
+  dnsServers: listOf(nameSchema),
+  leases: listOf(dhcpLeaseSchema),
 })
 
 export const dhcpServerSettingsSchema = z.strictObject({
   enabled: z.boolean(),
-  pools: z.array(dhcpPoolSchema),
-  excludedRanges: z.array(addressRangeSchema),
+  pools: listOf(dhcpPoolSchema),
+  excludedRanges: listOf(addressRangeSchema),
 })
 
 export const dnsRecordSchema = z.strictObject({
   type: z.literal('A'),
-  name: z.string(),
-  address: z.string(),
+  name: nameSchema,
+  address: nameSchema,
 })
 
 export const dnsServerSettingsSchema = z.strictObject({
   enabled: z.boolean(),
-  forwarders: z.array(z.string()),
-  records: z.array(dnsRecordSchema),
+  forwarders: listOf(nameSchema),
+  records: listOf(dnsRecordSchema),
 })
 
 export const deviceServicesSchema = z.strictObject({
@@ -52,4 +52,4 @@ export const ispHandoffSchema = z.strictObject({
   customerAddressing: reservedKey,
 })
 
-export const internetSettingsSchema = z.strictObject({ handoffs: z.array(ispHandoffSchema) })
+export const internetSettingsSchema = z.strictObject({ handoffs: listOf(ispHandoffSchema) })

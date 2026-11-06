@@ -188,7 +188,7 @@
   },
   "dns": {
     "enabled": "DNS hizmeti açık",
-    "forwarders": "Yönlendiriciler (forwarder)",
+    "forwarders": "Üst DNS sunucuları (forwarder)",
     "forwardersHint": "Eşleşen kayıt yoksa sorulacak üst DNS sunucuları. Virgülle ayır.",
     "records": "Kayıtlar",
     "emptyRecords": "Kayıt yok.",

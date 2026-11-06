@@ -1,7 +1,8 @@
 // zod mirror of src/domain/DeviceTypes.ts (see portSchemas.ts for the conventions).
 import { z } from 'zod'
 import type { DeviceKind } from '../../domain'
-import { idSchema, l3SettingsSchema, portSchema, reservedKey, vlanIdSchema } from './portSchemas'
+import { LAB_LIMITS } from './labLimits'
+import { idSchema, l3SettingsSchema, listOf, nameSchema, portSchema, reservedKey, textSchema, vlanIdSchema } from './portSchemas'
 import { deviceServicesSchema, internetSettingsSchema } from './serviceSchemas'
 
 /** Every DeviceKind (the type-equality test fails when the domain union gains a member). */
@@ -30,23 +31,23 @@ export const deviceKindSchema = z.enum(DEVICE_KINDS)
 
 export const appLinkSchema = z.strictObject({
   id: idSchema,
-  label: z.string(),
-  targetIp: z.string(),
+  label: nameSchema,
+  targetIp: nameSchema,
   targetKind: deviceKindSchema,
 })
 
 export const hostSettingsSchema = z.strictObject({
-  defaultGateway: z.string(),
-  dnsServers: z.array(z.string()),
-  appLinks: z.array(appLinkSchema),
+  defaultGateway: nameSchema,
+  dnsServers: listOf(nameSchema),
+  appLinks: listOf(appLinkSchema),
 })
 
-export const vlanEntrySchema = z.strictObject({ id: vlanIdSchema, name: z.string() })
+export const vlanEntrySchema = z.strictObject({ id: vlanIdSchema, name: nameSchema })
 
 export const sviSchema = z.strictObject({
   vlan: vlanIdSchema,
   adminUp: z.boolean(),
-  description: z.string().optional(),
+  description: textSchema.optional(),
   l3: l3SettingsSchema,
 })
 
@@ -58,21 +59,21 @@ export const switchingFeaturesSchema = z.strictObject({
 })
 
 export const switchingSettingsSchema = z.strictObject({
-  vlans: z.array(vlanEntrySchema),
-  svis: z.array(sviSchema),
-  defaultGateway: z.string(),
+  vlans: listOf(vlanEntrySchema, LAB_LIMITS.vlans),
+  svis: listOf(sviSchema, LAB_LIMITS.vlans),
+  defaultGateway: nameSchema,
   features: switchingFeaturesSchema.optional(),
 })
 
 const staticRouteBaseShape = {
-  prefix: z.string(),
-  mask: z.string(),
+  prefix: nameSchema,
+  mask: nameSchema,
   adminDistance: z.number().int().min(0).max(255),
 }
 
 export const staticRouteSchema = z.union([
-  z.strictObject({ ...staticRouteBaseShape, nextHop: z.string(), exitInterfaceId: z.string().optional() }),
-  z.strictObject({ ...staticRouteBaseShape, nextHop: reservedKey, exitInterfaceId: z.string() }),
+  z.strictObject({ ...staticRouteBaseShape, nextHop: nameSchema, exitInterfaceId: nameSchema.optional() }),
+  z.strictObject({ ...staticRouteBaseShape, nextHop: reservedKey, exitInterfaceId: nameSchema }),
 ])
 
 export const routingFeaturesSchema = z.strictObject({
@@ -84,20 +85,20 @@ export const routingFeaturesSchema = z.strictObject({
 
 export const routingSettingsSchema = z.strictObject({
   ipRouting: z.boolean(),
-  staticRoutes: z.array(staticRouteSchema),
+  staticRoutes: listOf(staticRouteSchema),
   features: routingFeaturesSchema.optional(),
 })
 
 export const wirelessSecuritySchema = z.strictObject({ mode: z.literal('open') })
 
 export const ssidSettingsSchema = z.strictObject({
-  ssid: z.string(),
+  ssid: nameSchema,
   vlan: vlanIdSchema,
   security: wirelessSecuritySchema,
 })
 
 export const wirelessSettingsSchema = z.strictObject({
-  ssids: z.array(ssidSettingsSchema),
+  ssids: listOf(ssidSettingsSchema),
   radio: reservedKey,
 })
 
@@ -113,10 +114,10 @@ export const deviceSchema = z.strictObject({
   id: idSchema,
   kind: deviceKindSchema,
   modelId: idSchema,
-  name: z.string(),
+  name: nameSchema,
   powered: z.boolean(),
-  baseMac: z.string(),
-  ports: z.array(portSchema),
+  baseMac: nameSchema,
+  ports: listOf(portSchema, LAB_LIMITS.portsPerDevice),
   host: hostSettingsSchema.optional(),
   switching: switchingSettingsSchema.optional(),
   routing: routingSettingsSchema.optional(),

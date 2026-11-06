@@ -1,19 +1,19 @@
 // Device configuration UI (owner I2b). Two components:
 //
-//   <DeviceConfigPanel device state onChange problems? locks? readOnly? />
+//   <DeviceConfigPanel device state onChange problems? policy? readOnly? />
 //     One card per settings area the device has (general, ports, host, app links, VLAN database,
 //     SVIs, routing, DHCP, DNS, wireless, internet). Each card keeps a local draft and calls
 //     `onChange(nextDevice)` with the whole edited device on Save; the parent applies
 //     `LabEditor.updateDevice` and, when it refuses, passes `deviceUpdateProblems` (as messages)
 //     back in `problems`. Props are never mutated.
 //
-//   <DeviceInfoPanel device state locks? />
+//   <DeviceInfoPanel device state policy? />
 //     Read-only summary: model, power, ports (medium, link light, neighbour, admin state, VLAN or
 //     address), gateway / DNS, VLANs, routing table, services, SSIDs, internet lines.
 //
-// Locks: both take the exercise's WHOLE `ExerciseDefinition.locks` array (`readonly ExerciseLock[]`
-// from src/domain/ExerciseTypes.ts); only the entries whose `deviceId` is `device.id` apply
-// (locks are not per-device objects). The strictest of device → section → port wins:
+// Locks: both take the exercise's `ExerciseLockPolicy` (src/session, built from the WHOLE
+// `ExerciseDefinition.locks`; default `ExerciseLockPolicy.none`); only the entries whose `deviceId`
+// is `device.id` apply. The strictest of device → section → port wins:
 // 'hidden' = the card (or the port's settings) is not rendered, 'readOnly' = shown but disabled.
 // The device name follows the device lock; power the 'power' section; NIC / interface addresses
 // the 'ports' section and port locks. `readOnly` turns every editable card read-only.

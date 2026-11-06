@@ -53,7 +53,6 @@ function DeviceTabs(props: DeviceTabsProps) {
     tabRefs.current.get(next)?.focus()
   }
 
-  const locks = policy.locks
   let panel
   if (active === 'settings') {
     panel = (
@@ -62,7 +61,7 @@ function DeviceTabs(props: DeviceTabsProps) {
         state={state}
         onChange={props.onUpdate}
         problems={props.problems}
-        locks={locks}
+        policy={policy}
         readOnly={policy.deviceAccess(device.id) === 'readOnly'}
       />
     )
@@ -82,7 +81,7 @@ function DeviceTabs(props: DeviceTabsProps) {
             <AppLinkStatusList statuses={appLinks} />
           </section>
         )}
-        <DeviceInfoPanel device={device} state={state} locks={locks} />
+        <DeviceInfoPanel device={device} state={state} policy={policy} />
       </div>
     )
   }

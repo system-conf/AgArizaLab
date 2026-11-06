@@ -12,7 +12,8 @@ export interface DeletionRequest {
 
 const STRICTNESS: Readonly<Record<EditAccess, number>> = { editable: 0, readOnly: 1, hidden: 2 }
 
-function strictest(...accesses: EditAccess[]): EditAccess {
+/** The strictest of the given accesses ('editable' when none is given). The only lock ranking. */
+export function strictest(...accesses: EditAccess[]): EditAccess {
   return accesses.reduce<EditAccess>((worst, access) => (STRICTNESS[access] > STRICTNESS[worst] ? access : worst), 'editable')
 }
 

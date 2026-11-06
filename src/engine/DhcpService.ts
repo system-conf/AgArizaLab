@@ -1,4 +1,4 @@
-import type { Device, DhcpPool, FailureReason, NetworkState, Port } from '../domain'
+import type { Device, DhcpPool, FailureReason, HostSettings, NetworkState, Port } from '../domain'
 import { Ipv4 } from './Ipv4'
 import { DeviceAddresses } from './DeviceAddresses'
 import { DhcpPoolAllocator } from './DhcpPoolAllocator'
@@ -21,6 +21,14 @@ interface PoolOwner {
  * DHCP on v2 hosts (MODEL_V2 §4, §13). Without a port id every active NIC in 'dhcp' mode is renewed;
  * the pool is the one whose network lies in the subnet of the server interface the request arrives
  * on. Never mutates its input; untouched devices are shared with the new state.
+ *
+ * Gateway and DNS servers are host-wide (`HostSettings`), not per NIC, so with several NICs:
+ * - renew: the lease's router / DNS servers replace the host-wide values, unless another NIC of the
+ *   host has a static address. Then the static configuration wins (the user typed it, like a static
+ *   adapter's gateway on Windows) and the lease only fills a host-wide field that is still empty.
+ *   With several DHCP NICs the most recent lease wins.
+ * - release: the host-wide gateway / DNS servers are cleared only when no other NIC of the host still
+ *   has an address; otherwise the remaining NICs keep using them.
  */
 export class DhcpService {
   private readonly segments: SegmentFinder
@@ -49,8 +57,9 @@ export class DhcpService {
   }
 
   /**
-   * `ipconfig /release`: the NIC gives its address back; the host keeps no gateway or DNS. The
-   * server keeps the lease record, so the next renew offers the same address again.
+   * `ipconfig /release`: the NIC gives its address back; gateway and DNS go too when no other NIC of
+   * the host keeps an address (see the class comment). The server keeps the lease record, so the next
+   * renew offers the same address again.
    */
   release(state: NetworkState, deviceId: string, portId?: string): DhcpReleaseResult {
     const checked = this.dhcpNics(state, deviceId, portId)
@@ -66,11 +75,14 @@ export class DhcpService {
     if (released.length === 0) return firstFailure ?? { ok: false, reason: 'invalidConfig' }
     return {
       ok: true,
-      nextState: this.updateDevice(state, deviceId, (device) => ({
-        ...device,
-        ports: device.ports.map((port) => (released.includes(port.id) ? this.withAddress(port, '', '') : port)),
-        ...(device.host ? { host: { ...device.host, defaultGateway: '', dnsServers: [] } } : {}),
-      })),
+      nextState: this.updateDevice(state, deviceId, (device) => {
+        const othersAddressed = L3Interfaces.nics(device).some((nic) => !released.includes(nic.id) && nic.address !== '')
+        return {
+          ...device,
+          ports: device.ports.map((port) => (released.includes(port.id) ? this.withAddress(port, '', '') : port)),
+          ...(device.host && !othersAddressed ? { host: { ...device.host, defaultGateway: '', dnsServers: [] } } : {}),
+        }
+      }),
     }
   }
 
@@ -100,12 +112,12 @@ export class DhcpService {
     if (!owner) return { ok: false, reason: 'dhcpNoServer', portId: nicId }
     const server = topology.require(owner.serverId)
     const mac = device.ports.find((port) => port.id === nicId)?.mac ?? device.baseMac
-    const ip = DhcpPoolAllocator.pick(
-      owner.pool,
-      mac,
-      DeviceAddresses.usedAddresses(state, deviceId),
-      server.services?.dhcp?.excludedRanges ?? [],
-    )
+    // Other devices' addresses, plus the client's own other interfaces (eth1 must not get eth0's address).
+    const inUse = DeviceAddresses.usedAddresses(state, deviceId)
+    for (const iface of L3Interfaces.of(device)) {
+      if (iface.id !== nicId && iface.address !== '') inUse.add(iface.address)
+    }
+    const ip = DhcpPoolAllocator.pick(owner.pool, mac, inUse, server.services?.dhcp?.excludedRanges ?? [])
     if (ip === null) return { ok: false, reason: 'dhcpPoolExhausted', portId: nicId }
     return { ok: true, ip, nextState: this.applyLease(state, deviceId, nicId, mac, owner, ip) }
   }
@@ -129,18 +141,32 @@ export class DhcpService {
     const withClient = this.updateDevice(state, clientId, (device) => ({
       ...device,
       ports: device.ports.map((port) => (port.id === nicId ? this.withAddress(port, ip, pool.mask) : port)),
-      ...(device.host ? { host: { ...device.host, defaultGateway: pool.defaultRouter, dnsServers: [...pool.dnsServers] } } : {}),
+      ...(device.host ? { host: this.hostAfterLease(device.host, device, nicId, pool) } : {}),
     }))
-    const hasLease = pool.leases.some((lease) => lease.mac.toUpperCase() === mac.toUpperCase())
-    const leases = hasLease
-      ? pool.leases.map((lease) => (lease.mac.toUpperCase() === mac.toUpperCase() ? { mac: lease.mac, ip } : { ...lease }))
-      : [...pool.leases.map((lease) => ({ ...lease })), { mac, ip }]
+    // One record per MAC: the first is updated in place (a stale address is replaced), duplicates go.
+    const isClient = (lease: { mac: string }) => lease.mac.toUpperCase() === mac.toUpperCase()
+    const first = pool.leases.findIndex(isClient)
+    const leases =
+      first >= 0
+        ? pool.leases.flatMap((lease, index) => (index === first ? [{ mac: lease.mac, ip }] : isClient(lease) ? [] : [{ ...lease }]))
+        : [...pool.leases.map((lease) => ({ ...lease })), { mac, ip }]
     return this.updateDevice(withClient, owner.serverId, (server) => {
       const dhcp = server.services?.dhcp
       if (!dhcp) return server
       const pools = dhcp.pools.map((candidate) => (candidate.id === pool.id ? { ...candidate, leases } : candidate))
       return { ...server, services: { ...server.services, dhcp: { ...dhcp, pools } } }
     })
+  }
+
+  /** Host-wide gateway / DNS after a lease on `nicId`: a statically addressed other NIC wins (class comment). */
+  private hostAfterLease(host: HostSettings, device: Device, nicId: string, pool: DhcpPool): HostSettings {
+    const staticWins = L3Interfaces.nics(device).some((nic) => nic.id !== nicId && nic.addressing === 'static' && nic.address !== '')
+    if (!staticWins) return { ...host, defaultGateway: pool.defaultRouter, dnsServers: [...pool.dnsServers] }
+    return {
+      ...host,
+      defaultGateway: host.defaultGateway === '' ? pool.defaultRouter : host.defaultGateway,
+      dnsServers: host.dnsServers.length === 0 ? [...pool.dnsServers] : host.dnsServers,
+    }
   }
 
   private withAddress(port: Port, address: string, mask: string): Port {

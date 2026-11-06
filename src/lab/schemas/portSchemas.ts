@@ -2,19 +2,35 @@
 // strict, so unknown keys are reported instead of silently dropped. labSchemas.test.ts proves at
 // compile time that every inferred type equals its domain type.
 import { z } from 'zod'
+import { LAB_LIMITS, RESERVED_IDS } from './labLimits'
 
 /** A reserved extension key (`key?: never`): must be absent until its pack gives it a type. */
 export const reservedKey = z.never().optional()
 
-/** Ids we reference (devices, ports, links, annotations): any non-empty string. */
-export const idSchema = z.string().min(1)
+/** Ids we reference (devices, ports, links, annotations): non-empty, short, never a prototype key. */
+export const idSchema = z
+  .string()
+  .min(1)
+  .max(LAB_LIMITS.idLength)
+  .refine((id) => !RESERVED_IDS.has(id), { params: { reason: 'reservedId' } })
+
+/** Names, titles, labels, addresses and other one-line values. */
+export const nameSchema = z.string().max(LAB_LIMITS.nameLength)
+
+/** Descriptions and annotation text. */
+export const textSchema = z.string().max(LAB_LIMITS.textLength)
+
+/** Any other list of the document. */
+export function listOf<Item extends z.ZodType>(item: Item, maximum: number = LAB_LIMITS.listItems) {
+  return z.array(item).max(maximum)
+}
 
 export const portMediumSchema = z.enum(['copper', 'fiber', 'wireless', 'serial', 'console', 'coaxial'])
 
 export const ipv4SettingsSchema = z.strictObject({
   addressing: z.enum(['static', 'dhcp']),
-  address: z.string(),
-  mask: z.string(),
+  address: nameSchema,
+  mask: nameSchema,
 })
 
 export const l3FeaturesSchema = z.strictObject({
@@ -28,7 +44,7 @@ export const l3FeaturesSchema = z.strictObject({
 
 export const l3SettingsSchema = z.strictObject({
   ipv4: ipv4SettingsSchema,
-  helperAddresses: z.array(z.string()).optional(),
+  helperAddresses: listOf(nameSchema).optional(),
   ipv6: reservedKey,
   features: l3FeaturesSchema.optional(),
 })
@@ -49,7 +65,7 @@ export const switchportSettingsSchema = z.strictObject({
   mode: z.enum(['access', 'trunk']),
   accessVlan: vlanIdSchema,
   nativeVlan: vlanIdSchema,
-  allowedVlans: z.union([z.literal('all'), z.array(vlanIdSchema)]),
+  allowedVlans: z.union([z.literal('all'), listOf(vlanIdSchema, LAB_LIMITS.vlans)]),
   features: switchportFeaturesSchema.optional(),
 })
 
@@ -58,7 +74,7 @@ export const subInterfaceSchema = z.strictObject({
   vlan: vlanIdSchema,
   native: z.boolean().optional(),
   adminUp: z.boolean(),
-  description: z.string().optional(),
+  description: textSchema.optional(),
   l3: l3SettingsSchema,
 })
 
@@ -70,9 +86,9 @@ export const serialSettingsSchema = z.strictObject({
 const portCommonShape = {
   id: idSchema,
   medium: portMediumSchema,
-  mac: z.string().optional(),
+  mac: nameSchema.optional(),
   adminUp: z.boolean(),
-  description: z.string().optional(),
+  description: textSchema.optional(),
   speed: z.literal(['auto', 10, 100, 1000, 10000]).optional(),
   duplex: z.enum(['auto', 'full', 'half']).optional(),
   autoMdix: z.boolean().optional(),
@@ -90,7 +106,7 @@ export const routedPortSchema = z.strictObject({
   ...portCommonShape,
   role: z.literal('routed'),
   l3: l3SettingsSchema,
-  subInterfaces: z.array(subInterfaceSchema),
+  subInterfaces: listOf(subInterfaceSchema, LAB_LIMITS.subInterfacesPerPort),
   serial: serialSettingsSchema.optional(),
 })
 

@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import type { Annotation, LabDocument, Link, TextAnnotation } from '../../../domain'
 import { focusRing } from '../../shared/focusRing'
 import { ANNOTATION_COLORS } from '../canvas/annotationActions'
+import { LAB_LIMITS } from '../labServices'
 import CommitField from './CommitField'
 
 const TEXT_SIZES: readonly TextAnnotation['size'][] = ['small', 'medium', 'large']
@@ -86,7 +87,7 @@ export function AnnotationProperties({ annotation, onChange, onTextChange, onDel
   return (
     <div className="space-y-4">
       {annotation.type === 'text' && (
-        <CommitField label={t('properties.noteText')} value={annotation.text} onCommit={onTextChange} multiline />
+        <CommitField label={t('properties.noteText')} value={annotation.text} onCommit={onTextChange} multiline maxLength={LAB_LIMITS.textLength} />
       )}
       <div>
         <label htmlFor={colorId} className="mb-1 block text-xs font-medium text-slate-600">

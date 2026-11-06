@@ -1,8 +1,9 @@
 import { Cloud, EthernetPort, Globe, Layers, Route, Server, Wifi } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { DeviceKindIcon, findDeviceModel } from '../../catalog'
-import type { Device, ExerciseLock, NetworkState } from '../../domain'
+import type { Device, NetworkState } from '../../domain'
 import { useMessageTranslator } from '../../i18n'
+import { ExerciseLockPolicy } from '../../session/ExerciseLockPolicy'
 import FactList, { type Fact } from './fields/FactList'
 import SettingsSection from './fields/SettingsSection'
 import { cidrText } from './info/addressText'
@@ -15,16 +16,16 @@ import { InternetServiceModel } from './model/InternetServiceModel'
 export interface DeviceInfoPanelProps {
   device: Device
   state: NetworkState
-  /** The exercise's whole `ExerciseDefinition.locks`; hidden areas are left out of the summary. */
-  locks?: readonly ExerciseLock[]
+  /** The exercise's locks (`ExerciseLockPolicy.none` by default); hidden areas are left out of the summary. */
+  policy?: ExerciseLockPolicy
 }
 
 /** Read-only summary of a device: model, power, ports with link lights, addressing, routes, services. */
-function DeviceInfoPanel({ device, state, locks = [] }: DeviceInfoPanelProps) {
+function DeviceInfoPanel({ device, state, policy = ExerciseLockPolicy.none }: DeviceInfoPanelProps) {
   const { t } = useTranslation(['deviceConfig', 'catalog'])
   const translate = useMessageTranslator()
   const model = findDeviceModel(device.modelId)
-  const configLocks = new ConfigLocks(device.id, locks)
+  const configLocks = new ConfigLocks(device.id, policy)
   const shows = (section: Parameters<ConfigLocks['section']>[0]) => configLocks.section(section) !== 'hidden'
   const notSet = t('info.notSet')
 

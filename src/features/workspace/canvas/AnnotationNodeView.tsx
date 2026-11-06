@@ -2,6 +2,7 @@ import type { NodeProps } from '@xyflow/react'
 import { memo, useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { ShapeAnnotation, TextAnnotation } from '../../../domain'
+import { LAB_LIMITS } from '../labServices'
 import { ANNOTATION_COLOR_CLASSES, useAnnotationActions } from './annotationActions'
 import type { AnnotationNode } from './canvasTypes'
 
@@ -50,6 +51,7 @@ function NoteEditor({ annotation }: { annotation: TextAnnotation }) {
       ref={field}
       aria-label={t('annotation.editLabel')}
       value={draft}
+      maxLength={LAB_LIMITS.textLength}
       onChange={(event) => setDraft(event.target.value)}
       onBlur={() => {
         if (!finished.current) actions.commitText(annotation.id, draft)

@@ -70,6 +70,13 @@ export class LabMessages {
         return localizedMessage('lab:schema.tooBig', { path, maximum: String(issue.maximum) })
       case 'invalid_union':
         return this.fromUnion(input, issue, fullPath, path)
+      case 'invalid_key': {
+        // A record key (`layout.devices.<id>`): report why the key itself is wrong.
+        const keyIssue = issue.issues[0]
+        return keyIssue === undefined ? localizedMessage('lab:schema.invalid', { path }) : this.fromIssue(input, keyIssue, fullPath)
+      }
+      case 'custom':
+        return this.fromCustom(issue.params, path)
       default:
         return localizedMessage('lab:schema.invalid', { path })
     }
@@ -92,6 +99,13 @@ export class LabMessages {
     const first = best?.[0]
     if (best === undefined || first === undefined || depth(best) === 0) return localizedMessage('lab:schema.invalid', { path })
     return this.fromIssue(input, first, fullPath)
+  }
+
+  /** Refinements of src/lab/schemas name their rule in `params` (see idSchema, labLayoutSchema). */
+  private fromCustom(params: Record<string, unknown> | undefined, path: string): LocalizedMessage {
+    if (params?.reason === 'reservedId') return localizedMessage('lab:schema.reservedId', { path })
+    if (typeof params?.maximum === 'number') return localizedMessage('lab:schema.tooBig', { path, maximum: String(params.maximum) })
+    return localizedMessage('lab:schema.invalid', { path })
   }
 
   private fromViolation(violation: InvariantViolation): LocalizedMessage {

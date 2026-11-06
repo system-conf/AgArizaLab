@@ -23,7 +23,8 @@
     "copied": "Paylaşım bağlantısı kopyalandı.",
     "tooLarge": "Bu lab paylaşım bağlantısı için çok büyük ({{size}} karakter, en fazla {{limit}}). Bunun yerine dosya olarak dışa aktar.",
     "corrupt": "Paylaşım bağlantısı bozuk ya da eksik. Yeni bir bağlantı iste.",
-    "copyFailed": "Bağlantı panoya kopyalanamadı."
+    "copyFailed": "Bağlantı panoya kopyalanamadı.",
+    "linkTooLong": "Bu paylaşım bağlantısı çok uzun ({{size}} karakter, en fazla {{limit}}). Bozuk ya da AgArizaLab ile oluşturulmamış; bunun yerine lab dosyasını iste."
   },
   "import": {
     "notJson": "Dosya geçerli bir JSON değil: {{detail}}",
@@ -32,7 +33,8 @@
     "invalidVersion": "Lab biçim sürümü \"{{version}}\" geçerli değil.",
     "migrationFailed": "Lab, {{version}} biçiminden güncel biçime yükseltilemedi: {{detail}}",
     "moreErrors": "…ve {{count}} sorun daha.",
-    "readFailed": "Dosya okunamadı: {{detail}}"
+    "readFailed": "Dosya okunamadı: {{detail}}",
+    "fileTooLarge": "Dosya bir lab olamayacak kadar büyük ({{size}} MB, en fazla {{limit}} MB)."
   },
   "schema": {
     "invalidType": "{{path}}: {{expected}} bekleniyordu.",
@@ -41,7 +43,8 @@
     "tooSmall": "{{path}}: değer çok küçük ya da çok kısa (en az {{minimum}}).",
     "tooBig": "{{path}}: değer çok büyük ya da çok uzun (en fazla {{maximum}}).",
     "notInteger": "{{path}}: tam sayı olmalı.",
-    "invalid": "{{path}}: geçersiz değer."
+    "invalid": "{{path}}: geçersiz değer.",
+    "reservedId": "{{path}}: bu kimlik ayrılmış (__proto__, constructor ve prototype kullanılamaz)."
   },
   "invariant": {
     "duplicateDeviceId": "İki cihaz aynı \"{{deviceId}}\" kimliğini kullanıyor.",

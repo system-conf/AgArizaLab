@@ -64,7 +64,7 @@ export class ProgressStore {
 
   /** Merges a successful verification (keeps the fewest guide steps) and saves it. */
   recordCompletion(scenarioId: string, guideStepsUsed: number): ProgressMap {
-    const previous = this.progress[scenarioId]
+    const previous = Object.hasOwn(this.progress, scenarioId) ? this.progress[scenarioId] : undefined
     const next: ScenarioProgress = {
       guideStepsUsed: previous ? Math.min(previous.guideStepsUsed, guideStepsUsed) : guideStepsUsed,
     }
@@ -107,15 +107,16 @@ export class ProgressStore {
       console.warn('Saved progress has an unknown format; ignored.')
       return {}
     }
-    const result: Record<string, ScenarioProgress> = {}
+    // Object.fromEntries defines own properties, so a stored `__proto__` key never reaches the prototype.
+    const entries: [string, ScenarioProgress][] = []
     for (const [scenarioId, entry] of Object.entries(value.completed)) {
       const parsed = parseEntry(entry, version)
       if (parsed) {
-        result[scenarioId] = parsed
+        entries.push([scenarioId, parsed])
       } else {
         console.warn(`Invalid saved progress entry ignored: ${scenarioId}`)
       }
     }
-    return result
+    return Object.fromEntries(entries)
   }
 }

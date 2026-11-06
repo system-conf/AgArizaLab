@@ -10,13 +10,13 @@ Status: ✅ done · 🟡 partial · ⬜ not started · Phase = PLAN_V2 phase/pac
 ## Workspace
 | Feature | Status | Phase |
 |---|---|---|
-| Logical workspace: add / move / delete devices, cable tool | 🟡 move only | 2 |
-| Device catalog by category, device models with port layouts | ⬜ | 2 |
-| Cable types (copper straight/cross, fiber, serial DCE/DTE, console, coaxial, phone, auto) | ⬜ | 2 / 5.7 |
+| Logical workspace: add / move / delete devices, cable tool | ✅ | 2 |
+| Device catalog by category, device models with port layouts | ✅ 25 models | 2 |
+| Cable types (copper straight/cross, fiber, serial DCE/DTE, console, coaxial, phone, auto) | 🟡 all but phone; serial clocking in 5.7 | 2 / 5.7 |
 | Link and port status lights | ✅ | — |
-| Notes, labels, shapes on canvas | ⬜ | 2 |
-| Save / open lab files, recent files | ⬜ | 2 |
-| Undo / redo | ⬜ | 2 |
+| Notes, labels, shapes on canvas | 🟡 text notes; shapes drawn but no create tool | 2 |
+| Save / open lab files, recent files | ✅ autosave, .agl.json, share link | 2 |
+| Undo / redo | ✅ | 2 |
 | Physical workspace (buildings, racks, cable lengths, wireless range) | ⬜ | 5.9 |
 | Device physical view (modules, power switch) | ⬜ | 5.9 |
 | Multiuser (connect labs across instances) | ⬜ | 5.9 |
@@ -38,30 +38,30 @@ Status: ✅ done · 🟡 partial · ⬜ not started · Phase = PLAN_V2 phase/pac
 | tracert, arp, netstat, ipconfig /release | 🟡 tracert, /release done | 1 / 4 |
 | Desktop apps: web browser, email, FTP client, terminal (console), text editor | ⬜ | 5.5 |
 | Server services: DHCP, DNS, HTTP/HTTPS, FTP, TFTP, email, Syslog, NTP, AAA | 🟡 DHCP/DNS on router | 3 / 5.5 |
-| Laptops, tablets, smartphones, IP phones, printers | 🟡 some kinds | 2 |
+| Laptops, tablets, smartphones, IP phones, printers | ✅ | 2 |
 
 ## Switching
 | Feature | Status | Phase |
 |---|---|---|
-| VLANs, access / trunk, native VLAN, allowed VLANs | 🟡 access/trunk | 2 / 3 |
+| VLANs, access / trunk, native VLAN, allowed VLANs | ✅ | 2 |
 | MAC address table | ⬜ | 3 |
 | STP / RSTP / PVST+ | ⬜ | 5.1 |
 | EtherChannel (LACP / PAgP) | ⬜ | 5.1 |
 | VTP, DTP | ⬜ | 5.8 |
 | CDP / LLDP | ⬜ | 5.1 |
 | Port security, DHCP snooping, DAI | ⬜ | 5.1 / 5.6 |
-| Layer 3 switch, SVI | ⬜ | 3 |
+| Layer 3 switch, SVI | ✅ | 2 |
 
 ## Routing and services on network devices
 | Feature | Status | Phase |
 |---|---|---|
-| Router-on-a-stick inter-VLAN routing | 🟡 | 3 |
-| Static and default routes | ⬜ | 2 / 3 |
+| Router-on-a-stick inter-VLAN routing | ✅ sub-interfaces | 2 |
+| Static and default routes | ✅ longest prefix + AD | 2 |
 | RIPv2, OSPFv2, EIGRP, BGP basics | ⬜ | 5.3 / 5.7 |
 | HSRP | ⬜ | 5.3 |
 | NAT / PAT | ⬜ | 5.2 |
 | ACL standard / extended / named | ⬜ | 5.2 |
-| DHCP server / relay on router | 🟡 server only | 3 |
+| DHCP server / relay on router | 🟡 server, pools, exclusions; relay later | 2 / 3 |
 | SSH / Telnet, AAA, enable secret, line config | ⬜ | 4 / 5.2 |
 | IPv6 (SLAAC, DHCPv6, OSPFv3) | ⬜ | 5.4 |
 | WAN: serial, PPP / CHAP, GRE, IPsec VPN | ⬜ | 5.7 |
@@ -73,7 +73,7 @@ Status: ✅ done · 🟡 partial · ⬜ not started · Phase = PLAN_V2 phase/pac
 |---|---|---|
 | Access point with SSIDs mapped to VLANs | 🟡 | — |
 | WPA2-PSK / Enterprise authentication | ⬜ | 5.6 |
-| Wireless router (home router) | ⬜ | 2 |
+| Wireless router (home router) | ✅ | 2 |
 | WLC + lightweight APs | ⬜ | 5.6 |
 
 ## Device CLI
@@ -88,7 +88,7 @@ Status: ✅ done · 🟡 partial · ⬜ not started · Phase = PLAN_V2 phase/pac
 |---|---|---|
 | Activities with goals and automatic grading | 🟡 5 fixed exercises | 5.9 |
 | Activity editor for instructors | ⬜ | 5.9 |
-| Locked fields / hidden settings in activities | ⬜ | 2 |
+| Locked fields / hidden settings in activities | ✅ topology / device / section / port locks | 2 |
 | Multiple languages | ✅ tr + en, i18n | 1 |
 | IoT devices and scripting (Python / JS) | ⬜ | 5.9 |
 

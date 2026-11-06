@@ -53,6 +53,26 @@ describe('LabEditor devices', () => {
     expect(() => editor.moveDevices(doc, [{ id: 'pc', to: { x: Infinity, y: 0 } }])).toThrow(LabEditError)
   })
 
+  it('keeps prototype-like device ids as plain layout entries', () => {
+    const sample = sampleLab()
+    const renamed = (id: string) => (id === 'pc' ? '__proto__' : id === 'laptop' ? 'constructor' : id)
+    const doc: LabDocument = {
+      ...sample,
+      state: { ...sample.state, devices: sample.state.devices.map((candidate) => ({ ...candidate, id: renamed(candidate.id) })) },
+      layout: { devices: Object.fromEntries(Object.entries(sample.layout.devices).filter(([id]) => id !== 'pc' && id !== 'laptop')) },
+    }
+    const moved = editor.moveDevices(doc, [
+      { id: '__proto__', to: { x: 1, y: 2 } },
+      { id: 'constructor', to: { x: 3, y: 4 } },
+    ])
+    const layout = moved.layout.devices
+    expect(Object.getPrototypeOf(layout)).toBe(Object.prototype)
+    expect(Object.hasOwn(layout, '__proto__')).toBe(true)
+    expect(Object.getOwnPropertyDescriptor(layout, '__proto__')?.value).toEqual({ x: 1, y: 2 })
+    expect(Object.getOwnPropertyDescriptor(layout, 'constructor')?.value).toEqual({ x: 3, y: 4 })
+    expect(Object.keys(layout).slice(0, -2)).toEqual(Object.keys(doc.layout.devices))
+  })
+
   it('renames a device (user content, kept verbatim)', () => {
     const doc = sampleLab()
     expect(device(editor.renameDevice(doc, 'pc', '  Kasa PC  '), 'pc').name).toBe('  Kasa PC  ')
