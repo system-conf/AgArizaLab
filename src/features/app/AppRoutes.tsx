@@ -16,6 +16,8 @@ const ExerciseScreen = lazy(() => import('../exercise/ExerciseScreen'))
 const DesignRoutes = lazy(() => import('../design/DesignRoutes'))
 // SL1 (sample labs): sample list and sample lessons load on demand (samples, checker, workspace).
 const SampleRoutes = lazy(() => import('../samples/SampleRoutes'))
+// PU (Preferences screen): loads on demand.
+const PreferencesScreen = lazy(() => import('../preferences/PreferencesScreen'))
 
 /** Picks the screen for the current route; redirects through RouteResolver. */
 function AppRoutes() {
@@ -119,6 +121,13 @@ function AppRoutes() {
       return (
         <Suspense fallback={<LoadingScreen />}>
           <SampleRoutes route={route} />
+        </Suspense>
+      )
+    // PU (Preferences screen)
+    case 'preferences':
+      return (
+        <Suspense fallback={<LoadingScreen />}>
+          <PreferencesScreen />
         </Suspense>
       )
   }

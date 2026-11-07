@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next'
 import type { LocalizedMessage } from '../../domain/Messages'
 import type { Device, NetworkState, TerminalLine } from '../../domain'
 import { useMessageTranslator } from '../../i18n'
+import { usePreference } from '../../preferences'
+import { terminalFontStyle } from '../preferences/model/preferenceWiring'
 import { focusRing } from '../shared/focusRing'
 import type { CliControlKey, ExerciseLockPolicy } from './cliServices'
 import { CliAccess } from './model/CliAccess'
@@ -55,6 +57,8 @@ function CliConsoleTab({ labId, device, network, policy, onUpdate, problems }: C
   const hintId = `${inputId}-hint`
   const kind = screen.input
   const readOnly = CliAccess.readOnly(device, policy)
+  // PU (Preferences → Terminal / CLI): text size (phones keep 16 px in the input, so iOS does not zoom).
+  const [fontSize] = usePreference('terminal.fontSize')
 
   useEffect(() => {
     const box = scrollRef.current
@@ -146,14 +150,14 @@ function CliConsoleTab({ labId, device, network, policy, onUpdate, problems }: C
   return (
     <div className="flex flex-col gap-2">
       {readOnly && (
-        <p className="flex items-start gap-1.5 text-xs text-amber-800">
+        <p className="flex items-start gap-1.5 text-xs text-amber-800 dark:text-amber-200">
           <Lock className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
           {t('ui.readOnly')}
         </p>
       )}
-      <div className="flex h-80 flex-col overflow-hidden rounded-lg border border-slate-400 bg-black shadow-md focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-sky-600 md:h-[28rem]">
-        <div className="flex items-center gap-2 bg-slate-100 px-2 py-1 text-xs text-slate-700">
-          <SquareTerminal className="h-4 w-4 text-slate-600" aria-hidden="true" />
+      <div className="flex h-80 flex-col overflow-hidden rounded-lg border border-slate-400 bg-black shadow-md focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-focus md:h-[28rem]">
+        <div className="flex items-center gap-2 bg-surface-muted px-2 py-1 text-xs text-fg">
+          <SquareTerminal className="h-4 w-4 text-fg-muted" aria-hidden="true" />
           <span className="flex-1 truncate">{t('ui.windowTitle', { name: device.name })}</span>
           <button
             type="button"
@@ -161,7 +165,7 @@ function CliConsoleTab({ labId, device, network, policy, onUpdate, problems }: C
               controls.clear()
               inputRef.current?.focus()
             }}
-            className={`flex items-center gap-1 rounded px-1.5 py-0.5 hover:bg-slate-200 ${focusRing}`}
+            className={`flex items-center gap-1 rounded px-1.5 py-0.5 hover:bg-surface-strong ${focusRing}`}
           >
             <Eraser className="h-3.5 w-3.5" aria-hidden="true" />
             {t('ui.clear')}
@@ -171,7 +175,8 @@ function CliConsoleTab({ labId, device, network, policy, onUpdate, problems }: C
           ref={scrollRef}
           dir={consoleDirection}
           onClick={focusInput}
-          className="flex-1 cursor-text overflow-y-auto px-3 py-2 font-console text-[13px] leading-snug"
+          style={terminalFontStyle(fontSize)}
+          className="flex-1 cursor-text overflow-y-auto px-3 py-2 font-console text-(length:--terminal-font-size) leading-snug"
         >
           <div role="log" aria-live="polite" aria-label={t('ui.outputLabel')}>
             {screen.lines.map((line, index) => (
@@ -200,16 +205,16 @@ function CliConsoleTab({ labId, device, network, policy, onUpdate, problems }: C
               autoCorrect="off"
               spellCheck={false}
               enterKeyHint="send"
-              className="min-w-0 flex-1 bg-transparent p-0 font-console text-base md:text-[13px] text-[#f2f2f2] caret-[#f2f2f2] outline-none"
+              className="min-w-0 flex-1 bg-transparent p-0 font-console text-base md:text-(length:--terminal-font-size) text-[#f2f2f2] caret-[#f2f2f2] outline-none"
             />
           </form>
         </div>
       </div>
-      <p id={hintId} className="text-xs text-slate-500">
+      <p id={hintId} className="text-xs text-fg-subtle">
         {hint}
       </p>
       {problems.length > 0 && (
-        <div role="alert" className="rounded-md border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-800">
+        <div role="alert" className="rounded-md border border-rose-200 dark:border-rose-800 bg-rose-50 dark:bg-rose-950/40 px-3 py-2 text-sm text-rose-800 dark:text-rose-200">
           <p className="font-medium">{t('ui.problems')}</p>
           <ul className="list-disc ps-5">
             {problems.map((problem, index) => (

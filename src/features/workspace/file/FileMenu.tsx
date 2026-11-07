@@ -1,6 +1,8 @@
-import { ChevronDown, Download, FileCode2, FilePlus2, FileText, FolderOpen, Link2, Upload, type LucideIcon } from 'lucide-react'
+import { ChevronDown, Download, FileCode2, FilePlus2, FileText, FolderOpen, Link2, Settings, Upload, type LucideIcon } from 'lucide-react'
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react'
 import { useTranslation } from 'react-i18next'
+// PU (Preferences screen): File → Preferences opens the same dialog as the header's gear.
+import { preferencesDialog } from '../../preferences/preferencesDialogState'
 import { focusRing } from '../../shared/focusRing'
 import { LAB_FILE_ACCEPT } from '../labServices'
 import type { LabFileActions } from './useLabFileActions'
@@ -14,7 +16,7 @@ interface FileMenuProps {
   onExportConfigs?: () => void
 }
 
-type ItemKey = 'newLab' | 'openRecent' | 'import' | 'export' | 'share' | 'handover' | 'exportConfigs'
+type ItemKey = 'newLab' | 'openRecent' | 'import' | 'export' | 'share' | 'handover' | 'exportConfigs' | 'preferences'
 
 const ITEMS: readonly { key: ItemKey; icon: LucideIcon }[] = [
   { key: 'newLab', icon: FilePlus2 },
@@ -26,11 +28,13 @@ const ITEMS: readonly { key: ItemKey; icon: LucideIcon }[] = [
   { key: 'handover', icon: FileText },
   // CI (CLI integration)
   { key: 'exportConfigs', icon: FileCode2 },
+  // PU (Preferences screen)
+  { key: 'preferences', icon: Settings },
 ]
 
 /** "File" menu button of the free lab (menu button pattern: arrows, Home / End, Esc, Tab closes). */
 function FileMenu({ actions, onOpenRecent, onHandover, onExportConfigs }: FileMenuProps) {
-  const { t } = useTranslation(['workspace', 'lab', 'design', 'cli'])
+  const { t } = useTranslation(['workspace', 'lab', 'design', 'cli', 'preferences'])
   // CI (CLI integration): "Export configs" only where the screen offers it.
   const items = ITEMS.filter((item) => item.key !== 'exportConfigs' || onExportConfigs !== undefined)
   const [open, setOpen] = useState(false)
@@ -69,6 +73,8 @@ function FileMenu({ actions, onOpenRecent, onHandover, onExportConfigs }: FileMe
         return onHandover()
       case 'exportConfigs':
         return onExportConfigs?.()
+      case 'preferences':
+        return preferencesDialog.show()
     }
   }
 
@@ -107,6 +113,8 @@ function FileMenu({ actions, onOpenRecent, onHandover, onExportConfigs }: FileMe
         return t('design:ui.handover.menuItem')
       case 'exportConfigs':
         return t('cli:ui.export.menuItem')
+      case 'preferences':
+        return t('preferences:open')
     }
   }
 
@@ -124,7 +132,7 @@ function FileMenu({ actions, onOpenRecent, onHandover, onExportConfigs }: FileMe
           event.preventDefault()
           setOpen(true)
         }}
-        className={`flex h-9 items-center gap-1 rounded-lg px-2 text-sm font-medium text-slate-700 hover:bg-slate-100 ${focusRing}`}
+        className={`flex h-9 items-center gap-1 rounded-lg px-2 text-sm font-medium text-fg hover:bg-surface-muted ${focusRing}`}
       >
         <FolderOpen className="h-5 w-5 sm:hidden" aria-hidden="true" />
         <span className="sr-only sm:not-sr-only">{t('workspace:header.file')}</span>
@@ -136,7 +144,7 @@ function FileMenu({ actions, onOpenRecent, onHandover, onExportConfigs }: FileMe
           role="menu"
           aria-label={t('workspace:header.file')}
           onKeyDown={handleMenuKeyDown}
-          className="absolute start-0 z-50 mt-1 w-60 rounded-xl border border-slate-200 bg-white p-1 shadow-lg"
+          className="absolute start-0 z-50 mt-1 w-60 rounded-xl border border-border bg-surface p-1 shadow-lg"
         >
           {items.map(({ key, icon: Icon }, index) => (
             <button
@@ -148,9 +156,9 @@ function FileMenu({ actions, onOpenRecent, onHandover, onExportConfigs }: FileMe
               role="menuitem"
               tabIndex={-1}
               onClick={() => run(key)}
-              className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-start text-sm text-slate-800 hover:bg-slate-100 focus:bg-slate-100 ${focusRing}`}
+              className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-start text-sm text-fg hover:bg-surface-muted focus:bg-surface-muted ${focusRing}`}
             >
-              <Icon className="h-4 w-4 text-slate-500" aria-hidden="true" />
+              <Icon className="h-4 w-4 text-fg-subtle" aria-hidden="true" />
               {label(key)}
             </button>
           ))}

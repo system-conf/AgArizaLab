@@ -44,6 +44,20 @@ describe('SampleValidator', () => {
     expect(unknown.sort()).toEqual(['ghost', 'nobody', 'pc7', 'pc8', 'pc9'])
   })
 
+  it('requires nativeVlanMatch cables that exist and join two switchports', () => {
+    const sample = officeSample()
+    const issues = validator.validate(officeSample({
+      steps: [
+        ...sample.steps.slice(0, 3),
+        { id: 'native', checks: [{ type: 'nativeVlanMatch', linkId: 'ghostLink' }, { type: 'not', check: { type: 'nativeVlanMatch', linkId: 'pc1Link' } }] },
+      ],
+    }))
+    expect(issues).toEqual([
+      { code: 'unknownLink', sampleId: 'officeBasics', stepId: 'native', detail: 'ghostLink' },
+      { code: 'notSwitchLink', sampleId: 'officeBasics', stepId: 'native', detail: 'pc1Link' },
+    ])
+  })
+
   it('finds invalid CIDR prefixes', () => {
     const sample = officeSample()
     const issues = validator.validate(officeSample({

@@ -41,7 +41,7 @@ export function PaletteSectionBar({ views, current, onSelect }: PaletteSectionBa
             aria-label={name}
             title={name}
             className={`flex h-8 w-8 items-center justify-center rounded-md transition ${
-              pressed ? 'bg-sky-100 text-sky-800 ring-1 ring-sky-300' : 'text-slate-600 hover:bg-slate-100'
+              pressed ? 'bg-sky-100 dark:bg-sky-900/40 text-sky-800 dark:text-sky-200 ring-1 ring-sky-300 dark:ring-sky-700' : 'text-fg-muted hover:bg-surface-muted'
             } ${focusRing}`}
           >
             <Icon className="h-5 w-5" aria-hidden="true" />
@@ -74,7 +74,7 @@ export function SubcategoryTabs({ subcategories, current, onSelect }: Subcategor
             onClick={() => onSelect(choice)}
             aria-pressed={pressed}
             className={`rounded-full border px-2 py-0.5 text-xs ${
-              pressed ? 'border-sky-300 bg-sky-100 text-sky-800' : 'border-slate-200 text-slate-600 hover:bg-slate-100'
+              pressed ? 'border-sky-300 dark:border-sky-700 bg-sky-100 dark:bg-sky-900/40 text-sky-800 dark:text-sky-200' : 'border-border text-fg-muted hover:bg-surface-muted'
             } ${focusRing}`}
           >
             {choice === 'all' ? t('palette.all') : translate({ key: `catalog:subcategories.${choice}` })}

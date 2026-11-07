@@ -43,8 +43,8 @@ function PropertiesPanel(props: PropertiesPanelProps) {
         )
       }
       return (
-        <p className="m-auto flex max-w-60 flex-col items-center gap-3 py-8 text-center text-sm text-slate-500">
-          <MousePointerClick className="h-7 w-7 text-sky-700" aria-hidden="true" />
+        <p className="m-auto flex max-w-60 flex-col items-center gap-3 py-8 text-center text-sm text-fg-subtle">
+          <MousePointerClick className="h-7 w-7 text-accent-text" aria-hidden="true" />
           {t('properties.selectHint')}
         </p>
       )
@@ -53,12 +53,12 @@ function PropertiesPanel(props: PropertiesPanelProps) {
       const deletable = SelectionModel.count(policy.allowedDeletion(selection)) > 0
       return (
         <div className="space-y-3">
-          <p className="text-sm text-slate-700">{t('properties.selected', { count })}</p>
+          <p className="text-sm text-fg">{t('properties.selected', { count })}</p>
           {deletable && (
             <button
               type="button"
               onClick={props.onDeleteSelection}
-              className={`flex items-center gap-1.5 rounded-md border border-rose-200 px-3 py-1.5 text-sm text-rose-700 hover:bg-rose-50 ${focusRing}`}
+              className={`flex items-center gap-1.5 rounded-md border border-rose-200 dark:border-rose-800 px-3 py-1.5 text-sm text-rose-700 dark:text-rose-300 hover:bg-rose-50 dark:hover:bg-rose-950/40 ${focusRing}`}
             >
               <Trash2 className="h-4 w-4" aria-hidden="true" />
               {t('properties.delete')}
@@ -97,8 +97,8 @@ function PropertiesPanel(props: PropertiesPanelProps) {
 
   return (
     <section aria-labelledby="properties-heading" className="flex h-full flex-col">
-      <div className="flex items-center justify-between border-b border-slate-200 px-4 py-2">
-        <h2 id="properties-heading" className="text-sm font-semibold text-slate-900">
+      <div className="flex items-center justify-between border-b border-border px-4 py-2">
+        <h2 id="properties-heading" className="text-sm font-semibold text-fg-strong">
           {t('properties.title')}
         </h2>
         {props.onClose && (
@@ -106,7 +106,7 @@ function PropertiesPanel(props: PropertiesPanelProps) {
             type="button"
             onClick={props.onClose}
             aria-label={t('properties.close')}
-            className={`rounded p-1 text-slate-500 hover:bg-slate-100 ${focusRing}`}
+            className={`rounded p-1 text-fg-subtle hover:bg-surface-muted ${focusRing}`}
           >
             <X className="h-4 w-4" aria-hidden="true" />
           </button>

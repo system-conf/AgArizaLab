@@ -17,6 +17,7 @@ import { localizedMessage } from '../../../i18n/messageKeys'
 import { anyRowErrors, hasErrors, optionalText, parseWholeNumber, type FieldErrors } from './formTypes'
 import { Ipv4Fields } from './Ipv4Fields'
 import { SubInterfaceFormModel, type SubInterfaceDraft, type SubInterfaceField } from './SubInterfaceFormModel'
+import { SwitchManagement } from './SwitchManagement'
 import { VlanListParser } from './VlanListParser'
 
 export interface PortDraft {
@@ -52,6 +53,8 @@ export interface PortOptions {
   duplex: boolean
   /** L3 switch: the port may switch between switchport and routed port. */
   roleChoice: boolean
+  /** A switchport's mode and VLANs can be set (false on an unmanaged switch, SwitchManagement). */
+  vlanSettings: boolean
 }
 
 /** Choices of the editor's selects. */
@@ -82,6 +85,7 @@ export class PortEditorModel {
       speeds: ethernet && template ? template.speedsMbps.filter(isPortSpeed) : [],
       duplex: port.medium === 'copper',
       roleChoice: ethernet && switchOrRouted && device.kind === 'l3Switch' && (model?.capabilities.includes('l3Switching') ?? true),
+      vlanSettings: SwitchManagement.vlansConfigurable(model),
     }
   }
 

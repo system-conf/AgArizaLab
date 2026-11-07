@@ -46,12 +46,17 @@
     default tab for network devices, font size, history length), Cables (auto cable on/off; cable length
     effects with the physical view), Language, Data (autosave, clear local data, reset progress,
     export / import preferences). Stored locally; later items added with their features.
+    **Done (PU, 2026-11-07)**: `/preferences` + a dialog in the workspace screens (header gear, File → Preferences);
+    every field wired (docs/PREFERENCES.md §1, §6). Left: cable length effects (with the physical view); device-CLI
+    history above 10 needs `terminal history size` in the CLI core.
 16. **Canvas performance pass** (reported: React Flow feels laggy): profile first; no simulator
     reconfigure / live checks during drags (run once on release); memoised node and edge components with
     stable objects; packet animation outside React state (requestAnimationFrame + direct SVG);
     `onlyRenderVisibleElements`; cheaper styles (shadows / blur) and minimap off while dragging; measure
     with 50 / 150 / 300-device labs. Only if still slow at 300 devices: evaluate a Canvas/WebGL renderer.
     Schedule: "UI polish" workflow (14 + 15 + 16 + 17 in parallel tracks) after the current CLI/samples workflow.
+    **Done (PF, 2026-11-07)**: numbers and changes in `docs/CANVAS_PERFORMANCE.md`. Drag frame at 292 devices
+    145.8 → 18.9 ms avg (dev build), click on a device 389 / 231 / 191 → 82 / 94 / 91 ms; no WebGL renderer needed.
 17. **Icon redesign** (approved): our own SVG icon set in the classic, generic network-diagram symbol
     language (router = cylinder with four arrows, switch = flat box with two-way arrows, L3 switch, hub,
     firewall = brick wall, access point = box with waves, cloud, server tower, PC, laptop, phone, camera…);
@@ -61,19 +66,26 @@
     Realistic artwork stays with item 3 (AI-generated, physical view).
 
 ## Follow-ups from wave 3.1 (small, schedule with the next integration wave)
-- Canvas node and device info panel should pass `modelId` to `DeviceKindIcon` (smart TV shows the chef-hat icon).
-- Default device names per model, not per kind (smart TV → "Smart TV 1", modems → "DSL modem 1").
-- `switch5` (unmanaged) has no CLI but its VLANs are editable — capability-based lock in deviceConfig.
-- One shared cable-tool list for toolbar and palette (`CanvasToolbar` private `CABLE_TOOLS`).
-- Touch: long-press on a palette tile shows the details card.
+- ~~Canvas node and device info panel should pass `modelId` to `DeviceKindIcon`.~~ Done (PF canvas, IC info panel).
+- ~~Default device names per model, not per kind.~~ Done (FX, `DefaultDeviceNames`).
+- ~~`switch5` (unmanaged) VLANs editable — capability-based lock in deviceConfig.~~ Done (FX).
+- ~~One shared cable-tool list for toolbar and palette.~~ Done (R2, `CABLE_TOOLS` / `useOfferedCableTools`).
+- ~~Touch: long-press on a palette tile shows the details card.~~ Done (IC).
 - MODEL_V2 §7: document `subcategory`, `useCaseKey`, catalog sections.
-- Lint after P1 (reported by T1): `react-hooks/static-components` in `catalog/icons/DeviceKindIcon.tsx`,
-  `react-refresh/only-export-components` in `palette/CablePalette.tsx` and `palette/PaletteNavigation.tsx`.
-- Exercise screen on phones: refit the map when the canvas is resized (failed-check list grows the footer).
+- ~~Lint after P1.~~ Lint is clean.
+- Dark mode: `<meta name="theme-color">` does not follow the theme; map does not refit when the simulation
+  panel opens (refit on resize is only on for exercises); move `canvasBench.ts` / `largeLabDocument.ts`
+  out of the app source; `EVENT_FILTER_PROTOCOLS` duplicates `FILTER_PROTOCOLS`; device-CLI history above
+  10 needs `terminal history size`.
+- ~~Exercise screen on phones: refit the map when the canvas is resized (failed-check list grows the footer).~~
+  Done (PF): `refitOnResize`, unless the learner moved the view.
 - e2e selectors use en locale texts — renaming en labels requires the same change in `e2e/`.
 - Design tasks: persist drafts across reloads (IndexedDB like labs); cable prices in the palette's cable view;
   "customer devices are pinned" note visible below 1024 px; brief difficulty as data instead of derived.
-- Move simulation player creation (≈200 ms on a 100-device lab) into the worker.
+- ~~Move simulation player creation (≈200 ms on a 100-device lab) into the worker.~~ Already the case since I3
+  for labs ≥ 30 devices (engine built and settled in the worker, main thread < 1 ms); see `docs/CANVAS_PERFORMANCE.md`.
+- PF leftovers: memoise the device palette / toolbars with stable callbacks in `WorkspaceView` (a click on a
+  device still re-renders the whole screen, ≈60–90 ms dev build); measure a production build on a phone.
 - e2e: add a design-task flow (open brief, add router+switch, checklist turns green, submit, review, handover).
 
 ## Proposed (awaiting decision)

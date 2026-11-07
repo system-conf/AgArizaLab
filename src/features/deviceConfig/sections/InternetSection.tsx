@@ -20,8 +20,8 @@ function InternetSection({ device, access, saved, onSave }: SectionProps) {
         onSubmit={() => onSave({ ...device, internet: InternetServiceModel.apply(lines, device) })}
         onDiscard={() => setLines(InternetServiceModel.serviceLines(device))}
       >
-        <p className="text-xs text-slate-500">{t('internet.hint')}</p>
-        {lines.length === 0 && <p className="text-sm text-slate-500">{t('internet.noPorts')}</p>}
+        <p className="text-xs text-fg-subtle">{t('internet.hint')}</p>
+        {lines.length === 0 && <p className="text-sm text-fg-subtle">{t('internet.noPorts')}</p>}
         {lines.map((line, index) => (
           <CheckboxField
             key={line.portId}

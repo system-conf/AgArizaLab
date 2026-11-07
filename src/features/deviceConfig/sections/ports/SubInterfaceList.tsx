@@ -21,7 +21,7 @@ function SubInterfaceList({ parentId, rows, errors, show, onChange }: SubInterfa
 
   return (
     <div className="flex flex-col gap-2">
-      <h4 className="text-sm font-medium text-slate-700">{t('subInterfaces.title')}</h4>
+      <h4 className="text-sm font-medium text-fg">{t('subInterfaces.title')}</h4>
       <RowList
         items={rows}
         keyOf={(row) => row.key}

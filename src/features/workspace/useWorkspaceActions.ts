@@ -1,12 +1,13 @@
 import { useReactFlow } from '@xyflow/react'
 import { useCallback, useMemo, type RefObject } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { CanvasPoint, DeviceKind, LabDocument } from '../../domain'
+import type { CanvasPoint, DeviceModel, LabDocument } from '../../domain'
+import { useMessageTranslator } from '../../i18n'
 import type { WorkspaceNode, WorkspaceSelection } from './canvas/canvasTypes'
 import { AlignCalculator, type AlignMode, type PlacedItem } from './geometry/AlignCalculator'
 import { PlacementFinder } from './geometry/PlacementFinder'
 import { annotationIdOf, annotationNodeId } from './canvas/flowElements'
-import { findDeviceModel, PortFactory, type ExerciseLockPolicy, type LabDocumentState, type LabEditor } from './labServices'
+import { DefaultDeviceNames, findDeviceModel, PortFactory, type ExerciseLockPolicy, type LabDocumentState, type LabEditor } from './labServices'
 import { WorkspaceOperations, type NodeMove } from './WorkspaceOperations'
 import { DEVICE_NODE_SIZE, DEVICE_SPACING, GRID_SIZE, NOTE_SIZE } from './workspaceConstants'
 
@@ -50,6 +51,7 @@ function numberOf(id: string, fallback: number): number {
 /** Every editing action of the workspace UI; each one is a single undo step. */
 export function useWorkspaceActions({ lab, editor, selection, policy, snapToGrid, canvasRef }: ActionsInput): WorkspaceActions {
   const { t } = useTranslation('workspace')
+  const translate = useMessageTranslator()
   const flow = useReactFlow<WorkspaceNode>()
   const operations = useMemo(() => new WorkspaceOperations(editor), [editor])
   const { apply } = lab
@@ -61,11 +63,18 @@ export function useWorkspaceActions({ lab, editor, selection, policy, snapToGrid
   }, [canvasRef, flow])
 
   const defaultName = useCallback(
-    (kind: DeviceKind, id: string, doc: LabDocument) => {
-      const sameKind = doc.state.devices.filter((device) => device.kind === kind).length
-      return t('deviceName', { kind: t(`deviceKinds.${kind}`), number: numberOf(id, sameKind + 1) })
+    (model: DeviceModel, id: string, doc: LabDocument) => {
+      // A model with its own name base (smart TV, modems) counts its own names: "Smart TV 1".
+      const modelBase = DefaultDeviceNames.modelBaseKey(model.id)
+      if (modelBase !== null) {
+        const kind = translate({ key: modelBase })
+        const format = (number: number) => t('deviceName', { kind, number })
+        return format(DefaultDeviceNames.firstFreeNumber(format, doc.state.devices.map((device) => device.name)))
+      }
+      const sameKind = doc.state.devices.filter((device) => device.kind === model.kind).length
+      return t('deviceName', { kind: t(`deviceKinds.${model.kind}`), number: numberOf(id, sameKind + 1) })
     },
-    [t],
+    [t, translate],
   )
 
   const addModelAt = useCallback(
@@ -78,7 +87,7 @@ export function useWorkspaceActions({ lab, editor, selection, policy, snapToGrid
       }
       apply((doc) => {
         const id = editor.nextDeviceId(doc, model.kind)
-        const device = PortFactory.createDevice(model, id, defaultName(model.kind, id, doc))
+        const device = PortFactory.createDevice(model, id, defaultName(model, id, doc))
         const topLeft = { x: point.x - DEVICE_NODE_SIZE / 2, y: point.y - DEVICE_NODE_SIZE / 2 }
         const wanted = snapToGrid ? calculator.snap(topLeft) : topLeft
         return editor.addDevice(doc, device, devicePlacement.find(wanted, Object.values(doc.layout.devices)))

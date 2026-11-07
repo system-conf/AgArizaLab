@@ -255,7 +255,11 @@
         },
         "fixConflict": {
           "title": "PC3'e kendi adresini ver",
-          "detail": "PC3'ün adresini 192.168.1.30 yap: PC3 hemen PC2'ye ping atabilir. PC1 ise hâlâ '(Duplicate)' gösterir: Windows gibi, kaybettiği adresi kendiliğinden geri almaz. PC1'i kapatıp aç (ya da kablosunu çıkarıp yeniden tak), sonra PC1'den PC2'ye ping at."
+          "detail": "PC3'ün adresini 192.168.1.30 yap ve PC3'ten PC2'ye ping at: yanıt hemen gelir. PC1 ise hâlâ '(Duplicate)' gösterir ve pingleri yine başarısız olur: Windows gibi, kaybettiği adresi kendiliğinden geri almaz."
+        },
+        "restartPc1": {
+          "title": "PC1'i geri getir",
+          "detail": "PC1'i kapatıp aç (ya da kablosunu çıkarıp yeniden tak): 192.168.1.10'u yeniden yoklar, artık başka kimse kullanmadığı için adresi alır. PC1'den PC2'ye ping at: yanıt gelir. Bu adımı kendin işaretle: lab kontrolü PC1'in yeniden başlatıldığını göremez."
         },
         "watchProbe": {
           "title": "Adres yoklamasını izle",
@@ -445,7 +449,7 @@
       "intro": {
         "what": "DHCP DISCOVER bir yayındır (broadcast) ve router'lar yayınları iletmez. Gi0/0'daki 'ip helper-address 192.168.20.10' ile R1 her isteği DHCP1'e giden bir unicast'e çevirir ve içine kendi adresini (giaddr, 192.168.10.1) yazar.",
         "why": "Sunucu havuzu (CLIENTS, 192.168.10.0/24) giaddr'a göre seçer ve yanıtını aktarıcıya geri gönderir, aktarıcı da istemciye teslim eder. Tek bir merkezi sunucu bütün VLAN'lara hizmet verebilir.",
-        "realWorld": "Şirketler bir ya da iki merkezi DHCP sunucusu çalıştırır ve router'ların ya da katman 3 switch'lerin her VLAN arayüzüne bir helper adresi yazar. İstemcileri 169.254 adresi alan yeni bir VLAN'da genellikle helper adresi eksiktir. (Helper adresi cihaz komut satırından girilir, o da Faz 4'te geliyor; bu lab hazır ayarlı gelir.)"
+        "realWorld": "Şirketler bir ya da iki merkezi DHCP sunucusu çalıştırır ve router'ların ya da katman 3 switch'lerin her VLAN arayüzüne bir helper adresi yazar. İstemcileri 169.254 adresi alan yeni bir VLAN'da genellikle helper adresi eksiktir. (Bu labda R1'in komut satırında 'show running-config', helper adresini interface Gi0/0 altında gösterir.)"
       },
       "steps": {
         "renewPc1": {
@@ -466,6 +470,10 @@
         }
       },
       "breakIt": {
+        "removeHelper": {
+          "change": "R1'in komut satırında sırayla 'enable', 'configure terminal', 'interface Gi0/0' ve 'no ip helper-address 192.168.20.10' yaz. Sonra PC1'i yenile.",
+          "result": "R1 artık DISCOVER yayınını iletmez, DHCP1 onu hiç duymaz: yenileme zaman aşımına uğrar. Düzeltmek için helper adresini geri yaz."
+        },
         "removePool": {
           "change": "DHCP1'deki CLIENTS havuzunu sil ve PC2'yi yenile.",
           "result": "Aktarıcı isteği yine ulaştırır, ama giaddr'a uyan havuz yok: yanıt gelmez, yenileme zaman aşımına uğrar."

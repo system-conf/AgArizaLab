@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { usePreference } from '../../preferences'
 import type { SimulationPlayer } from './model/SimulationPlayer'
 import type { PlaySpeed } from './simulationServices'
 
@@ -26,7 +27,8 @@ export interface Playback {
  */
 export function usePlayback(player: SimulationPlayer | null, windowSerial: number): Playback {
   const [playing, setPlaying] = useState(false)
-  const [speed, setSpeed] = useState<PlaySpeed>(1)
+  // PU (Preferences → Animation & simulation): the speed is remembered; the panel and the Preferences screen share it.
+  const [speed, setSpeed] = usePreference('simulation.speed')
   const stepMs = STEP_ANIMATION_MS / speed
 
   useEffect(() => {

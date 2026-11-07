@@ -15,17 +15,10 @@ export { WIRELESS_ROUTER_WAN_PORT } from './models/wireless'
 export { isPortGroup, PORT_GROUPS, type CatalogPortTemplate, type PortGroup } from './portTemplates'
 export { PortFactory, type CreateDeviceOptions } from './PortFactory'
 export { DEFAULT_SSID, DeviceDefaults, HOME_ROUTER_LAN, type DeviceSettingsGroups } from './DeviceDefaults'
+export { DefaultDeviceNames, MODEL_NAME_BASES } from './DefaultDeviceNames'
 export { RandomBaseMacSource, SeededBaseMacSource, type BaseMacSource } from './BaseMacSource'
 export { PortStrip, TWO_ROW_THRESHOLD, type PortStripGroup, type PortStripLayout, type PortStripSection } from './PortStrip'
-export { deviceIconFor, deviceIconForModel, deviceIconRegistry, modelIconOverrides } from './icons/deviceIconRegistry'
-export { DeviceKindIcon } from './icons/DeviceKindIcon'
-export type { DeviceIcon, DeviceIconProps } from './icons/deviceIconTypes'
-export {
-  AccessPointIcon,
-  HubIcon,
-  InternetCloudIcon,
-  L3SwitchIcon,
-  RouterIcon,
-  SwitchIcon,
-  WirelessRouterIcon,
-} from './icons/NetworkDeviceIcons'
+export { deviceIconFor, deviceIconForModel, deviceIconRegistry, FALLBACK_DEVICE_ICON, modelIconOverrides } from './icons/deviceIconRegistry'
+export { DEVICE_ICON_ART, DEVICE_ICON_IDS } from './icons/deviceIconArt'
+export { DeviceIconGlyph, DeviceKindIcon } from './icons/DeviceKindIcon'
+export type { DeviceIconArt, DeviceIconId, DeviceIconProps, DeviceIconTone } from './icons/deviceIconTypes'

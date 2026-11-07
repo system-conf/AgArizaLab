@@ -3,7 +3,7 @@
 import { accessPorts, subInterfaces, svis, trunkPorts, vlans } from '../../scenarios/design/deviceSetup'
 import { LabBuilder } from '../../scenarios/design/labBuilder'
 import type { SampleDefinition } from '../contract'
-import { finishLab, reaches, staticNic, trunkDetails, vlanEntries } from './sampleKit'
+import { finishLab, nativeVlanMatch, reaches, staticNic, trunkDetails, vlanEntries } from './sampleKit'
 
 const NAMES = { 10: 'STAFF', 20: 'GUESTS', 30: 'PRINTERS', 99: 'NATIVE' } as const
 
@@ -67,7 +67,8 @@ export const switchingNativeVlan: SampleDefinition = {
   steps: [
     { id: 'compareTrunks', focusDeviceId: 'sw2' },
     { id: 'watchReply', mode: 'simulation', focusDeviceId: 'pc1' },
-    { id: 'fixNative', focusDeviceId: 'sw2', checks: [reaches('pc1', 'pc3'), reaches('pc3', 'pc1')] },
+    // A ping alone also passes when the uplink stops being a trunk (VLAN 10 breaks then): check the trunks too.
+    { id: 'fixNative', focusDeviceId: 'sw2', checks: [nativeVlanMatch('interSwitch'), reaches('pc1', 'pc3'), reaches('pc3', 'pc1')] },
     { id: 'taggedFine', focusDeviceId: 'pc2' },
   ],
   breakIt: ['vlanLeak', 'bothDefault'],

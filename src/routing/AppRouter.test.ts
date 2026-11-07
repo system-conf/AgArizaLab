@@ -66,6 +66,9 @@ describe('AppRouteCodec', () => {
     ['/samples', { name: 'samples' }],
     ['/samples/', { name: 'samples' }],
     ['/samples/twoPcsSwitch', { name: 'sample', sampleId: 'twoPcsSwitch' }],
+    // PU (Preferences screen)
+    ['/preferences', { name: 'preferences' }],
+    ['/preferences/', { name: 'preferences' }],
   ]
 
   it.each(cases)('parses %s', (path, route) => {
@@ -91,6 +94,8 @@ describe('AppRouteCodec', () => {
     '/samples/twoPcs/more',
     '/samples/1abc',
     '/samples/%E0%A4%A',
+    // PU (Preferences screen)
+    '/preferences/map',
   ]
 
   it.each(notFound)('treats %s as not found', (path) => {

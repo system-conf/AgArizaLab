@@ -26,8 +26,8 @@ function SampleCard({ item }: SampleCardProps) {
   return (
     <article
       aria-labelledby={titleId}
-      className={`flex h-full flex-col gap-3 rounded-2xl border bg-white p-4 shadow-sm transition hover:shadow-md ${
-        complete ? 'border-emerald-200' : 'border-slate-200 hover:border-teal-300'
+      className={`flex h-full flex-col gap-3 rounded-2xl border bg-surface p-4 shadow-sm transition hover:shadow-md ${
+        complete ? 'border-emerald-200 dark:border-emerald-800' : 'border-border hover:border-teal-300 dark:hover:border-teal-700'
       }`}
     >
       <div className="flex flex-wrap items-center gap-1.5">
@@ -47,7 +47,7 @@ function SampleCard({ item }: SampleCardProps) {
         {item.features.length > 0 && (
           <ul aria-label={t('ui.card.needs')} className="flex flex-wrap gap-1.5">
             {item.features.map((feature) => (
-              <li key={feature} className="flex items-center gap-1 rounded-full bg-violet-50 px-2 py-0.5 text-xs font-medium text-violet-800 ring-1 ring-violet-200">
+              <li key={feature} className="flex items-center gap-1 rounded-full bg-violet-50 dark:bg-violet-950/40 px-2 py-0.5 text-xs font-medium text-violet-800 dark:text-violet-200 ring-1 ring-violet-200 dark:ring-violet-800">
                 <Cpu className="h-3 w-3" aria-hidden="true" />
                 {t(`features.${feature}`)}
               </li>
@@ -55,14 +55,14 @@ function SampleCard({ item }: SampleCardProps) {
           </ul>
         )}
       </div>
-      <h3 id={titleId} className="text-base font-semibold leading-snug text-slate-900">
+      <h3 id={titleId} className="text-base font-semibold leading-snug text-fg-strong">
         {item.title}
       </h3>
-      {item.summary !== '' && <p className="text-sm leading-relaxed text-slate-600">{item.summary}</p>}
+      {item.summary !== '' && <p className="text-sm leading-relaxed text-fg-muted">{item.summary}</p>}
       {item.topics.length > 0 && (
         <ul aria-label={t('ui.card.topics')} className="flex flex-wrap gap-1.5">
           {item.topics.map((topic) => (
-            <li key={topic} className="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-700">
+            <li key={topic} className="rounded-full bg-surface-muted px-2 py-0.5 text-xs text-fg">
               {topic}
             </li>
           ))}
@@ -71,12 +71,12 @@ function SampleCard({ item }: SampleCardProps) {
       <div className="mt-auto flex flex-col gap-2 pt-1">
         <div className="flex items-center justify-between gap-2 text-xs">
           {complete ? (
-            <span className="flex items-center gap-1 font-medium text-emerald-700">
+            <span className="flex items-center gap-1 font-medium text-emerald-700 dark:text-emerald-300">
               <CircleCheck className="h-4 w-4" aria-hidden="true" />
               {t('ui.card.complete')}
             </span>
           ) : (
-            <span className="text-slate-500">{done === 0 ? t('ui.card.notStarted') : t('ui.card.steps', stepParams)}</span>
+            <span className="text-fg-subtle">{done === 0 ? t('ui.card.notStarted') : t('ui.card.steps', stepParams)}</span>
           )}
         </div>
         <div
@@ -86,7 +86,7 @@ function SampleCard({ item }: SampleCardProps) {
           aria-valuemax={total}
           aria-valuenow={done}
           aria-valuetext={t('ui.card.stepsAria', stepParams)}
-          className="h-1.5 w-full overflow-hidden rounded-full bg-slate-200"
+          className="h-1.5 w-full overflow-hidden rounded-full bg-surface-strong"
         >
           <div className={`h-full rounded-full ${complete ? 'bg-emerald-600' : 'bg-teal-600'}`} style={{ width: `${percent}%` }} />
         </div>

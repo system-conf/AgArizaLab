@@ -1,0 +1,165 @@
+{
+  "title": "Preferences",
+  "lead": "These settings are saved in this browser only.",
+  "open": "Preferences",
+  "close": "Close preferences",
+  "back": "Back to the home page",
+  "tabsLabel": "Preference categories",
+  "comingSoon": "Coming soon",
+  "tabs": {
+    "appearance": "Appearance",
+    "map": "Map",
+    "simulation": "Animation & simulation",
+    "terminal": "Terminal / CLI",
+    "cables": "Cables",
+    "language": "Language",
+    "data": "Data"
+  },
+  "appearance": {
+    "theme": {
+      "label": "Theme",
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    },
+    "fontScale": {
+      "label": "Text size",
+      "hint": "Scales all text and controls of the app."
+    },
+    "density": {
+      "label": "Density",
+      "comfortable": "Comfortable",
+      "compact": "Compact",
+      "hint": "Compact puts more on the screen; the map keeps its size."
+    },
+    "highContrast": {
+      "label": "High contrast",
+      "hint": "Stronger text and border colours."
+    }
+  },
+  "map": {
+    "deviceLabels": {
+      "label": "Device labels",
+      "name": "Name",
+      "model": "Model",
+      "both": "Name and model",
+      "none": "None"
+    },
+    "portLabels": {
+      "label": "Port labels",
+      "always": "Always",
+      "hover": "On hover or selection",
+      "never": "Never"
+    },
+    "linkLights": {
+      "label": "Link lights",
+      "hint": "The light at the switch end of a cable: green when the link is up."
+    },
+    "grid": {
+      "label": "Show the grid"
+    },
+    "snap": {
+      "label": "Snap to grid",
+      "hint": "Moved devices land on the grid."
+    },
+    "minimap": {
+      "label": "Minimap",
+      "hint": "Shown on screens 768 px and wider."
+    }
+  },
+  "simulation": {
+    "animation": {
+      "label": "Animate packets",
+      "hint": "Off: packets jump to the end of each step. Your system's reduced-motion setting turns the animation off too."
+    },
+    "speed": {
+      "label": "Playback speed"
+    },
+    "defaultMode": {
+      "label": "Start in",
+      "realtime": "Realtime mode",
+      "simulation": "Simulation mode",
+      "hint": "Used when a lab, exercise or sample opens."
+    },
+    "defaultEventFilters": {
+      "label": "Protocols the event list shows at the start",
+      "all": "Select all",
+      "none": "Clear all"
+    }
+  },
+  "terminal": {
+    "cliDefault": {
+      "label": "Open network devices on the CLI tab",
+      "hint": "Routers and switches open on CLI instead of Info."
+    },
+    "fontSize": {
+      "label": "Terminal text size",
+      "option": "{{size}} px"
+    },
+    "historyLength": {
+      "label": "Command history length",
+      "hint": "Up and Down walk back through this many commands. Device CLIs keep at most 10 per mode for now (the IOS default).",
+      "invalid": "Enter a whole number from {{min}} to {{max}}."
+    }
+  },
+  "cables": {
+    "autoCable": {
+      "label": "Offer the automatic cable",
+      "hint": "Off: the toolbar and the palette list only real cable types, so you pick each cable yourself."
+    },
+    "length": {
+      "label": "Cable length effects",
+      "hint": "Arrives with the physical view."
+    }
+  },
+  "language": {
+    "label": "Interface language",
+    "hint": "Device output stays in English, like on real equipment."
+  },
+  "data": {
+    "autosave": {
+      "label": "Autosave the lab",
+      "hint": "Off: changes in the free lab are not saved in this browser. Export the lab from the File menu to keep it."
+    },
+    "file": {
+      "heading": "Preferences file",
+      "lead": "Take your preferences to another browser.",
+      "export": "Export preferences",
+      "import": "Import preferences",
+      "exported": "Preferences file downloaded.",
+      "imported": "Preferences imported.",
+      "importedWithIgnored_one": "Preferences imported. {{count}} invalid setting was reset to its default.",
+      "importedWithIgnored_other": "Preferences imported. {{count}} invalid settings were reset to their defaults.",
+      "invalidJson": "This file is not valid JSON.",
+      "notPreferences": "This file is not an AgArizaLab preferences file.",
+      "readFailed": "The file could not be read."
+    },
+    "resetPreferences": {
+      "heading": "Default preferences",
+      "button": "Reset preferences",
+      "confirm": "Reset every preference on this screen to its default?",
+      "confirmButton": "Reset preferences",
+      "done": "Preferences reset to their defaults."
+    },
+    "progress": {
+      "heading": "Reset progress",
+      "lead": "Marks the chosen kinds as not done again. Saved labs stay.",
+      "exercises": "Troubleshooting exercises",
+      "designs": "Design tasks",
+      "samples": "Sample labs",
+      "button": "Reset progress",
+      "confirm": "Reset the progress of the selected kinds? This cannot be undone. The page reloads.",
+      "confirmButton": "Yes, reset progress",
+      "nothingSelected": "Choose at least one kind."
+    },
+    "clear": {
+      "heading": "Clear local data",
+      "lead": "Deletes everything this app saved in this browser: labs, progress, preferences, language and palette favourites.",
+      "button": "Clear local data",
+      "confirm": "Delete all local data of this app? This cannot be undone. Export the labs you want to keep first. The home page opens afterwards.",
+      "confirmButton": "Yes, delete everything",
+      "failed": "Local data could not be cleared completely. Try again, or clear the site data in the browser settings."
+    },
+    "cancel": "Cancel"
+  }
+}

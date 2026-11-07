@@ -32,12 +32,12 @@ function ReviewQuotation({ view }: ReviewQuotationProps) {
     <>
       <ReviewSection id="designReviewQuotation" title={t('design:ui.review.cost.title')} icon={Coins}>
         {lines.length === 0 ? (
-          <p className="text-sm text-slate-600">{t('design:ui.review.cost.empty')}</p>
+          <p className="text-sm text-fg-muted">{t('design:ui.review.cost.empty')}</p>
         ) : (
           <div className="-mx-2 overflow-x-auto">
             <table className="w-full min-w-[20rem] text-sm">
-              <thead className="text-xs text-slate-500">
-                <tr className="border-b border-slate-200">
+              <thead className="text-xs text-fg-subtle">
+                <tr className="border-b border-border">
                   <th scope="col" className={`${cell} text-start font-medium`}>
                     {t('design:ui.review.cost.item')}
                   </th>
@@ -54,8 +54,8 @@ function ReviewQuotation({ view }: ReviewQuotationProps) {
               </thead>
               <tbody>
                 {lines.map((line) => (
-                  <tr key={line.key} className="border-b border-slate-100">
-                    <th scope="row" className={`${cell} text-start font-normal text-slate-800`}>
+                  <tr key={line.key} className="border-b border-border/60">
+                    <th scope="row" className={`${cell} text-start font-normal text-fg`}>
                       {line.name}
                     </th>
                     <td className={`${cell} text-end tabular-nums`}>{formatNumber(line.count)}</td>
@@ -66,10 +66,10 @@ function ReviewQuotation({ view }: ReviewQuotationProps) {
               </tbody>
               <tfoot>
                 <tr>
-                  <th scope="row" colSpan={3} className={`${cell} text-start font-semibold text-slate-900`}>
+                  <th scope="row" colSpan={3} className={`${cell} text-start font-semibold text-fg-strong`}>
                     {t('design:ui.review.cost.total')}
                   </th>
-                  <td className={`${cell} text-end font-semibold tabular-nums text-slate-900`}>{price(view.cost.total)}</td>
+                  <td className={`${cell} text-end font-semibold tabular-nums text-fg-strong`}>{price(view.cost.total)}</td>
                 </tr>
               </tfoot>
             </table>
@@ -77,24 +77,24 @@ function ReviewQuotation({ view }: ReviewQuotationProps) {
         )}
         <div className="mt-3 flex flex-col gap-2">
           {view.budget && <BudgetMeterBar meter={view.budget} />}
-          <p className="text-sm text-slate-700">{translate(view.budgetMessage)}</p>
+          <p className="text-sm text-fg">{translate(view.budgetMessage)}</p>
         </div>
       </ReviewSection>
       <ReviewSection id="designReviewDevices" title={t('design:ui.review.devices.title')} icon={Server}>
         <dl className="mb-3 grid grid-cols-2 gap-2 text-sm">
-          <div className="rounded-lg bg-slate-50 p-2.5">
-            <dt className="text-xs text-slate-500">{t('design:ui.review.devices.provided')}</dt>
-            <dd className="text-lg font-semibold text-slate-900">{formatNumber(view.provided)}</dd>
+          <div className="rounded-lg bg-surface-subtle p-2.5">
+            <dt className="text-xs text-fg-subtle">{t('design:ui.review.devices.provided')}</dt>
+            <dd className="text-lg font-semibold text-fg-strong">{formatNumber(view.provided)}</dd>
           </div>
-          <div className="rounded-lg bg-slate-50 p-2.5">
-            <dt className="text-xs text-slate-500">{t('design:ui.review.devices.added')}</dt>
-            <dd className="text-lg font-semibold text-slate-900">{formatNumber(view.added)}</dd>
+          <div className="rounded-lg bg-surface-subtle p-2.5">
+            <dt className="text-xs text-fg-subtle">{t('design:ui.review.devices.added')}</dt>
+            <dd className="text-lg font-semibold text-fg-strong">{formatNumber(view.added)}</dd>
           </div>
         </dl>
         <div className="-mx-2 overflow-x-auto">
           <table className="w-full min-w-[18rem] text-sm">
-            <thead className="text-xs text-slate-500">
-              <tr className="border-b border-slate-200">
+            <thead className="text-xs text-fg-subtle">
+              <tr className="border-b border-border">
                 <th scope="col" className={`${cell} text-start font-medium`}>
                   {t('design:ui.review.devices.kind')}
                 </th>
@@ -108,8 +108,8 @@ function ReviewQuotation({ view }: ReviewQuotationProps) {
             </thead>
             <tbody>
               {view.devicesByKind.map((entry) => (
-                <tr key={entry.kind} className="border-b border-slate-100">
-                  <th scope="row" className={`${cell} text-start font-normal text-slate-800`}>
+                <tr key={entry.kind} className="border-b border-border/60">
+                  <th scope="row" className={`${cell} text-start font-normal text-fg`}>
                     {translate(entry.label)}
                   </th>
                   <td className={`${cell} text-end tabular-nums`}>{formatNumber(entry.provided)}</td>

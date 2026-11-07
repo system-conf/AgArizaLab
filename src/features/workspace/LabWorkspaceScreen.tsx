@@ -2,6 +2,7 @@ import { ReactFlowProvider } from '@xyflow/react'
 import { Network } from 'lucide-react'
 import { lazy, Suspense, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { usePreference } from '../../preferences'
 import { routes } from '../../routing'
 // CI (CLI integration): File menu "Export configs".
 import { useLabConfigExport } from '../cli'
@@ -29,7 +30,9 @@ export interface LabWorkspaceScreenProps {
 /** The free lab (`/lab`): autosaved, with the File menu (new, recent, import, export, share, handover pack). */
 function LabWorkspace({ shareHash, onShareHashUsed }: LabWorkspaceScreenProps) {
   const { t } = useTranslation(['workspace', 'lab', 'common'])
-  const lab = useLabDocument()
+  // PU (Preferences → Data): autosave of the free lab can be turned off (exercises, designs and samples never autosave).
+  const [autosave] = usePreference('data.autosave')
+  const lab = useLabDocument(undefined, { autosave })
   const toasts = useToasts()
   useLabOpening({ lab, notify: toasts.show, shareHash, onShareHashUsed })
   const files = useLabFileActions(lab, toasts.show)
@@ -45,7 +48,7 @@ function LabWorkspace({ shareHash, onShareHashUsed }: LabWorkspaceScreenProps) {
         to={routes.landing}
         aria-label={t('workspace:header.home')}
         title={t('workspace:header.home')}
-        className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-sky-700 hover:bg-sky-50 ${focusRing}`}
+        className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-accent-text hover:bg-accent-muted ${focusRing}`}
       >
         <Network className="h-6 w-6" aria-hidden="true" />
       </AppLink>

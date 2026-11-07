@@ -34,6 +34,26 @@
       content="Fix realistic faults in small business networks. In your browser, free and open source. Available in English and Turkish."
     />
     <link rel="canonical" href="https://agarizalab.slovveis.workers.dev/" />
+    <!-- Appearance preferences before the first paint (no light flash in dark mode). Mirrors
+         src/preferences/ThemeApplier.ts (ThemeApplier.test.ts compares both); the app re-applies them. -->
+    <script id="preferencesBoot">
+      (function (root) {
+        try {
+          var stored = JSON.parse(localStorage.getItem('agArizaLab.preferences') || '{}')
+          var look = (stored && typeof stored.appearance === 'object' && stored.appearance) || {}
+          var dark = look.theme === 'dark' ||
+            (look.theme === 'system' && typeof matchMedia === 'function' && matchMedia('(prefers-color-scheme: dark)').matches)
+          root.classList.toggle('dark', dark)
+          root.setAttribute('data-density', look.density === 'compact' ? 'compact' : 'comfortable')
+          if (look.highContrast === true) root.setAttribute('data-contrast', 'more')
+          else root.removeAttribute('data-contrast')
+          var scales = [0.875, 1.125, 1.25, 1.5]
+          root.style.fontSize = scales.indexOf(look.fontScale) >= 0 ? look.fontScale * 100 + '%' : ''
+        } catch (error) {
+          console.warn('Saved appearance could not be applied early; the app applies it after loading.', error)
+        }
+      })(document.documentElement)
+    </script>
   </head>
   <body>
     <div id="root"></div>

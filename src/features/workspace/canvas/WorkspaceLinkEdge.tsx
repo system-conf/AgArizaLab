@@ -12,7 +12,7 @@ function WorkspaceLinkEdge(props: EdgeProps<LinkFlowEdge>) {
   const [path] = getStraightPath({ sourceX, sourceY, targetX, targetY })
   return (
     <>
-      {selected && <path d={path} fill="none" stroke="#7dd3fc" strokeWidth={10} strokeLinecap="round" opacity={0.8} />}
+      {selected && <path d={path} fill="none" className="stroke-sky-300 dark:stroke-sky-700" strokeWidth={10} strokeLinecap="round" opacity={0.8} />}
       <LinkEdge {...props} />
     </>
   )

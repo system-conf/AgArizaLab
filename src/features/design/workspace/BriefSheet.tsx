@@ -13,7 +13,7 @@ function BriefSheet({ onClose, children }: BriefSheetProps) {
   const { t } = useTranslation('design')
   return (
     <div className="fixed inset-0 z-50 flex flex-col justify-end">
-      <button type="button" tabIndex={-1} aria-hidden="true" onClick={onClose} className="absolute inset-0 bg-slate-900/30" />
+      <button type="button" tabIndex={-1} aria-hidden="true" onClick={onClose} className="absolute inset-0 bg-slate-900/30 dark:bg-black/60" />
       <div
         role="dialog"
         aria-modal="true"
@@ -24,10 +24,10 @@ function BriefSheet({ onClose, children }: BriefSheetProps) {
           event.stopPropagation()
           onClose()
         }}
-        className="relative max-h-[80dvh] overflow-y-auto rounded-t-2xl border-t border-slate-200 bg-slate-50 p-3 shadow-2xl sm:p-4"
+        className="relative max-h-[80dvh] overflow-y-auto rounded-t-2xl border-t border-border bg-surface-subtle p-3 shadow-2xl sm:p-4"
       >
         <div className="mb-3 flex items-center justify-between">
-          <h2 id="designBriefSheetTitle" className="text-base font-semibold text-slate-900">
+          <h2 id="designBriefSheetTitle" className="text-base font-semibold text-fg-strong">
             {t('ui.brief.title')}
           </h2>
           <button
@@ -36,7 +36,7 @@ function BriefSheet({ onClose, children }: BriefSheetProps) {
             autoFocus
             onClick={onClose}
             aria-label={t('ui.brief.close')}
-            className={`rounded p-1 text-slate-500 hover:bg-slate-200 ${focusRing}`}
+            className={`rounded p-1 text-fg-subtle hover:bg-surface-strong ${focusRing}`}
           >
             <X className="h-5 w-5" aria-hidden="true" />
           </button>

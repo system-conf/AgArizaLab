@@ -24,9 +24,9 @@ function SolveFooter({ notes, onNotesChange, onVerify, checking = false, failedC
   const sentences = [...new Set(failedChecks.map(translateMessage))]
 
   return (
-    <footer className="flex flex-col gap-3 border-t border-slate-200 bg-white px-4 py-3 md:flex-row md:items-start">
+    <footer className="flex flex-col gap-3 border-t border-border bg-surface px-4 py-3 md:flex-row md:items-start">
       <div className="flex flex-1 flex-col gap-1">
-        <label htmlFor={notesId} className="text-sm font-medium text-slate-700">
+        <label htmlFor={notesId} className="text-sm font-medium text-fg">
           {t('footer.notesLabel')}
         </label>
         <textarea
@@ -36,7 +36,7 @@ function SolveFooter({ notes, onNotesChange, onVerify, checking = false, failedC
           maxLength={LAB_LIMITS.notesLength}
           rows={2}
           placeholder={t('footer.notesPlaceholder')}
-          className={`resize-y rounded-md border border-slate-300 px-2 py-1.5 text-sm ${focusRing}`}
+          className={`resize-y rounded-md border border-border-strong px-2 py-1.5 text-sm ${focusRing}`}
         />
       </div>
       <div className="flex flex-col gap-2 md:w-96">
@@ -50,7 +50,7 @@ function SolveFooter({ notes, onNotesChange, onVerify, checking = false, failedC
           {t('footer.verify')}
         </button>
         {sentences.length > 0 && (
-          <div role="alert" className="rounded-md border border-rose-200 bg-rose-50 p-2 text-sm text-rose-900">
+          <div role="alert" className="rounded-md border border-rose-200 dark:border-rose-800 bg-rose-50 dark:bg-rose-950/40 p-2 text-sm text-rose-900 dark:text-rose-200">
             <p className="font-medium">{t('footer.notSolvedYet')}</p>
             <ul className="mt-1 flex flex-col gap-1">
               {sentences.map((sentence) => (

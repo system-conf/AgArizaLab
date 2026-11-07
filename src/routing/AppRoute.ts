@@ -19,6 +19,8 @@ export type AppRoute =
   | { name: 'samples' }
   /** SL1 (sample labs): one sample opened as a free lab with its lesson panel (`/samples/<id>`). */
   | { name: 'sample'; sampleId: string }
+  /** PU (Preferences screen): the user's preferences (`/preferences`). */
+  | { name: 'preferences' }
   /** Any other path; the app sends the user to the landing page. */
   | { name: 'notFound'; path: string }
 
@@ -33,6 +35,7 @@ export class AppRouteCodec {
     const [first, second, third, ...rest] = segments
     if (first === undefined) return { name: 'landing' }
     if (first === 'lab' && second === undefined) return { name: 'lab' }
+    if (first === 'preferences') return second === undefined ? { name: 'preferences' } : { name: 'notFound', path: pathname }
     // SL1 (sample labs): `/samples` and `/samples/<id>`; anything deeper is not found.
     if (first === 'samples') return AppRouteCodec.parseSample(pathname, second, third)
     if ((first !== 'exercises' && first !== 'design') || rest.length > 0) return { name: 'notFound', path: pathname }
@@ -71,6 +74,9 @@ export class AppRouteCodec {
         return '/samples'
       case 'sample':
         return `/samples/${encodeURIComponent(route.sampleId)}`
+      // PU (Preferences screen)
+      case 'preferences':
+        return '/preferences'
       case 'notFound':
         return route.path
     }
@@ -111,4 +117,6 @@ export const routes = {
   // SL1 (sample labs)
   samples: { name: 'samples' },
   sample: (sampleId: string): AppRoute => ({ name: 'sample', sampleId }),
+  // PU (Preferences screen)
+  preferences: { name: 'preferences' },
 } as const satisfies Record<string, AppRoute | ((id: string) => AppRoute)>

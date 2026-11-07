@@ -8,7 +8,7 @@ export interface DesignProgress {
 export type DesignProgressMap = Readonly<Record<string, DesignProgress>>
 
 /** Separate from the troubleshooting progress (`agArizaLab.progress.v1`). */
-const STORAGE_KEY = 'agArizaLab.designProgress.v1'
+export const STORAGE_KEY = 'agArizaLab.designProgress.v1'
 const FORMAT_VERSION = 1
 
 function isRecord(value: unknown): value is Record<string, unknown> {

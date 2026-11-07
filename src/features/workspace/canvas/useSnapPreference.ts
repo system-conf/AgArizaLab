@@ -1,13 +1,12 @@
-import { useCallback, useState } from 'react'
-import { SnapPreference } from './SnapPreference'
+import { useCallback } from 'react'
+import { usePreference } from '../../../preferences'
 
-/** Snap to grid (off by default), remembered across visits; `toggle` flips and saves it. */
+/**
+ * Snap to grid (off by default), the `map.snap` preference: remembered across visits and tabs;
+ * `toggle` flips and saves it. (The old key agArizaLab.workspace.snap is migrated by PreferencesStore.)
+ */
 export function useSnapPreference(): { snapToGrid: boolean; toggle: () => void } {
-  const [store] = useState(() => SnapPreference.fromBrowser())
-  const [snapToGrid, setSnapToGrid] = useState(() => store.read())
-  const toggle = useCallback(() => {
-    store.write(!snapToGrid)
-    setSnapToGrid(!snapToGrid)
-  }, [snapToGrid, store])
+  const [snapToGrid, setSnap] = usePreference('map.snap')
+  const toggle = useCallback(() => setSnap(!snapToGrid), [snapToGrid, setSnap])
   return { snapToGrid, toggle }
 }

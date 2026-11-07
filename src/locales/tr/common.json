@@ -3,6 +3,12 @@
   "languageSwitcher": {
     "label": "Dil"
   },
+  "themeToggle": {
+    "label": "Tema: {{current}}. {{next}} seçeneğine geç",
+    "light": "Açık",
+    "dark": "Koyu",
+    "system": "Sistem"
+  },
   "meta": {
     "title": "Ağ Arıza Laboratuvarı — Tarayıcıda ağ arızası bul, düzelt, öğren",
     "pageTitle": "{{page}} — {{appName}}",

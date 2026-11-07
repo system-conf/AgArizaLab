@@ -43,7 +43,7 @@ function DnsSection({ device, access, saved, onSave }: SectionProps) {
           hint={t('dns.forwardersHint')}
           error={errors.show(validation.forwarders)}
         />
-        <h4 className="text-sm font-medium text-slate-700">{t('dns.records')}</h4>
+        <h4 className="text-sm font-medium text-fg">{t('dns.records')}</h4>
         <RowList
           items={draft.records}
           keyOf={(row) => row.key}

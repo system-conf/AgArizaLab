@@ -93,7 +93,8 @@
     "mask": "Subnet mask",
     "dhcpInfo": "The address comes from a DHCP server.",
     "clockRate": "Clock rate (bit/s)",
-    "clockRateHint": "Needed on the DCE end of a serial line, e.g. 64000. Leave empty on the DTE end."
+    "clockRateHint": "Needed on the DCE end of a serial line, e.g. 64000. Leave empty on the DTE end.",
+    "unmanagedVlans": "Unmanaged switch: every port is an access port in VLAN 1. It has no VLAN settings and no command line."
   },
   "subInterfaces": {
     "title": "Sub-interfaces",

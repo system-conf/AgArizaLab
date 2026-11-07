@@ -57,6 +57,12 @@ export type StepCheck =
   | { type: 'network'; condition: NetworkCondition }
   /** The device has an IPv4 address (inside `prefix`, CIDR, when given; e.g. '169.254.0.0/16'). */
   | { type: 'hasAddress'; deviceId: string; prefix?: string }
+  /**
+   * Both ends of the cable `linkId` are trunk switchports with the same native VLAN (equal to `vlan`
+   * when given). Reads the port settings: the rule engine does not model untagged replies landing in
+   * another VLAN, the simulator does (native VLAN mismatch).
+   */
+  | { type: 'nativeVlanMatch'; linkId: string; vlan?: number }
   /** Holds when `check` does not hold (e.g. "PC1 can no longer reach PC2"). */
   | { type: 'not'; check: StepCheck }
 

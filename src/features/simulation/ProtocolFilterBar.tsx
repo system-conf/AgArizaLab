@@ -21,7 +21,7 @@ function ProtocolFilterBar({ filter, onChange }: ProtocolFilterBarProps) {
       <button
         type="button"
         onClick={() => onChange(allOn ? EventFilters.none() : EventFilters.all())}
-        className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-medium text-sky-800 ring-1 ring-sky-200 hover:bg-sky-50 ${focusRing}`}
+        className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-medium text-sky-800 dark:text-sky-200 ring-1 ring-sky-200 dark:ring-sky-800 hover:bg-accent-muted ${focusRing}`}
       >
         {allOn ? t('ui.filters.none') : t('ui.filters.all')}
       </button>
@@ -34,7 +34,7 @@ function ProtocolFilterBar({ filter, onChange }: ProtocolFilterBarProps) {
             aria-pressed={on}
             onClick={() => onChange(EventFilters.toggle(filter, protocol))}
             className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-medium ring-1 transition ${
-              on ? PROTOCOL_STYLES[protocol].chip : 'bg-white text-slate-400 ring-slate-200 line-through'
+              on ? PROTOCOL_STYLES[protocol].chip : 'bg-surface text-fg-subtle ring-border line-through'
             } ${focusRing}`}
           >
             {translate(SimMessages.protocol(protocol))}

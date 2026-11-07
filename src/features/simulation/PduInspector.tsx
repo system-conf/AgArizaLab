@@ -31,7 +31,7 @@ function PduInspector({ event, nameOf, onSelectEvent }: PduInspectorProps) {
   const baseId = useId()
   const view = useMemo(() => (event ? InspectorModels.build(event, nameOf) : null), [event, nameOf])
 
-  if (!view) return <p className="p-3 text-sm text-slate-500">{t('ui.inspector.empty')}</p>
+  if (!view) return <p className="p-3 text-sm text-fg-subtle">{t('ui.inspector.empty')}</p>
 
   const seconds = new Intl.NumberFormat(language, { minimumFractionDigits: 3, maximumFractionDigits: 3 }).format(view.time / 1000)
   const failed = view.action === 'dropped' || view.action === 'timedOut'
@@ -43,13 +43,13 @@ function PduInspector({ event, nameOf, onSelectEvent }: PduInspectorProps) {
   return (
     <div className="space-y-3 p-3">
       <header className="space-y-1">
-        <h3 className="flex flex-wrap items-center gap-2 text-sm font-semibold text-slate-900">
+        <h3 className="flex flex-wrap items-center gap-2 text-sm font-semibold text-fg-strong">
           <span>{t('ui.inspector.at', { device: nameOf(view.deviceId) })}</span>
           <span className={`rounded px-1.5 py-0.5 text-[11px] font-semibold ring-1 ${view.protocol ? PROTOCOL_STYLES[view.protocol].chip : NO_PROTOCOL_CHIP}`}>
             {view.protocol ? translate(SimMessages.protocol(view.protocol)) : t('ui.events.client')}
           </span>
         </h3>
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-fg-subtle">
           <span className="font-mono tabular-nums">{t('ui.time.seconds', { value: seconds })}</span>
           {view.lastDeviceId !== undefined && <span className="ms-2">{t('ui.inspector.from', { device: nameOf(view.lastDeviceId) })}</span>}
           <span className="ms-2">{t('ui.events.eventNumber', { id: view.eventId })}</span>
@@ -60,13 +60,13 @@ function PduInspector({ event, nameOf, onSelectEvent }: PduInspectorProps) {
         <p className="flex items-start gap-2 font-medium">
           {failed ? <TriangleAlert className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" /> : <Info className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />}
           <span>
-            <span className="me-1.5 rounded bg-white/70 px-1.5 py-0.5 text-xs font-semibold">{translate(SimMessages.action(view.action))}</span>
+            <span className="me-1.5 rounded bg-surface/70 px-1.5 py-0.5 text-xs font-semibold">{translate(SimMessages.action(view.action))}</span>
             {translate(view.decision)}
           </span>
         </p>
         {view.reason && (
           <p className="mt-1 ps-6">
-            <span className="me-1.5 rounded bg-white/70 px-1.5 py-0.5 text-xs font-semibold">{t('ui.inspector.why')}</span>
+            <span className="me-1.5 rounded bg-surface/70 px-1.5 py-0.5 text-xs font-semibold">{t('ui.inspector.why')}</span>
             {translate(view.reason)}
           </p>
         )}
@@ -82,7 +82,7 @@ function PduInspector({ event, nameOf, onSelectEvent }: PduInspectorProps) {
         )}
       </section>
 
-      <div role="tablist" aria-label={t('ui.inspector.tabsLabel')} className="flex gap-1 border-b border-slate-200">
+      <div role="tablist" aria-label={t('ui.inspector.tabsLabel')} className="flex gap-1 border-b border-border">
         {tabs.map((entry) => (
           <button
             key={entry.id}
@@ -93,7 +93,7 @@ function PduInspector({ event, nameOf, onSelectEvent }: PduInspectorProps) {
             aria-controls={`${baseId}-${entry.id}-panel`}
             onClick={() => setTab(entry.id)}
             className={`-mb-px border-b-2 px-3 py-1.5 text-sm font-medium ${
-              tab === entry.id ? 'border-sky-600 text-sky-800' : 'border-transparent text-slate-600 hover:text-slate-900'
+              tab === entry.id ? 'border-sky-600 text-sky-800 dark:text-sky-200' : 'border-transparent text-fg-muted hover:text-fg-strong'
             } ${focusRing}`}
           >
             {entry.label}

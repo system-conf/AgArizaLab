@@ -45,15 +45,15 @@ function RecentLabsSection() {
     <section aria-labelledby="recentLabsTitle" className="flex flex-col gap-3">
       <div className="flex flex-wrap items-end justify-between gap-2">
         <div>
-          <h2 id="recentLabsTitle" className="text-lg font-semibold text-slate-900">
+          <h2 id="recentLabsTitle" className="text-lg font-semibold text-fg-strong">
             {t('lab:recent.title')}
           </h2>
-          <p className="text-sm text-slate-500">{recent.storageAvailable ? t('landing:recentLabs.hint') : t('lab:storage.unavailable')}</p>
+          <p className="text-sm text-fg-subtle">{recent.storageAvailable ? t('landing:recentLabs.hint') : t('lab:storage.unavailable')}</p>
         </div>
         <button
           type="button"
           onClick={() => fileRef.current?.click()}
-          className={`flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 ${focusRing}`}
+          className={`flex items-center gap-2 rounded-lg border border-border-strong bg-surface px-3 py-2 text-sm font-medium text-fg hover:bg-surface-subtle ${focusRing}`}
         >
           <Upload className="h-4 w-4" aria-hidden="true" />
           {t('landing:recentLabs.import')}
@@ -73,7 +73,7 @@ function RecentLabsSection() {
         />
       </div>
       {importErrors !== null && (
-        <div role="alert" className="flex gap-2 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-900">
+        <div role="alert" className="flex gap-2 rounded-lg border border-rose-200 dark:border-rose-800 bg-rose-50 dark:bg-rose-950/40 p-3 text-sm text-rose-900 dark:text-rose-200">
           <CircleAlert className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
           <div>
             <p className="font-medium">{t('landing:recentLabs.importFailed')}</p>

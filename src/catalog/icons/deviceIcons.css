@@ -1,0 +1,47 @@
+/*
+ * Device icon colours. Themes (dark mode, high contrast) override the variables only:
+ *   --device-icon-network / -end-device / -security / -wan   stroke colour per category
+ *   --device-icon-fill-opacity                               tint of the icon bodies
+ * The rules live in the `components` layer so a Tailwind text colour on the icon still wins.
+ */
+:root {
+  --device-icon-network: #0369a1; /* sky-700 */
+  --device-icon-end-device: #475569; /* slate-600 */
+  --device-icon-security: #c2410c; /* orange-700 */
+  --device-icon-wan: #6d28d9; /* violet-700 */
+  --device-icon-fill-opacity: 0.14;
+}
+
+/* Screen only, like the dark tokens in src/index.css: printed pages keep the light colours. */
+@media not print {
+  :root.dark {
+    --device-icon-network: #7dd3fc; /* sky-300 */
+    --device-icon-end-device: #cbd5e1; /* slate-300 */
+    --device-icon-security: #fdba74; /* orange-300 */
+    --device-icon-wan: #c4b5fd; /* violet-300 */
+    --device-icon-fill-opacity: 0.2;
+  }
+}
+
+@layer components {
+  .deviceIcon[data-tone='network'] {
+    color: var(--device-icon-network);
+  }
+
+  .deviceIcon[data-tone='endDevice'] {
+    color: var(--device-icon-end-device);
+  }
+
+  .deviceIcon[data-tone='security'] {
+    color: var(--device-icon-security);
+  }
+
+  .deviceIcon[data-tone='wan'] {
+    color: var(--device-icon-wan);
+  }
+
+  .deviceIcon .deviceIconBody {
+    fill: currentColor;
+    fill-opacity: var(--device-icon-fill-opacity);
+  }
+}

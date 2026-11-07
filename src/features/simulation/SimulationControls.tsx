@@ -23,7 +23,7 @@ function ControlButton({ label, onClick, disabled, primary, children }: ControlB
       aria-label={label}
       title={label}
       className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-md transition disabled:cursor-not-allowed disabled:opacity-40 ${
-        primary ? 'bg-sky-600 text-white hover:bg-sky-700 disabled:hover:bg-sky-600' : 'text-slate-700 hover:bg-slate-100'
+        primary ? 'bg-sky-600 text-white hover:bg-accent disabled:hover:bg-sky-600' : 'text-fg hover:bg-surface-muted'
       } ${focusRing}`}
     >
       {children}
@@ -71,7 +71,7 @@ function SimulationControls({ simulation, expanded, onToggleExpanded, bodyId }: 
           <RotateCcw className="h-5 w-5" aria-hidden="true" />
         </ControlButton>
       </div>
-      <label className="flex items-center gap-1.5 text-xs text-slate-600">
+      <label className="flex items-center gap-1.5 text-xs text-fg-muted">
         <span>{t('ui.controls.speed')}</span>
         <input
           type="range"
@@ -83,13 +83,13 @@ function SimulationControls({ simulation, expanded, onToggleExpanded, bodyId }: 
           onChange={(event) => playback.setSpeed(PLAY_SPEEDS[Number(event.target.value)] ?? 1)}
           className="w-20 accent-sky-600"
         />
-        <span className="w-9 tabular-nums text-slate-800" aria-hidden="true">
+        <span className="w-9 tabular-nums text-fg" aria-hidden="true">
           {speedText}
         </span>
       </label>
       <p className="text-xs" title={t('ui.controls.time')}>
         <span className="sr-only">{t('ui.controls.time')}</span>
-        <span className="font-mono tabular-nums text-slate-900">{t('ui.time.seconds', { value: seconds })}</span>
+        <span className="font-mono tabular-nums text-fg-strong">{t('ui.time.seconds', { value: seconds })}</span>
       </p>
       <div className="ms-auto flex items-center gap-0.5">
         <ControlButton label={t('ui.controls.exportPcap')} onClick={simulation.exportPcap}>
@@ -102,18 +102,18 @@ function SimulationControls({ simulation, expanded, onToggleExpanded, bodyId }: 
           aria-controls={bodyId}
           aria-label={expanded ? t('ui.panel.collapse') : t('ui.panel.expand')}
           title={expanded ? t('ui.panel.collapse') : t('ui.panel.expand')}
-          className={`flex h-9 w-9 items-center justify-center rounded-md text-slate-600 hover:bg-slate-100 ${focusRing}`}
+          className={`flex h-9 w-9 items-center justify-center rounded-md text-fg-muted hover:bg-surface-muted ${focusRing}`}
         >
           {expanded ? <ChevronDown className="h-5 w-5" aria-hidden="true" /> : <ChevronUp className="h-5 w-5" aria-hidden="true" />}
         </button>
       </div>
       {view.status !== 'ready' ? (
-        <p className="w-full text-xs text-slate-500" role="status">
+        <p className="w-full text-xs text-fg-subtle" role="status">
           {t(view.status === 'preparing' ? 'ui.prepare.preparing' : 'ui.prepare.dormant')}
         </p>
       ) : (
         !canForward && (
-          <p className="w-full text-xs text-slate-500" role="status">
+          <p className="w-full text-xs text-fg-subtle" role="status">
             {t('ui.controls.idle')}
           </p>
         )

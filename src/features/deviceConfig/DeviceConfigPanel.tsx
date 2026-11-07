@@ -113,7 +113,7 @@ function DeviceConfigPanel({ device, state, onChange, problems = [], policy = Ex
   return (
     <div aria-label={t('panel.label')} role="region" className="@container flex min-w-0 flex-col gap-3">
       {problems.length > 0 && <ProblemList problems={problems} />}
-      {readOnly && <p className="rounded-md bg-slate-100 p-2 text-xs text-slate-600">{t('panel.readOnly')}</p>}
+      {readOnly && <p className="rounded-md bg-surface-muted p-2 text-xs text-fg-muted">{t('panel.readOnly')}</p>}
       {visible.map((section) => renderCard(section))}
     </div>
   )

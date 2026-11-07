@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
 import { initI18n } from './i18n'
+import { PreferencesProvider } from './preferences'
 
 const rootElement = document.getElementById('root')
 if (rootElement === null) {
@@ -13,7 +14,9 @@ const root = createRoot(rootElement)
 function renderApp(): void {
   root.render(
     <StrictMode>
-      <App />
+      <PreferencesProvider>
+        <App />
+      </PreferencesProvider>
     </StrictMode>,
   )
 }

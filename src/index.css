@@ -1,18 +1,208 @@
 @import "tailwindcss";
 
+/* Dark mode follows the "dark" class on <html> (set by src/preferences/ThemeApplier.ts and the early
+   script in index.html), not the media query: the user can pick Light / Dark / System.
+   Screen only, like the dark tokens: printing always uses the light look. */
+@custom-variant dark {
+  @media not print {
+    &:where(.dark, .dark *) {
+      @slot;
+    }
+  }
+}
+
 @theme {
   /* Windows command prompt look for the terminal tab. */
   --font-console: Consolas, "Lucida Console", "Cascadia Mono", "Courier New", ui-monospace, monospace;
 }
 
+/*
+ * Semantic colour tokens (docs/PREFERENCES.md §5). Light values = today's look; the dark and
+ * high-contrast values below override them. Utilities: bg-surface, text-fg, border-border, ...
+ * and var(--color-*) in inline styles / SVG. `static`: emitted even before a class uses them, so
+ * var(--color-*) always resolves. designTokens.test.ts checks the WCAG AA pairs.
+ */
+@theme static {
+  /* App chrome */
+  --color-page: #f8fafc;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f1f5f9;
+  --color-surface-raised: #ffffff;
+  --color-surface-subtle: #f8fafc;
+  --color-surface-strong: #e2e8f0;
+  --color-border: #e2e8f0;
+  --color-border-strong: #cbd5e1;
+  --color-fg-strong: #0f172a;
+  --color-fg: #1e293b;
+  --color-fg-muted: #475569;
+  --color-fg-subtle: #64748b;
+  --color-focus: #0284c7;
+
+  /* Actions and states */
+  --color-accent: #0369a1;
+  --color-accent-hover: #075985;
+  --color-accent-fg: #ffffff;
+  --color-accent-muted: #f0f9ff;
+  --color-accent-text: #0369a1;
+  --color-danger: #be123c;
+  --color-danger-muted: #fff1f2;
+  --color-warning: #b45309;
+  --color-warning-muted: #fffbeb;
+  --color-success: #047857;
+  --color-success-muted: #ecfdf5;
+
+  /* Map canvas */
+  --color-canvas: #f8fafc;
+  --color-canvas-grid: #cbd5e1;
+  --color-node: #ffffff;
+  --color-node-border: #cbd5e1;
+  --color-cable: #64748b;
+  --color-cable-unplugged: #cbd5e1;
+  --color-link-up: #22c55e;
+  --color-link-down: #94a3b8;
+  --color-port-label: #475569;
+  --color-port-label-halo: #f8fafc;
+
+  /* Simulation packets (envelope fills, one per protocol) */
+  --color-packet-arp: #d97706;
+  --color-packet-icmp: #7c3aed;
+  --color-packet-dhcp: #059669;
+  --color-packet-dns: #0891b2;
+  --color-packet-http: #e11d48;
+  --color-packet-tcp: #db2777;
+  --color-packet-udp: #0d9488;
+  --color-packet-ipv4: #2563eb;
+  --color-packet-ethernet: #475569;
+  --color-packet-hdlc: #57534e;
+  --color-packet-dropped: #dc2626;
+  --color-packet-highlight: #f59e0b;
+}
+
 @layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  /* Dark tokens are screen-only: printed pages (the handover pack) always use the light values. */
+  @media not print {
+  .dark {
+    color-scheme: dark;
+
+    --color-page: #020617;
+    --color-surface: #0f172a;
+    --color-surface-muted: #1e293b;
+    --color-surface-raised: #1e293b;
+    --color-surface-subtle: #162032;
+    --color-surface-strong: #334155;
+    --color-border: #334155;
+    --color-border-strong: #475569;
+    --color-fg-strong: #f8fafc;
+    --color-fg: #e2e8f0;
+    --color-fg-muted: #cbd5e1;
+    --color-fg-subtle: #94a3b8;
+    --color-focus: #38bdf8;
+
+    --color-accent: #0369a1;
+    --color-accent-hover: #075985;
+    --color-accent-fg: #ffffff;
+    --color-accent-muted: #082f49;
+    --color-accent-text: #7dd3fc;
+    --color-danger: #fda4af;
+    --color-danger-muted: #4c0519;
+    --color-warning: #fcd34d;
+    --color-warning-muted: #451a03;
+    --color-success: #6ee7b7;
+    --color-success-muted: #022c22;
+
+    --color-canvas: #0f172a;
+    --color-canvas-grid: #334155;
+    --color-node: #1e293b;
+    --color-node-border: #64748b;
+    --color-cable: #94a3b8;
+    --color-cable-unplugged: #475569;
+    --color-link-up: #4ade80;
+    --color-link-down: #64748b;
+    --color-port-label: #cbd5e1;
+    --color-port-label-halo: #0f172a;
+
+    --color-packet-arp: #fbbf24;
+    --color-packet-icmp: #a78bfa;
+    --color-packet-dhcp: #34d399;
+    --color-packet-dns: #22d3ee;
+    --color-packet-http: #fb7185;
+    --color-packet-tcp: #f472b6;
+    --color-packet-udp: #2dd4bf;
+    --color-packet-ipv4: #60a5fa;
+    --color-packet-ethernet: #94a3b8;
+    --color-packet-hdlc: #a8a29e;
+    --color-packet-dropped: #f87171;
+    --color-packet-highlight: #fbbf24;
+  }
+  }
+
+  /* High contrast (Preferences > Appearance): stronger borders and secondary text. */
+  [data-contrast="more"] {
+    --color-border: #64748b;
+    --color-border-strong: #334155;
+    --color-fg: #0f172a;
+    --color-fg-muted: #1e293b;
+    --color-fg-subtle: #334155;
+    --color-node-border: #334155;
+    --color-cable: #334155;
+    --color-cable-unplugged: #64748b;
+  }
+
+  @media not print {
+  .dark[data-contrast="more"] {
+    --color-border: #94a3b8;
+    --color-border-strong: #cbd5e1;
+    --color-fg-strong: #ffffff;
+    --color-fg: #f8fafc;
+    --color-fg-muted: #e2e8f0;
+    --color-fg-subtle: #cbd5e1;
+    --color-node-border: #cbd5e1;
+    --color-cable: #cbd5e1;
+    --color-cable-unplugged: #94a3b8;
+  }
+  }
+
+  /* React Flow chrome (minimap, controls, selection box) follows the tokens in every theme. */
+  .react-flow {
+    --xy-background-color: transparent;
+    --xy-minimap-background-color: var(--color-surface);
+    --xy-minimap-mask-background-color: color-mix(in srgb, var(--color-surface-muted) 60%, transparent);
+    --xy-minimap-node-background-color: var(--color-border-strong);
+    --xy-minimap-node-stroke-color: var(--color-fg-subtle);
+    --xy-controls-button-background-color: var(--color-surface);
+    --xy-controls-button-background-color-hover: var(--color-surface-muted);
+    --xy-controls-button-color: var(--color-fg);
+    --xy-controls-button-color-hover: var(--color-fg-strong);
+    --xy-controls-button-border-color: var(--color-border);
+    --xy-attribution-background-color: color-mix(in srgb, var(--color-surface) 50%, transparent);
+    --xy-selection-background-color: color-mix(in srgb, var(--color-focus) 8%, transparent);
+    --xy-selection-border: 1px dotted var(--color-focus);
+    --xy-edge-label-background-color: var(--color-surface);
+    --xy-edge-label-color: var(--color-fg);
+  }
+
   html {
     -webkit-text-size-adjust: 100%;
   }
 
   body {
-    @apply bg-slate-50 text-slate-800 antialiased;
+    @apply bg-page text-fg antialiased;
   }
+}
+
+/* Density (Preferences → Appearance, `data-density` set by ThemeApplier): compact shrinks every Tailwind
+   spacing step (padding, gaps, control heights) by 12.5 %; the map keeps its geometry (node size, packet
+   placement and cable label offsets are measured in flow pixels). Unlayered, so it wins over the theme. */
+:root[data-density="compact"] {
+  --spacing: 0.21875rem;
+}
+
+:root[data-density="compact"] .react-flow {
+  --spacing: 0.25rem;
 }
 
 @media (prefers-reduced-motion: reduce) {

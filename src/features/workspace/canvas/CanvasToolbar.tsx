@@ -18,7 +18,7 @@ import { useTranslation } from 'react-i18next'
 import type { CableTool } from '../../../domain'
 import { focusRing } from '../../shared/focusRing'
 import CableGlyph from '../cable/CableGlyph'
-import { CABLE_TOOLS } from '../cable/cableTools'
+import { useOfferedCableTools } from '../cable/useOfferedCableTools'
 import type { AlignMode } from '../geometry/AlignCalculator'
 
 interface CanvasToolbarProps {
@@ -63,8 +63,8 @@ function ToolButton({ label, onClick, pressed, disabled, children }: ToolButtonP
       aria-pressed={pressed}
       aria-label={label}
       title={label}
-      className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40 ${
-        pressed ? 'bg-sky-100 text-sky-800 ring-1 ring-sky-300 hover:bg-sky-100' : ''
+      className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-fg transition hover:bg-surface-muted disabled:cursor-not-allowed disabled:opacity-40 ${
+        pressed ? 'bg-sky-100 dark:bg-sky-900/40 text-sky-800 dark:text-sky-200 ring-1 ring-sky-300 dark:ring-sky-700 hover:bg-sky-100 dark:hover:bg-sky-900/40' : ''
       } ${focusRing}`}
     >
       {children}
@@ -73,12 +73,13 @@ function ToolButton({ label, onClick, pressed, disabled, children }: ToolButtonP
 }
 
 function Divider() {
-  return <span className="mx-1 h-6 w-px shrink-0 bg-slate-200" aria-hidden="true" />
+  return <span className="mx-1 h-6 w-px shrink-0 bg-surface-strong" aria-hidden="true" />
 }
 
 /** Tools above the canvas: select, cables, note, delete, snap, align, zoom. Scrolls sideways on phones. */
 function CanvasToolbar(props: CanvasToolbarProps) {
   const { t } = useTranslation('workspace')
+  const cableTools = useOfferedCableTools()
   const flow = useReactFlow()
   const { activeTool } = props
 
@@ -86,7 +87,7 @@ function CanvasToolbar(props: CanvasToolbarProps) {
     <div
       role="group"
       aria-label={t('toolbar.label')}
-      className="relative flex items-center gap-0.5 overflow-x-auto border-b border-slate-200 bg-white px-2 py-1 [scrollbar-width:none]"
+      className="relative flex items-center gap-0.5 overflow-x-auto border-b border-border bg-surface px-2 py-1 [scrollbar-width:none]"
     >
       <ToolButton label={t('toolbar.select')} onClick={props.onSelectTool} pressed={activeTool === null}>
         <MousePointer2 className="h-5 w-5" aria-hidden="true" />
@@ -95,7 +96,7 @@ function CanvasToolbar(props: CanvasToolbarProps) {
       {props.cablesEnabled && (
         <>
           <div role="group" aria-label={t('toolbar.cables')} className="flex items-center gap-0.5">
-            {CABLE_TOOLS.map((tool) => (
+            {cableTools.map((tool) => (
               <ToolButton key={tool} label={t(`cableTools.${tool}`)} onClick={() => props.onChooseCable(tool)} pressed={activeTool === tool}>
                 <CableGlyph tool={tool} />
               </ToolButton>
@@ -130,7 +131,7 @@ function CanvasToolbar(props: CanvasToolbarProps) {
         <Maximize className="h-5 w-5" aria-hidden="true" />
       </ToolButton>
       {props.lockedNote && (
-        <p className="ms-auto flex shrink-0 items-center gap-1.5 ps-2 text-xs text-slate-500 lg:min-w-0 lg:shrink" title={props.lockedNote}>
+        <p className="ms-auto flex shrink-0 items-center gap-1.5 ps-2 text-xs text-fg-subtle lg:min-w-0 lg:shrink" title={props.lockedNote}>
           <Lock className="h-4 w-4 shrink-0" aria-hidden="true" />
           <span className="sr-only lg:not-sr-only lg:truncate">{props.lockedNote}</span>
         </p>

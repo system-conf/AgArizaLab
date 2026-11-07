@@ -29,9 +29,9 @@ function SimulationToolbar({ simulation, onToolStart }: SimulationToolbarProps) 
   const preparing = useDelayedFlag(view.status === 'preparing', PREPARING_HINT_DELAY_MS)
 
   return (
-    <div className="flex shrink-0 items-center gap-1 border-b border-s border-slate-200 bg-white px-2 py-1">
+    <div className="flex shrink-0 items-center gap-1 border-b border-s border-border bg-surface px-2 py-1">
       {/* role=status: screen readers hear when the preparation starts; the text stays while it runs. */}
-      <p role="status" className={preparing ? 'flex items-center gap-1.5 px-1 text-xs text-slate-600' : 'sr-only'}>
+      <p role="status" className={preparing ? 'flex items-center gap-1.5 px-1 text-xs text-fg-muted' : 'sr-only'}>
         {preparing && (
           <>
             <LoaderCircle className="h-4 w-4 shrink-0 motion-safe:animate-spin" aria-hidden="true" />
@@ -44,7 +44,7 @@ function SimulationToolbar({ simulation, onToolStart }: SimulationToolbarProps) 
           type="button"
           onClick={simulation.prepare}
           title={t('ui.prepare.startHint')}
-          className={`flex h-8 items-center gap-1.5 rounded-md bg-sky-600 px-2 text-xs font-medium text-white hover:bg-sky-700 sm:text-sm ${focusRing}`}
+          className={`flex h-8 items-center gap-1.5 rounded-md bg-sky-600 px-2 text-xs font-medium text-white hover:bg-accent sm:text-sm ${focusRing}`}
         >
           <Power className="h-4 w-4 shrink-0" aria-hidden="true" />
           {t('ui.prepare.start')}
@@ -62,14 +62,14 @@ function SimulationToolbar({ simulation, onToolStart }: SimulationToolbarProps) 
           aria-pressed={pduTool.active}
           aria-label={t('ui.pduTool.button')}
           title={t('ui.pduTool.button')}
-          className={`flex h-9 w-9 items-center justify-center rounded-md text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40 ${
-            pduTool.active ? 'bg-violet-100 text-violet-800 ring-1 ring-violet-300 hover:bg-violet-100' : ''
+          className={`flex h-9 w-9 items-center justify-center rounded-md text-fg transition hover:bg-surface-muted disabled:cursor-not-allowed disabled:opacity-40 ${
+            pduTool.active ? 'bg-violet-100 dark:bg-violet-900/40 text-violet-800 dark:text-violet-200 ring-1 ring-violet-300 dark:ring-violet-700 hover:bg-violet-100 dark:hover:bg-violet-900/40' : ''
           } ${focusRing}`}
         >
           <MailPlus className="h-5 w-5" aria-hidden="true" />
         </button>
       )}
-      <div role="group" aria-label={t('ui.modes.label')} className="flex rounded-lg bg-slate-100 p-0.5">
+      <div role="group" aria-label={t('ui.modes.label')} className="flex rounded-lg bg-surface-muted p-0.5">
         {MODES.map(({ mode: option, icon: Icon }) => {
           const checked = mode === option
           return (
@@ -80,7 +80,7 @@ function SimulationToolbar({ simulation, onToolStart }: SimulationToolbarProps) 
               title={t(option === 'realtime' ? 'ui.modes.realtimeHint' : 'ui.modes.simulationHint')}
               onClick={() => simulation.setMode(option)}
               className={`flex h-8 items-center gap-1.5 rounded-md px-2 text-xs font-medium transition sm:text-sm ${
-                checked ? 'bg-white text-sky-800 shadow-sm ring-1 ring-slate-200' : 'text-slate-600 hover:text-slate-900'
+                checked ? 'bg-surface text-sky-800 dark:text-sky-200 shadow-sm ring-1 ring-border' : 'text-fg-muted hover:text-fg-strong'
               } ${focusRing}`}
             >
               <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />

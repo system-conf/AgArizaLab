@@ -54,7 +54,7 @@ function ConfigBlock({ title, copyLabel, text, note }: ConfigBlockProps) {
   return (
     <section aria-labelledby={headingId} className="flex flex-col gap-1.5">
       <div className="flex items-center justify-between gap-2">
-        <h4 id={headingId} className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+        <h4 id={headingId} className="text-xs font-semibold uppercase tracking-wide text-fg-subtle">
           {title}
         </h4>
         {text !== null && (
@@ -62,20 +62,20 @@ function ConfigBlock({ title, copyLabel, text, note }: ConfigBlockProps) {
             type="button"
             onClick={() => copyText(text)}
             aria-label={copy === 'idle' ? copyLabel : buttonText}
-            className={`flex items-center gap-1 rounded-md border border-slate-300 px-2 py-1 text-xs text-slate-700 hover:bg-slate-50 ${focusRing}`}
+            className={`flex items-center gap-1 rounded-md border border-border-strong px-2 py-1 text-xs text-fg hover:bg-surface-subtle ${focusRing}`}
           >
             {copy === 'copied' ? <Check className="h-3.5 w-3.5" aria-hidden="true" /> : <Copy className="h-3.5 w-3.5" aria-hidden="true" />}
             <span aria-live="polite">{buttonText}</span>
           </button>
         )}
       </div>
-      {note !== undefined && <p className="text-sm text-slate-600">{note}</p>}
+      {note !== undefined && <p className="text-sm text-fg-muted">{note}</p>}
       {text !== null && (
         <pre
           dir={configDirection}
           tabIndex={0}
           aria-labelledby={headingId}
-          className={`max-h-80 overflow-auto rounded-lg border border-slate-300 bg-slate-950 px-3 py-2 font-console text-[12px] leading-snug text-slate-100 ${focusRing}`}
+          className={`max-h-80 overflow-auto rounded-lg border border-border-strong bg-slate-950 px-3 py-2 font-console text-[12px] leading-snug text-slate-100 ${focusRing}`}
         >
           {text}
         </pre>

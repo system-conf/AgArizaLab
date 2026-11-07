@@ -28,17 +28,17 @@ function CheckboxField({ label, checked, onChange, hint, error }: CheckboxFieldP
           aria-describedby={describedBy === '' ? undefined : describedBy}
           className={`mt-0.5 h-4 w-4 shrink-0 accent-sky-700 ${focusRing}`}
         />
-        <label htmlFor={id} className="text-sm text-slate-800">
+        <label htmlFor={id} className="text-sm text-fg">
           {label}
         </label>
       </div>
       {hint && (
-        <p id={hintId} className="ps-6 text-xs text-slate-500">
+        <p id={hintId} className="ps-6 text-xs text-fg-subtle">
           {hint}
         </p>
       )}
       {error && (
-        <p id={errorId} className="ps-6 text-xs text-rose-700">
+        <p id={errorId} className="ps-6 text-xs text-rose-700 dark:text-rose-300">
           {error}
         </p>
       )}

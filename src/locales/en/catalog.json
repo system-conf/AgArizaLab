@@ -300,5 +300,10 @@
     "phoneTablet": "Phones & tablets",
     "cameraNvr": "Cameras & NVR",
     "posDisplay": "POS & displays"
+  },
+  "defaultNames": {
+    "smartTv": "Smart TV",
+    "dslModem": "DSL modem",
+    "cableModem": "Cable modem"
   }
 }

@@ -9,8 +9,8 @@ import CommitField from './CommitField'
 
 const TEXT_SIZES: readonly TextAnnotation['size'][] = ['small', 'medium', 'large']
 
-const dangerButton = `flex items-center gap-1.5 rounded-md border border-rose-200 px-3 py-1.5 text-sm text-rose-700 hover:bg-rose-50 ${focusRing}`
-const selectClasses = `w-full rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm ${focusRing}`
+const dangerButton = `flex items-center gap-1.5 rounded-md border border-rose-200 dark:border-rose-800 px-3 py-1.5 text-sm text-rose-700 dark:text-rose-300 hover:bg-rose-50 dark:hover:bg-rose-950/40 ${focusRing}`
+const selectClasses = `w-full rounded-md border border-border-strong bg-surface px-2 py-1.5 text-sm ${focusRing}`
 
 interface LinkPropertiesProps {
   doc: LabDocument
@@ -21,7 +21,7 @@ interface LinkPropertiesProps {
   onSetConnected?: (connected: boolean) => void
 }
 
-const secondaryButton = `flex items-center gap-1.5 rounded-md border border-slate-300 px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50 ${focusRing}`
+const secondaryButton = `flex items-center gap-1.5 rounded-md border border-border-strong px-3 py-1.5 text-sm text-fg hover:bg-surface-subtle ${focusRing}`
 
 /** Cable type, ends and its extra settings (SSID, DCE end); plug / unplug and "Remove cable". */
 export function LinkProperties({ doc, link, onDisconnect, onSetConnected }: LinkPropertiesProps) {
@@ -33,27 +33,27 @@ export function LinkProperties({ doc, link, onDisconnect, onSetConnected }: Link
   return (
     <div className="space-y-4">
       <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm">
-        <dt className="text-slate-500">{t('properties.linkCable')}</dt>
-        <dd className="text-slate-800">{t(`cableTools.${link.cable}`)}</dd>
-        <dt className="text-slate-500">{t('properties.linkEnds')}</dt>
-        <dd className="text-slate-800">
+        <dt className="text-fg-subtle">{t('properties.linkCable')}</dt>
+        <dd className="text-fg">{t(`cableTools.${link.cable}`)}</dd>
+        <dt className="text-fg-subtle">{t('properties.linkEnds')}</dt>
+        <dd className="text-fg">
           <span className="block">{endA}</span>
           <span className="block">{endB}</span>
         </dd>
         {link.cable === 'wireless' && (
           <>
-            <dt className="text-slate-500">{t('properties.linkSsid')}</dt>
-            <dd className="text-slate-800">{link.ssid}</dd>
+            <dt className="text-fg-subtle">{t('properties.linkSsid')}</dt>
+            <dd className="text-fg">{link.ssid}</dd>
           </>
         )}
         {link.cable === 'serial' && (
           <>
-            <dt className="text-slate-500">{t('properties.linkDce')}</dt>
-            <dd className="text-slate-800">{endText(link.dceEnd)}</dd>
+            <dt className="text-fg-subtle">{t('properties.linkDce')}</dt>
+            <dd className="text-fg">{endText(link.dceEnd)}</dd>
           </>
         )}
       </dl>
-      {!link.connected && <p className="text-sm text-amber-700">{t('properties.unplugged')}</p>}
+      {!link.connected && <p className="text-sm text-amber-700 dark:text-amber-300">{t('properties.unplugged')}</p>}
       <div className="flex flex-wrap gap-2">
         {onSetConnected && link.cable !== 'wireless' && (
           <button type="button" onClick={() => onSetConnected(!link.connected)} className={secondaryButton}>
@@ -90,7 +90,7 @@ export function AnnotationProperties({ annotation, onChange, onTextChange, onDel
         <CommitField label={t('properties.noteText')} value={annotation.text} onCommit={onTextChange} multiline maxLength={LAB_LIMITS.textLength} />
       )}
       <div>
-        <label htmlFor={colorId} className="mb-1 block text-xs font-medium text-slate-600">
+        <label htmlFor={colorId} className="mb-1 block text-xs font-medium text-fg-muted">
           {t('properties.noteColor')}
         </label>
         <select
@@ -111,7 +111,7 @@ export function AnnotationProperties({ annotation, onChange, onTextChange, onDel
       </div>
       {annotation.type === 'text' && (
         <div>
-          <label htmlFor={sizeId} className="mb-1 block text-xs font-medium text-slate-600">
+          <label htmlFor={sizeId} className="mb-1 block text-xs font-medium text-fg-muted">
             {t('properties.noteSize')}
           </label>
           <select

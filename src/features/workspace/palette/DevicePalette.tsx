@@ -93,7 +93,7 @@ function DevicePalette({ models, onAdd, onChooseCable, activeCable, priceLabelOf
     <div className="flex flex-col gap-2">
       <PaletteSectionBar views={views} current={searching ? null : view} onSelect={selectView} />
       <div className="relative">
-        <Search className="pointer-events-none absolute start-2 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" aria-hidden="true" />
+        <Search className="pointer-events-none absolute start-2 top-1/2 h-4 w-4 -translate-y-1/2 text-fg-subtle" aria-hidden="true" />
         <input
           type="search"
           value={query}
@@ -107,20 +107,20 @@ function DevicePalette({ models, onAdd, onChooseCable, activeCable, priceLabelOf
           }}
           aria-label={t('palette.search')}
           placeholder={t('palette.searchPlaceholder')}
-          className={`w-full rounded-md border border-slate-300 bg-white py-1.5 ps-8 pe-8 text-sm text-slate-900 placeholder:text-slate-400 [&::-webkit-search-cancel-button]:hidden ${focusRing}`}
+          className={`w-full rounded-md border border-border-strong bg-surface py-1.5 ps-8 pe-8 text-sm text-fg-strong placeholder:text-fg-subtle [&::-webkit-search-cancel-button]:hidden ${focusRing}`}
         />
         {query !== '' && (
           <button
             type="button"
             onClick={() => setQuery('')}
             aria-label={t('palette.clearSearch')}
-            className={`absolute end-1 top-1/2 -translate-y-1/2 rounded p-1 text-slate-400 hover:text-slate-700 ${focusRing}`}
+            className={`absolute end-1 top-1/2 -translate-y-1/2 rounded p-1 text-fg-subtle hover:text-fg ${focusRing}`}
           >
             <X className="h-4 w-4" aria-hidden="true" />
           </button>
         )}
       </div>
-      <h3 id={headingId} className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+      <h3 id={headingId} className="text-xs font-semibold uppercase tracking-wide text-fg-subtle">
         {searching ? t('palette.resultCount', { count: resultCount }) : viewName(view)}
       </h3>
       <p className="sr-only" aria-live="polite">
@@ -133,14 +133,15 @@ function DevicePalette({ models, onAdd, onChooseCable, activeCable, priceLabelOf
         <CablePalette activeTool={activeCable} onChoose={onChooseCable} />
       ) : (
         <>
-          <p className="text-xs text-slate-500">{t('palette.hint')}</p>
+          <p className="text-xs text-fg-subtle">{t('palette.hint')}</p>
+          <p className="hidden text-xs text-fg-subtle pointer-coarse:block">{t('palette.touchHint')}</p>
           {resultCount === 0 ? (
-            <p className="rounded-lg border border-dashed border-slate-200 p-3 text-center text-xs text-slate-500">{emptyText}</p>
+            <p className="rounded-lg border border-dashed border-border p-3 text-center text-xs text-fg-subtle">{emptyText}</p>
           ) : (
             tileGroups.map((group) => (
               <section key={group.key} aria-labelledby={group.title === undefined ? headingId : `${headingId}-${group.key}`}>
                 {group.title !== undefined && (
-                  <h4 id={`${headingId}-${group.key}`} className="mb-1 text-xs font-medium text-slate-500">
+                  <h4 id={`${headingId}-${group.key}`} className="mb-1 text-xs font-medium text-fg-subtle">
                     {group.title}
                   </h4>
                 )}

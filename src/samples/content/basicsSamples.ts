@@ -119,7 +119,10 @@ export const basicsIpConflict: SampleDefinition = {
     ),
   steps: [
     { id: 'spotConflict', focusDeviceId: 'pc1' },
-    { id: 'fixConflict', focusDeviceId: 'pc3', checks: [reaches('pc1', 'pc2'), reaches('pc3', 'pc2')] },
+    // Only what holds at once in the simulator: PC3 moved off .10 and reaches PC2. PC1 keeps its
+    // "(Duplicate)" until it restarts, which the lab state cannot show, so that step is ticked.
+    { id: 'fixConflict', focusDeviceId: 'pc3', checks: [not(hasAddress('pc3', '192.168.1.10/32')), reaches('pc3', 'pc2')] },
+    { id: 'restartPc1', focusDeviceId: 'pc1' },
     { id: 'watchProbe', mode: 'simulation', focusDeviceId: 'pc3' },
   ],
   breakIt: ['powerOffPc1', 'otherMask'],

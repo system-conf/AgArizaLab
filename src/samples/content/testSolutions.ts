@@ -144,3 +144,14 @@ export function steps(...edits: Solution[]): Solution {
 export function route(prefix: string, mask: string, nextHop: string, adminDistance = 1): StaticRoute {
   return { prefix, mask, nextHop, adminDistance }
 }
+
+/** `ip helper-address` list of a routed port ([] = `no ip helper-address`). */
+export function setHelpers(state: NetworkState, routerId: string, portId: string, addresses: string[]): NetworkState {
+  return editPort(state, routerId, portId, (port) => {
+    if (port.role !== 'routed') throw new Error(`${routerId}/${portId} is not routed`)
+    const l3 = { ...port.l3 }
+    delete l3.helperAddresses
+    if (addresses.length > 0) l3.helperAddresses = addresses
+    return { ...port, l3 }
+  })
+}

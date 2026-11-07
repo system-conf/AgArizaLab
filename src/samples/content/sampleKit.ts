@@ -146,6 +146,11 @@ export function hasAddress(deviceId: string, prefix?: string): StepCheck {
   return prefix === undefined ? { type: 'hasAddress', deviceId } : { type: 'hasAddress', deviceId, prefix }
 }
 
+/** Both ends of the cable are trunks with the same native VLAN (`vlan` when given). */
+export function nativeVlanMatch(linkId: string, vlan?: number): StepCheck {
+  return vlan === undefined ? { type: 'nativeVlanMatch', linkId } : { type: 'nativeVlanMatch', linkId, vlan }
+}
+
 export function not(check: StepCheck): StepCheck {
   return { type: 'not', check }
 }

@@ -68,7 +68,7 @@ function TextNote({ annotation, selected }: { annotation: TextAnnotation; select
   const actions = useAnnotationActions()
   if (actions.editingId === annotation.id) return <NoteEditor annotation={annotation} />
   const colors = ANNOTATION_COLOR_CLASSES[annotation.color].note
-  const ring = selected ? 'ring-4 ring-sky-200 border-sky-500' : ''
+  const ring = selected ? 'ring-4 ring-sky-200 dark:ring-sky-800 border-sky-500' : ''
   return (
     <div
       onDoubleClick={() => actions.startEditing(annotation.id)}
@@ -85,7 +85,7 @@ function ShapeBox({ annotation, selected }: { annotation: ShapeAnnotation; selec
   const shape = annotation.type === 'ellipse' ? 'rounded-[50%]' : 'rounded-lg'
   const fill = annotation.filled ? '' : 'bg-transparent'
   return (
-    <div className={`h-full w-full border-2 border-dashed ${shape} ${colors} ${fill} ${selected ? 'ring-4 ring-sky-200' : ''}`}>
+    <div className={`h-full w-full border-2 border-dashed ${shape} ${colors} ${fill} ${selected ? 'ring-4 ring-sky-200 dark:ring-sky-800' : ''}`}>
       {annotation.label && <span className="block p-2 text-sm font-medium">{annotation.label}</span>}
     </div>
   )

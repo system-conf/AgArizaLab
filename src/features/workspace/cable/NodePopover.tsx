@@ -20,7 +20,7 @@ function NodePopover({ nodeId, label, children }: NodePopoverProps) {
     <div
       role="dialog"
       aria-label={label}
-      className="nodrag nowheel nopan max-h-[60vh] w-full overflow-y-auto rounded-xl border border-slate-200 bg-white p-3 text-sm shadow-lg md:w-72"
+      className="nodrag nowheel nopan max-h-[60vh] w-full overflow-y-auto rounded-xl border border-border bg-surface p-3 text-sm shadow-lg md:w-72"
     >
       {children}
     </div>

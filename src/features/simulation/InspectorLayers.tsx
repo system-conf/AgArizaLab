@@ -23,21 +23,21 @@ function InspectorLayers({ direction, rows }: InspectorLayersProps) {
 
   return (
     <section aria-labelledby={headingId} className="min-w-0 flex-1">
-      <h4 id={headingId} className="flex items-center gap-1.5 text-sm font-semibold text-slate-900">
-        <Arrow className="h-4 w-4 text-slate-500" aria-hidden="true" />
+      <h4 id={headingId} className="flex items-center gap-1.5 text-sm font-semibold text-fg-strong">
+        <Arrow className="h-4 w-4 text-fg-subtle" aria-hidden="true" />
         {direction === 'in' ? t('ui.inspector.inLayers') : t('ui.inspector.outLayers')}
       </h4>
-      <p className="mb-2 text-xs text-slate-500">{direction === 'in' ? t('ui.inspector.inHint') : t('ui.inspector.outHint')}</p>
+      <p className="mb-2 text-xs text-fg-subtle">{direction === 'in' ? t('ui.inspector.inHint') : t('ui.inspector.outHint')}</p>
       {rows.length === 0 ? (
-        <p className="rounded-md border border-dashed border-slate-200 p-2 text-xs text-slate-500">
+        <p className="rounded-md border border-dashed border-border p-2 text-xs text-fg-subtle">
           {direction === 'in' ? t('ui.inspector.noIn') : t('ui.inspector.noOut')}
         </p>
       ) : (
         <ol className="space-y-1.5">
           {rows.map((row) => (
-            <li key={row.layer} className="rounded-md border border-slate-200 bg-white p-2">
+            <li key={row.layer} className="rounded-md border border-border bg-surface p-2">
               <div className="flex flex-wrap items-center gap-1.5">
-                <span className="text-xs font-semibold text-slate-800">{translate(SimMessages.layer(row.layer))}</span>
+                <span className="text-xs font-semibold text-fg">{translate(SimMessages.layer(row.layer))}</span>
                 {row.protocols.length > 0 ? (
                   row.protocols.map((protocol) => (
                     <span key={protocol} className={`rounded px-1.5 py-0.5 text-[11px] font-semibold ring-1 ${PROTOCOL_STYLES[protocol].chip}`}>
@@ -45,17 +45,17 @@ function InspectorLayers({ direction, rows }: InspectorLayersProps) {
                     </span>
                   ))
                 ) : (
-                  <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[11px] font-medium text-slate-700">{translate(row.title)}</span>
+                  <span className="rounded bg-surface-muted px-1.5 py-0.5 text-[11px] font-medium text-fg">{translate(row.title)}</span>
                 )}
               </div>
               {row.notes.length > 0 ? (
-                <ul className="mt-1 list-disc space-y-0.5 ps-4 text-xs text-slate-700">
+                <ul className="mt-1 list-disc space-y-0.5 ps-4 text-xs text-fg">
                   {row.notes.map((note, index) => (
                     <li key={index}>{translate(note)}</li>
                   ))}
                 </ul>
               ) : (
-                <p className="mt-1 text-xs text-slate-400">{t('ui.inspector.noNotes')}</p>
+                <p className="mt-1 text-xs text-fg-subtle">{t('ui.inspector.noNotes')}</p>
               )}
             </li>
           ))}

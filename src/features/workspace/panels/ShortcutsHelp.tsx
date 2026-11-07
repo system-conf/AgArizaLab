@@ -8,7 +8,7 @@ interface ShortcutsHelpProps {
 }
 
 function Key({ children }: { children: string }) {
-  return <kbd className="rounded border border-slate-300 bg-slate-50 px-1.5 py-0.5 font-mono text-xs text-slate-700">{children}</kbd>
+  return <kbd className="rounded border border-border-strong bg-surface-subtle px-1.5 py-0.5 font-mono text-xs text-fg">{children}</kbd>
 }
 
 /** List of the workspace's keyboard shortcuts (opened with ? or the header button). */
@@ -49,10 +49,10 @@ function ShortcutsHelp({ onClose }: ShortcutsHelpProps) {
       role="dialog"
       aria-labelledby="shortcuts-heading"
       onKeyDown={handleKeyDown}
-      className="absolute end-3 top-14 z-50 w-[min(24rem,calc(100vw-1.5rem))] rounded-xl border border-slate-200 bg-white p-4 shadow-xl"
+      className="absolute end-3 top-14 z-50 w-[min(24rem,calc(100vw-1.5rem))] rounded-xl border border-border bg-surface p-4 shadow-xl"
     >
       <div className="mb-3 flex items-center justify-between">
-        <h2 id="shortcuts-heading" className="font-semibold text-slate-900">
+        <h2 id="shortcuts-heading" className="font-semibold text-fg-strong">
           {t('shortcuts.title')}
         </h2>
         <button
@@ -60,7 +60,7 @@ function ShortcutsHelp({ onClose }: ShortcutsHelpProps) {
           type="button"
           onClick={onClose}
           aria-label={t('shortcuts.close')}
-          className={`rounded p-1 text-slate-500 hover:bg-slate-100 ${focusRing}`}
+          className={`rounded p-1 text-fg-subtle hover:bg-surface-muted ${focusRing}`}
         >
           <X className="h-4 w-4" aria-hidden="true" />
         </button>
@@ -73,7 +73,7 @@ function ShortcutsHelp({ onClose }: ShortcutsHelpProps) {
                 <Key key={key}>{key}</Key>
               ))}
             </dt>
-            <dd className="text-end text-slate-700">{row.text}</dd>
+            <dd className="text-end text-fg">{row.text}</dd>
           </div>
         ))}
       </dl>

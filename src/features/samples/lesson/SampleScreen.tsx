@@ -102,14 +102,14 @@ function SampleWorkspace({ sample, progress, related, onSaveAsMine }: SampleScre
       <AppLink
         to={routes.samples}
         aria-label={t('ui.lesson.backAria')}
-        className={`flex h-9 shrink-0 items-center gap-1.5 rounded-lg px-2 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900 ${focusRing}`}
+        className={`flex h-9 shrink-0 items-center gap-1.5 rounded-lg px-2 text-sm text-fg-muted hover:bg-surface-muted hover:text-fg-strong ${focusRing}`}
       >
         <ArrowLeft className="h-4 w-4 rtl:-scale-x-100" aria-hidden="true" />
         <span className="hidden sm:inline">{t('ui.lesson.back')}</span>
       </AppLink>
       <div className="min-w-0">
-        <p className="truncate text-[11px] font-medium uppercase tracking-wide text-teal-700">{t(`categories.${sample.category}.title`)}</p>
-        <h1 className="truncate text-sm font-semibold text-slate-900 sm:text-base">{texts.title}</h1>
+        <p className="truncate text-[11px] font-medium uppercase tracking-wide text-teal-700 dark:text-teal-300">{t(`categories.${sample.category}.title`)}</p>
+        <h1 className="truncate text-sm font-semibold text-fg-strong sm:text-base">{texts.title}</h1>
       </div>
     </>
   )
@@ -126,7 +126,7 @@ function SampleWorkspace({ sample, progress, related, onSaveAsMine }: SampleScre
             <aside
               id={panelId}
               aria-label={t('ui.lesson.title')}
-              className="w-80 shrink-0 overflow-y-auto border-s border-slate-200 bg-slate-50 p-3 2xl:w-96"
+              className="w-80 shrink-0 overflow-y-auto border-s border-border bg-surface-subtle p-3 2xl:w-96"
             >
               {lessonPanel}
             </aside>

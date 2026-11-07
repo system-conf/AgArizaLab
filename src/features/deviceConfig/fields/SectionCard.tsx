@@ -20,7 +20,7 @@ function SectionCard({ title, icon, access, saved, children }: SectionCardProps)
   const status = (
     <span className="flex items-center gap-2">
       {access === 'readOnly' && (
-        <span className="flex items-center gap-1 text-xs text-slate-500">
+        <span className="flex items-center gap-1 text-xs text-fg-subtle">
           <Lock className="h-3.5 w-3.5" aria-hidden="true" />
           {t('panel.lockedReadOnly')}
         </span>

@@ -41,6 +41,8 @@ export interface AppResources {
   cli: typeof import('../locales/en/cli.json')
   // C4 (host commands): src/cli/host
   hostCli: typeof import('../locales/en/hostCli.json')
+  // PU (Preferences screen): docs/PREFERENCES.md
+  preferences: typeof import('../locales/en/preferences.json')
 }
 
 declare module 'i18next' {

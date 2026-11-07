@@ -16,10 +16,10 @@ function SimplePduHint({ state, nameOf }: SimplePduHintProps) {
 
   return (
     <Panel position="top-center" className="pointer-events-none max-w-[calc(100%-1rem)]">
-      <p role="status" className="flex items-center gap-2 rounded-full border border-violet-200 bg-white/95 px-3 py-1.5 text-xs text-slate-700 shadow-sm sm:text-sm">
-        <MailPlus className="h-4 w-4 shrink-0 text-violet-700" aria-hidden="true" />
+      <p role="status" className="flex items-center gap-2 rounded-full border border-violet-200 dark:border-violet-800 bg-surface/95 px-3 py-1.5 text-xs text-fg shadow-sm sm:text-sm">
+        <MailPlus className="h-4 w-4 shrink-0 text-violet-700 dark:text-violet-300" aria-hidden="true" />
         <span>{text}</span>
-        <span className="hidden whitespace-nowrap border-s border-slate-200 ps-2 text-slate-400 sm:inline">{t('ui.pduTool.escape')}</span>
+        <span className="hidden whitespace-nowrap border-s border-border ps-2 text-fg-subtle sm:inline">{t('ui.pduTool.escape')}</span>
       </p>
     </Panel>
   )

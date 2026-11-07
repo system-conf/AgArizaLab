@@ -4,7 +4,10 @@ import type { LabParseResult } from '../LabSerializer'
 import { IdbKeyValueStore, ResilientKeyValueStore } from './LabKeyValueStore'
 import { LabLibrary, newLabId, type RecentLabEntry, type StoredLab } from './LabLibrary'
 
-const appStore = new ResilientKeyValueStore(new IdbKeyValueStore('agArizaLab', 'labs'))
+/** IndexedDB database and object store of the labs (PU: Preferences → Data clears the store). */
+export const LAB_DATABASE = { name: 'agArizaLab', store: 'labs' } as const
+
+const appStore = new ResilientKeyValueStore(new IdbKeyValueStore(LAB_DATABASE.name, LAB_DATABASE.store))
 
 /** Shared library used by useLabDocument's autosave and the recent-labs UI. */
 export const labLibrary = new LabLibrary(appStore)

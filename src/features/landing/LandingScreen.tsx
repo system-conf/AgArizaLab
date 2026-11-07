@@ -9,7 +9,7 @@ import RecentLabsSection from './RecentLabsSection'
 function LandingScreen() {
   useDocumentMeta()
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-page">
       <SiteHeader />
       <main className="mx-auto flex max-w-5xl flex-col gap-10 px-4 py-6 sm:py-10">
         <LandingHero />

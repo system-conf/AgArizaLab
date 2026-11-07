@@ -2,7 +2,7 @@ import { StateInvariants, type NetworkState } from '../../domain'
 import { Cidr } from '../../design'
 import { SAMPLE_CATEGORIES, SAMPLE_STEP_LIMITS } from './sampleCatalogue'
 import type { SampleDefinition, SampleLink, StepCheck } from './SampleTypes'
-import { leafChecks, solveConditionDevices, StepChecker } from './StepChecker'
+import { leafChecks, linkEndPorts, solveConditionDevices, StepChecker } from './StepChecker'
 
 export type SampleIssueCode =
   /** An id (sample, step, break-it idea, group) is not camelCase. */
@@ -27,6 +27,10 @@ export type SampleIssueCode =
   | 'unknownDevice'
   /** A `hasAddress` / `addressPlan` prefix is not valid CIDR. */
   | 'badPrefix'
+  /** A `nativeVlanMatch` cable is not in the lab (`detail` = link id). */
+  | 'unknownLink'
+  /** A `nativeVlanMatch` cable does not join two switchports (`detail` = link id). */
+  | 'notSwitchLink'
   /** A related link points to an unknown exercise / brief / sample, or to the sample itself. */
   | 'badRelated'
 
@@ -119,8 +123,19 @@ export class SampleValidator {
         for (const deviceId of SampleValidator.checkDevices(check)) unknown(deviceId, step.id)
         const prefix = SampleValidator.checkPrefix(check)
         if (prefix !== undefined && Cidr.parse(prefix) === null) add('badPrefix', { stepId: step.id, detail: prefix })
+        if (check.type === 'nativeVlanMatch') SampleValidator.checkLink(state, check.linkId, (code) => add(code, { stepId: step.id, detail: check.linkId }))
       }
     }
+  }
+
+  /** The cable exists and joins two switchports (trunk mode may be the learner's job). */
+  private static checkLink(state: NetworkState, linkId: string, add: (code: SampleIssueCode) => void): void {
+    if (!state.links.some((link) => link.id === linkId)) {
+      add('unknownLink')
+      return
+    }
+    const ends = linkEndPorts(state, linkId)
+    if (!ends?.every((port) => port.role === 'switched')) add('notSwitchLink')
   }
 
   private static checkDevices(check: StepCheck): string[] {
@@ -130,6 +145,7 @@ export class SampleValidator {
       case 'hasAddress':
         return [check.deviceId]
       case 'network':
+      case 'nativeVlanMatch':
       case 'not':
         return []
     }

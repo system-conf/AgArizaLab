@@ -31,24 +31,24 @@ function SampleListScreen({ model }: SampleListScreenProps) {
   const progressParams = { complete: formatNumber(complete), total: formatNumber(total) }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-page">
       <SiteHeader />
       <main className="mx-auto flex max-w-5xl flex-col gap-6 px-4 py-6 sm:py-10">
         <section aria-labelledby="sampleListTitle" className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
-            <h1 id="sampleListTitle" className="text-2xl font-semibold text-slate-900">
+            <h1 id="sampleListTitle" className="text-2xl font-semibold text-fg-strong">
               {t('ui.title')}
             </h1>
-            <p className="max-w-3xl text-sm leading-relaxed text-slate-600 sm:text-base">{t('ui.list.lead')}</p>
+            <p className="max-w-3xl text-sm leading-relaxed text-fg-muted sm:text-base">{t('ui.list.lead')}</p>
           </div>
           {total === 0 ? (
-            <p className="rounded-2xl border border-dashed border-slate-300 bg-white p-6 text-center text-sm text-slate-600">{t('ui.list.empty')}</p>
+            <p className="rounded-2xl border border-dashed border-border-strong bg-surface p-6 text-center text-sm text-fg-muted">{t('ui.list.empty')}</p>
           ) : (
             <>
-              <div className="flex flex-col gap-1.5 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+              <div className="flex flex-col gap-1.5 rounded-2xl border border-border bg-surface p-4 shadow-sm">
                 <div className="flex items-center justify-between gap-2 text-sm">
-                  <span className="font-medium text-slate-700">{t('ui.list.progressLabel')}</span>
-                  <span className="text-slate-600">{t('ui.list.progress', progressParams)}</span>
+                  <span className="font-medium text-fg">{t('ui.list.progressLabel')}</span>
+                  <span className="text-fg-muted">{t('ui.list.progress', progressParams)}</span>
                 </div>
                 <div
                   role="progressbar"
@@ -57,14 +57,14 @@ function SampleListScreen({ model }: SampleListScreenProps) {
                   aria-valuemax={total}
                   aria-valuenow={complete}
                   aria-valuetext={t('ui.list.progress', progressParams)}
-                  className="h-2.5 w-full overflow-hidden rounded-full bg-slate-200"
+                  className="h-2.5 w-full overflow-hidden rounded-full bg-surface-strong"
                 >
                   <div className="h-full rounded-full bg-teal-600 transition-[width] duration-500" style={{ width: `${percent}%` }} />
                 </div>
               </div>
-              <p className="text-sm text-slate-500">{t('ui.list.hint')}</p>
+              <p className="text-sm text-fg-subtle">{t('ui.list.hint')}</p>
               <SampleFilterBar filter={filter} levels={model.levels()} features={model.features()} onChange={setFilter} />
-              <p role="status" className="text-sm text-slate-600">
+              <p role="status" className="text-sm text-fg-muted">
                 {shown === 0 ? t('ui.list.noMatch') : t('ui.list.resultCount', { count: shown, formatted: formatNumber(shown) })}
               </p>
               {groups.map((group) => {
@@ -72,10 +72,10 @@ function SampleListScreen({ model }: SampleListScreenProps) {
                 return (
                   <section key={group.category} aria-labelledby={headingId} className="flex flex-col gap-3">
                     <div className="flex flex-col gap-0.5">
-                      <h2 id={headingId} className="text-lg font-semibold text-slate-900">
+                      <h2 id={headingId} className="text-lg font-semibold text-fg-strong">
                         {t(`categories.${group.category}.title`)}
                       </h2>
-                      <p className="text-sm text-slate-600">{t(`categories.${group.category}.description`)}</p>
+                      <p className="text-sm text-fg-muted">{t(`categories.${group.category}.description`)}</p>
                     </div>
                     <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                       {group.items.map((item) => (
@@ -89,10 +89,10 @@ function SampleListScreen({ model }: SampleListScreenProps) {
               })}
             </>
           )}
-          <p className="text-sm text-slate-600">
+          <p className="text-sm text-fg-muted">
             <AppLink
               to={routes.exercises}
-              className={`inline-flex items-center gap-1.5 rounded font-medium text-sky-700 underline-offset-2 hover:underline ${focusRing}`}
+              className={`inline-flex items-center gap-1.5 rounded font-medium text-accent-text underline-offset-2 hover:underline ${focusRing}`}
             >
               <ListChecks className="h-4 w-4" aria-hidden="true" />
               {t('ui.list.toExercises')}

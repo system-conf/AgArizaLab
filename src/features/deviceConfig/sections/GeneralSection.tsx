@@ -39,8 +39,8 @@ function GeneralSection({ device, access, powerAccess, saved, onSave }: GeneralS
         <InputField label={t('general.name')} value={name} onChange={setName} error={errors.show(nameError)} maxLength={MAX_DEVICE_NAME * 2} />
       </SectionForm>
       {powerAccess !== 'hidden' && (
-        <div className="flex flex-col gap-1 border-t border-slate-100 pt-3">
-          <span className="text-sm font-medium text-slate-700">{t('general.power')}</span>
+        <div className="flex flex-col gap-1 border-t border-border/60 pt-3">
+          <span className="text-sm font-medium text-fg">{t('general.power')}</span>
           <button
             type="button"
             aria-pressed={device.powered}
@@ -48,8 +48,8 @@ function GeneralSection({ device, access, powerAccess, saved, onSave }: GeneralS
             onClick={() => onSave({ ...device, powered: !device.powered })}
             className={`flex items-center gap-2 self-start rounded-md border px-3 py-1.5 text-sm disabled:cursor-not-allowed disabled:opacity-60 ${
               device.powered
-                ? 'border-emerald-300 bg-emerald-50 text-emerald-900 hover:bg-emerald-100'
-                : 'border-slate-300 bg-white text-slate-700 hover:bg-slate-50'
+                ? 'border-emerald-300 dark:border-emerald-700 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-200 hover:bg-emerald-100 dark:hover:bg-emerald-900/40'
+                : 'border-border-strong bg-surface text-fg hover:bg-surface-subtle'
             } ${focusRing}`}
           >
             <Power className="h-4 w-4" aria-hidden="true" />

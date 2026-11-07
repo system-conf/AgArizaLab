@@ -10,7 +10,7 @@ export type ProgressMap = Readonly<Record<string, ScenarioProgress>>
 export type KeyValueStorage = Pick<Storage, 'getItem' | 'setItem'>
 
 /** Same key as v1 so existing progress is found; the stored `version` tells the formats apart. */
-const STORAGE_KEY = 'agArizaLab.progress.v1'
+export const STORAGE_KEY = 'agArizaLab.progress.v1'
 /**
  * v1: `{ bestSeconds, hintsUsed }` per exercise (timer era).
  * v2: `{ guideStepsUsed }` per exercise. v1 data is migrated on load (time is dropped).

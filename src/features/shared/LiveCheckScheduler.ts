@@ -9,7 +9,7 @@ const browserTimers: TimerPort = {
   clear: (handle) => window.clearTimeout(handle),
 }
 
-/** Quiet time after the last change before the requirements are checked (contract: ≥ 300 ms). */
+/** Quiet time after the last change before a live check runs (design contract: ≥ 300 ms). */
 export const LIVE_CHECK_DELAY_MS = 400
 
 export interface LiveCheckSchedulerOptions {
@@ -18,9 +18,10 @@ export interface LiveCheckSchedulerOptions {
 }
 
 /**
- * Debounces the live requirement check of a design (docs/DESIGN_EXERCISES.md §6.3): a change starts
- * the quiet time again, and only the latest input is checked once it has settled. An input that is
- * the same object as the last checked one is not checked again.
+ * Debounces a live check of the lab: design requirements (docs/DESIGN_EXERCISES.md §6.3) and sample
+ * steps (docs/SAMPLE_LABS.md). A change starts the quiet time again, and only the latest input is
+ * checked once it has settled. An input that is the same object as the last checked one is not
+ * checked again.
  */
 export class LiveCheckScheduler<Input, Output> {
   private readonly run: (input: Input) => Output

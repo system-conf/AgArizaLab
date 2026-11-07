@@ -24,7 +24,7 @@ function LanguageSwitcher() {
 
   return (
     <div className="flex shrink-0 items-center gap-1">
-      <label htmlFor={selectId} className="flex items-center text-slate-500">
+      <label htmlFor={selectId} className="flex items-center text-fg-subtle">
         <Languages className="hidden h-4 w-4 sm:block" aria-hidden="true" />
         <span className="sr-only">{t('languageSwitcher.label')}</span>
       </label>
@@ -32,7 +32,7 @@ function LanguageSwitcher() {
         id={selectId}
         value={language}
         onChange={handleChange}
-        className={`h-9 rounded-lg border border-slate-300 bg-white ps-2 pe-1 text-sm text-slate-700 hover:bg-slate-50 ${focusRing}`}
+        className={`h-9 rounded-lg border border-border-strong bg-surface ps-2 pe-1 text-sm text-fg hover:bg-surface-subtle ${focusRing}`}
       >
         {languages.map((option) => (
           <option key={option.code} value={option.code} lang={option.code}>

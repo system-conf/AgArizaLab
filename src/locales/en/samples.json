@@ -255,7 +255,11 @@
         },
         "fixConflict": {
           "title": "Give PC3 its own address",
-          "detail": "Change PC3's address to 192.168.1.30: PC3 can ping PC2 at once. PC1 still shows '(Duplicate)': like Windows, it does not take a lost address back by itself. Switch PC1 off and on again (or unplug and replug its cable), then ping PC2 from PC1."
+          "detail": "Change PC3's address to 192.168.1.30 and ping PC2 from PC3: replies at once. PC1 still shows '(Duplicate)' and its pings still fail: like Windows, it does not take a lost address back by itself."
+        },
+        "restartPc1": {
+          "title": "Bring PC1 back",
+          "detail": "Switch PC1 off and on again (or unplug and replug its cable): it probes 192.168.1.10 again, nobody else uses it now, and it keeps it. Ping PC2 from PC1: replies. Tick this step yourself: the lab check cannot see that PC1 was restarted."
         },
         "watchProbe": {
           "title": "Watch the address probe",
@@ -445,7 +449,7 @@
       "intro": {
         "what": "A DHCP DISCOVER is a broadcast, and routers do not forward broadcasts. With 'ip helper-address 192.168.20.10' on Gi0/0, R1 turns each request into a unicast to DHCP1 and writes its own address (the giaddr, 192.168.10.1) into it.",
         "why": "The server uses the giaddr to choose the pool (CLIENTS, 192.168.10.0/24) and sends its answer back to the relay, which hands it to the client. One central server can serve every VLAN.",
-        "realWorld": "Companies run one or two central DHCP servers and configure a helper address on every VLAN interface of the routers or layer-3 switches. A new VLAN whose clients get 169.254 addresses usually lacks its helper address. (Helper addresses are set from the device CLI, which is coming in Phase 4; this lab ships with one.)"
+        "realWorld": "Companies run one or two central DHCP servers and configure a helper address on every VLAN interface of the routers or layer-3 switches. A new VLAN whose clients get 169.254 addresses usually lacks its helper address. (In this lab, 'show running-config' in R1's CLI shows the helper address under interface Gi0/0.)"
       },
       "steps": {
         "renewPc1": {
@@ -466,6 +470,10 @@
         }
       },
       "breakIt": {
+        "removeHelper": {
+          "change": "In R1's CLI type 'enable', 'configure terminal', 'interface Gi0/0' and 'no ip helper-address 192.168.20.10'. Then renew PC1.",
+          "result": "R1 no longer passes the DISCOVER broadcast on, so DHCP1 never hears it: the renew times out. Put the helper address back to fix it."
+        },
         "removePool": {
           "change": "Delete the pool CLIENTS on DHCP1 and renew PC2.",
           "result": "The relay still delivers the request, but no pool matches the giaddr: no answer, the renew times out."

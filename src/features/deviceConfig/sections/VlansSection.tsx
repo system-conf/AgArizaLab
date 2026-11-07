@@ -92,9 +92,9 @@ function VlansSection({ device, switching, access, saved, onSave }: VlansSection
                   error={errors.show(validation[index]?.name)}
                 />
               </div>
-              {!VlanDatabaseModel.isRemovable(row) && <p className="text-xs text-slate-500">{t('vlans.defaultFixed')}</p>}
+              {!VlanDatabaseModel.isRemovable(row) && <p className="text-xs text-fg-subtle">{t('vlans.defaultFixed')}</p>}
               {confirmKey === row.key && (
-                <div role="alert" className="flex flex-col gap-2 rounded-md border border-amber-300 bg-amber-50 p-2 text-sm text-amber-900">
+                <div role="alert" className="flex flex-col gap-2 rounded-md border border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-950/40 p-2 text-sm text-amber-900 dark:text-amber-200">
                   <p>{t('vlans.inUse', { vlan: row.id, users: usersOf(row).join(', ') })}</p>
                   <div className="flex flex-wrap gap-2">
                     <button
@@ -107,7 +107,7 @@ function VlansSection({ device, switching, access, saved, onSave }: VlansSection
                     <button
                       type="button"
                       onClick={() => setConfirmKey(null)}
-                      className={`rounded-md border border-amber-300 bg-white px-3 py-1.5 text-sm hover:bg-amber-100 ${focusRing}`}
+                      className={`rounded-md border border-amber-300 dark:border-amber-700 bg-surface px-3 py-1.5 text-sm hover:bg-amber-100 dark:hover:bg-amber-900/40 ${focusRing}`}
                     >
                       {t('actions.cancel')}
                     </button>

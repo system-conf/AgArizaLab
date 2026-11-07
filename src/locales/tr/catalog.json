@@ -300,5 +300,10 @@
     "phoneTablet": "Telefon ve tablet",
     "cameraNvr": "Kamera ve NVR",
     "posDisplay": "Kasa ve ekranlar"
+  },
+  "defaultNames": {
+    "smartTv": "Akıllı TV",
+    "dslModem": "DSL modem",
+    "cableModem": "Kablo modem"
   }
 }

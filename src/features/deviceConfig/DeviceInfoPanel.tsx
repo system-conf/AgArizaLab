@@ -73,10 +73,10 @@ function DeviceInfoPanel({ device, state, policy = ExerciseLockPolicy.none }: De
 
   return (
     <div className="@container flex min-w-0 flex-col gap-3">
-      <section className="flex flex-col gap-3 rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
+      <section className="flex flex-col gap-3 rounded-xl border border-border bg-surface p-3 shadow-sm">
         <div className="flex items-center gap-2">
-          <DeviceKindIcon kind={device.kind} className="h-6 w-6 shrink-0 text-sky-700" aria-hidden="true" />
-          <h3 className="min-w-0 truncate font-semibold text-slate-900">{device.name}</h3>
+          <DeviceKindIcon kind={device.kind} modelId={device.modelId} className="h-7 w-7 shrink-0" aria-hidden="true" />
+          <h3 className="min-w-0 truncate font-semibold text-fg-strong">{device.name}</h3>
         </div>
         <FactList facts={general} />
       </section>
@@ -100,7 +100,7 @@ function DeviceInfoPanel({ device, state, policy = ExerciseLockPolicy.none }: De
           {routing.ipRouting ? (
             <RoutingTableView routes={DeviceInfoModel.routes(state, device)} />
           ) : (
-            <p className="text-sm text-slate-500">{t('info.routingOff')}</p>
+            <p className="text-sm text-fg-subtle">{t('info.routingOff')}</p>
           )}
         </SettingsSection>
       )}

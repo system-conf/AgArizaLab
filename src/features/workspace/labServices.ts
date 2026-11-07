@@ -27,7 +27,7 @@ export {
   type LabEditor,
   type LabParseResult,
 } from '../../lab'
-export { DEVICE_CATEGORIES, DeviceKindIcon, deviceCatalog, findDeviceModel, PortFactory } from '../../catalog'
+export { DEVICE_CATEGORIES, DefaultDeviceNames, DeviceKindIcon, deviceCatalog, findDeviceModel, PortFactory } from '../../catalog'
 export {
   modelDescriptionKey,
   PortSummary,

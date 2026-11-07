@@ -26,7 +26,7 @@ function RecentLabsDialog({ onOpen, onClose }: RecentLabsDialogProps) {
   }, [])
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-900/40 p-3 sm:items-center" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-900/40 p-3 dark:bg-black/60 sm:items-center" onClick={onClose}>
       <div
         role="dialog"
         aria-modal="true"
@@ -37,10 +37,10 @@ function RecentLabsDialog({ onOpen, onClose }: RecentLabsDialogProps) {
           event.preventDefault()
           onClose()
         }}
-        className="flex max-h-[80vh] w-full max-w-lg flex-col gap-3 rounded-2xl bg-white p-4 shadow-2xl"
+        className="flex max-h-[80vh] w-full max-w-lg flex-col gap-3 rounded-2xl bg-surface p-4 shadow-2xl"
       >
         <div className="flex items-center justify-between">
-          <h2 id={titleId} className="text-base font-semibold text-slate-900">
+          <h2 id={titleId} className="text-base font-semibold text-fg-strong">
             {t('lab:recent.title')}
           </h2>
           <button
@@ -48,7 +48,7 @@ function RecentLabsDialog({ onOpen, onClose }: RecentLabsDialogProps) {
             type="button"
             onClick={onClose}
             aria-label={t('workspace:recentDialog.close')}
-            className={`rounded p-1 text-slate-500 hover:bg-slate-100 ${focusRing}`}
+            className={`rounded p-1 text-fg-subtle hover:bg-surface-muted ${focusRing}`}
           >
             <X className="h-5 w-5" aria-hidden="true" />
           </button>

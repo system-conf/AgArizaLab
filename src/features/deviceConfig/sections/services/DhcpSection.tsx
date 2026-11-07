@@ -37,7 +37,7 @@ function DhcpSection({ device, access, saved, onSave }: SectionProps) {
     <SectionCard title={t('sections.dhcp')} icon={Server} access={access} saved={saved}>
       <SectionForm editable={access === 'editable'} onSubmit={submit} onDiscard={discard}>
         <CheckboxField label={t('dhcp.enabled')} checked={draft.enabled} onChange={(enabled) => setDraft((current) => ({ ...current, enabled }))} />
-        <h4 className="text-sm font-medium text-slate-700">{t('dhcp.pools')}</h4>
+        <h4 className="text-sm font-medium text-fg">{t('dhcp.pools')}</h4>
         <RowList
           items={draft.pools}
           keyOf={(row) => row.key}
@@ -56,7 +56,7 @@ function DhcpSection({ device, access, saved, onSave }: SectionProps) {
             />
           )}
         />
-        <h4 className="text-sm font-medium text-slate-700">{t('dhcp.excluded')}</h4>
+        <h4 className="text-sm font-medium text-fg">{t('dhcp.excluded')}</h4>
         <RowList
           items={draft.excluded}
           keyOf={(row) => row.key}

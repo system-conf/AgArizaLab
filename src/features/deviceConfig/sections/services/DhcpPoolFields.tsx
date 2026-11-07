@@ -50,11 +50,11 @@ function DhcpPoolFields({ row, errors, show, onChange }: DhcpPoolFieldsProps) {
       </div>
       {row.original && (
         <div className="flex flex-col gap-1 text-sm">
-          <span className="font-medium text-slate-700">{t('dhcp.leases')}</span>
+          <span className="font-medium text-fg">{t('dhcp.leases')}</span>
           {leases.length === 0 ? (
-            <p className="text-slate-500">{t('dhcp.noLeases')}</p>
+            <p className="text-fg-subtle">{t('dhcp.noLeases')}</p>
           ) : (
-            <ul className="flex flex-col gap-0.5 font-mono text-xs text-slate-700" dir="ltr">
+            <ul className="flex flex-col gap-0.5 font-mono text-xs text-fg" dir="ltr">
               {leases.map((lease) => (
                 <li key={`${lease.mac}-${lease.ip}`}>{t('dhcp.lease', { ip: lease.ip, mac: lease.mac })}</li>
               ))}

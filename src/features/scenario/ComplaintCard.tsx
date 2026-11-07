@@ -29,12 +29,12 @@ function ComplaintCard({ from, message }: ComplaintCardProps) {
       >
         {initialsOf(from, language)}
       </span>
-      <div className="relative max-w-2xl rounded-2xl rounded-es-md bg-white px-4 py-2.5 shadow-sm ring-1 ring-slate-200">
+      <div className="relative max-w-2xl rounded-2xl rounded-es-md bg-surface px-4 py-2.5 shadow-sm ring-1 ring-border">
         <figcaption className="flex items-center gap-2 text-xs">
-          <span className="font-semibold text-orange-700">{from}</span>
-          <span className="text-slate-400">{t('complaint.newMessage')}</span>
+          <span className="font-semibold text-orange-700 dark:text-orange-300">{from}</span>
+          <span className="text-fg-subtle">{t('complaint.newMessage')}</span>
         </figcaption>
-        <blockquote className="mt-0.5 text-sm leading-relaxed text-slate-800 sm:text-base">{message}</blockquote>
+        <blockquote className="mt-0.5 text-sm leading-relaxed text-fg sm:text-base">{message}</blockquote>
       </div>
     </figure>
   )

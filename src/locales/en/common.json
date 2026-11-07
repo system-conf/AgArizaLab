@@ -3,6 +3,12 @@
   "languageSwitcher": {
     "label": "Language"
   },
+  "themeToggle": {
+    "label": "Theme: {{current}}. Switch to {{next}}",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
   "meta": {
     "title": "Network Troubleshooting Lab — find and fix network faults in your browser",
     "pageTitle": "{{page}} — {{appName}}",

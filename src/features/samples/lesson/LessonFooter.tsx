@@ -24,26 +24,26 @@ function LessonFooter({ completion, lessonOpen, lessonControls, saving, onToggle
   const summary = t('ui.card.steps', { done: formatNumber(completion.done), total: formatNumber(completion.total) })
 
   return (
-    <footer className="flex items-center gap-2 border-t border-slate-200 bg-white px-2 py-2 sm:gap-3 sm:px-4">
+    <footer className="flex items-center gap-2 border-t border-border bg-surface px-2 py-2 sm:gap-3 sm:px-4">
       <button
         type="button"
         onClick={onToggleLesson}
         aria-expanded={lessonOpen}
         aria-controls={lessonControls}
         className={`flex shrink-0 items-center gap-1.5 rounded-lg border px-2.5 py-2 text-sm font-medium ${
-          lessonOpen ? 'border-teal-300 bg-teal-50 text-teal-900' : 'border-slate-300 bg-white text-slate-700 hover:bg-slate-50'
+          lessonOpen ? 'border-teal-300 dark:border-teal-700 bg-teal-50 dark:bg-teal-950/40 text-teal-900 dark:text-teal-200' : 'border-border-strong bg-surface text-fg hover:bg-surface-subtle'
         } ${focusRing}`}
       >
         <BookOpen className="h-4 w-4" aria-hidden="true" />
         <span className="hidden sm:inline">{t('ui.lesson.toggle')}</span>
-        <span className={completion.complete ? 'text-emerald-700' : 'text-slate-500'}>{summary}</span>
+        <span className={completion.complete ? 'text-emerald-700 dark:text-emerald-300' : 'text-fg-subtle'}>{summary}</span>
       </button>
       <div className="min-w-0 flex-1" />
       <button
         type="button"
         onClick={onResetLab}
         title={t('ui.lesson.resetLab')}
-        className={`flex shrink-0 items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-2.5 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 ${focusRing}`}
+        className={`flex shrink-0 items-center gap-1.5 rounded-lg border border-border-strong bg-surface px-2.5 py-2 text-sm font-medium text-fg hover:bg-surface-subtle ${focusRing}`}
       >
         <RotateCcw className="h-4 w-4" aria-hidden="true" />
         <span className="sm:hidden">{t('ui.lesson.resetLabShort')}</span>

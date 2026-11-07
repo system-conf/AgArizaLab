@@ -85,16 +85,16 @@ function ExerciseWorkspace({ exercise, total, onSolved }: ExerciseWorkspaceProps
       <AppLink
         to={routes.exercises}
         aria-label={t('header.backAria')}
-        className={`flex h-9 shrink-0 items-center gap-1.5 rounded-lg px-2 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900 ${focusRing}`}
+        className={`flex h-9 shrink-0 items-center gap-1.5 rounded-lg px-2 text-sm text-fg-muted hover:bg-surface-muted hover:text-fg-strong ${focusRing}`}
       >
         <ArrowLeft className="h-4 w-4 rtl:-scale-x-100" aria-hidden="true" />
         <span className="hidden sm:inline">{t('header.back')}</span>
       </AppLink>
       <div className="min-w-0">
-        <p className="truncate text-[11px] font-medium uppercase tracking-wide text-sky-700">
+        <p className="truncate text-[11px] font-medium uppercase tracking-wide text-accent-text">
           {t('header.position', { order: formatNumber(exercise.order), total: formatNumber(total) })}
         </p>
-        <h1 className="truncate text-sm font-semibold text-slate-900 sm:text-base">{exercise.texts.title}</h1>
+        <h1 className="truncate text-sm font-semibold text-fg-strong sm:text-base">{exercise.texts.title}</h1>
       </div>
     </>
   )
@@ -113,7 +113,7 @@ function ExerciseWorkspace({ exercise, total, onSolved }: ExerciseWorkspaceProps
         />
       }
       banner={
-        <section aria-label={t('mode.complaintRegion')} className="border-b border-slate-200 bg-slate-50 px-3 py-2 sm:px-4">
+        <section aria-label={t('mode.complaintRegion')} className="border-b border-border bg-surface-subtle px-3 py-2 sm:px-4">
           <ComplaintCard from={exercise.texts.complaint.from} message={exercise.texts.complaint.message} />
         </section>
       }

@@ -101,16 +101,16 @@ function DesignWorkspace({ brief, total, draft, onSubmit, onLeave }: DesignScree
       <AppLink
         to={routes.designs}
         aria-label={t('ui.workspace.backAria')}
-        className={`flex h-9 shrink-0 items-center gap-1.5 rounded-lg px-2 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900 ${focusRing}`}
+        className={`flex h-9 shrink-0 items-center gap-1.5 rounded-lg px-2 text-sm text-fg-muted hover:bg-surface-muted hover:text-fg-strong ${focusRing}`}
       >
         <ArrowLeft className="h-4 w-4 rtl:-scale-x-100" aria-hidden="true" />
         <span className="hidden sm:inline">{t('ui.workspace.back')}</span>
       </AppLink>
       <div className="min-w-0">
-        <p className="truncate text-[11px] font-medium uppercase tracking-wide text-indigo-700">
+        <p className="truncate text-[11px] font-medium uppercase tracking-wide text-indigo-700 dark:text-indigo-300">
           {t('ui.workspace.position', { order: formatNumber(brief.order), total: formatNumber(total) })}
         </p>
-        <h1 className="truncate text-sm font-semibold text-slate-900 sm:text-base">{brief.texts.title}</h1>
+        <h1 className="truncate text-sm font-semibold text-fg-strong sm:text-base">{brief.texts.title}</h1>
       </div>
     </>
   )
@@ -129,7 +129,7 @@ function DesignWorkspace({ brief, total, draft, onSubmit, onLeave }: DesignScree
             <aside
               id={panelId}
               aria-label={t('ui.brief.title')}
-              className="w-72 shrink-0 overflow-y-auto border-s border-slate-200 bg-slate-50 p-3 2xl:w-80"
+              className="w-72 shrink-0 overflow-y-auto border-s border-border bg-surface-subtle p-3 2xl:w-80"
             >
               {briefPanel}
             </aside>

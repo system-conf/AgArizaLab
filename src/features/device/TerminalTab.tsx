@@ -3,6 +3,8 @@ import { useEffect, useId, useRef, useState, type FormEvent, type KeyboardEvent 
 import { useTranslation } from 'react-i18next'
 import type { TerminalLine } from '../../domain'
 import { useMessageTranslator } from '../../i18n'
+import { usePreference } from '../../preferences'
+import { recentHistory, terminalFontStyle } from '../preferences/model/preferenceWiring'
 import { focusRing } from '../shared/focusRing'
 
 interface TerminalTabProps {
@@ -45,6 +47,9 @@ function TerminalTab({ lines, onRunCommand, hiddenLineCount = 0, onClear }: Term
   const inputId = useId()
   const translateMessage = useMessageTranslator()
   const visibleLines = lines.slice(hiddenLineCount)
+  // PU (Preferences → Terminal / CLI): text size and how many commands Up / Down keep.
+  const [fontSize] = usePreference('terminal.fontSize')
+  const [historyLength] = usePreference('terminal.historyLength')
 
   useEffect(() => {
     const box = scrollRef.current
@@ -57,7 +62,7 @@ function TerminalTab({ lines, onRunCommand, hiddenLineCount = 0, onClear }: Term
     if (command === '') return
     if (onClear && command.toLowerCase() === 'cls') onClear()
     else onRunCommand(command)
-    setHistory((current) => [...current, command])
+    setHistory((current) => recentHistory([...current, command], historyLength))
     setHistoryIndex(null)
     setInput('')
   }
@@ -96,9 +101,9 @@ function TerminalTab({ lines, onRunCommand, hiddenLineCount = 0, onClear }: Term
   }
 
   return (
-    <div className="flex h-80 flex-col overflow-hidden rounded-lg border border-slate-400 bg-black shadow-md focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-sky-600 md:h-[28rem]">
-      <div className="flex items-center gap-2 bg-slate-100 px-2 py-1 text-xs text-slate-700">
-        <SquareTerminal className="h-4 w-4 text-slate-600" aria-hidden="true" />
+    <div className="flex h-80 flex-col overflow-hidden rounded-lg border border-slate-400 bg-black shadow-md focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-focus md:h-[28rem]">
+      <div className="flex items-center gap-2 bg-surface-muted px-2 py-1 text-xs text-fg">
+        <SquareTerminal className="h-4 w-4 text-fg-muted" aria-hidden="true" />
         <span className="flex-1 truncate">{t('windowTitle')}</span>
         {onClear && (
           <button
@@ -107,7 +112,7 @@ function TerminalTab({ lines, onRunCommand, hiddenLineCount = 0, onClear }: Term
               onClear()
               inputRef.current?.focus()
             }}
-            className={`flex items-center gap-1 rounded px-1.5 py-0.5 hover:bg-slate-200 ${focusRing}`}
+            className={`flex items-center gap-1 rounded px-1.5 py-0.5 hover:bg-surface-strong ${focusRing}`}
           >
             <Eraser className="h-3.5 w-3.5" aria-hidden="true" />
             {t('clear')}
@@ -118,7 +123,8 @@ function TerminalTab({ lines, onRunCommand, hiddenLineCount = 0, onClear }: Term
         ref={scrollRef}
         dir={consoleDirection}
         onClick={focusInput}
-        className="flex-1 cursor-text overflow-y-auto px-3 py-2 font-console text-[13px] leading-snug"
+        style={terminalFontStyle(fontSize)}
+        className="flex-1 cursor-text overflow-y-auto px-3 py-2 font-console text-(length:--terminal-font-size) leading-snug"
       >
         <div role="log" aria-live="polite" aria-label={t('outputLabel')}>
           {visibleLines.length === 0 && (
@@ -150,7 +156,7 @@ function TerminalTab({ lines, onRunCommand, hiddenLineCount = 0, onClear }: Term
             autoCorrect="off"
             spellCheck={false}
             enterKeyHint="send"
-            className="min-w-0 flex-1 bg-transparent p-0 font-console text-base md:text-[13px] text-[#f2f2f2] caret-[#f2f2f2] outline-none"
+            className="min-w-0 flex-1 bg-transparent p-0 font-console text-base md:text-(length:--terminal-font-size) text-[#f2f2f2] caret-[#f2f2f2] outline-none"
           />
         </form>
       </div>

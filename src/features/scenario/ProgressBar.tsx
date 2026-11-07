@@ -16,8 +16,8 @@ function ProgressBar({ completed, total }: ProgressBarProps) {
   return (
     <div className="flex w-full flex-col gap-1.5">
       <div className="flex items-center justify-between gap-2 text-sm">
-        <span className="font-medium text-slate-700">{t('progress.label')}</span>
-        <span className="text-slate-600">{t('progress.summary', params)}</span>
+        <span className="font-medium text-fg">{t('progress.label')}</span>
+        <span className="text-fg-muted">{t('progress.summary', params)}</span>
       </div>
       <div
         role="progressbar"
@@ -26,7 +26,7 @@ function ProgressBar({ completed, total }: ProgressBarProps) {
         aria-valuemax={total}
         aria-valuenow={completed}
         aria-valuetext={t('progress.valueText', params)}
-        className="h-2.5 w-full overflow-hidden rounded-full bg-slate-200"
+        className="h-2.5 w-full overflow-hidden rounded-full bg-surface-strong"
       >
         <div className="h-full rounded-full bg-sky-600 transition-[width] duration-500" style={{ width: `${percent}%` }} />
       </div>

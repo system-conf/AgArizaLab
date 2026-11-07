@@ -10,6 +10,7 @@ import CableHint from './cable/CableHint'
 import PortPicker from './cable/PortPicker'
 import SsidPicker from './cable/SsidPicker'
 import { useCableTool } from './cable/useCableTool'
+import { useOfferedCableTools } from './cable/useOfferedCableTools'
 import { AnnotationActionsContext, type AnnotationActions } from './canvas/annotationActions'
 import CanvasToolbar from './canvas/CanvasToolbar'
 import { EMPTY_SELECTION, type WorkspaceNode, type WorkspaceSelection } from './canvas/canvasTypes'
@@ -22,8 +23,9 @@ import { useWorkspaceKeyboard } from './keyboard/useWorkspaceKeyboard'
 import { deviceCatalog, hasTerminal, labEditor, type ExerciseLockPolicy, type LabDocumentState } from './labServices'
 import DevicePalette from './palette/DevicePalette'
 import DeviceTabs from './panels/DeviceTabs'
-import type { DeviceTab } from './panels/deviceTabModel'
 import PropertiesPanel from './panels/PropertiesPanel'
+// PU (Preferences): CLI as the default device tab.
+import { useDeviceTabState } from './panels/useDeviceTabState'
 import ShortcutsHelp from './panels/ShortcutsHelp'
 import { useDeviceTerminals } from './terminal/useDeviceTerminals'
 import ToastRegion from './ToastRegion'
@@ -78,9 +80,10 @@ function WorkspaceView(props: WorkspaceViewProps) {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [shortcutsOpen, setShortcutsOpen] = useState(false)
   const [paletteOpen, setPaletteOpen] = useState(false)
-  const [deviceTab, setDeviceTab] = useState<DeviceTab>('info')
+  const [deviceTab, setDeviceTab] = useDeviceTabState()
   const wide = useMediaQuery('(min-width: 1024px)')
   const cable = useCableTool({ lab, editor: labEditor, notify: toasts.show })
+  const cableTools = useOfferedCableTools()
   const actions = useWorkspaceActions({ lab, editor: labEditor, selection, policy, snapToGrid, canvasRef })
   const editing = useDeviceEditing(lab, labEditor, policy)
   const selectedCount = SelectionModel.count(selection)
@@ -154,7 +157,7 @@ function WorkspaceView(props: WorkspaceViewProps) {
         return setSelection(EMPTY_SELECTION)
       case 'cableTool':
         if (!editable) return undefined
-        return cable.state.active ? cable.stop() : cable.choose('auto')
+        return cable.state.active ? cable.stop() : cable.choose(cableTools[0] ?? 'auto')
       case 'selectAll':
         return setSelection(SelectionModel.all(doc))
       case 'showShortcuts':
@@ -185,7 +188,7 @@ function WorkspaceView(props: WorkspaceViewProps) {
     const terminalOpen = hasTerminal(device) && policy.canUseTerminal(device.id)
     return (
       <div key={device.id} className="space-y-3">
-        <h3 className="break-words text-base font-semibold text-slate-900">{device.name}</h3>
+        <h3 className="break-words text-base font-semibold text-fg-strong">{device.name}</h3>
         <DeviceTabs
           // CI (CLI integration): the CLI keeps one console per device of the open lab.
           labId={lab.labId}
@@ -228,7 +231,7 @@ function WorkspaceView(props: WorkspaceViewProps) {
   )
 
   return (
-    <div className="flex h-dvh flex-col bg-slate-100 text-slate-900">
+    <div className="flex h-dvh flex-col bg-surface-muted text-fg-strong">
       <WorkspaceHeader
         start={headerStart}
         end={headerEnd}
@@ -242,8 +245,8 @@ function WorkspaceView(props: WorkspaceViewProps) {
       {banner}
       <div className="relative flex min-h-0 flex-1">
         {editable && (
-          <aside aria-labelledby="palette-heading" className="hidden w-56 shrink-0 overflow-y-auto border-e border-slate-200 bg-white p-3 md:block">
-            <h2 id="palette-heading" className="mb-2 text-sm font-semibold text-slate-900">
+          <aside aria-labelledby="palette-heading" className="hidden w-56 shrink-0 overflow-y-auto border-e border-border bg-surface p-3 md:block">
+            <h2 id="palette-heading" className="mb-2 text-sm font-semibold text-fg-strong">
               {t('palette.title')}
             </h2>
             <DevicePalette models={paletteModels} priceLabelOf={priceLabelOf} onAdd={addModel} onChooseCable={chooseCableFromPalette} activeCable={cable.state.tool} />
@@ -292,6 +295,8 @@ function WorkspaceView(props: WorkspaceViewProps) {
                 devicesDraggable={editable}
                 screenToFlow={flow.screenToFlowPosition}
                 canvasRef={canvasRef}
+                // Exercise on a phone: the footer grows with the failed checks; the map is fitted again.
+                refitOnResize={exerciseMode}
               >
                 <CableHint state={cable.state} nameOf={nameOf} />
                 {/* Simulation (U3) */}
@@ -320,7 +325,7 @@ function WorkspaceView(props: WorkspaceViewProps) {
               <button
                 type="button"
                 onClick={() => setPaletteOpen(true)}
-                className={`absolute bottom-3 start-3 z-20 flex items-center gap-1.5 rounded-full bg-sky-600 px-4 py-2 text-sm font-medium text-white shadow-lg hover:bg-sky-700 md:hidden ${focusRing}`}
+                className={`absolute bottom-3 start-3 z-20 flex items-center gap-1.5 rounded-full bg-accent px-4 py-2 text-sm font-medium text-accent-fg shadow-lg hover:bg-accent-hover md:hidden ${focusRing}`}
               >
                 <LayoutGrid className="h-4 w-4" aria-hidden="true" />
                 {t('palette.open')}
@@ -337,9 +342,9 @@ function WorkspaceView(props: WorkspaceViewProps) {
         </main>
         {/* Design (D2): the brief panel */}
         {props.sidePanel}
-        {wide && <aside className="w-80 shrink-0 border-s border-slate-200 bg-white xl:w-96">{properties()}</aside>}
+        {wide && <aside className="w-80 shrink-0 border-s border-border bg-surface xl:w-96">{properties()}</aside>}
         {!wide && selectedCount > 0 && !paletteOpen && (
-          <div className="absolute inset-x-0 bottom-0 z-30 h-[60%] overflow-hidden rounded-t-2xl border-t border-slate-200 bg-white shadow-2xl">
+          <div className="absolute inset-x-0 bottom-0 z-30 h-[60%] overflow-hidden rounded-t-2xl border-t border-border bg-surface shadow-2xl">
             {properties(() => setSelection(EMPTY_SELECTION))}
           </div>
         )}
@@ -352,10 +357,10 @@ function WorkspaceView(props: WorkspaceViewProps) {
               event.preventDefault()
               setPaletteOpen(false)
             }}
-            className="absolute inset-x-0 bottom-0 z-40 max-h-[65vh] overflow-y-auto rounded-t-2xl border-t border-slate-200 bg-white p-3 shadow-2xl md:hidden"
+            className="absolute inset-x-0 bottom-0 z-40 max-h-[65vh] overflow-y-auto rounded-t-2xl border-t border-border bg-surface p-3 shadow-2xl md:hidden"
           >
             <div className="mb-2 flex items-center justify-between">
-              <h2 id="palette-drawer-heading" className="text-sm font-semibold text-slate-900">
+              <h2 id="palette-drawer-heading" className="text-sm font-semibold text-fg-strong">
                 {t('palette.title')}
               </h2>
               <button
@@ -364,7 +369,7 @@ function WorkspaceView(props: WorkspaceViewProps) {
                 autoFocus
                 onClick={() => setPaletteOpen(false)}
                 aria-label={t('palette.close')}
-                className={`rounded p-1 text-slate-500 hover:bg-slate-100 ${focusRing}`}
+                className={`rounded p-1 text-fg-subtle hover:bg-surface-muted ${focusRing}`}
               >
                 <X className="h-5 w-5" aria-hidden="true" />
               </button>

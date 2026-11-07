@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { NetworkState } from '../../domain'
+import { usePreferencesStore } from '../../preferences'
 import { workspaceEngineBuild } from './model/engineBuild'
-import { EventFilters } from './model/EventFilters'
 import type { RealtimeReplay } from './model/RealtimeReplay'
 import { SimulationPlayer, type EngineBuild, type PlayerView } from './model/SimulationPlayer'
 import { SimulationTerminal, type CommandProgress, type FinishedCommand } from './model/SimulationTerminal'
@@ -81,11 +81,13 @@ function startsOnDemand(network: NetworkState): boolean {
 export function useSimulation(options: SimulationOptions): WorkspaceSimulation {
   const { network, labId, nameOf, notify, title } = options
   const { t } = useTranslation('simulation')
-  const [mode, setModeState] = useState<SimMode>('realtime')
+  // PU (Preferences → Animation & simulation): start mode and the event list's starting filter, read once.
+  const preferences = usePreferencesStore()
+  const [mode, setModeState] = useState<SimMode>(() => preferences.get('simulation.defaultMode'))
   const [replay, setReplay] = useState<NumberedReplay | null>(null)
   const [worker] = useState(() => options.worker ?? simWorkerClient)
   const [player] = useState(
-    () => new SimulationPlayer(options.build ?? workspaceEngineBuild(worker), network, { startNow: !startsOnDemand(network) }),
+    () => new SimulationPlayer(options.build ?? workspaceEngineBuild(worker), network, { startNow: !startsOnDemand(network) || mode === 'simulation' }),
   )
   const [runner] = useState(
     () =>
@@ -93,7 +95,7 @@ export function useSimulation(options: SimulationOptions): WorkspaceSimulation {
         setReplay((current) => (next ? { replay: next, id: (current?.id ?? 0) + 1 } : null)),
       ),
   )
-  const [filter, setFilter] = useState<EventFilter>(EventFilters.all)
+  const [filter, setFilter] = useState<EventFilter>(() => ({ protocols: preferences.get('simulation.defaultEventFilters') }))
   const [selectedId, setSelectedId] = useState<number | null>(null)
   const view = useSyncExternalStore(player.subscribe, player.getView)
   const playback = usePlayback(player, view.window?.serial ?? 0)

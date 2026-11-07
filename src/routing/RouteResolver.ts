@@ -44,6 +44,7 @@ export class RouteResolver {
       case 'exercises':
       case 'designs':
       case 'samples':
+      case 'preferences':
         return RENDER
       case 'notFound':
         return redirect({ name: 'landing' })

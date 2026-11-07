@@ -1,4 +1,4 @@
-import type { DeviceGroup, NetworkEngine, NetworkState, SolveCondition } from '../../domain'
+import type { DeviceGroup, LinkEnd, NetworkEngine, NetworkState, Port, SolveCondition } from '../../domain'
 import { Cidr, conditionGroups, GroupMembers, NetworkConditionEvaluator } from '../../design'
 import { DeviceAddresses, networkEngine, SolveChecker } from '../../engine'
 import type { CheckResult, SampleDefinition, SampleStep, StepCheck, StepStatus } from './SampleTypes'
@@ -21,6 +21,17 @@ export function solveConditionDevices(condition: SolveCondition): string[] {
     case 'appLinksOk':
       return [condition.deviceId]
   }
+}
+
+/** The ports at both ends of a cable, or null when the cable, a device or a port is missing. */
+export function linkEndPorts(state: NetworkState, linkId: string): readonly [Port, Port] | null {
+  const link = state.links.find((candidate) => candidate.id === linkId)
+  if (!link) return null
+  const portOf = (end: LinkEnd): Port | undefined =>
+    state.devices.find((device) => device.id === end.deviceId)?.ports.find((port) => port.id === end.portId)
+  const a = portOf(link.a)
+  const b = portOf(link.b)
+  return a && b ? [a, b] : null
 }
 
 /** Every leaf check of a check (unwraps `not`). */
@@ -84,6 +95,8 @@ export class StepChecker {
         return this.evaluator.evaluate(state, check.condition).ok
       case 'hasAddress':
         return this.hasAddress(state, check.deviceId, check.prefix)
+      case 'nativeVlanMatch':
+        return StepChecker.nativeVlanMatches(state, check.linkId, check.vlan)
       case 'not':
         return !this.holds(state, check.check)
     }
@@ -102,5 +115,13 @@ export class StepChecker {
     if (prefix === undefined) return addresses.length > 0
     const block = Cidr.parse(prefix)
     return block !== null && addresses.some((address) => Cidr.contains(block, address))
+  }
+
+  private static nativeVlanMatches(state: NetworkState, linkId: string, vlan: number | undefined): boolean {
+    const ends = linkEndPorts(state, linkId)
+    if (!ends) return false
+    const native = (port: Port): number | null => (port.role === 'switched' && port.l2.mode === 'trunk' ? port.l2.nativeVlan : null)
+    const a = native(ends[0])
+    return a !== null && a === native(ends[1]) && (vlan === undefined || a === vlan)
   }
 }

@@ -19,14 +19,14 @@ function HandoverTopology({ source }: HandoverTopologyProps) {
 
   return (
     <section aria-labelledby="handover-topology" className="flex flex-col gap-3 break-inside-avoid">
-      <h2 id="handover-topology" className="border-b border-slate-300 pb-1 text-lg font-semibold">
+      <h2 id="handover-topology" className="border-b border-border-strong pb-1 text-lg font-semibold">
         {t('ui.handover.topology')}
       </h2>
       <svg
         role="img"
         aria-label={t('ui.handover.topologyAria', { count: sketch.nodes.length })}
         viewBox={`${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`}
-        className="max-h-[32rem] w-full rounded-lg border border-slate-200 bg-white"
+        className="max-h-[32rem] w-full rounded-lg border border-border bg-surface"
       >
         {sketch.zones.map((zone) =>
           zone.ellipse ? (
@@ -36,16 +36,16 @@ function HandoverTopology({ source }: HandoverTopologyProps) {
               cy={zone.y + zone.height / 2}
               rx={zone.width / 2}
               ry={zone.height / 2}
-              className="fill-slate-50 stroke-slate-300"
+              className="fill-surface-subtle stroke-border-strong"
             />
           ) : (
-            <rect key={zone.id} x={zone.x} y={zone.y} width={zone.width} height={zone.height} rx={8} className="fill-slate-50 stroke-slate-300" />
+            <rect key={zone.id} x={zone.x} y={zone.y} width={zone.width} height={zone.height} rx={8} className="fill-surface-subtle stroke-border-strong" />
           ),
         )}
         {sketch.zones.map(
           (zone) =>
             zone.label !== undefined && (
-              <text key={`${zone.id}-label`} x={zone.x + 8} y={zone.y + 18} className="fill-slate-600 text-[13px] font-semibold">
+              <text key={`${zone.id}-label`} x={zone.x + 8} y={zone.y + 18} className="fill-fg-muted text-[13px] font-semibold">
                 {zone.label}
               </text>
             ),
@@ -59,16 +59,16 @@ function HandoverTopology({ source }: HandoverTopologyProps) {
             y2={link.y2}
             strokeWidth={2}
             strokeDasharray={link.wireless || !link.connected ? '6 4' : undefined}
-            className={link.connected ? 'stroke-slate-500' : 'stroke-rose-400'}
+            className={link.connected ? 'stroke-cable' : 'stroke-rose-400'}
           />
         ))}
         {sketch.nodes.map((node) => (
           <g key={node.id}>
-            <circle cx={node.x} cy={node.y} r={ICON_SIZE / 2 + 6} className="fill-white stroke-slate-400" />
-            <svg x={node.x - ICON_SIZE / 2} y={node.y - ICON_SIZE / 2} width={ICON_SIZE} height={ICON_SIZE} className="text-slate-800">
+            <circle cx={node.x} cy={node.y} r={ICON_SIZE / 2 + 6} className="fill-node stroke-node-border" />
+            <svg x={node.x - ICON_SIZE / 2} y={node.y - ICON_SIZE / 2} width={ICON_SIZE} height={ICON_SIZE} className="text-fg">
               <DeviceKindIcon kind={node.kind} modelId={node.modelId} className="h-full w-full" aria-hidden="true" />
             </svg>
-            <text x={node.x} y={node.y + ICON_SIZE / 2 + 22} textAnchor="middle" stroke="white" strokeWidth={4} paintOrder="stroke" className="fill-slate-900 text-[12px]">
+            <text x={node.x} y={node.y + ICON_SIZE / 2 + 22} textAnchor="middle" strokeWidth={4} paintOrder="stroke" className="fill-fg-strong stroke-surface text-[12px]">
               {node.name}
             </text>
           </g>

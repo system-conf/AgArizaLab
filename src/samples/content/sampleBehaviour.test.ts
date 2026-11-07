@@ -6,7 +6,7 @@ import { networkEngine } from '../../engine'
 import { createSimulation, SimTerminal, type SimulationEngine } from '../../sim'
 import { contentSamples } from './index'
 import { MASK_24 } from './sampleKit'
-import { accessVlan, addRoute, plug, power, removePool, removeRoutes, route, setGateway, setStatic, simRenew, trunk } from './testSolutions'
+import { accessVlan, addRoute, plug, power, removePool, removeRoutes, route, setGateway, setHelpers, setStatic, simRenew, trunk } from './testSolutions'
 
 function lab(id: string): NetworkState {
   const sample = contentSamples.find((candidate) => candidate.id === id)
@@ -82,6 +82,9 @@ describe('DHCP samples behave as the lessons say', () => {
     expect(networkEngine.renewDhcp(lab('dhcpRelay'), 'pc1')).toMatchObject({ ok: false })
     expect(() => simRenew(removePool(lab('dhcpRelay'), 'dhcp1', 'CLIENTS'), 'pc1')).toThrow()
     expect(() => simRenew(setGateway(lab('dhcpRelay'), 'dhcp1', ''), 'pc1')).toThrow()
+    // Break it: `no ip helper-address` on Gi0/0, then the DISCOVER broadcast stops at R1.
+    expect(() => simRenew(setHelpers(renewed, 'r1', 'Gi0/0', []), 'pc1')).toThrow()
+    expect(terminal(setHelpers(lab('dhcpRelay'), 'r1', 'Gi0/0', []), 'pc1', 'ipconfig /renew').join('\n')).toContain('unable to contact your DHCP server')
   })
 
   it('dhcpConflict: after the renew PC1 reaches R1, the printer answers only after its new address', () => {

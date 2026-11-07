@@ -6,9 +6,9 @@ import type { ChecklistStatus, ChecklistView } from '../model/RequirementCheckli
 import { useMeasureText } from './useMeasureText'
 
 const statusStyles: Record<ChecklistStatus, { icon: typeof CircleCheck; className: string }> = {
-  met: { icon: CircleCheck, className: 'text-emerald-600' },
-  unmet: { icon: CircleX, className: 'text-rose-600' },
-  unknown: { icon: CircleDashed, className: 'text-slate-400' },
+  met: { icon: CircleCheck, className: 'text-emerald-600 dark:text-emerald-300' },
+  unmet: { icon: CircleX, className: 'text-rose-600 dark:text-rose-300' },
+  unknown: { icon: CircleDashed, className: 'text-fg-subtle' },
 }
 
 interface RequirementChecklistViewProps {
@@ -27,10 +27,10 @@ function RequirementChecklistView({ checklist, checking }: RequirementChecklistV
   return (
     <section aria-labelledby="designChecklistTitle" className="flex flex-col gap-2">
       <div className="flex items-baseline justify-between gap-2">
-        <h2 id="designChecklistTitle" className="text-sm font-semibold text-slate-900">
+        <h2 id="designChecklistTitle" className="text-sm font-semibold text-fg-strong">
           {t('ui.checklist.title')}
         </h2>
-        <span className="text-xs text-slate-500" aria-live="polite">
+        <span className="text-xs text-fg-subtle" aria-live="polite">
           {checking ? t('ui.checklist.checking') : t('ui.checklist.summary', { met: formatNumber(checklist.met), total: formatNumber(checklist.total) })}
         </span>
       </div>
@@ -38,14 +38,14 @@ function RequirementChecklistView({ checklist, checking }: RequirementChecklistV
         {checklist.items.map((item) => {
           const { icon: Icon, className } = statusStyles[item.status]
           return (
-            <li key={item.id} className="flex items-start gap-2 rounded-lg bg-white px-2.5 py-2 text-sm ring-1 ring-slate-200">
+            <li key={item.id} className="flex items-start gap-2 rounded-lg bg-surface px-2.5 py-2 text-sm ring-1 ring-border">
               <Icon className={`mt-0.5 h-4 w-4 shrink-0 ${className}`} aria-hidden="true" />
               <div className="min-w-0 flex-1">
                 <span className="sr-only">{t(`ui.checklist.status.${item.status}`)}: </span>
-                <span className="text-slate-800">{translate(item.description)}</span>
-                {item.qualifier && <span className="text-slate-600"> {translate(item.qualifier)}</span>}
+                <span className="text-fg">{translate(item.description)}</span>
+                {item.qualifier && <span className="text-fg-muted"> {translate(item.qualifier)}</span>}
                 {item.measure && item.status !== 'met' && (
-                  <span className="mt-0.5 block text-xs text-slate-500">{measureText(item.measure)}</span>
+                  <span className="mt-0.5 block text-xs text-fg-subtle">{measureText(item.measure)}</span>
                 )}
               </div>
             </li>
@@ -54,7 +54,7 @@ function RequirementChecklistView({ checklist, checking }: RequirementChecklistV
         {Array.from({ length: checklist.hiddenCount }, (_, index) => (
           <li
             key={`hidden-${index}`}
-            className="flex items-start gap-2 rounded-lg border border-dashed border-slate-300 px-2.5 py-2 text-sm text-slate-500"
+            className="flex items-start gap-2 rounded-lg border border-dashed border-border-strong px-2.5 py-2 text-sm text-fg-subtle"
           >
             <LockKeyhole className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
             <span>{t('ui.checklist.hidden')}</span>
@@ -62,7 +62,7 @@ function RequirementChecklistView({ checklist, checking }: RequirementChecklistV
         ))}
       </ul>
       {checklist.allMet && !checking && (
-        <p role="status" className="rounded-lg bg-emerald-50 px-2.5 py-2 text-sm text-emerald-800 ring-1 ring-emerald-200">
+        <p role="status" className="rounded-lg bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-2 text-sm text-emerald-800 dark:text-emerald-200 ring-1 ring-emerald-200 dark:ring-emerald-800">
           {t('ui.checklist.allMet')}
         </p>
       )}

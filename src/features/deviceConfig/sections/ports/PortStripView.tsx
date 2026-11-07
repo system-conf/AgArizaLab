@@ -110,7 +110,7 @@ function PortStripView({ device, state, model, locks, selectedPortId, onSelect }
           </div>
         ))}
       </div>
-      <p className="flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-slate-500">
+      <p className="flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-fg-subtle">
         {hasSwitchports && (
           <>
             <span>{t('ports.legend.number')}</span>

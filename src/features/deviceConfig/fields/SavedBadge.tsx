@@ -11,7 +11,7 @@ function SavedBadge({ visible }: SavedBadgeProps) {
   return (
     <span role="status" aria-live="polite" className="text-xs">
       {visible && (
-        <span className="flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 font-medium text-emerald-800 ring-1 ring-emerald-200">
+        <span className="flex items-center gap-1 rounded-full bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 font-medium text-emerald-800 dark:text-emerald-200 ring-1 ring-emerald-200 dark:ring-emerald-800">
           <Check className="h-3.5 w-3.5" aria-hidden="true" />
           {t('saved')}
         </span>

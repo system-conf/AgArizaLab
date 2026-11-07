@@ -1,0 +1,165 @@
+{
+  "title": "Tercihler",
+  "lead": "Bu ayarlar yalnızca bu tarayıcıda saklanır.",
+  "open": "Tercihler",
+  "close": "Tercihleri kapat",
+  "back": "Ana sayfaya dön",
+  "tabsLabel": "Tercih kategorileri",
+  "comingSoon": "Yakında",
+  "tabs": {
+    "appearance": "Görünüm",
+    "map": "Harita",
+    "simulation": "Animasyon ve simülasyon",
+    "terminal": "Terminal / CLI",
+    "cables": "Kablolar",
+    "language": "Dil",
+    "data": "Veri"
+  },
+  "appearance": {
+    "theme": {
+      "label": "Tema",
+      "light": "Açık",
+      "dark": "Koyu",
+      "system": "Sistem"
+    },
+    "fontScale": {
+      "label": "Yazı boyutu",
+      "hint": "Uygulamadaki tüm yazıları ve düğmeleri büyütür ya da küçültür."
+    },
+    "density": {
+      "label": "Yoğunluk",
+      "comfortable": "Rahat",
+      "compact": "Sıkı",
+      "hint": "Sıkı görünüm ekrana daha çok şey sığdırır; harita aynı boyutta kalır."
+    },
+    "highContrast": {
+      "label": "Yüksek karşıtlık",
+      "hint": "Yazı ve kenarlık renklerini belirginleştirir."
+    }
+  },
+  "map": {
+    "deviceLabels": {
+      "label": "Cihaz etiketleri",
+      "name": "Ad",
+      "model": "Model",
+      "both": "Ad ve model",
+      "none": "Yok"
+    },
+    "portLabels": {
+      "label": "Port etiketleri",
+      "always": "Her zaman",
+      "hover": "Üzerine gelince ya da seçilince",
+      "never": "Hiçbir zaman"
+    },
+    "linkLights": {
+      "label": "Bağlantı ışıkları",
+      "hint": "Kablonun switch ucundaki ışık: bağlantı varsa yeşil yanar."
+    },
+    "grid": {
+      "label": "Izgarayı göster"
+    },
+    "snap": {
+      "label": "Izgaraya hizala",
+      "hint": "Taşıdığın cihazlar ızgaraya oturur."
+    },
+    "minimap": {
+      "label": "Mini harita",
+      "hint": "768 px ve daha geniş ekranlarda görünür."
+    }
+  },
+  "simulation": {
+    "animation": {
+      "label": "Paketleri canlandır",
+      "hint": "Kapalıyken paketler her adımın sonuna atlar. Sistemindeki hareketi azalt ayarı da animasyonu kapatır."
+    },
+    "speed": {
+      "label": "Oynatma hızı"
+    },
+    "defaultMode": {
+      "label": "Başlangıç modu",
+      "realtime": "Gerçek zamanlı mod",
+      "simulation": "Simülasyon modu",
+      "hint": "Bir lab, alıştırma ya da örnek açıldığında kullanılır."
+    },
+    "defaultEventFilters": {
+      "label": "Olay listesinin başta gösterdiği protokoller",
+      "all": "Tümünü seç",
+      "none": "Tümünü kaldır"
+    }
+  },
+  "terminal": {
+    "cliDefault": {
+      "label": "Ağ cihazlarını CLI sekmesinde aç",
+      "hint": "Router ve switch'ler Bilgi yerine CLI sekmesiyle açılır."
+    },
+    "fontSize": {
+      "label": "Terminal yazı boyutu",
+      "option": "{{size}} px"
+    },
+    "historyLength": {
+      "label": "Komut geçmişi uzunluğu",
+      "hint": "Yukarı ve Aşağı okları bu kadar komut geriye gider. Cihaz CLI'ları şimdilik her modda en çok 10 komut tutar (IOS varsayılanı).",
+      "invalid": "{{min}} ile {{max}} arasında bir tam sayı gir."
+    }
+  },
+  "cables": {
+    "autoCable": {
+      "label": "Otomatik kabloyu göster",
+      "hint": "Kapalıyken araç çubuğu ve palet yalnızca gerçek kablo türlerini listeler; her kabloyu sen seçersin."
+    },
+    "length": {
+      "label": "Kablo uzunluğunun etkileri",
+      "hint": "Fiziksel görünümle birlikte gelecek."
+    }
+  },
+  "language": {
+    "label": "Arayüz dili",
+    "hint": "Cihaz çıktıları gerçek cihazlardaki gibi İngilizce kalır."
+  },
+  "data": {
+    "autosave": {
+      "label": "Labı otomatik kaydet",
+      "hint": "Kapalıyken serbest labdaki değişiklikler bu tarayıcıya kaydedilmez. Saklamak için labı Dosya menüsünden dışa aktar."
+    },
+    "file": {
+      "heading": "Tercih dosyası",
+      "lead": "Tercihlerini başka bir tarayıcıya taşı.",
+      "export": "Tercihleri dışa aktar",
+      "import": "Tercihleri içe aktar",
+      "exported": "Tercih dosyası indirildi.",
+      "imported": "Tercihler içe aktarıldı.",
+      "importedWithIgnored_one": "Tercihler içe aktarıldı. Geçersiz {{count}} ayar varsayılanına döndü.",
+      "importedWithIgnored_other": "Tercihler içe aktarıldı. Geçersiz {{count}} ayar varsayılanına döndü.",
+      "invalidJson": "Bu dosya geçerli bir JSON değil.",
+      "notPreferences": "Bu dosya bir AgArizaLab tercih dosyası değil.",
+      "readFailed": "Dosya okunamadı."
+    },
+    "resetPreferences": {
+      "heading": "Varsayılan tercihler",
+      "button": "Tercihleri sıfırla",
+      "confirm": "Bu ekrandaki tüm tercihler varsayılanlarına dönsün mü?",
+      "confirmButton": "Tercihleri sıfırla",
+      "done": "Tercihler varsayılanlarına döndü."
+    },
+    "progress": {
+      "heading": "İlerlemeyi sıfırla",
+      "lead": "Seçtiğin türleri yeniden yapılmamış sayar. Kayıtlı lablar kalır.",
+      "exercises": "Arıza alıştırmaları",
+      "designs": "Tasarım görevleri",
+      "samples": "Örnek lablar",
+      "button": "İlerlemeyi sıfırla",
+      "confirm": "Seçtiğin türlerin ilerlemesi sıfırlansın mı? Bu geri alınamaz. Sayfa yeniden yüklenir.",
+      "confirmButton": "Evet, ilerlemeyi sıfırla",
+      "nothingSelected": "En az bir tür seç."
+    },
+    "clear": {
+      "heading": "Yerel verileri temizle",
+      "lead": "Uygulamanın bu tarayıcıda sakladığı her şeyi siler: lablar, ilerleme, tercihler, dil ve palet favorileri.",
+      "button": "Yerel verileri temizle",
+      "confirm": "Uygulamanın tüm yerel verileri silinsin mi? Bu geri alınamaz. Saklamak istediğin labları önce dışa aktar. Ardından ana sayfa açılır.",
+      "confirmButton": "Evet, hepsini sil",
+      "failed": "Yerel veriler tamamen temizlenemedi. Yeniden dene ya da tarayıcı ayarlarından site verilerini temizle."
+    },
+    "cancel": "Vazgeç"
+  }
+}

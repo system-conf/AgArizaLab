@@ -1,9 +1,12 @@
 // Every automatic "try this" step of every sample fails on the fresh lab and passes after the documented
 // solution (applied in step order, like a learner working through the lesson).
 import { describe, expect, it } from 'vitest'
-import { StateInvariants } from '../../domain'
+import { StateInvariants, type NetworkState } from '../../domain'
+import { networkEngine } from '../../engine'
 import { StepChecker, type SampleDefinition } from '../contract'
+import { basicsIpConflict } from './basicsSamples'
 import { contentSamples } from './index'
+import { switchingNativeVlan } from './switchingSamples'
 import { MASK_24 } from './sampleKit'
 import {
   accessVlan,
@@ -152,5 +155,37 @@ describe('sample step solutions', () => {
     expect(new StateInvariants().violations(state)).toEqual([])
     // Once solved, every automatic step holds together (nothing the learner did undid an earlier step).
     expect(checker.check(state).filter((status) => status.kind === 'auto' && !status.ok)).toEqual([])
+  })
+})
+
+/** Status of one step of a sample on a state. */
+function stepOk(sample: SampleDefinition, stepId: string, state: NetworkState): boolean {
+  const step = sample.steps.find((candidate) => candidate.id === stepId)
+  if (!step) throw new Error(`No step ${sample.id}.${stepId}`)
+  const status = new StepChecker(sample).checkStep(state, step)
+  return status.kind === 'auto' && status.ok
+}
+
+describe('sample step checks pass only when the simulator agrees', () => {
+  it('basicsIpConflict.fixConflict: only PC3 leaving .10 counts; PC1 needs a restart (manual step)', () => {
+    const start = basicsIpConflict.lab().state
+    // Moving PC1 instead satisfies the rule engine, but in the simulator PC3 keeps its "(Duplicate)".
+    const movedPc1 = setStatic(start, 'pc1', '192.168.1.30')
+    expect(networkEngine.reach(movedPc1, 'pc3', '192.168.1.20')).toMatchObject({ ok: true })
+    expect(stepOk(basicsIpConflict, 'fixConflict', movedPc1)).toBe(false)
+    expect(stepOk(basicsIpConflict, 'fixConflict', setStatic(start, 'pc3', '192.168.1.40'))).toBe(true)
+    expect(basicsIpConflict.steps.find((step) => step.id === 'restartPc1')?.checks).toBeUndefined()
+  })
+
+  it('switchingNativeVlan.fixNative: matching trunks count, turning the uplink into access ports does not', () => {
+    const start = switchingNativeVlan.lab().state
+    const accessUplink = steps(
+      (state) => accessVlan(state, 'sw1', 'Fa0/8', 1),
+      (state) => accessVlan(state, 'sw2', 'Fa0/8', 1),
+    )(start)
+    expect(networkEngine.reach(accessUplink, 'pc1', '192.168.1.12')).toMatchObject({ ok: true })
+    expect(stepOk(switchingNativeVlan, 'fixNative', accessUplink)).toBe(false)
+    // "Both default" (break-it idea) is a valid fix too: the native VLAN only has to match.
+    expect(stepOk(switchingNativeVlan, 'fixNative', trunk(start, 'sw1', 'Fa0/8', { nativeVlan: 1 }))).toBe(true)
   })
 })

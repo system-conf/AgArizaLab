@@ -42,7 +42,7 @@ function PortsSection({ device, state, model, locks, access, saved, onSave }: Po
           onClose={() => setSelectedId(null)}
         />
       ) : (
-        <p className="text-sm text-slate-500">{t('ports.selectHint')}</p>
+        <p className="text-sm text-fg-subtle">{t('ports.selectHint')}</p>
       )}
     </SectionCard>
   )

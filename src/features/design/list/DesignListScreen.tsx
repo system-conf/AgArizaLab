@@ -26,20 +26,20 @@ function DesignListScreen({ items, onStart }: DesignListScreenProps) {
   const params = { solved: formatNumber(solved), total: formatNumber(items.length) }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-page">
       <SiteHeader />
       <main className="mx-auto flex max-w-5xl flex-col gap-6 px-4 py-6 sm:py-10">
         <section aria-labelledby="designListTitle" className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
-            <h1 id="designListTitle" className="text-2xl font-semibold text-slate-900">
+            <h1 id="designListTitle" className="text-2xl font-semibold text-fg-strong">
               {t('ui.list.title')}
             </h1>
-            <p className="max-w-3xl text-sm leading-relaxed text-slate-600 sm:text-base">{t('ui.list.lead')}</p>
+            <p className="max-w-3xl text-sm leading-relaxed text-fg-muted sm:text-base">{t('ui.list.lead')}</p>
           </div>
-          <div className="flex flex-col gap-1.5 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+          <div className="flex flex-col gap-1.5 rounded-2xl border border-border bg-surface p-4 shadow-sm">
             <div className="flex items-center justify-between gap-2 text-sm">
-              <span className="font-medium text-slate-700">{t('ui.list.progressLabel')}</span>
-              <span className="text-slate-600">{t('ui.list.progress', params)}</span>
+              <span className="font-medium text-fg">{t('ui.list.progressLabel')}</span>
+              <span className="text-fg-muted">{t('ui.list.progress', params)}</span>
             </div>
             <div
               role="progressbar"
@@ -48,12 +48,12 @@ function DesignListScreen({ items, onStart }: DesignListScreenProps) {
               aria-valuemax={items.length}
               aria-valuenow={solved}
               aria-valuetext={t('ui.list.progress', params)}
-              className="h-2.5 w-full overflow-hidden rounded-full bg-slate-200"
+              className="h-2.5 w-full overflow-hidden rounded-full bg-surface-strong"
             >
               <div className="h-full rounded-full bg-indigo-600 transition-[width] duration-500" style={{ width: `${percent}%` }} />
             </div>
           </div>
-          <p className="text-sm text-slate-500">{t('ui.list.hint')}</p>
+          <p className="text-sm text-fg-subtle">{t('ui.list.hint')}</p>
           <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {sorted.map((item) => (
               <li key={item.id}>
@@ -61,10 +61,10 @@ function DesignListScreen({ items, onStart }: DesignListScreenProps) {
               </li>
             ))}
           </ul>
-          <p className="text-sm text-slate-600">
+          <p className="text-sm text-fg-muted">
             <AppLink
               to={routes.exercises}
-              className={`inline-flex items-center gap-1.5 rounded font-medium text-sky-700 underline-offset-2 hover:underline ${focusRing}`}
+              className={`inline-flex items-center gap-1.5 rounded font-medium text-accent-text underline-offset-2 hover:underline ${focusRing}`}
             >
               <ListChecks className="h-4 w-4" aria-hidden="true" />
               {t('ui.list.toExercises')}

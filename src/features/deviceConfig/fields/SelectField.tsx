@@ -24,7 +24,7 @@ function SelectField({ label, value, options, onChange, error, hint }: SelectFie
 
   return (
     <div className="flex min-w-0 flex-col gap-1">
-      <label htmlFor={id} className="text-sm font-medium text-slate-700">
+      <label htmlFor={id} className="text-sm font-medium text-fg">
         {label}
       </label>
       <select
@@ -33,8 +33,8 @@ function SelectField({ label, value, options, onChange, error, hint }: SelectFie
         onChange={(event) => onChange(event.target.value)}
         aria-invalid={error ? true : undefined}
         aria-describedby={describedBy === '' ? undefined : describedBy}
-        className={`w-full min-w-0 rounded-md border bg-white px-2 py-1.5 text-sm disabled:bg-slate-100 disabled:text-slate-500 ${
-          error ? 'border-rose-400' : 'border-slate-300'
+        className={`w-full min-w-0 rounded-md border bg-surface px-2 py-1.5 text-sm disabled:bg-surface-muted disabled:text-fg-subtle ${
+          error ? 'border-rose-400' : 'border-border-strong'
         } ${focusRing}`}
       >
         {options.map((option) => (
@@ -44,12 +44,12 @@ function SelectField({ label, value, options, onChange, error, hint }: SelectFie
         ))}
       </select>
       {hint && (
-        <p id={hintId} className="text-xs text-slate-500">
+        <p id={hintId} className="text-xs text-fg-subtle">
           {hint}
         </p>
       )}
       {error && (
-        <p id={errorId} className="text-xs text-rose-700">
+        <p id={errorId} className="text-xs text-rose-700 dark:text-rose-300">
           {error}
         </p>
       )}

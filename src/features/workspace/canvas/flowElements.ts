@@ -52,8 +52,6 @@ export interface FlowLabels {
 export interface NodeInput {
   doc: LabDocument
   selection: WorkspaceSelection
-  /** Positions of nodes being dragged right now (by node id). */
-  dragPositions: Readonly<Record<string, CanvasPoint>>
   measured: MeasuredSizes
   labels: FlowLabels
   cableHighlight: (deviceId: string) => CableHighlight
@@ -62,7 +60,7 @@ export interface NodeInput {
 }
 
 export function buildNodes(input: NodeInput): WorkspaceNode[] {
-  const { doc, selection, dragPositions, measured, labels } = input
+  const { doc, selection, measured, labels } = input
   const annotationNodes: AnnotationNode[] = []
   for (const annotation of doc.annotations) {
     const at = annotationPosition(annotation)
@@ -72,7 +70,7 @@ export function buildNodes(input: NodeInput): WorkspaceNode[] {
     annotationNodes.push({
       id,
       type: 'annotation',
-      position: dragPositions[id] ?? at,
+      position: at,
       data: { annotation },
       selected: selection.annotationIds.includes(annotation.id),
       measured: measured[id],
@@ -84,7 +82,7 @@ export function buildNodes(input: NodeInput): WorkspaceNode[] {
   const deviceNodes: WorkspaceDeviceNode[] = doc.state.devices.map((device) => ({
     id: device.id,
     type: 'device',
-    position: dragPositions[device.id] ?? doc.layout.devices[device.id] ?? { x: 0, y: 0 },
+    position: doc.layout.devices[device.id] ?? { x: 0, y: 0 },
     data: { device, modelName: labels.modelName(device), cableHighlight: input.cableHighlight(device.id) },
     selected: selection.deviceIds.includes(device.id),
     draggable: input.devicesDraggable,
@@ -140,6 +138,21 @@ export function documentPosition(doc: LabDocument, nodeId: string): CanvasPoint 
   return annotation ? annotationPosition(annotation) : null
 }
 
+/** Positions of nodes being dragged right now (by node id). */
+export type DragPositions = Readonly<Record<string, CanvasPoint>>
+
+/**
+ * `nodes` with the nodes being dragged at their drag positions. Only those nodes get new objects, so
+ * a drag frame costs one pass over the list and re-renders only the dragged nodes.
+ */
+export function withDragPositions(nodes: WorkspaceNode[], dragPositions: DragPositions): WorkspaceNode[] {
+  if (Object.keys(dragPositions).length === 0) return nodes
+  return nodes.map((node) => {
+    const position = dragPositions[node.id]
+    return position === undefined || shallowEqual(position, node.position) ? node : { ...node, position }
+  })
+}
+
 /** Same own keys with identical values (one level deep). */
 function shallowEqual(first: object, second: object): boolean {
   const firstEntries = Object.entries(first)
@@ -148,23 +161,57 @@ function shallowEqual(first: object, second: object): boolean {
   return firstEntries.every(([key, value]) => Object.hasOwn(secondRecord, key) && Object.is(value, secondRecord[key]))
 }
 
+/** Equal values, or two arrays whose items are shallowly equal (edge data's `switchEnds`). */
+function sameValue(first: unknown, second: unknown): boolean {
+  if (Object.is(first, second)) return true
+  if (!Array.isArray(first) || !Array.isArray(second) || first.length !== second.length) return false
+  return first.every((item: unknown, index) => {
+    const other: unknown = second[index]
+    if (Object.is(item, other)) return true
+    return typeof item === 'object' && item !== null && typeof other === 'object' && other !== null && shallowEqual(item, other)
+  })
+}
+
+/** Same own keys; values equal by `sameValue`. */
+function sameRecord(first: object, second: object): boolean {
+  const firstEntries = Object.entries(first)
+  if (firstEntries.length !== Object.keys(second).length) return false
+  const secondRecord: Record<string, unknown> = { ...second }
+  return firstEntries.every(([key, value]) => Object.hasOwn(secondRecord, key) && sameValue(value, secondRecord[key]))
+}
+
+/** Optional plain objects (position, measured size) equal by value. */
+function samePlain(first: object | undefined, second: object | undefined): boolean {
+  if (first === undefined || second === undefined) return first === second
+  return shallowEqual(first, second)
+}
+
+/** The fields of nodes and edges the reuse compares. */
+interface FlowElement {
+  id: string
+  data?: object
+  position?: object
+  measured?: object
+}
+
 /** Equal for React Flow: the same fields, with position, size and data compared by value. */
-function sameNode(previous: WorkspaceNode, next: WorkspaceNode): boolean {
+function sameElement(previous: FlowElement, next: FlowElement): boolean {
   const { position, measured, data, ...rest } = next
   const { position: previousPosition, measured: previousMeasured, data: previousData, ...previousRest } = previous
-  if (!shallowEqual(rest, previousRest) || !shallowEqual(position, previousPosition) || !shallowEqual(data, previousData)) return false
-  if (measured === undefined || previousMeasured === undefined) return measured === previousMeasured
-  return shallowEqual(measured, previousMeasured)
+  if (!shallowEqual(rest, previousRest) || !samePlain(position, previousPosition) || !samePlain(measured, previousMeasured)) return false
+  if (data === undefined || previousData === undefined) return data === previousData
+  return sameRecord(data, previousData)
 }
 
 /**
- * `next` with every node that did not change replaced by its previous object, so React Flow and the
- * memoised node components re-render only what changed (during a drag: the moved nodes).
+ * `next` with every node or edge that did not change replaced by its previous object, so React Flow
+ * and the memoised node and edge components re-render only what changed (a selection change: the
+ * nodes and cables whose selection changed; a drag frame: the moved nodes).
  */
-export function reuseUnchanged(previousNodes: readonly WorkspaceNode[], next: readonly WorkspaceNode[]): WorkspaceNode[] {
-  const previous = new Map(previousNodes.map((node) => [node.id, node]))
-  return next.map((node) => {
-    const before = previous.get(node.id)
-    return before && sameNode(before, node) ? before : node
+export function reuseUnchanged<Element extends FlowElement>(previousElements: readonly Element[], next: readonly Element[]): Element[] {
+  const previous = new Map(previousElements.map((element) => [element.id, element]))
+  return next.map((element) => {
+    const before = previous.get(element.id)
+    return before && sameElement(before, element) ? before : element
   })
 }

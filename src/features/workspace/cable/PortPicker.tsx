@@ -20,7 +20,7 @@ interface PortPickerProps {
 const STATUS_DOT: Readonly<Record<PortOption['status'], string>> = {
   free: 'bg-emerald-500',
   inUse: 'bg-amber-500',
-  incompatible: 'bg-slate-300',
+  incompatible: 'bg-slate-300 dark:bg-slate-600',
 }
 
 /** Port list of a device for the cable tool: free ports are buttons, the others say why not. */
@@ -55,21 +55,21 @@ function PortPicker({ device, end, options, nameOf, onPick, onClose }: PortPicke
       <div onKeyDown={handleKeyDown}>
         <div className="mb-2 flex items-start justify-between gap-2">
           <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+            <p className="text-xs font-medium uppercase tracking-wide text-fg-subtle">
               {end === 'first' ? t('portPicker.firstEnd') : t('portPicker.secondEnd')}
             </p>
-            <h2 className="font-semibold text-slate-900">{title}</h2>
+            <h2 className="font-semibold text-fg-strong">{title}</h2>
           </div>
           <button
             type="button"
             onClick={onClose}
             aria-label={t('portPicker.close')}
-            className={`rounded p-1 text-slate-500 hover:bg-slate-100 ${focusRing}`}
+            className={`rounded p-1 text-fg-subtle hover:bg-surface-muted ${focusRing}`}
           >
             <X className="h-4 w-4" aria-hidden="true" />
           </button>
         </div>
-        {options.length === 0 && <p className="text-slate-500">{t('portPicker.noPorts')}</p>}
+        {options.length === 0 && <p className="text-fg-subtle">{t('portPicker.noPorts')}</p>}
         <ul className="space-y-1">
           {options.map((option, index) => {
             const usable = option.status === 'free'
@@ -81,14 +81,14 @@ function PortPicker({ device, end, options, nameOf, onPick, onClose }: PortPicke
                   disabled={!usable}
                   onClick={() => onPick(option.port.id)}
                   className={`flex w-full items-start gap-2 rounded-md px-2 py-1.5 text-start ${
-                    usable ? 'hover:bg-sky-50' : 'cursor-not-allowed text-slate-400'
+                    usable ? 'hover:bg-accent-muted' : 'cursor-not-allowed text-fg-subtle'
                   } ${focusRing}`}
                 >
                   <span className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${STATUS_DOT[option.status]}`} aria-hidden="true" />
                   <span className="min-w-0 flex-1">
                     <span className="flex items-baseline justify-between gap-2">
-                      <span className={`font-mono text-sm ${usable ? 'text-slate-900' : ''}`}>{option.port.id}</span>
-                      <span className="text-xs text-slate-500">{t(`media.${option.port.medium}`)}</span>
+                      <span className={`font-mono text-sm ${usable ? 'text-fg-strong' : ''}`}>{option.port.id}</span>
+                      <span className="text-xs text-fg-subtle">{t(`media.${option.port.medium}`)}</span>
                     </span>
                     <span className="block text-xs">{statusText(option, option.reason, option.linkedTo)}</span>
                   </span>

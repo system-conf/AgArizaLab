@@ -45,7 +45,11 @@ level and required feature; "Open" loads it as a free lab (unlocked) with the le
 ## Contract (SL0, fixed API — SL1 and SL2 build on these names)
 
 Code: `src/samples/contract/**` (pure TS, no React), re-exported from `src/samples` (import from
-there). Definitions list: `sampleDefinitions` in `src/samples/sampleDefinitions.ts` (SL2 fills it).
+there). Definitions: one file per category, `src/samples/content/<category>Samples.ts` (e.g.
+`basicsSamples.ts` exports `basicsSamples`), collected in catalogue order by `contentSamples` in
+`src/samples/content/index.ts`; `sampleDefinitions` in `src/samples/sampleDefinitions.ts` is the full
+list the app uses (packs append their own lists there). Shared lab building blocks and the step-check
+shorthands: `src/samples/content/sampleKit.ts`.
 
 ### `SampleDefinition` (`SampleTypes.ts`)
 | Field | Meaning |
@@ -72,11 +76,22 @@ content once opened, never translated (unlike exercise placeholders).
   on the state **as it is** (no DHCP settling, unlike design review). A group id that is not in
   `groups` names a single device (its device id).
 - `{ type: 'hasAddress', deviceId, prefix? }` — the device has an IPv4 address (inside the CIDR).
+- `{ type: 'nativeVlanMatch', linkId, vlan? }` — both ends of cable `linkId` are trunk switchports
+  with the same native VLAN (equal to `vlan` when given). Reads the port settings, so a "fix" that
+  turns the uplink into access ports (pings work, tagged VLANs break) does not pass. Fails when the
+  cable, a device or a port is gone (a re-drawn cable gets a new id). Shorthand
+  `nativeVlanMatch(linkId, vlan?)` in `sampleKit.ts`.
 - `{ type: 'not', check }` — negation ("PC1 can no longer reach PC2").
 - No `checks` (or `[]`) = **manual** step: the learner ticks it. Use it for everything only visible in
   Simulation mode (ARP request, MAC learning, TTL), and for DHCP relay (the rule engine does not
   relay; only the simulator does).
 - A step passes when all its checks hold. A check about a deleted device fails, never throws.
+- **Honest checks.** Checks see the lab state, not the running simulator. When the simulator only
+  catches up after an action the state cannot show (a PC that lost its address to a conflict keeps
+  "(Duplicate)" until it is restarted; power off + on leaves the same state), check only what holds
+  at once and put the rest in a manual step whose text says to tick it (example: `basicsIpConflict`
+  `fixConflict` + `restartPc1`). Guard against fixes the rule engine accepts but the lesson does not
+  mean (moving the wrong device, giving up the trunk): add a check on the setting itself.
 
 `new StepChecker(sample)` → `check(state): StepStatus[]` (step order), `checkStep(state, step)`,
 `holds(state, check)`. `StepStatus` = `{ stepId, kind: 'manual' }` \| `{ stepId, kind: 'auto', ok,
@@ -116,8 +131,9 @@ Reading: `new SampleTextReader(t).texts(sample)` → `SampleTexts` (missing text
   (`agArizaLab.samples.progress`). `SampleProgress` = `{ sampleId, doneStepIds, updatedAt,
   completedAt? }`; the learning path (BACKLOG 9) will read the same book.
 - `SampleValidator` (tests only): `validate(sample)` / `validateAll(samples)` → `SampleIssue[]`
-  (ids, step count, break-it, invariants, positions, fresh factory, device references, CIDR, related
-  links against `{ exerciseIds, briefIds, sampleIds }`).
+  (ids, step count, break-it, invariants, positions, fresh factory, device references, CIDR,
+  `nativeVlanMatch` cables (`unknownLink`, `notSwitchLink`), related links against
+  `{ exerciseIds, briefIds, sampleIds }`).
 
 ### Routes (SL1 implements; SL0 does not edit routing)
 - `AppRoute` additions: `{ name: 'samples' }` ↔ `/samples`, `{ name: 'sample'; sampleId: string }` ↔
@@ -130,8 +146,14 @@ Reading: `new SampleTextReader(t).texts(sample)` → `SampleTexts` (missing text
 - Landing: a "Samples" entry next to Exercises.
 
 ### SL2 content checklist (per sample)
-- Definition file under `src/samples/<category>/`, listed in `sampleDefinitions`; texts tr + en.
-- Test: `new SampleValidator({ exerciseIds, briefIds }).validateAll(sampleDefinitions)` is `[]`;
-  every `SampleTextKeys.stringKeys` key exists in tr and en; each automatic step is not ok on the
-  fresh lab and ok after applying the guided change (unless the step only observes — then make it a
-  manual step or say so in the test).
+- Definition in `src/samples/content/<category>Samples.ts`, added to that file's list (e.g.
+  `basicsSamples`); a new category file is added to `contentSamples` in `src/samples/content/index.ts`
+  (which feeds `sampleDefinitions`). Texts tr + en in `src/locales/<lang>/samples.json`.
+- Tests (`src/samples/content/*.test.ts`): `sampleContent.test.ts` — the validator
+  (`new SampleValidator({ exerciseIds, briefIds }).validateAll(sampleDefinitions)` is `[]`) and every
+  `SampleTextKeys.stringKeys` key in tr and en; `sampleSolutions.test.ts` — a solution for each
+  automatic step (edits in `testSolutions.ts`): not ok on the fresh lab, ok after the guided change
+  (a step that only observes is a manual step); `sampleBehaviour.test.ts` — what the texts promise in
+  the terminal (simulator) and in the break-it ideas.
+- Checks are honest (see Step checks): an automatic step never passes before the simulator shows the
+  result the text promises.

@@ -19,18 +19,18 @@ function BriefPanel({ brief, checklist, checking, budget }: BriefPanelProps) {
   return (
     <div className="flex flex-col gap-4">
       <section aria-labelledby="designCustomerTitle" className="flex flex-col gap-2">
-        <h2 id="designCustomerTitle" className="text-sm font-semibold text-slate-900">
+        <h2 id="designCustomerTitle" className="text-sm font-semibold text-fg-strong">
           {t('ui.brief.customer')}
         </h2>
         <ComplaintCard from={brief.texts.customer.from} message={brief.texts.customer.message} />
       </section>
       {budget && (
-        <section aria-label={t('ui.budget.label')} className="rounded-lg bg-white p-2.5 ring-1 ring-slate-200">
+        <section aria-label={t('ui.budget.label')} className="rounded-lg bg-surface p-2.5 ring-1 ring-border">
           <BudgetMeterBar meter={budget} />
         </section>
       )}
       <RequirementChecklistView checklist={checklist} checking={checking} />
-      <p className="text-xs leading-relaxed text-slate-500">{t('ui.brief.howTo')}</p>
+      <p className="text-xs leading-relaxed text-fg-subtle">{t('ui.brief.howTo')}</p>
     </div>
   )
 }

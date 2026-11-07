@@ -1,5 +1,7 @@
 import { Handle, Position, type NodeProps } from '@xyflow/react'
 import { memo, type CSSProperties } from 'react'
+import { usePreference } from '../../../preferences'
+import { deviceLabelLines } from '../../preferences/model/preferenceWiring'
 import { DeviceKindIcon } from '../labServices'
 import type { CableHighlight, WorkspaceDeviceNode as DeviceNodeType } from './canvasTypes'
 
@@ -19,9 +21,9 @@ const hiddenHandle: CSSProperties = {
 
 const HIGHLIGHT_CLASSES: Readonly<Record<CableHighlight, string>> = {
   none: '',
-  usable: 'ring-4 ring-emerald-200 border-emerald-500',
+  usable: 'ring-4 ring-emerald-200 dark:ring-emerald-800 border-emerald-500',
   unusable: 'opacity-40',
-  firstEnd: 'ring-4 ring-amber-200 border-amber-500',
+  firstEnd: 'ring-4 ring-amber-200 dark:ring-amber-800 border-amber-500',
 }
 
 /**
@@ -30,29 +32,40 @@ const HIGHLIGHT_CLASSES: Readonly<Record<CableHighlight, string>> = {
  */
 function WorkspaceDeviceNode({ data, selected }: NodeProps<DeviceNodeType>) {
   const { device, modelName, cableHighlight } = data
+  // PU (Preferences → Map): name, model, both or no label under the icon (the node's aria-label keeps the name).
+  const [labelMode] = usePreference('map.deviceLabels')
+  const labelLines = deviceLabelLines(labelMode, device.name, modelName)
+  /** A powered-off device drops its category colour and takes the greyed text colour. */
+  const iconTone = device.powered ? ('category' as const) : ('inherit' as const)
   const ring = cableHighlight !== 'none' ? HIGHLIGHT_CLASSES[cableHighlight] : ''
-  const border = selected ? 'border-sky-600 ring-4 ring-sky-200' : 'border-slate-300 hover:border-sky-400'
+  const border = selected ? 'border-sky-600 dark:border-sky-400 ring-4 ring-sky-200 dark:ring-sky-800' : 'border-node-border hover:border-sky-400'
 
   return (
     <div className="relative h-12 w-12" title={modelName}>
       <Handle type="target" position={Position.Top} style={hiddenHandle} isConnectable={false} />
       <Handle type="source" position={Position.Top} style={hiddenHandle} isConnectable={false} />
       <span
-        className={`flex h-12 w-12 items-center justify-center rounded-xl border-2 bg-white shadow-sm transition group-focus-visible:ring-4 group-focus-visible:ring-sky-400 ${border} ${ring} ${
-          device.powered ? 'text-slate-700' : 'text-slate-300'
+        className={`flex h-12 w-12 items-center justify-center rounded-xl border-2 bg-node shadow-sm transition group-data-[moving]/canvas:shadow-none group-focus-visible:ring-4 group-focus-visible:ring-sky-400 ${border} ${ring} ${
+          device.powered ? 'text-fg' : 'text-slate-300 dark:text-slate-600'
         }`}
       >
-        <DeviceKindIcon kind={device.kind} className="h-7 w-7" aria-hidden="true" />
+        <DeviceKindIcon kind={device.kind} modelId={device.modelId} tone={iconTone} className="h-7 w-7" aria-hidden="true" />
       </span>
       <span
-        className={`absolute end-0.5 top-0.5 h-2.5 w-2.5 rounded-full border-2 border-white ${
+        className={`absolute end-0.5 top-0.5 h-2.5 w-2.5 rounded-full border-2 border-node ${
           device.powered ? 'bg-emerald-500' : 'bg-slate-400'
         }`}
         aria-hidden="true"
       />
-      <span className="pointer-events-none absolute start-1/2 top-full mt-1 w-32 -translate-x-1/2 text-center leading-tight rtl:translate-x-1/2">
-        <span className="rounded bg-white/90 px-1 text-xs font-medium text-slate-700">{device.name}</span>
-      </span>
+      {labelLines.length > 0 && (
+        <span className="pointer-events-none absolute start-1/2 top-full mt-1 flex w-32 -translate-x-1/2 flex-col items-center text-center leading-tight rtl:translate-x-1/2">
+          {labelLines.map((line, index) => (
+            <span key={index} className={`rounded bg-canvas/90 px-1 text-xs ${index === 0 ? 'font-medium text-fg' : 'text-fg-muted'}`}>
+              {line}
+            </span>
+          ))}
+        </span>
+      )}
     </div>
   )
 }

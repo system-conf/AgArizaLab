@@ -84,7 +84,7 @@ function DeviceTabs(props: DeviceTabsProps) {
       <div className="flex flex-col gap-3">
         {appLinks.length > 0 && (
           <section aria-labelledby={`${baseId}-applinks`} className="flex flex-col gap-1.5">
-            <h4 id={`${baseId}-applinks`} className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+            <h4 id={`${baseId}-applinks`} className="text-xs font-semibold uppercase tracking-wide text-fg-subtle">
               {t('device:sections.appLinks')}
             </h4>
             <AppLinkStatusList statuses={appLinks} />
@@ -97,7 +97,7 @@ function DeviceTabs(props: DeviceTabsProps) {
 
   return (
     <div className="flex flex-col gap-3">
-      <div role="tablist" aria-label={t('properties.tabsLabel')} onKeyDown={handleKeyDown} className="flex gap-1 rounded-lg bg-slate-100 p-1">
+      <div role="tablist" aria-label={t('properties.tabsLabel')} onKeyDown={handleKeyDown} className="flex gap-1 rounded-lg bg-surface-muted p-1">
         {tabs.map((value) => (
           <button
             key={value}
@@ -113,7 +113,7 @@ function DeviceTabs(props: DeviceTabsProps) {
             tabIndex={value === active ? 0 : -1}
             onClick={() => onTab(value)}
             className={`flex-1 rounded-md px-2 py-1.5 text-sm font-medium ${
-              value === active ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+              value === active ? 'bg-surface text-fg-strong shadow-sm' : 'text-fg-muted hover:text-fg-strong'
             } ${focusRing}`}
           >
             {/* CI (CLI integration): the CLI tabs are named in the cli namespace. */}

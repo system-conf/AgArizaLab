@@ -179,7 +179,7 @@ export const dhcpRelay: SampleDefinition = {
     { id: 'readServerPool', focusDeviceId: 'dhcp1' },
     { id: 'pc2Ping', focusDeviceId: 'pc2', checks: [hasAddress('pc2', '192.168.10.0/24'), reaches('pc2', 'dhcp1')] },
   ],
-  breakIt: ['removePool', 'serverNoGateway'],
+  breakIt: ['removeHelper', 'removePool', 'serverNoGateway'],
   related: [
     { kind: 'sample', sampleId: 'dhcpRouterServer' },
     { kind: 'design', briefId: 'schoolLab' },

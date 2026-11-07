@@ -1,0 +1,44 @@
+import { useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
+import { useLanguage } from '../../../i18n'
+import { DENSITIES, FONT_SCALES, THEMES, usePreference } from '../../../preferences'
+import ChoiceGroup, { type Choice } from '../controls/ChoiceGroup'
+import { FIELD_LIST } from '../controls/fieldList'
+import SwitchField from '../controls/SwitchField'
+
+/** Appearance: theme, text size, density, high contrast (ThemeApplier writes them on <html>). */
+function AppearanceSection() {
+  const { t } = useTranslation('preferences')
+  const { language } = useLanguage()
+  const [theme, setTheme] = usePreference('appearance.theme')
+  const [fontScale, setFontScale] = usePreference('appearance.fontScale')
+  const [density, setDensity] = usePreference('appearance.density')
+  const [highContrast, setHighContrast] = usePreference('appearance.highContrast')
+
+  const scaleChoices = useMemo(() => {
+    const percent = new Intl.NumberFormat(language, { style: 'percent', maximumFractionDigits: 1 })
+    return FONT_SCALES.map((scale): Choice<typeof scale> => ({ value: scale, label: percent.format(scale) }))
+  }, [language])
+
+  return (
+    <div className={FIELD_LIST}>
+      <ChoiceGroup
+        label={t('appearance.theme.label')}
+        choices={THEMES.map((value) => ({ value, label: t(`appearance.theme.${value}`) }))}
+        value={theme}
+        onChange={setTheme}
+      />
+      <ChoiceGroup label={t('appearance.fontScale.label')} hint={t('appearance.fontScale.hint')} choices={scaleChoices} value={fontScale} onChange={setFontScale} />
+      <ChoiceGroup
+        label={t('appearance.density.label')}
+        hint={t('appearance.density.hint')}
+        choices={DENSITIES.map((value) => ({ value, label: t(`appearance.density.${value}`) }))}
+        value={density}
+        onChange={setDensity}
+      />
+      <SwitchField label={t('appearance.highContrast.label')} hint={t('appearance.highContrast.hint')} checked={highContrast} onChange={setHighContrast} />
+    </div>
+  )
+}
+
+export default AppearanceSection

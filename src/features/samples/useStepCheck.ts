@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { NetworkState } from '../../domain'
 import { StepChecker, type SampleDefinition, type StepStatus } from '../../samples'
-import { LiveCheckScheduler } from '../design/model/LiveCheckScheduler'
+import { LiveCheckScheduler } from '../shared/LiveCheckScheduler'
 
 export interface LiveStepCheck {
   /** Status of every step on the latest checked lab; null before the first check. */
@@ -20,7 +20,7 @@ type Scheduler = LiveCheckScheduler<NetworkState, StepStatus[]>
 
 /**
  * Live "try this" step checks of the open sample: StepChecker runs once the lab has been quiet for
- * the debounce time (the design mode's LiveCheckScheduler), never on every keystroke or drag frame.
+ * the debounce time (the shared LiveCheckScheduler), never on every keystroke or drag frame.
  */
 export function useStepCheck(sample: SampleDefinition, state: NetworkState): LiveStepCheck {
   const checker = useMemo(() => new StepChecker(sample), [sample])

@@ -24,25 +24,25 @@ function DesignFooter({ checklist, budget, briefOpen, briefControls, onToggleBri
   const summary = t('ui.checklist.summary', { met: formatNumber(checklist.met), total: formatNumber(checklist.total) })
 
   return (
-    <footer className="flex items-center gap-2 border-t border-slate-200 bg-white px-2 py-2 sm:gap-3 sm:px-4">
+    <footer className="flex items-center gap-2 border-t border-border bg-surface px-2 py-2 sm:gap-3 sm:px-4">
       <button
         type="button"
         onClick={onToggleBrief}
         aria-expanded={briefOpen}
         aria-controls={briefControls}
         className={`flex shrink-0 items-center gap-1.5 rounded-lg border px-2.5 py-2 text-sm font-medium ${
-          briefOpen ? 'border-sky-300 bg-sky-50 text-sky-900' : 'border-slate-300 bg-white text-slate-700 hover:bg-slate-50'
+          briefOpen ? 'border-sky-300 dark:border-sky-700 bg-accent-muted text-sky-900 dark:text-sky-200' : 'border-border-strong bg-surface text-fg hover:bg-surface-subtle'
         } ${focusRing}`}
       >
         <ClipboardList className="h-4 w-4" aria-hidden="true" />
         <span className="hidden sm:inline">{t('ui.brief.title')}</span>
-        <span className={checklist.allMet ? 'text-emerald-700' : 'text-slate-500'}>{summary}</span>
+        <span className={checklist.allMet ? 'text-emerald-700 dark:text-emerald-300' : 'text-fg-subtle'}>{summary}</span>
       </button>
       <div className="min-w-0 flex-1">{budget && <BudgetMeterBar meter={budget} compact />}</div>
       <button
         type="button"
         onClick={onSubmit}
-        className={`flex shrink-0 items-center gap-1.5 rounded-lg bg-sky-700 px-3 py-2 text-sm font-semibold text-white hover:bg-sky-800 ${focusRing}`}
+        className={`flex shrink-0 items-center gap-1.5 rounded-lg bg-accent px-3 py-2 text-sm font-semibold text-white hover:bg-accent-hover ${focusRing}`}
       >
         <Send className="h-4 w-4 rtl:-scale-x-100" aria-hidden="true" />
         <span className="sm:hidden">{t('ui.submit.short')}</span>

@@ -22,7 +22,7 @@ function AppLinkStatusList({ statuses }: AppLinkStatusListProps) {
         <li
           key={status.appLinkId}
           className={`flex items-start gap-2 rounded-md px-2 py-1.5 ${
-            status.ok ? 'bg-emerald-50 text-emerald-900' : 'bg-rose-50 text-rose-900'
+            status.ok ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-200' : 'bg-rose-50 dark:bg-rose-950/40 text-rose-900 dark:text-rose-200'
           }`}
         >
           {status.ok ? (

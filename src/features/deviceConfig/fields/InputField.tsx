@@ -24,7 +24,7 @@ function InputField({ label, value, onChange, error, hint, type = 'text', maxLen
 
   return (
     <div className="flex min-w-0 flex-col gap-1">
-      <label htmlFor={id} className="text-sm font-medium text-slate-700">
+      <label htmlFor={id} className="text-sm font-medium text-fg">
         {label}
       </label>
       <input
@@ -40,17 +40,17 @@ function InputField({ label, value, onChange, error, hint, type = 'text', maxLen
         onChange={(event) => onChange(event.target.value)}
         aria-invalid={error ? true : undefined}
         aria-describedby={describedBy === '' ? undefined : describedBy}
-        className={`w-full min-w-0 rounded-md border px-2 py-1.5 text-sm disabled:bg-slate-100 disabled:text-slate-500 ${
+        className={`w-full min-w-0 rounded-md border px-2 py-1.5 text-sm disabled:bg-surface-muted disabled:text-fg-subtle ${
           technical ? 'font-mono' : ''
-        } ${error ? 'border-rose-400' : 'border-slate-300'} ${focusRing}`}
+        } ${error ? 'border-rose-400' : 'border-border-strong'} ${focusRing}`}
       />
       {hint && (
-        <p id={hintId} className="text-xs text-slate-500">
+        <p id={hintId} className="text-xs text-fg-subtle">
           {hint}
         </p>
       )}
       {error && (
-        <p id={errorId} className="text-xs text-rose-700">
+        <p id={errorId} className="text-xs text-rose-700 dark:text-rose-300">
           {error}
         </p>
       )}

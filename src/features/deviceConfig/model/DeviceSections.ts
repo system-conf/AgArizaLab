@@ -1,6 +1,8 @@
 // Which configuration cards a device gets: from its settings groups and port roles (the device is
-// authoritative), plus model capabilities for services a device may switch on later.
+// authoritative), plus model capabilities for services a device may switch on later and for the
+// VLAN lock of unmanaged switches (SwitchManagement).
 import type { Device, DeviceModel, DeviceSection } from '../../../domain'
+import { SwitchManagement } from './SwitchManagement'
 
 export type ConfigSectionId =
   | 'general'
@@ -34,13 +36,14 @@ export class DeviceSections {
   /** Cards in display order. */
   static of(device: Device, model: DeviceModel | undefined): ConfigSectionId[] {
     const capabilities = new Set(model?.capabilities ?? [])
+    const vlans = device.switching !== undefined && SwitchManagement.vlansConfigurable(model)
     const shown: Record<ConfigSectionId, boolean> = {
       general: true,
       ports: device.ports.some((port) => DeviceSections.isConfigurablePort(port.role)),
       host: device.host !== undefined,
       appLinks: device.host !== undefined && (capabilities.has('appLinks') || device.host.appLinks.length > 0),
-      vlans: device.switching !== undefined,
-      svis: device.switching !== undefined,
+      vlans,
+      svis: vlans,
       routing: device.routing !== undefined,
       dhcp: device.services?.dhcp !== undefined || capabilities.has('dhcpServer'),
       dns: device.services?.dns !== undefined || capabilities.has('dnsServer'),

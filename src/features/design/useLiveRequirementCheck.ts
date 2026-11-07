@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { NetworkState } from '../../domain'
 import type { RequirementChecker, RequirementResult } from '../../design'
-import { LiveCheckScheduler } from './model/LiveCheckScheduler'
+import { LiveCheckScheduler } from '../shared/LiveCheckScheduler'
 
 export interface LiveCheck {
   /** Results of the latest check (every requirement, hidden ones included); null before the first. */

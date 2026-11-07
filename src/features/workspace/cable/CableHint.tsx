@@ -25,11 +25,11 @@ function CableHint({ state, nameOf }: CableHintProps) {
     <Panel position="top-center" className="pointer-events-none max-w-[calc(100%-1rem)]">
       <p
         role="status"
-        className="flex items-center gap-2 rounded-full border border-sky-200 bg-white/95 px-3 py-1.5 text-xs text-slate-700 shadow-sm sm:text-sm"
+        className="flex items-center gap-2 rounded-full border border-sky-200 dark:border-sky-800 bg-surface/95 px-3 py-1.5 text-xs text-fg shadow-sm sm:text-sm"
       >
         <CableGlyph tool={tool} className="h-4 w-4 shrink-0" />
         <span>{text}</span>
-        <span className="hidden whitespace-nowrap border-s border-slate-200 ps-2 text-slate-400 sm:inline">{t('cableHints.escape')}</span>
+        <span className="hidden whitespace-nowrap border-s border-border ps-2 text-fg-subtle sm:inline">{t('cableHints.escape')}</span>
       </p>
     </Panel>
   )

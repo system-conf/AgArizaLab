@@ -28,7 +28,7 @@ export interface DesignReviewScreenProps {
   onBackToList: () => void
 }
 
-const secondaryButton = `flex items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-60 ${focusRing}`
+const secondaryButton = `flex items-center justify-center gap-2 rounded-lg border border-border-strong bg-surface px-4 py-2.5 text-sm font-medium text-fg hover:bg-surface-subtle disabled:opacity-60 ${focusRing}`
 
 /**
  * `/design/<id>/review`: the design review report (DesignReview) of the submitted design: score,
@@ -73,7 +73,7 @@ function DesignReviewScreen({ brief, submission, onOpenInLab, onHandover, onBack
   ]
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-page">
       <SiteHeader />
       <main className="mx-auto flex max-w-3xl flex-col gap-5 px-4 py-6 sm:py-10">
         <section
@@ -121,11 +121,11 @@ function DesignReviewScreen({ brief, submission, onOpenInLab, onHandover, onBack
         <ReviewSpofList rows={view.singlePointsOfFailure} />
         <ReviewReference hints={view.hints} hintsRevealed={view.hintsRevealed} reference={brief.texts.reference} />
 
-        <section aria-labelledby="designReviewActions" className="flex flex-col gap-3 rounded-2xl border border-sky-200 bg-sky-50 p-4">
-          <h2 id="designReviewActions" className="text-sm font-semibold text-sky-950">
+        <section aria-labelledby="designReviewActions" className="flex flex-col gap-3 rounded-2xl border border-sky-200 dark:border-sky-800 bg-accent-muted p-4">
+          <h2 id="designReviewActions" className="text-sm font-semibold text-sky-950 dark:text-sky-200">
             {t('ui.review.actions.title')}
           </h2>
-          <p className="text-sm text-sky-900">{t('ui.review.actions.hint')}</p>
+          <p className="text-sm text-sky-900 dark:text-sky-200">{t('ui.review.actions.hint')}</p>
           <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
             <button type="button" onClick={() => open(designLabs.reference(brief, t('ui.review.referenceLabTitle', { title: brief.texts.title })))} disabled={opening === 'busy'} className={secondaryButton}>
               <FlaskConical className="h-4 w-4" aria-hidden="true" />
@@ -141,7 +141,7 @@ function DesignReviewScreen({ brief, submission, onOpenInLab, onHandover, onBack
             </button>
           </div>
           {opening === 'failed' && (
-            <p role="alert" className="text-sm text-rose-800">
+            <p role="alert" className="text-sm text-rose-800 dark:text-rose-200">
               {t('ui.review.actions.openFailed')}
             </p>
           )}
@@ -155,13 +155,13 @@ function DesignReviewScreen({ brief, submission, onOpenInLab, onHandover, onBack
           <button
             type="button"
             onClick={onBackToDesign}
-            className={`flex items-center justify-center gap-2 rounded-lg bg-sky-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-sky-800 ${focusRing}`}
+            className={`flex items-center justify-center gap-2 rounded-lg bg-accent px-4 py-2.5 text-sm font-medium text-white hover:bg-accent-hover ${focusRing}`}
           >
             <ArrowLeft className="h-4 w-4 rtl:-scale-x-100" aria-hidden="true" />
             {t('ui.review.nav.backToDesign')}
           </button>
         </nav>
-        <p className="flex items-center justify-center gap-1.5 text-xs text-slate-500">
+        <p className="flex items-center justify-center gap-1.5 text-xs text-fg-subtle">
           <ListChecks className="h-3.5 w-3.5" aria-hidden="true" />
           {t('ui.review.footnote')}
         </p>

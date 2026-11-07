@@ -11,7 +11,7 @@ const context: RouteContext = {
 
 describe('RouteResolver', () => {
   it('renders the known screens', () => {
-    for (const route of [{ name: 'landing' }, { name: 'lab' }, { name: 'exercises' }, { name: 'designs' }] as const) {
+    for (const route of [{ name: 'landing' }, { name: 'lab' }, { name: 'exercises' }, { name: 'designs' }, { name: 'preferences' }] as const) {
       expect(RouteResolver.resolve(route, context)).toEqual({ kind: 'render' })
     }
     expect(RouteResolver.resolve({ name: 'exercise', exerciseId: 'wrongDns' }, context)).toEqual({ kind: 'render' })

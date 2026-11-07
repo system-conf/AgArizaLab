@@ -1,0 +1,53 @@
+import { renderToString } from 'react-dom/server'
+import { describe, expect, it } from 'vitest'
+import { PreferencesProvider, PreferencesStore } from '../../preferences'
+import { memoryStorage } from '../../preferences/testStorage'
+import MapSection from './sections/MapSection'
+import SimulationSection from './sections/SimulationSection'
+import TerminalSection from './sections/TerminalSection'
+import PreferencesView from './PreferencesView'
+
+function render(store: PreferencesStore, element: React.ReactElement): string {
+  return renderToString(<PreferencesProvider store={store}>{element}</PreferencesProvider>)
+}
+
+describe('PreferencesView', () => {
+  it('renders an accessible tab list with one selected tab and its panel', () => {
+    const html = render(new PreferencesStore(memoryStorage()), <PreferencesView />)
+    expect(html).toContain('role="tablist"')
+    expect(html.match(/role="tab"/g)).toHaveLength(7)
+    expect(html.match(/aria-selected="true"/g)).toHaveLength(1)
+    expect(html.match(/tabindex="0"/g)?.length).toBeGreaterThanOrEqual(1)
+    expect(html).toContain('role="tabpanel"')
+    // SSR has no media query: the phone layout (a horizontal row) is rendered.
+    expect(html).toContain('aria-orientation="horizontal"')
+  })
+
+  it('shows the stored map preferences', () => {
+    const store = new PreferencesStore(memoryStorage())
+    store.update({ map: { deviceLabels: 'model', grid: false } })
+    const html = render(store, <MapSection />)
+    expect(html).toMatch(/checked="" value="model"/)
+    expect(html).not.toMatch(/checked="" value="name"/)
+    // Switches: link lights (on), grid (off), snap (off), minimap (on).
+    expect(html.match(/role="switch" aria-checked="true"/g)).toHaveLength(2)
+    expect(html.match(/role="switch" aria-checked="false"/g)).toHaveLength(2)
+  })
+
+  it('shows the start mode and the starting event filters', () => {
+    const store = new PreferencesStore(memoryStorage())
+    store.update({ simulation: { defaultMode: 'simulation', defaultEventFilters: ['icmp', 'arp'] } })
+    const html = render(store, <SimulationSection />)
+    expect(html).toMatch(/checked="" value="simulation"/)
+    expect(html.match(/type="checkbox"[^>]*checked=""/g)).toHaveLength(2)
+  })
+
+  it('shows the terminal font size and history length', () => {
+    const store = new PreferencesStore(memoryStorage())
+    store.update({ terminal: { fontSize: 16, historyLength: 42 } })
+    const html = render(store, <TerminalSection />)
+    expect(html).toContain('value="42"')
+    // The select's value is the option index: 16 px is the sixth size from 11 px.
+    expect(html).toMatch(/<option value="5" selected="">/)
+  })
+})

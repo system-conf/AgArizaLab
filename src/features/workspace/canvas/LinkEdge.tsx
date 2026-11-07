@@ -1,6 +1,8 @@
 import { BaseEdge, getStraightPath, type EdgeProps } from '@xyflow/react'
 import { memo } from 'react'
 import { useTranslation } from 'react-i18next'
+import { usePreference } from '../../../preferences'
+import { portLabelClassName } from '../../preferences/model/preferenceWiring'
 import type { LinkFlowEdge, SwitchEnd } from './canvasTypes'
 
 /** Distance from the switch centre (flow px) of the link light and the port label. */
@@ -26,12 +28,16 @@ function pointAlong(from: Point, to: Point, distance: number): Point {
  */
 function LinkEdge({ id, sourceX, sourceY, targetX, targetY, data }: EdgeProps<LinkFlowEdge>) {
   const { t } = useTranslation('map')
+  // PU (Preferences → Map): port labels always / on hover / never, link lights on or off.
+  const [portLabels] = usePreference('map.portLabels')
+  const [linkLights] = usePreference('map.linkLights')
+  const labelClass = portLabelClassName(portLabels)
   const [path] = getStraightPath({ sourceX, sourceY, targetX, targetY })
   if (!data) return null
   const { link, light, wireless, switchEnds } = data
   const source = { x: sourceX, y: sourceY }
   const target = { x: targetX, y: targetY }
-  const stroke = link.connected ? '#64748b' : '#cbd5e1'
+  const stroke = link.connected ? 'var(--color-cable)' : 'var(--color-cable-unplugged)'
   const dash = wireless ? '8 6' : link.connected ? undefined : '2 6'
 
   function renderSwitchEnd(end: SwitchEnd) {
@@ -42,22 +48,27 @@ function LinkEdge({ id, sourceX, sourceY, targetX, targetY, data }: EdgeProps<Li
     const up = light === 'up'
     return (
       <g key={end.side}>
-        <circle cx={led.x} cy={led.y} r={5} fill={up ? '#22c55e' : '#94a3b8'} stroke="#ffffff" strokeWidth={2}>
-          <title>{up ? t('edge.linkLightUp', { port: end.portId }) : t('edge.linkLightDown', { port: end.portId })}</title>
-        </circle>
-        <text
-          x={label.x}
-          y={label.y}
-          textAnchor="middle"
-          dominantBaseline="middle"
-          fontSize={12}
-          fill="#475569"
-          stroke="#f8fafc"
-          strokeWidth={4}
-          paintOrder="stroke"
-        >
-          {end.portId}
-        </text>
+        {linkLights && (
+          <circle cx={led.x} cy={led.y} r={5} fill={up ? 'var(--color-link-up)' : 'var(--color-link-down)'} stroke="var(--color-canvas)" strokeWidth={2}>
+            <title>{up ? t('edge.linkLightUp', { port: end.portId }) : t('edge.linkLightDown', { port: end.portId })}</title>
+          </circle>
+        )}
+        {labelClass !== null && (
+          <text
+            className={labelClass}
+            x={label.x}
+            y={label.y}
+            textAnchor="middle"
+            dominantBaseline="middle"
+            fontSize={12}
+            fill="var(--color-port-label)"
+            stroke="var(--color-port-label-halo)"
+            strokeWidth={4}
+            paintOrder="stroke"
+          >
+            {end.portId}
+          </text>
+        )}
       </g>
     )
   }

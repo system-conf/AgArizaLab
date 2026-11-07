@@ -1,6 +1,8 @@
 import { useEffect, useRef, useSyncExternalStore } from 'react'
 import type { Device, NetworkState, TerminalLine } from '../../domain'
 import { localizedMessage } from '../../i18n/messageKeys'
+import { usePreference } from '../../preferences'
+import { recentHistory } from '../preferences/model/preferenceWiring'
 import {
   appCliShell,
   CliPrompt,
@@ -49,6 +51,8 @@ export interface CliConsoleControls {
  */
 export function useCliConsole({ labId, device, network, policy, onUpdate }: CliConsoleOptions): CliConsoleControls {
   const screen = useSyncExternalStore(cliSessions.subscribe, () => cliSessions.consoleOf(labId, device))
+  // PU (Preferences → Terminal / CLI): Up / Down walk at most this many (the shell keeps 10 per mode, IOS default).
+  const [historyLength] = usePreference('terminal.historyLength')
   // A job resumes after the lab may have changed: it reads the latest lab copies.
   const latest = useRef({ device, network, policy, onUpdate })
   useEffect(() => {
@@ -118,7 +122,7 @@ export function useCliConsole({ labId, device, network, policy, onUpdate }: CliC
       const from = current()
       apply(from, appCliShell.control(from.session, latest.current.device, key), from.controlEcho(text, key))
     },
-    history: () => appCliShell.history(current().session),
+    history: () => recentHistory(appCliShell.history(current().session), historyLength),
     clear: () => cliSessions.set(labId, latest.current.device.id, current().cleared()),
   }
 }

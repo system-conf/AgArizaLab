@@ -60,13 +60,13 @@ function PortEditor({ device, port, model, access, onSave, onClose }: PortEditor
   const hasAddress = draft.role === 'routed' || draft.role === 'host'
 
   return (
-    <section aria-labelledby={titleId} className="flex flex-col gap-3 rounded-lg border border-sky-200 bg-sky-50/40 p-3">
+    <section aria-labelledby={titleId} className="flex flex-col gap-3 rounded-lg border border-sky-200 dark:border-sky-800 bg-sky-50/40 dark:bg-sky-950/30 p-3">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
-          <h4 id={titleId} className="font-mono text-sm font-semibold text-slate-800">
+          <h4 id={titleId} className="font-mono text-sm font-semibold text-fg">
             {t('ports.editorTitle', { port: port.id })}
           </h4>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-fg-subtle">
             {t(`catalog:media.${port.medium}`)} · {t(`catalog:portRoles.${port.role}`)}
           </p>
         </div>
@@ -75,14 +75,14 @@ function PortEditor({ device, port, model, access, onSave, onClose }: PortEditor
           onClick={onClose}
           aria-label={t('ports.close')}
           title={t('ports.close')}
-          className={`rounded-md p-1.5 text-slate-500 hover:bg-slate-100 ${focusRing}`}
+          className={`rounded-md p-1.5 text-fg-subtle hover:bg-surface-muted ${focusRing}`}
         >
           <X className="h-4 w-4" aria-hidden="true" />
         </button>
       </div>
-      {access === 'hidden' && <p className="text-sm text-slate-600">{t('ports.hiddenPort')}</p>}
+      {access === 'hidden' && <p className="text-sm text-fg-muted">{t('ports.hiddenPort')}</p>}
       {access !== 'hidden' && !DeviceSections.isConfigurablePort(port.role) && (
-        <p className="text-sm text-slate-600">{t('ports.nothingToConfigure')}</p>
+        <p className="text-sm text-fg-muted">{t('ports.nothingToConfigure')}</p>
       )}
       {access !== 'hidden' && DeviceSections.isConfigurablePort(port.role) && (
         <SectionForm editable={access === 'editable'} onSubmit={submit} onDiscard={discard}>
@@ -123,7 +123,8 @@ function PortEditor({ device, port, model, access, onSave, onClose }: PortEditor
               />
             )}
           </div>
-          {draft.role === 'switched' && <SwitchportFields draft={draft} errors={validation} show={errors.show} onChange={change} />}
+          {draft.role === 'switched' && options.vlanSettings && <SwitchportFields draft={draft} errors={validation} show={errors.show} onChange={change} />}
+          {draft.role === 'switched' && !options.vlanSettings && <p className="text-xs text-fg-subtle">{t('port.unmanagedVlans')}</p>}
           {hasAddress && (
             <div className={fieldGrid}>
               <SelectField

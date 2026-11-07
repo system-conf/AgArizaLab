@@ -29,7 +29,7 @@ const sections: { key: keyof ScenarioExplanation; icon: LucideIcon }[] = [
   { key: 'interviewAnswer', icon: Briefcase },
 ]
 
-const secondaryButton = `flex items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-slate-700 hover:bg-slate-50 ${focusRing}`
+const secondaryButton = `flex items-center justify-center gap-2 rounded-lg border border-border-strong bg-surface px-4 py-2.5 text-fg hover:bg-surface-subtle ${focusRing}`
 
 /** Solution report after a successful verification: summary, explanation cards, sharing and navigation. */
 function ResultScreen(props: ResultScreenProps) {
@@ -51,7 +51,7 @@ function ResultScreen(props: ResultScreenProps) {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-page">
       <SiteHeader />
       <main className="mx-auto flex max-w-3xl flex-col gap-5 px-4 py-6 sm:py-10">
         <section
@@ -85,31 +85,31 @@ function ResultScreen(props: ResultScreenProps) {
         {sections.map((section) => {
           const Icon = section.icon
           return (
-            <section key={section.key} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
-              <h2 className="mb-2 flex items-center gap-2 font-semibold text-slate-900">
-                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-sky-50 text-sky-700">
+            <section key={section.key} className="rounded-2xl border border-border bg-surface p-4 shadow-sm sm:p-5">
+              <h2 className="mb-2 flex items-center gap-2 font-semibold text-fg-strong">
+                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-muted text-accent-text">
                   <Icon className="h-4 w-4" aria-hidden="true" />
                 </span>
                 {t(`sections.${section.key}`)}
               </h2>
-              <p className="whitespace-pre-line leading-relaxed text-slate-700">{explanation[section.key]}</p>
+              <p className="whitespace-pre-line leading-relaxed text-fg">{explanation[section.key]}</p>
             </section>
           )
         })}
         {onOpenInLab && (
-          <section className="flex flex-col items-start gap-2 rounded-2xl border border-sky-200 bg-sky-50 p-4 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-sm text-sky-900">{t('openInLab.hint')}</p>
+          <section className="flex flex-col items-start gap-2 rounded-2xl border border-sky-200 dark:border-sky-800 bg-accent-muted p-4 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-sm text-sky-900 dark:text-sky-200">{t('openInLab.hint')}</p>
             <button
               type="button"
               onClick={handleOpenInLab}
               disabled={openInLab === 'busy'}
-              className={`flex shrink-0 items-center gap-2 rounded-lg bg-sky-700 px-4 py-2 text-sm font-medium text-white hover:bg-sky-800 disabled:opacity-60 ${focusRing}`}
+              className={`flex shrink-0 items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white hover:bg-accent-hover disabled:opacity-60 ${focusRing}`}
             >
               <FlaskConical className="h-4 w-4" aria-hidden="true" />
               {t('nav.openInLab')}
             </button>
             {openInLab === 'failed' && (
-              <p role="alert" className="text-sm text-rose-800">
+              <p role="alert" className="text-sm text-rose-800 dark:text-rose-200">
                 {t('openInLab.failed')}
               </p>
             )}
@@ -129,7 +129,7 @@ function ResultScreen(props: ResultScreenProps) {
             <button
               type="button"
               onClick={onNext}
-              className={`flex items-center justify-center gap-2 rounded-lg bg-sky-700 px-4 py-2.5 font-medium text-white hover:bg-sky-800 ${focusRing}`}
+              className={`flex items-center justify-center gap-2 rounded-lg bg-accent px-4 py-2.5 font-medium text-white hover:bg-accent-hover ${focusRing}`}
             >
               {t('nav.next')}
               <ArrowRight className="h-4 w-4 rtl:-scale-x-100" aria-hidden="true" />

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { editHost } from '../../engine/testLabs'
-import { officeLab, unplug, wanDown } from '../../engine/testNetworks'
+import { editHost, editSwitchport } from '../../engine/testLabs'
+import { officeLab, unplug, vlanLab, wanDown } from '../../engine/testNetworks'
 import type { SampleStep, StepCheck } from './SampleTypes'
 import { referencedGroupIds, StepChecker } from './StepChecker'
 import { officeSample, withoutDevice } from './testSamples'
@@ -57,6 +57,23 @@ describe('StepChecker', () => {
     expect(checker.holds(state, { type: 'hasAddress', deviceId: 'printer', prefix: '169.254.0.0/16' })).toBe(false)
     expect(checker.holds(state, { type: 'hasAddress', deviceId: 'printer', prefix: 'not a prefix' })).toBe(false)
     expect(checker.holds(state, { type: 'hasAddress', deviceId: 'switch' })).toBe(false)
+  })
+
+  it('checks nativeVlanMatch on the two trunk ends of a cable', () => {
+    const match: StepCheck = { type: 'nativeVlanMatch', linkId: 'apLink' }
+    const state = vlanLab()
+    expect(checker.holds(state, match)).toBe(true)
+    expect(checker.holds(state, { ...match, vlan: 1 })).toBe(true)
+    expect(checker.holds(state, { ...match, vlan: 99 })).toBe(false)
+    const mismatch = editSwitchport(state, 'switch', 'Fa0/4', { nativeVlan: 99 })
+    expect(checker.holds(mismatch, match)).toBe(false)
+    expect(checker.holds(editSwitchport(mismatch, 'ap', 'Gi0', { nativeVlan: 99 }), { ...match, vlan: 99 })).toBe(true)
+    // An access port at one end is no trunk, even with a matching native VLAN setting.
+    expect(checker.holds(editSwitchport(state, 'switch', 'Fa0/4', { mode: 'access' }), match)).toBe(false)
+    // Unknown cable, a cable to a host NIC, a deleted device: false, never a throw.
+    expect(checker.holds(state, { type: 'nativeVlanMatch', linkId: 'nope' })).toBe(false)
+    expect(checker.holds(state, { type: 'nativeVlanMatch', linkId: 'guestLink' })).toBe(false)
+    expect(checker.holds(withoutDevice(state, 'ap'), match)).toBe(false)
   })
 
   it('negates a check with not', () => {

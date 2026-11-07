@@ -129,7 +129,7 @@ describe('PortEditorModel', () => {
 
   it('offers speeds from the model template, duplex on copper and the role choice on an L3 switch', () => {
     const access = portOf('switch24', 'Fa0/1')
-    expect(PortEditorModel.options(access.device, model('switch24'), access.port)).toEqual({ speeds: [10, 100], duplex: true, roleChoice: false })
+    expect(PortEditorModel.options(access.device, model('switch24'), access.port)).toEqual({ speeds: [10, 100], duplex: true, roleChoice: false, vlanSettings: true })
     const l3 = portOf('l3Switch24', 'Gi1/0/1')
     expect(PortEditorModel.options(l3.device, model('l3Switch24'), l3.port).roleChoice).toBe(true)
     const routed = edit(l3.port, { role: 'routed', addressing: 'static', address: '10.1.1.1', mask: '255.255.255.252', speed: '100', duplex: 'full' })

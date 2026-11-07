@@ -26,6 +26,8 @@ export const namespaces = [
   'cli',
   // C4 (host commands): src/cli/host
   'hostCli',
+  // PU (Preferences screen): docs/PREFERENCES.md
+  'preferences',
 ] as const
 
 export type Namespace = (typeof namespaces)[number]

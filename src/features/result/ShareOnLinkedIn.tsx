@@ -13,10 +13,10 @@ function ShareOnLinkedIn() {
   const { language } = useLanguage()
 
   return (
-    <section className="flex flex-col items-start gap-3 rounded-2xl border border-sky-200 bg-sky-50 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
+    <section className="flex flex-col items-start gap-3 rounded-2xl border border-sky-200 dark:border-sky-800 bg-accent-muted p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
       <div>
-        <h2 className="font-semibold text-slate-900">{t('share.title')}</h2>
-        <p className="mt-0.5 text-sm text-slate-600">{t('share.text')}</p>
+        <h2 className="font-semibold text-fg-strong">{t('share.title')}</h2>
+        <p className="mt-0.5 text-sm text-fg-muted">{t('share.text')}</p>
       </div>
       <a
         href={linkedInShareUrl(siteUrlInLanguage(language))}

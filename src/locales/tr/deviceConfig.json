@@ -93,7 +93,8 @@
     "mask": "Alt ağ maskesi",
     "dhcpInfo": "Adres bir DHCP sunucusundan gelir.",
     "clockRate": "Saat hızı (clock rate, bit/s)",
-    "clockRateHint": "Seri hattın DCE ucunda gerekir, ör. 64000. DTE ucunda boş bırak."
+    "clockRateHint": "Seri hattın DCE ucunda gerekir, ör. 64000. DTE ucunda boş bırak.",
+    "unmanagedVlans": "Yönetilemeyen switch: her port VLAN 1'de bir erişim portudur. VLAN ayarı ve komut satırı yoktur."
   },
   "subInterfaces": {
     "title": "Alt arayüzler (sub-interface)",

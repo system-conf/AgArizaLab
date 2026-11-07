@@ -11,6 +11,7 @@
   "palette": {
     "title": "Devices",
     "hint": "Drag a device onto the canvas, or click it to add it in the middle.",
+    "touchHint": "Touch and hold a device to see its ports and when to use it.",
     "open": "Devices",
     "close": "Close device list",
     "add": "Add {{name}}",

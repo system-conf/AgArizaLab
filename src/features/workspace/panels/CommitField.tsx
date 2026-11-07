@@ -16,7 +16,7 @@ interface CommitFieldProps {
   maxLength?: number
 }
 
-const fieldClasses = `w-full rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm text-slate-800 ${focusRing}`
+const fieldClasses = `w-full rounded-md border border-border-strong bg-surface px-2 py-1.5 text-sm text-fg ${focusRing}`
 
 /** Draft field: typing is local, the document changes once when editing ends. Esc reverts. */
 function DraftField({ label, value, onCommit, multiline, hint, placeholder, hideLabel, className, maxLength }: CommitFieldProps) {
@@ -48,7 +48,7 @@ function DraftField({ label, value, onCommit, multiline, hint, placeholder, hide
   }
   return (
     <div className={className}>
-      <label htmlFor={id} className={hideLabel ? 'sr-only' : 'mb-1 block text-xs font-medium text-slate-600'}>
+      <label htmlFor={id} className={hideLabel ? 'sr-only' : 'mb-1 block text-xs font-medium text-fg-muted'}>
         {label}
       </label>
       {multiline ? (
@@ -57,7 +57,7 @@ function DraftField({ label, value, onCommit, multiline, hint, placeholder, hide
         <input {...common} type="text" onChange={(event) => setDraft(event.target.value)} className={fieldClasses} />
       )}
       {hint && (
-        <p id={hintId} className="mt-1 text-xs text-slate-500">
+        <p id={hintId} className="mt-1 text-xs text-fg-subtle">
           {hint}
         </p>
       )}

@@ -57,8 +57,8 @@ function RoutingSection({ device, routing, ipRoutingChoice, access, saved, onSav
             hint={t('routing.ipRoutingHint')}
           />
         )}
-        <h4 className="text-sm font-medium text-slate-700">{t('routing.staticRoutes')}</h4>
-        <p className="text-xs text-slate-500">{t('routing.routeHint')}</p>
+        <h4 className="text-sm font-medium text-fg">{t('routing.staticRoutes')}</h4>
+        <p className="text-xs text-fg-subtle">{t('routing.routeHint')}</p>
         <RowList
           items={draft.routes}
           keyOf={(row) => row.key}

@@ -11,6 +11,7 @@
   "palette": {
     "title": "Cihazlar",
     "hint": "Bir cihazı tuvale sürükle ya da ortaya eklemek için tıkla.",
+    "touchHint": "Portlarını ve ne zaman kullanılacağını görmek için bir cihaza basılı tut.",
     "open": "Cihazlar",
     "close": "Cihaz listesini kapat",
     "add": "{{name}} ekle",
