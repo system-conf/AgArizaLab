@@ -8,7 +8,8 @@ import { CliShell } from './CliShell'
 export function catalogDevice(modelId: string, id: string, baseMac: string): Device {
   const model = findDeviceModel(modelId)
   if (model === undefined) throw new Error(`No catalog model ${modelId}`)
-  return PortFactory.createDevice(model, id, id, { baseMac })
+  // A name with a space is not a valid hostname, so the prompt shows the IOS factory name (Router>, Switch>).
+  return PortFactory.createDevice(model, id, `${id} test`, { baseMac })
 }
 
 /** router2PortSerial: Gi0/0, Gi0/1, Se0/0/0, Se0/0/1, Console. */

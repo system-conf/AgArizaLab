@@ -4,23 +4,11 @@ import { useTranslation } from 'react-i18next'
 import { usePreference } from '../../../preferences'
 import { portLabelClassName } from '../../preferences/model/preferenceWiring'
 import type { LinkFlowEdge, SwitchEnd } from './canvasTypes'
+import { placeCableEnd } from './edgeLabelPlacement'
 
-/** Distance from the switch centre (flow px) of the link light and the port label. */
+/** Smallest distance from the switch centre (flow px) of the link light and the port label. */
 const ledDistance = 34
 const labelDistance = 66
-
-interface Point {
-  x: number
-  y: number
-}
-
-/** Point `distance` px from `from` towards `to`, never past 40 % of the line. */
-function pointAlong(from: Point, to: Point, distance: number): Point {
-  const length = Math.hypot(to.x - from.x, to.y - from.y)
-  if (length === 0) return from
-  const fraction = Math.min(distance / length, 0.4)
-  return { x: from.x + (to.x - from.x) * fraction, y: from.y + (to.y - from.y) * fraction }
-}
 
 /**
  * One cable or wireless association. Line style shows only plugged / wireless; the LED at a
@@ -43,8 +31,8 @@ function LinkEdge({ id, sourceX, sourceY, targetX, targetY, data }: EdgeProps<Li
   function renderSwitchEnd(end: SwitchEnd) {
     const from = end.side === 'source' ? source : target
     const to = end.side === 'source' ? target : source
-    const led = pointAlong(from, to, ledDistance)
-    const label = pointAlong(from, to, labelDistance)
+    // Pushed clear of the device box and of the name label under it (edgeLabelPlacement).
+    const { led, label } = placeCableEnd(from, to, end.portId, ledDistance, labelDistance)
     const up = light === 'up'
     return (
       <g key={end.side}>

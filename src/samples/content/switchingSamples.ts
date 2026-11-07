@@ -3,7 +3,7 @@
 import { accessPorts, subInterfaces, svis, trunkPorts, vlans } from '../../scenarios/design/deviceSetup'
 import { LabBuilder } from '../../scenarios/design/labBuilder'
 import type { SampleDefinition } from '../contract'
-import { finishLab, nativeVlanMatch, reaches, staticNic, trunkDetails, vlanEntries } from './sampleKit'
+import { dhcpService, dnsService, finishLab, leasedNic, macOf, nativeVlanMatch, pool, reaches, resolves, staticNic, trunkDetails, vlanEntries, withLease } from './sampleKit'
 
 const NAMES = { 10: 'STAFF', 20: 'GUESTS', 30: 'PRINTERS', 99: 'NATIVE' } as const
 
@@ -176,10 +176,85 @@ export const switchingSvi: SampleDefinition = {
   ],
 }
 
+/** Office VLAN 10, accounting VLAN 20; the DNS server sits in the office VLAN. */
+const OFFICE_VLANS = { 10: 'OFFICE', 20: 'ACCOUNTING' } as const
+const OFFICE_DNS = '192.168.10.10'
+/** PC4's lease, from the accounting pool (it worked before its cable moved to Fa0/5). */
+const PC4_ADDRESS = '192.168.20.12'
+
+/**
+ * A small office, ready to demo: R1 routes both VLANs (router-on-a-stick) and hands out addresses
+ * by DHCP, DNS1 answers for sunucu.ofis. PC4 belongs to accounting (VLAN 20) but its switch port
+ * Fa0/5 is still in VLAN 10, so its gateway never answers.
+ */
+function officeLab(): LabBuilder {
+  const lab = new LabBuilder(3406)
+    .add('router2Port', 'r1', { x: 400, y: 0 }, subInterfaces('Gi0/0', [{ vlan: 10, address: '192.168.10.1' }, { vlan: 20, address: '192.168.20.1' }]))
+    .add(
+      'switch8',
+      'sw1',
+      { x: 400, y: 210 },
+      vlans(vlanEntries([10, 20], OFFICE_VLANS)),
+      accessPorts(['Fa0/1', 'Fa0/2', 'Fa0/3'], 10),
+      accessPorts(['Fa0/4'], 20),
+      // The fault: Fa0/5 (PC4, accounting) was left in the office VLAN.
+      accessPorts(['Fa0/5'], 10),
+      trunkPorts(['Fa0/8']),
+    )
+    .add('pc', 'pc1', { x: 100, y: 420 }, leasedNic('192.168.10.11', '192.168.10.1', [OFFICE_DNS]))
+    .add('pc', 'pc2', { x: 250, y: 420 }, leasedNic('192.168.10.12', '192.168.10.1', [OFFICE_DNS]))
+    .add('server', 'dns1', { x: 400, y: 420 }, staticNic(OFFICE_DNS, undefined, '192.168.10.1'), dnsService([['sunucu.ofis', OFFICE_DNS]]))
+    .add('pc', 'pc3', { x: 550, y: 420 }, leasedNic('192.168.20.11', '192.168.20.1', [OFFICE_DNS]))
+    .add('pc', 'pc4', { x: 700, y: 420 }, leasedNic(PC4_ADDRESS, '192.168.20.1', [OFFICE_DNS]))
+    .cable('trunk', ['r1', 'Gi0/0'], ['sw1', 'Fa0/8'])
+    .cable('pc1Link', ['pc1', 'eth0'], ['sw1', 'Fa0/1'])
+    .cable('pc2Link', ['pc2', 'eth0'], ['sw1', 'Fa0/2'])
+    .cable('dns1Link', ['dns1', 'eth0'], ['sw1', 'Fa0/3'])
+    .cable('pc3Link', ['pc3', 'eth0'], ['sw1', 'Fa0/4'])
+    .cable('pc4Link', ['pc4', 'eth0'], ['sw1', 'Fa0/5'])
+  lab.edit(
+    'r1',
+    dhcpService([pool('OFFICE', '192.168.10.0', '192.168.10.1', [OFFICE_DNS]), pool('ACCOUNTING', '192.168.20.0', '192.168.20.1', [OFFICE_DNS])], [
+      { start: '192.168.10.1', end: '192.168.10.10' },
+      { start: '192.168.20.1', end: '192.168.20.10' },
+    ]),
+  )
+  lab.edit('r1', withLease('OFFICE', macOf(lab, 'pc1'), '192.168.10.11'), withLease('OFFICE', macOf(lab, 'pc2'), '192.168.10.12'))
+  lab.edit('r1', withLease('ACCOUNTING', macOf(lab, 'pc3'), '192.168.20.11'), withLease('ACCOUNTING', macOf(lab, 'pc4'), PC4_ADDRESS))
+  return lab
+}
+
+export const switchingOfficeWrongVlan: SampleDefinition = {
+  id: 'switchingOfficeWrongVlan',
+  category: 'switching',
+  order: 6,
+  level: 'beginner',
+  features: [],
+  lab: () => finishLab(officeLab()),
+  groups: [{ id: 'accounting', name: 'accounting', deviceIds: ['pc3', 'pc4'] }],
+  steps: [
+    { id: 'seeFault', focusDeviceId: 'pc4' },
+    { id: 'traceFault', mode: 'simulation', focusDeviceId: 'pc4' },
+    {
+      id: 'fixVlan',
+      focusDeviceId: 'sw1',
+      checks: [{ type: 'network', condition: { type: 'sameVlan', group: 'accounting' } }, reaches('pc4', 'r1'), reaches('pc4', 'dns1')],
+    },
+    { id: 'verifyName', focusDeviceId: 'pc4', checks: [resolves('pc4', 'sunucu.ofis')] },
+  ],
+  breakIt: ['renewInWrongVlan', 'dnsDown'],
+  related: [
+    { kind: 'exercise', exerciseId: 'kitchenVlan' },
+    { kind: 'sample', sampleId: 'switchingRouterOnAStick' },
+    { kind: 'design', briefId: 'smallOffice' },
+  ],
+}
+
 export const switchingSamples: readonly SampleDefinition[] = [
   switchingVlansTrunks,
   switchingNativeVlan,
   switchingAllowedVlans,
   switchingRouterOnAStick,
   switchingSvi,
+  switchingOfficeWrongVlan,
 ]

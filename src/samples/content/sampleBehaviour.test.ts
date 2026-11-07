@@ -116,6 +116,20 @@ describe('switching samples behave as the lessons say', () => {
     expect(networkEngine.reach(oneEnd, 'pc2', '192.168.20.12')).toMatchObject({ ok: false })
   })
 
+  it('switchingOfficeWrongVlan: PC4 cannot find its gateway until its port is in VLAN 20, then the name resolves', () => {
+    const broken = lab('switchingOfficeWrongVlan')
+    expect(terminal(broken, 'pc4', 'ping 192.168.20.1')[2]).toBe('Reply from 192.168.20.12: Destination host unreachable.')
+    expect(terminal(broken, 'pc4', 'ping sunucu.ofis')[0]).toBe('Ping request could not find host sunucu.ofis. Please check the name and try again.')
+    expect(terminal(broken, 'pc3', 'ping 192.168.20.1')[2]).toMatch(/^Reply from 192\.168\.20\.1/)
+    const fixed = accessVlan(broken, 'sw1', 'Fa0/5', 20)
+    expect(terminal(fixed, 'pc4', 'ping 192.168.20.1')[2]).toMatch(/^Reply from 192\.168\.20\.1/)
+    const byName = terminal(fixed, 'pc4', 'ping sunucu.ofis').join('\n')
+    expect(byName).toContain('Pinging sunucu.ofis [192.168.10.10]')
+    expect(byName).toMatch(/Reply from 192\.168\.10\.10/)
+    // Break-it: a renew in the wrong VLAN takes an office address.
+    expect(terminal(broken, 'pc4', 'ipconfig /renew').join('\n')).toContain('192.168.10.')
+  })
+
   it('switchingSvi: the SVIs answer before ip routing, PC2 does not', () => {
     expect(terminal(lab('switchingSvi'), 'pc1', 'ping 192.168.10.1')[2]).toMatch(/^Reply from 192\.168\.10\.1/)
     expect(terminal(lab('switchingSvi'), 'pc1', 'ping 192.168.20.11')[2]).toBe('Request timed out.')

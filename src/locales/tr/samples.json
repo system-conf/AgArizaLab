@@ -868,6 +868,51 @@
         "VLAN'lar arası yönlendirme"
       ]
     },
+    "switchingOfficeWrongVlan": {
+      "title": "Küçük ofis: yanlış VLAN",
+      "summary": "İki VLAN, DHCP ve DNS çalışan bir ofiste muhasebedeki PC4 ağa çıkamıyor. Arızayı bul, düzelt.",
+      "intro": {
+        "what": "Ofis VLAN 10'da (PC1, PC2, DNS1), muhasebe VLAN 20'de (PC3, PC4). R1 iki VLAN'ı tek porttan yönlendiriyor (router-on-a-stick) ve adresleri DHCP ile dağıtıyor; DNS1 'sunucu.ofis' adını çözüyor. PC4 muhasebeye ait ama bağlı olduğu SW1 Fa0/5 portu hâlâ VLAN 10'da.",
+        "why": "Bir bilgisayar yanlış VLAN'a düşünce adresi ve ağ geçidi doğru görünür ama hiçbir yere ulaşamaz: ARP isteği başka bir VLAN'da yayılır ve kimse cevap vermez. Sahada en sık karşılaşılan arızalardan biridir.",
+        "realWorld": "Masa değişikliğinde kablo başka bir porta takılır ya da port ayarı unutulur. Teknisyen önce 'show vlan brief' ve 'show interfaces status' ile portun VLAN'ına bakar; düzeltme tek satırdır: 'switchport access vlan 20'."
+      },
+      "steps": {
+        "seeFault": {
+          "title": "Arızayı gör",
+          "detail": "PC4'ün terminalinde 'ping 192.168.20.1' çalıştır: 'Destination host unreachable.' gelir, PC4 ağ geçidini bulamıyor. 'ping sunucu.ofis' de adı çözemez. PC3 aynı komutlarla yanıt alır; ikisinin adresi ve ağ geçidi aynı ağda."
+        },
+        "traceFault": {
+          "title": "Paketin nerede takıldığını izle",
+          "detail": "Simülasyon modunda PC4'ten R1'e basit bir ping gönder ve adım adım ilerle. PC4'ün ARP isteği SW1'de VLAN 10'a yayılır; R1'in VLAN 10 arayüzü 192.168.20.1 olmadığı için cevap vermez, ping orada takılır."
+        },
+        "fixVlan": {
+          "title": "PC4'ün portunu VLAN 20'ye al",
+          "detail": "SW1'in CLI'ında 'show vlan brief' ile Fa0/5'in VLAN 10'da olduğunu gör. Sonra: 'enable', 'configure terminal', 'interface fa0/5', 'switchport access vlan 20', 'end'. PC4'ten ağ geçidine tekrar ping at."
+        },
+        "verifyName": {
+          "title": "Adla doğrula",
+          "detail": "PC4'te 'ping sunucu.ofis' çalıştır: DNS1 adı 192.168.10.10'a çevirir ve yanıtlar gelir. Arıza giderildi."
+        }
+      },
+      "breakIt": {
+        "renewInWrongVlan": {
+          "change": "Portu düzeltmeden PC4'te 'ipconfig /renew' çalıştır.",
+          "result": "PC4 VLAN 10'dan (ofis havuzundan) adres alır ve çalışır gibi görünür, ama artık muhasebe ağında değildir. Gerçek arıza gizlenmiş olur."
+        },
+        "dnsDown": {
+          "change": "DNS1 sunucusunu kapat.",
+          "result": "IP adresleriyle ping çalışmaya devam eder ama 'sunucu.ofis' çözülemez: ad çözümleme ile bağlantı ayrı sorunlardır."
+        }
+      },
+      "topics": [
+        "VLAN",
+        "Access port",
+        "Router-on-a-stick",
+        "DHCP",
+        "DNS",
+        "Arıza giderme"
+      ]
+    },
     "routingStaticDefault": {
       "title": "Statik ve varsayılan rotalar",
       "summary": "İki yer, iki router: her birine diğerinin ve internetin yolunu öğret.",

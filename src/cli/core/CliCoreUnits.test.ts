@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import type { CliCommandSet } from '../contract'
 import { CliParamMatcher } from './CliParamMatcher'
 import { keyword } from './CliNodes'
+import { CliPrompt } from './CliPrompt'
 import { CliRegistry } from './CliRegistry'
 import { InterfaceNames } from './InterfaceNames'
 import { PasswordEncoding } from './PasswordEncoding'
@@ -76,5 +77,15 @@ describe('CliRegistry', () => {
   it('gives interface-range mode the interface commands', () => {
     const set: CliCommandSet = { id: 'a', commands: [{ modes: ['interface'], node: keyword('switchport', 'x', { run: () => ({}) }) }] }
     expect(new CliRegistry([set]).roots('interfaceRange').map((node) => node.word)).toEqual(['switchport'])
+  })
+})
+
+describe('CliPrompt hostname', () => {
+  it('starts from the device name when it is a valid hostname, else the IOS factory name', () => {
+    expect(CliPrompt.hostname({ ...testRouter(), name: 'R1' })).toBe('R1')
+    expect(CliPrompt.hostname({ ...testSwitch(), name: 'SW-Core' })).toBe('SW-Core')
+    expect(CliPrompt.hostname({ ...testRouter(), name: 'Router 1' })).toBe('Router')
+    expect(CliPrompt.hostname({ ...testSwitch(), name: 'Switch 1' })).toBe('Switch')
+    expect(CliPrompt.hostname({ ...testSwitch(), name: '1st floor' })).toBe('Switch')
   })
 })

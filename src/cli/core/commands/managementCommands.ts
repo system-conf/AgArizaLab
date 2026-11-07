@@ -4,12 +4,11 @@ import type { ManagementSettings } from '../../../domain'
 import type { CliCommandRegistration, CliCommandResult, CliContext, CliQuestion } from '../../contract'
 import { keyword, param } from '../CliNodes'
 import { cliError } from '../CliOutput'
-import { CliPrompt } from '../CliPrompt'
+import { CliPrompt, HOSTNAME_PATTERN } from '../CliPrompt'
 import { DeviceEdits } from '../DeviceEdits'
 import { PasswordEncoding } from '../PasswordEncoding'
 import { BANNER_DELIMITER } from '../coreConfigSections'
 
-const HOSTNAME_PATTERN = /^[A-Za-z](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?$/
 
 type ManagementKey = keyof ManagementSettings
 

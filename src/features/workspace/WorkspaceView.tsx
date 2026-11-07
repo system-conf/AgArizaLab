@@ -25,6 +25,7 @@ import DevicePalette from './palette/DevicePalette'
 import DeviceTabs from './panels/DeviceTabs'
 import PropertiesPanel from './panels/PropertiesPanel'
 // PU (Preferences): CLI as the default device tab.
+import { showsConsole } from './panels/deviceTabModel'
 import { useDeviceTabState } from './panels/useDeviceTabState'
 import ShortcutsHelp from './panels/ShortcutsHelp'
 import { useDeviceTerminals } from './terminal/useDeviceTerminals'
@@ -88,6 +89,10 @@ function WorkspaceView(props: WorkspaceViewProps) {
   const editing = useDeviceEditing(lab, labEditor, policy)
   const selectedCount = SelectionModel.count(selection)
   const deletableCount = SelectionModel.count(policy.allowedDeletion(selection))
+  // One device with its CLI or terminal open: a wider panel, so 80-column console output does not wrap.
+  const consoleDevice = selectedCount === 1 && selection.deviceIds.length === 1 ? doc.state.devices.find((device) => device.id === selection.deviceIds[0]) : undefined
+  // Not next to a lesson or design brief panel: the map would be squeezed too much.
+  const consoleOpen = props.sidePanel === undefined && consoleDevice !== undefined && showsConsole(consoleDevice, policy, hasTerminal(consoleDevice) && policy.canUseTerminal(consoleDevice.id), deviceTab)
   const nameOf = useCallback(
     (deviceId: string) => doc.state.devices.find((device) => device.id === deviceId)?.name ?? deviceId,
     [doc],
@@ -342,7 +347,9 @@ function WorkspaceView(props: WorkspaceViewProps) {
         </main>
         {/* Design (D2): the brief panel */}
         {props.sidePanel}
-        {wide && <aside className="w-80 shrink-0 border-s border-border bg-surface xl:w-96">{properties()}</aside>}
+        {wide && (
+          <aside className={`shrink-0 border-s border-border bg-surface ${consoleOpen ? 'w-[32rem] xl:w-[40rem]' : 'w-80 xl:w-96'}`}>{properties()}</aside>
+        )}
         {!wide && selectedCount > 0 && !paletteOpen && (
           <div className="absolute inset-x-0 bottom-0 z-30 h-[60%] overflow-hidden rounded-t-2xl border-t border-border bg-surface shadow-2xl">
             {properties(() => setSelection(EMPTY_SELECTION))}

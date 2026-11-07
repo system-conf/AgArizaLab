@@ -13,3 +13,11 @@ export function availableDeviceTabs(device: Device, policy: ExerciseLockPolicy, 
   if (hasTerminal) tabs.push('terminal')
   return tabs
 }
+
+/** Tabs that show a console: the properties panel widens for them so 80-column output does not wrap. */
+const CONSOLE_TABS: readonly DeviceTab[] = ['cli', 'terminal']
+
+/** True when the tab the device would actually show (unavailable tab → Info) is a console. */
+export function showsConsole(device: Device, policy: ExerciseLockPolicy, hasTerminal: boolean, tab: DeviceTab): boolean {
+  return CONSOLE_TABS.includes(tab) && availableDeviceTabs(device, policy, hasTerminal).includes(tab)
+}

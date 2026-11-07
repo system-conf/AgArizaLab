@@ -22,8 +22,8 @@ describe('lab config export', () => {
     const lines = exporter.lines(network, { title: 'Ofis Ağı', exportedAt: '2026-11-06T20:00:00.000Z' })
     const rule = `!${'='.repeat(71)}`
     expect(lines.slice(0, 4)).toEqual(['! Octetlab configuration export', '! Lab: Ofis Ağı', '! Exported: 2026-11-06T20:00:00.000Z', '! Devices: 4'])
-    const routerAt = lines.indexOf('! Device r1 (id: r1, kind: router, model: router2PortSerial)')
-    expect(lines.slice(routerAt - 2, routerAt + 4)).toEqual(['', rule, '! Device r1 (id: r1, kind: router, model: router2PortSerial)', rule, '!', 'version 15.1'])
+    const routerAt = lines.indexOf('! Device r1 test (id: r1, kind: router, model: router2PortSerial)')
+    expect(lines.slice(routerAt - 2, routerAt + 4)).toEqual(['', rule, '! Device r1 test (id: r1, kind: router, model: router2PortSerial)', rule, '!', 'version 15.1'])
     const routerConfig = new DeviceConfigText(shell).lines(sampleRouter())
     expect(lines.slice(routerAt + 2, routerAt + 2 + routerConfig.length)).toEqual(routerConfig)
     expect(lines.slice(-14)).toEqual([
@@ -38,7 +38,7 @@ describe('lab config export', () => {
       '! DNS servers: 192.168.1.2, 8.8.8.8',
       '',
       rule,
-      '! Device hub1 (id: hub1, kind: hub, model: hub8)',
+      '! Device hub1 test (id: hub1, kind: hub, model: hub8)',
       rule,
       '! No configuration',
     ])

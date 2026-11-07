@@ -101,6 +101,8 @@ const SOLUTIONS: Readonly<Record<string, Readonly<Record<string, Solution>>>> = 
     ),
   },
   switchingRouterOnAStick: { addSubInterface: (state) => addSubInterface(state, 'r1', 'Gi0/0', 20, '192.168.20.1') },
+  // verifyName needs nothing more: the name resolves once PC4 is in VLAN 20.
+  switchingOfficeWrongVlan: { fixVlan: (state) => accessVlan(state, 'sw1', 'Fa0/5', 20), verifyName: (state) => state },
   switchingSvi: {
     enableRouting: (state) => setIpRouting(state, 'mls1', true),
     addVlan30: steps(

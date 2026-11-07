@@ -15,6 +15,9 @@ const MODE_SUFFIXES: Readonly<Record<CliModeKind, string>> = {
   router: '(config-router)#',
 }
 
+/** IOS hostname rule: a letter first, then letters, digits and hyphens, no hyphen at the end. */
+export const HOSTNAME_PATTERN = /^[A-Za-z](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?$/
+
 /** The device's management settings, or the factory ones (`{}`). */
 export function managementOf(device: Device): ManagementSettings {
   return device.features?.management ?? {}
@@ -27,8 +30,18 @@ export class CliPrompt {
     return configured !== undefined && configured !== '' ? configured : CliPrompt.defaultHostname(device)
   }
 
-  /** IOS factory name: 'Router' for routers and wireless routers, else 'Switch'. */
+  /**
+   * Hostname when none is configured: the device's name on the map when it is a valid hostname
+   * (sample and exercise devices are called R1, SW1…), else the IOS factory name ('Router' for
+   * routers and wireless routers, 'Switch' for switches) — e.g. for "Router 1" with its space.
+   */
   static defaultHostname(device: Device): string {
+    if (HOSTNAME_PATTERN.test(device.name)) return device.name
+    return CliPrompt.factoryHostname(device)
+  }
+
+  /** IOS factory name: 'Router' for routers and wireless routers, else 'Switch'. */
+  static factoryHostname(device: Device): string {
     return device.kind === 'router' || device.kind === 'wirelessRouter' ? 'Router' : 'Switch'
   }
 
