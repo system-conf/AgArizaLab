@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 320" width="1280" height="320" role="img" aria-labelledby="title desc">
+  <title id="title">Octetlab</title>
+  <desc id="desc">Octetlab — a network lab in your browser: build, configure and simulate networks packet by packet.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#075985"/>
+      <stop offset="0.55" stop-color="#0c4a6e"/>
+      <stop offset="1" stop-color="#0f172a"/>
+    </linearGradient>
+    <pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="1" fill="#e0f2fe" fill-opacity="0.10"/>
+    </pattern>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#38bdf8" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#38bdf8" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1280" height="320" rx="24" fill="url(#bg)"/>
+  <rect width="1280" height="320" rx="24" fill="url(#grid)"/>
+
+  <!-- Logo mark (same shape as the app icon) -->
+  <g transform="translate(72 96)">
+    <rect width="128" height="128" rx="28" fill="#0369a1" stroke="#7dd3fc" stroke-opacity="0.35" stroke-width="2"/>
+    <path d="M64 36v24M64 60l-28 28M64 60l28 28" stroke="#e0f2fe" stroke-width="8" stroke-linecap="round" fill="none"/>
+    <circle cx="64" cy="32" r="13" fill="#fff"/>
+    <circle cx="36" cy="92" r="13" fill="#fff"/>
+    <circle cx="92" cy="92" r="13" fill="#fff"/>
+  </g>
+
+  <!-- Name and tagline -->
+  <g font-family="-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+    <text x="232" y="158" font-size="72" font-weight="700" fill="#ffffff" letter-spacing="-1.5">Octetlab</text>
+    <text x="236" y="204" font-size="28" fill="#bae6fd">A network lab in your browser</text>
+    <g font-size="17" font-weight="600" fill="#e0f2fe">
+      <rect x="236" y="228" width="72" height="32" rx="16" fill="#ffffff" fill-opacity="0.10" stroke="#7dd3fc" stroke-opacity="0.4"/>
+      <text x="272" y="250" text-anchor="middle">Build</text>
+      <rect x="318" y="228" width="104" height="32" rx="16" fill="#ffffff" fill-opacity="0.10" stroke="#7dd3fc" stroke-opacity="0.4"/>
+      <text x="370" y="250" text-anchor="middle">Configure</text>
+      <rect x="432" y="228" width="100" height="32" rx="16" fill="#ffffff" fill-opacity="0.10" stroke="#7dd3fc" stroke-opacity="0.4"/>
+      <text x="482" y="250" text-anchor="middle">Simulate</text>
+      <rect x="542" y="228" width="76" height="32" rx="16" fill="#ffffff" fill-opacity="0.10" stroke="#7dd3fc" stroke-opacity="0.4"/>
+      <text x="580" y="250" text-anchor="middle">Learn</text>
+    </g>
+  </g>
+
+  <!-- Small topology: cloud, router, two switches, three hosts, packets on the wire -->
+  <g stroke="#7dd3fc" stroke-opacity="0.75" stroke-width="3" fill="none" stroke-linecap="round">
+    <path d="M1010 74 L1010 136"/>
+    <path d="M1010 136 L900 206"/>
+    <path d="M1010 136 L1120 206"/>
+    <path d="M900 206 L850 270"/>
+    <path d="M900 206 L950 270"/>
+    <path d="M1120 206 L1120 270"/>
+  </g>
+  <circle cx="1010" cy="136" r="70" fill="url(#glow)"/>
+
+  <!-- cloud / ISP -->
+  <path d="M988 82 a14 14 0 0 1 4-27 a18 18 0 0 1 34-4 a13 13 0 0 1 12 22 a10 10 0 0 1-6 9 z" fill="#ede9fe" stroke="#a78bfa" stroke-width="2"/>
+  <!-- router -->
+  <g transform="translate(1010 136)">
+    <ellipse rx="34" ry="12" cy="8" fill="#0369a1" stroke="#e0f2fe" stroke-width="2.5"/>
+    <rect x="-34" y="-8" width="68" height="16" fill="#0369a1"/>
+    <path d="M-34 -8 v16 M34 -8 v16" stroke="#e0f2fe" stroke-width="2.5"/>
+    <ellipse rx="34" ry="12" cy="-8" fill="#0284c7" stroke="#e0f2fe" stroke-width="2.5"/>
+    <path d="M-14 -8 h28 M0 -15 v14" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>
+  </g>
+  <!-- switches -->
+  <g fill="#0369a1" stroke="#e0f2fe" stroke-width="2.5">
+    <rect x="872" y="194" width="56" height="24" rx="5"/>
+    <rect x="1092" y="194" width="56" height="24" rx="5"/>
+  </g>
+  <g stroke="#ffffff" stroke-width="2" stroke-linecap="round">
+    <path d="M884 202 h32 M884 210 h32"/>
+    <path d="M1104 202 h32 M1104 210 h32"/>
+  </g>
+  <!-- hosts -->
+  <g fill="#f1f5f9" stroke="#94a3b8" stroke-width="2">
+    <rect x="832" y="262" width="36" height="26" rx="4"/>
+    <rect x="932" y="262" width="36" height="26" rx="4"/>
+    <rect x="1102" y="262" width="36" height="26" rx="4"/>
+  </g>
+  <!-- link lights -->
+  <g fill="#34d399">
+    <circle cx="1010" cy="98" r="4"/>
+    <circle cx="986" cy="150" r="4"/>
+    <circle cx="1034" cy="150" r="4"/>
+    <circle cx="900" cy="226" r="4"/>
+    <circle cx="1120" cy="226" r="4"/>
+  </g>
+  <!-- packets in flight -->
+  <g>
+    <circle cx="955" cy="171" r="9" fill="#f59e0b" stroke="#fff" stroke-width="2.5"/>
+    <circle cx="925" cy="238" r="9" fill="#a855f7" stroke="#fff" stroke-width="2.5"/>
+    <circle cx="1065" cy="171" r="9" fill="#22c55e" stroke="#fff" stroke-width="2.5"/>
+  </g>
+  <!-- the four octets -->
+  <text x="1188" y="146" font-family="Consolas, 'Cascadia Mono', Menlo, monospace" font-size="15" fill="#bae6fd" fill-opacity="0.85" text-anchor="end">
+    <tspan x="1236" dy="0">192.168.10.1</tspan>
+  </text>
+</svg>

@@ -1,11 +1,53 @@
-# Octetlab — tarayıcında ağ laboratuvarı
+<p align="center">
+  <img src="docs/images/banner.svg" alt="Octetlab — tarayıcında ağ laboratuvarı" width="100%">
+</p>
 
-[English](README.md) · **Canlı:** https://octetlab.slovveis.workers.dev
+<p align="center">
+  <a href="https://octetlab.slovveis.workers.dev"><img alt="Canlı demo" src="https://img.shields.io/badge/canl%C4%B1_demo-octetlab.slovveis.workers.dev-0369a1?style=for-the-badge&logo=cloudflare&logoColor=white"></a>
+</p>
+<p align="center">
+  <a href="https://github.com/system-conf/Octetlab/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/system-conf/Octetlab/actions/workflows/ci.yml/badge.svg"></a>
+  <a href="LICENSE"><img alt="MIT" src="https://img.shields.io/badge/license-MIT-16a34a"></a>
+  <img alt="English | Türkçe" src="https://img.shields.io/badge/i18n-English%20%7C%20T%C3%BCrk%C3%A7e-7c3aed">
+  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-strict-3178c6?logo=typescript&logoColor=white">
+  <img alt="React 19" src="https://img.shields.io/badge/React-19-149eca?logo=react&logoColor=white">
+  <img alt="Tests" src="https://img.shields.io/badge/tests-2000%2B-0f766e">
+</p>
+
+<p align="center">
+  <a href="README.md">English</a> · <b>Türkçe</b>
+</p>
 
 Octetlab, tamamen tarayıcıda çalışan açık kaynaklı bir ağ laboratuvarı. Ağını kurarsın, kablolarını
 takarsın, ayarlarını arayüzden ya da IOS tarzı komut satırından yaparsın ve simülasyon modunda her
 paketin nereye gittiğini adım adım izlersin. Kurulum ve üyelik gerekmez; bilgisayarda ve tablette
 çalışır. **Türkçe** ve **İngilizce**, yeni dillere hazır.
+
+<p align="center">
+  <img src="docs/images/simulation.gif" alt="Simülasyon modunda bir ping: ARP ve ICMP paketleri PC1'den switch üzerinden router'a gidiyor, altta olay listesi" width="760">
+</p>
+
+## Ekran görüntüleri
+
+<p align="center">
+  <img src="docs/images/landingTr.png" alt="Türkçe ana sayfa" width="80%"><br>
+  <sub>Türkçe arayüz — diğer görüntüler İngilizce arayüzden</sub>
+</p>
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/images/sampleLesson.png" alt="Ders paneliyle bir örnek lab"><br><sub><b>Örnek lablar</b> — çalışan bir ağ, kısa bir ders ve kendini kontrol eden adımlar</sub></td>
+    <td width="50%"><img src="docs/images/simulation.png" alt="Olay listesi ve PDU incelemesiyle simülasyon modu"><br><sub><b>Simülasyon modu</b> — her paketi adım adım izle, katman katman içine bak</sub></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="docs/images/deviceCli.png" alt="Router'da IOS tarzı CLI"><br><sub><b>Cihaz CLI'ı</b> — kısaltmalar, ? yardımı, Tab tamamlama ve sayfalama</sub></td>
+    <td width="50%"><img src="docs/images/darkMode.png" alt="Koyu temada çalışma alanı"><br><sub><b>Koyu tema</b> — açık, koyu ya da sistemle aynı</sub></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="docs/images/samples.png" alt="Örnek lab kütüphanesi"><br><sub><b>Örnek lab kütüphanesi</b> — adreslemeden VLAN'lar arası routing'e 24 ders</sub></td>
+    <td width="50%"><img src="docs/images/designTasks.png" alt="Tasarım görevleri"><br><sub><b>Tasarım görevleri</b> — müşteri talebi, bütçe ve canlı kontrol listesi</sub></td>
+  </tr>
+</table>
 
 ## Neler yapabilirsin
 

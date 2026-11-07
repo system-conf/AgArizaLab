@@ -1,11 +1,48 @@
-# Octetlab — a network lab in your browser
+<p align="center">
+  <img src="docs/images/banner.svg" alt="Octetlab — a network lab in your browser" width="100%">
+</p>
 
-[Türkçe](README.tr.md) · **Live:** https://octetlab.slovveis.workers.dev
+<p align="center">
+  <a href="https://octetlab.slovveis.workers.dev"><img alt="Live demo" src="https://img.shields.io/badge/live_demo-octetlab.slovveis.workers.dev-0369a1?style=for-the-badge&logo=cloudflare&logoColor=white"></a>
+</p>
+<p align="center">
+  <a href="https://github.com/system-conf/Octetlab/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/system-conf/Octetlab/actions/workflows/ci.yml/badge.svg"></a>
+  <a href="LICENSE"><img alt="MIT" src="https://img.shields.io/badge/license-MIT-16a34a"></a>
+  <img alt="English | Türkçe" src="https://img.shields.io/badge/i18n-English%20%7C%20T%C3%BCrk%C3%A7e-7c3aed">
+  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-strict-3178c6?logo=typescript&logoColor=white">
+  <img alt="React 19" src="https://img.shields.io/badge/React-19-149eca?logo=react&logoColor=white">
+  <img alt="Tests" src="https://img.shields.io/badge/tests-2000%2B-0f766e">
+</p>
+
+<p align="center">
+  <b>English</b> · <a href="README.tr.md">Türkçe</a>
+</p>
 
 Octetlab is an open-source network lab that runs entirely in the browser: build a network, cable
 it, configure it from a GUI or an IOS-style command line, and watch every packet move in
 simulation mode. No installation, no account, works on desktop and tablet. Available in
 **English** and **Turkish**, ready for more languages.
+
+<p align="center">
+  <img src="docs/images/simulation.gif" alt="A ping in simulation mode: ARP and ICMP packets travel from PC1 through the switch to the router, with the event list below" width="760">
+</p>
+
+## Screenshots
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/images/sampleLesson.png" alt="A sample lab with its lesson panel"><br><sub><b>Sample labs</b> — a working network plus a short lesson and steps that check themselves</sub></td>
+    <td width="50%"><img src="docs/images/simulation.png" alt="Simulation mode with the event list and the PDU inspector"><br><sub><b>Simulation mode</b> — step through every packet, look inside it layer by layer</sub></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="docs/images/deviceCli.png" alt="IOS-style CLI on a router"><br><sub><b>Device CLI</b> — IOS-style console with abbreviations, ? help, Tab completion and paging</sub></td>
+    <td width="50%"><img src="docs/images/darkMode.png" alt="The workspace in dark mode"><br><sub><b>Dark mode</b> — light, dark or follow the system</sub></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="docs/images/samples.png" alt="The sample lab library"><br><sub><b>Sample library</b> — 24 lessons from addressing to inter-VLAN routing</sub></td>
+    <td width="50%"><img src="docs/images/designTasks.png" alt="Design tasks"><br><sub><b>Design tasks</b> — a customer brief, a budget and a live checklist</sub></td>
+  </tr>
+</table>
 
 ## What you can do
 
@@ -79,6 +116,9 @@ rules for UI code are in [docs/I18N.md](docs/I18N.md). Device output (Windows `p
 `show` commands, …) stays in English in every language, as on real equipment.
 
 ## Documentation
+
+Screenshots are generated from the live site with `node scripts/readmeScreenshots.mjs` (Playwright).
+
 
 | Document | Contents |
 |---|---|
