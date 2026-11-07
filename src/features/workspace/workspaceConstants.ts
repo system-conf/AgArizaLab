@@ -13,7 +13,7 @@ export const DEVICE_SPACING = { x: 144, y: 120 }
 export const NUDGE_STEP = 5
 export const NUDGE_FACTOR = 4
 /** Drag data type of a palette item (value = DeviceModel id). */
-export const MODEL_DRAG_TYPE = 'application/x-agarizalab-model'
+export const MODEL_DRAG_TYPE = 'application/x-octetlab-model'
 /** Prefix of annotation node ids; device ids are camelCase, so they can never collide. */
 export const ANNOTATION_NODE_PREFIX = 'note:'
 /** Size of a new text note. */

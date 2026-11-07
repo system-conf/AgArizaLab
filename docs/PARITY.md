@@ -1,4 +1,4 @@
-# Feature parity checklist (Packet Tracer → AgArizaLab)
+# Feature parity checklist (Packet Tracer → Octetlab)
 
 Goal: nothing a learner can do in Packet Tracer should be impossible here. This list was drafted from
 general knowledge of Packet Tracer and **must be verified against the current Packet Tracer release**

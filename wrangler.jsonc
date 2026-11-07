@@ -2,7 +2,7 @@
 // Name must be lowercase: Cloudflare requirement.
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
-  "name": "agarizalab",
+  "name": "octetlab",
   "compatibility_date": "2026-11-01",
   "assets": {
     "directory": "./dist",

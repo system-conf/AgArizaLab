@@ -21,7 +21,7 @@ describe('lab config export', () => {
     const network = lab()
     const lines = exporter.lines(network, { title: 'Ofis Ağı', exportedAt: '2026-11-06T20:00:00.000Z' })
     const rule = `!${'='.repeat(71)}`
-    expect(lines.slice(0, 4)).toEqual(['! AgArizaLab configuration export', '! Lab: Ofis Ağı', '! Exported: 2026-11-06T20:00:00.000Z', '! Devices: 4'])
+    expect(lines.slice(0, 4)).toEqual(['! Octetlab configuration export', '! Lab: Ofis Ağı', '! Exported: 2026-11-06T20:00:00.000Z', '! Devices: 4'])
     const routerAt = lines.indexOf('! Device r1 (id: r1, kind: router, model: router2PortSerial)')
     expect(lines.slice(routerAt - 2, routerAt + 4)).toEqual(['', rule, '! Device r1 (id: r1, kind: router, model: router2PortSerial)', rule, '!', 'version 15.1'])
     const routerConfig = new DeviceConfigText(shell).lines(sampleRouter())
@@ -46,7 +46,7 @@ describe('lab config export', () => {
 
   it('leaves the export time out when none is given and ends the text with a line break', () => {
     const text = exporter.text(lab(), { title: 'Lab' })
-    expect(text.startsWith('! AgArizaLab configuration export\n! Lab: Lab\n! Devices: 4\n\n')).toBe(true)
+    expect(text.startsWith('! Octetlab configuration export\n! Lab: Lab\n! Devices: 4\n\n')).toBe(true)
     expect(text.endsWith('! No configuration\n')).toBe(true)
   })
 

@@ -1,5 +1,5 @@
 {
-  "appName": "Ağ Arıza Laboratuvarı",
+  "appName": "Octetlab",
   "languageSwitcher": {
     "label": "Dil"
   },
@@ -10,9 +10,9 @@
     "system": "Sistem"
   },
   "meta": {
-    "title": "Ağ Arıza Laboratuvarı — Tarayıcıda ağ arızası bul, düzelt, öğren",
+    "title": "Octetlab — tarayıcında ağ laboratuvarı",
     "pageTitle": "{{page}} — {{appName}}",
-    "description": "Tarayıcıda çalışan ücretsiz ve açık kaynak ağ arıza laboratuvarı. Cihazları incele, ping, ipconfig ve nslookup çalıştır; restoran, ofis ve mağaza ağlarındaki gerçekçi arızaları bul ve düzelt."
+    "description": "Tarayıcıda çalışan ücretsiz ve açık kaynak ağ laboratuvarı. Ağını kur ve kablola, arayüzden ya da IOS tarzı CLI'dan yapılandır, simülasyon modunda her paketi izle; örnek lablar, arıza alıştırmaları ve tasarım görevleriyle öğren."
   },
   "opensInNewTab": "(yeni sekmede açılır)",
   "loading": "Yükleniyor…",

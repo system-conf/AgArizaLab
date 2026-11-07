@@ -1,5 +1,5 @@
 # Optional: uploads a Cloudflare Workers preview version per branch (`wrangler versions upload`),
-# reachable at https://<branch>-agarizalab.<subdomain>.workers.dev. Production is not touched.
+# reachable at https://<branch>-octetlab.<subdomain>.workers.dev. Production is not touched.
 # Runs only when the repository has the CLOUDFLARE_API_TOKEN secret; otherwise it skips with a notice.
 # Secrets: CLOUDFLARE_API_TOKEN (Workers Scripts: Edit), CLOUDFLARE_ACCOUNT_ID (see README "Testing").
 name: Preview deploy

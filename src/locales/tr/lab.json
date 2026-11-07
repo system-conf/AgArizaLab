@@ -24,12 +24,12 @@
     "tooLarge": "Bu lab paylaşım bağlantısı için çok büyük ({{size}} karakter, en fazla {{limit}}). Bunun yerine dosya olarak dışa aktar.",
     "corrupt": "Paylaşım bağlantısı bozuk ya da eksik. Yeni bir bağlantı iste.",
     "copyFailed": "Bağlantı panoya kopyalanamadı.",
-    "linkTooLong": "Bu paylaşım bağlantısı çok uzun ({{size}} karakter, en fazla {{limit}}). Bozuk ya da AgArizaLab ile oluşturulmamış; bunun yerine lab dosyasını iste."
+    "linkTooLong": "Bu paylaşım bağlantısı çok uzun ({{size}} karakter, en fazla {{limit}}). Bozuk ya da Octetlab ile oluşturulmamış; bunun yerine lab dosyasını iste."
   },
   "import": {
     "notJson": "Dosya geçerli bir JSON değil: {{detail}}",
-    "notALab": "Dosya bir AgArizaLab labı değil.",
-    "unsupportedVersion": "Bu lab AgArizaLab’ın daha yeni bir sürümüyle kaydedilmiş (biçim {{version}}; bu sürüm en fazla {{supported}} okuyabilir). Uygulamayı güncelleyip tekrar dene.",
+    "notALab": "Dosya bir Octetlab labı değil.",
+    "unsupportedVersion": "Bu lab Octetlab’ın daha yeni bir sürümüyle kaydedilmiş (biçim {{version}}; bu sürüm en fazla {{supported}} okuyabilir). Uygulamayı güncelleyip tekrar dene.",
     "invalidVersion": "Lab biçim sürümü \"{{version}}\" geçerli değil.",
     "migrationFailed": "Lab, {{version}} biçiminden güncel biçime yükseltilemedi: {{detail}}",
     "moreErrors": "…ve {{count}} sorun daha.",

@@ -24,12 +24,12 @@
     "tooLarge": "This lab is too large for a share link ({{size}} of at most {{limit}} characters). Export it as a file instead.",
     "corrupt": "The share link is damaged or incomplete. Ask for a new link.",
     "copyFailed": "The link could not be copied to the clipboard.",
-    "linkTooLong": "This share link is too long ({{size}} characters, at most {{limit}}). It is damaged or was not made by AgArizaLab; ask for the lab file instead."
+    "linkTooLong": "This share link is too long ({{size}} characters, at most {{limit}}). It is damaged or was not made by Octetlab; ask for the lab file instead."
   },
   "import": {
     "notJson": "The file is not valid JSON: {{detail}}",
-    "notALab": "The file is not an AgArizaLab lab.",
-    "unsupportedVersion": "This lab was saved by a newer version of AgArizaLab (format {{version}}; this version reads up to {{supported}}). Update the app and try again.",
+    "notALab": "The file is not an Octetlab lab.",
+    "unsupportedVersion": "This lab was saved by a newer version of Octetlab (format {{version}}; this version reads up to {{supported}}). Update the app and try again.",
     "invalidVersion": "The lab format version \"{{version}}\" is not valid.",
     "migrationFailed": "The lab could not be upgraded from format {{version}} to the current format: {{detail}}",
     "moreErrors": "…and {{count}} more problems.",

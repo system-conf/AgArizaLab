@@ -131,7 +131,7 @@
       "importedWithIgnored_one": "Tercihler içe aktarıldı. Geçersiz {{count}} ayar varsayılanına döndü.",
       "importedWithIgnored_other": "Tercihler içe aktarıldı. Geçersiz {{count}} ayar varsayılanına döndü.",
       "invalidJson": "Bu dosya geçerli bir JSON değil.",
-      "notPreferences": "Bu dosya bir AgArizaLab tercih dosyası değil.",
+      "notPreferences": "Bu dosya bir Octetlab tercih dosyası değil.",
       "readFailed": "Dosya okunamadı."
     },
     "resetPreferences": {

@@ -8,7 +8,7 @@ describe('i18n runtime', () => {
     // Node exposes navigator.language (the machine locale), so the result depends on the machine.
     expect(['tr', 'en']).toContain(currentLanguage())
     await changeLanguage('en')
-    expect(i18n.t('common:appName')).toBe('Network Troubleshooting Lab')
+    expect(i18n.t('common:appName')).toBe('Octetlab')
   })
 
   it('switches language and translates messages with params', async () => {

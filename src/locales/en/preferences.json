@@ -131,7 +131,7 @@
       "importedWithIgnored_one": "Preferences imported. {{count}} invalid setting was reset to its default.",
       "importedWithIgnored_other": "Preferences imported. {{count}} invalid settings were reset to their defaults.",
       "invalidJson": "This file is not valid JSON.",
-      "notPreferences": "This file is not an AgArizaLab preferences file.",
+      "notPreferences": "This file is not an Octetlab preferences file.",
       "readFailed": "The file could not be read."
     },
     "resetPreferences": {

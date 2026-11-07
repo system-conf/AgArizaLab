@@ -35,7 +35,7 @@ export class LabConfigExport {
 
   /** The export file's lines: title block, then one section per device. */
   lines(network: NetworkState, info: LabExportInfo): string[] {
-    const lines = ['! AgArizaLab configuration export', `! Lab: ${info.title}`]
+    const lines = ['! Octetlab configuration export', `! Lab: ${info.title}`]
     if (info.exportedAt !== undefined) lines.push(`! Exported: ${info.exportedAt}`)
     lines.push(`! Devices: ${network.devices.length}`)
     for (const device of network.devices) lines.push('', ...LabConfigExport.header(device), ...this.devices.lines(device))

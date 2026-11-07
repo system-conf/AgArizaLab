@@ -1,7 +1,7 @@
 /** Public facts about the site, used by the landing page footer and share buttons. The app name is translated (common:appName). */
 export const siteInfo = {
-  url: 'https://agarizalab.slovveis.workers.dev/',
-  repositoryUrl: 'https://github.com/system-conf/AgArizaLab',
+  url: 'https://octetlab.slovveis.workers.dev/',
+  repositoryUrl: 'https://github.com/system-conf/Octetlab',
   author: 'Süleyman Talha Duman',
   license: 'MIT',
 } as const

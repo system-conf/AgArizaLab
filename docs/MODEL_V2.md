@@ -1,4 +1,4 @@
-# AgArizaLab — v2 data model
+# Octetlab — v2 data model
 
 Contract of Phase 2 (wave 2.0, K2). Everything the workspace, the engine, the simulator (Phase 3), the
 CLIs (Phase 4) and the protocol packs (Phase 5+) build on. Code: `src/domain/**` (types + two pure

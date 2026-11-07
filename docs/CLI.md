@@ -1,4 +1,4 @@
-# AgArizaLab — CLI contract (Phase 4)
+# Octetlab — CLI contract (Phase 4)
 
 Contract of wave 4.0 (K4). Binding for C2 (switch commands), C3 (router commands), C4 (host commands +
 config views) and the integrator CI. Code: `src/cli/contract/**` (types + constants),

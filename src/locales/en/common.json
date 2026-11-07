@@ -1,5 +1,5 @@
 {
-  "appName": "Network Troubleshooting Lab",
+  "appName": "Octetlab",
   "languageSwitcher": {
     "label": "Language"
   },
@@ -10,9 +10,9 @@
     "system": "System"
   },
   "meta": {
-    "title": "Network Troubleshooting Lab — find and fix network faults in your browser",
+    "title": "Octetlab — a network lab in your browser",
     "pageTitle": "{{page}} — {{appName}}",
-    "description": "A free, open-source network troubleshooting lab in your browser. Inspect devices, run ping, ipconfig and nslookup, and fix realistic faults in restaurant, office and shop networks."
+    "description": "A free, open-source network lab in your browser. Build and cable networks, configure them from a GUI or an IOS-style CLI, watch every packet in simulation mode, and learn with sample labs, troubleshooting exercises and design tasks."
   },
   "opensInNewTab": "(opens in a new tab)",
   "loading": "Loading…",

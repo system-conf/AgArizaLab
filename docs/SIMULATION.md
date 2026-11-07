@@ -1,4 +1,4 @@
-# AgArizaLab — packet simulation (Phase 3)
+# Octetlab — packet simulation (Phase 3)
 
 Contract of Phase 3 (wave 3.0, K3). Binding for S1, S2, S3, U3 (wave 3.1), I3 and O3 (wave 3.2) and
 read by the Phase 4 CLI. Code: `src/sim/contract/**` (types + three pure helpers), `src/sim/core/**`
